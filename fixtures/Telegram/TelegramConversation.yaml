@@ -1,0 +1,8 @@
+App\Entity\Telegram\TelegramConversation:
+  telegram_conversation_create_feedback_search_term_asked:
+    __construct:
+      messengerUser: '@messenger_user_1_telegram'
+      chatId: <(\App\Tests\Fixtures::TELEGRAM_CHAT_ID_1)>
+      class: <(\App\Service\Telegram\Conversation\CreateFeedbackTelegramConversation::class)>
+      status: <(\App\Enum\Telegram\TelegramConversationStatus::ACTIVE)>
+      state: <(['step'=>\App\Service\Telegram\Conversation\CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_ASKED])>

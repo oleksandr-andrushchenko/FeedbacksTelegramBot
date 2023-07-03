@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="app.frontend_base_url">%env(FRONTEND_BASE_URL)%</parameter>
+
+        <parameter key="app.telegram_options" type="collection">
+            <parameter key="default" type="collection">
+                <parameter key="api_token">%env(TELEGRAM_DEFAULT_API_TOKEN)%</parameter>
+                <parameter key="username">%env(TELEGRAM_DEFAULT_USERNAME)%</parameter>
+                <parameter key="webhook_url">%env(TELEGRAM_DEFAULT_WEBHOOK_URL)%</parameter>
+                <parameter key="webhook_certificate_path">%env(TELEGRAM_DEFAULT_CERTIFICATE_PATH)%</parameter>
+                <parameter key="admin_ids">%env(json:TELEGRAM_DEFAULT_ADMIN_IDS)%</parameter>
+                <parameter key="language_codes">%env(json:TELEGRAM_DEFAULT_LANGUAGE_CODES)%</parameter>
+                <parameter key="admin_chat_ids">%env(json:TELEGRAM_DEFAULT_ADMIN_CHAT_IDS)%</parameter>
+                <parameter key="check_update_duplicates">%env(bool:TELEGRAM_DEFAULT_CHECK_UPDATE_DUPLICATES)%</parameter>
+                <parameter key="process_admin_only">%env(bool:TELEGRAM_DEFAULT_PROCESS_ADMIN_ONLY)%</parameter>
+            </parameter>
+            <parameter key="feedbacks" type="collection">
+                <parameter key="api_token">%env(TELEGRAM_FEEDBACKS_API_TOKEN)%</parameter>
+                <parameter key="username">%env(TELEGRAM_FEEDBACKS_USERNAME)%</parameter>
+                <parameter key="webhook_url">%env(TELEGRAM_FEEDBACKS_WEBHOOK_URL)%</parameter>
+                <parameter key="webhook_certificate_path">%env(TELEGRAM_FEEDBACKS_CERTIFICATE_PATH)%</parameter>
+                <parameter key="admin_ids">%env(json:TELEGRAM_FEEDBACKS_ADMIN_IDS)%</parameter>
+                <parameter key="language_codes">%env(json:TELEGRAM_FEEDBACKS_LANGUAGE_CODES)%</parameter>
+                <parameter key="admin_chat_ids">%env(json:TELEGRAM_FEEDBACKS_ADMIN_CHAT_IDS)%</parameter>
+                <parameter key="check_update_duplicates">%env(bool:TELEGRAM_FEEDBACKS_CHECK_UPDATE_DUPLICATES)%</parameter>
+                <parameter key="process_admin_only">%env(bool:TELEGRAM_FEEDBACKS_PROCESS_ADMIN_ONLY)%</parameter>
+            </parameter>
+        </parameter>
+
+        <parameter key="app.instagram_options" type="collection">
+            <parameter key="default" type="collection">
+                <parameter key="username">%env(INSTAGRAM_DEFAULT_USERNAME)%</parameter>
+                <parameter key="password">%env(INSTAGRAM_DEFAULT_PASSWORD)%</parameter>
+            </parameter>
+            <parameter key="feedbacks" type="collection"/>
+        </parameter>
+
+        <parameter key="app.feedback_creator_options" type="collection">
+            <parameter key="user_target_messenger_required">%env(bool:FEEDBACK_CREATOR_USER_TARGET_MESSENGER_REQUIRED)%</parameter>
+        </parameter>
+    </parameters>
+</container>

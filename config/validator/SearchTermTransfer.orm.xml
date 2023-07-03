@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping
+        https://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="App\Object\Feedback\SearchTermTransfer">
+        <property name="text">
+            <constraint name="NotBlank">
+                <option name="message">search_term.text.not_blank</option>
+                <option name="groups">
+                    <value>text</value>
+                </option>
+            </constraint>
+            <constraint name="Length">
+                <option name="min">0</option>
+                <option name="minMessage">search_term.text.min_length</option>
+                <option name="max">2048</option>
+                <option name="maxMessage">search_term.text.max_length</option>
+                <option name="groups">
+                    <value>text</value>
+                </option>
+            </constraint>
+        </property>
+        <property name="messengerProfileUrl">
+            <constraint name="Url">
+                <option name="message">search_term.messenger_profile_url.url</option>
+            </constraint>
+        </property>
+    </class>
+</constraint-mapping>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.command.telegram_webhook_update" class="App\Command\Telegram\TelegramWebhookUpdateCommand" lazy="true">
+            <argument type="service" id="app.telegram_registry"/>
+            <argument type="service" id="app.telegram_webhook_updater"/>
+
+            <tag name="console.command" command="telegram:webhook:update"/>
+        </service>
+        <service id="app.command.telegram_webhook_delete" class="App\Command\Telegram\TelegramWebhookDeleteCommand" lazy="true">
+            <argument type="service" id="app.telegram_registry"/>
+            <argument type="service" id="app.telegram_webhook_info_provider"/>
+            <argument type="service" id="app.telegram_webhook_remover"/>
+
+            <tag name="console.command" command="telegram:webhook:remove"/>
+        </service>
+        <service id="app.command.telegram_webhook_info" class="App\Command\Telegram\TelegramWebhookInfoCommand" lazy="true">
+            <argument type="service" id="app.telegram_registry"/>
+            <argument type="service" id="app.telegram_webhook_info_provider"/>
+
+            <tag name="console.command" command="telegram:webhook:info"/>
+        </service>
+        <service id="app.command.telegram_commands_update" class="App\Command\Telegram\TelegramCommandsUpdateCommand" lazy="true">
+            <argument type="service" id="app.telegram_registry"/>
+            <argument type="service" id="app.telegram_commands_updater"/>
+
+            <tag name="console.command" command="telegram:commands:update"/>
+        </service>
+        <service id="app.command.telegram_commands_delete" class="App\Command\Telegram\TelegramCommandsDeleteCommand" lazy="true">
+            <argument type="service" id="app.telegram_registry"/>
+            <argument type="service" id="app.telegram_commands_remover"/>
+
+            <tag name="console.command" command="telegram:commands:delete"/>
+        </service>
+        <service id="app.command.telegram_descriptions_update" class="App\Command\Telegram\TelegramDescriptionsUpdateCommand" lazy="true">
+            <argument type="service" id="app.telegram_registry"/>
+            <argument type="service" id="app.telegram_descriptions_updater"/>
+
+            <tag name="console.command" command="telegram:descriptions:update"/>
+        </service>
+    </services>
+</container>

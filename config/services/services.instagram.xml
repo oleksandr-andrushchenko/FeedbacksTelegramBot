@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.instagram_client_factory" class="App\Service\Instagram\InstagramClientFactory" lazy="true">
+            <argument type="service" id="cache"/>
+        </service>
+        <service id="app.instagram_factory" class="App\Service\Instagram\InstagramFactory" lazy="true">
+            <argument>%app.instagram_options%</argument>
+            <argument type="service" id="app.instagram_client_registry"/>
+            <argument type="service" id="logger"/>
+        </service>
+        <service id="app.instagram_client_registry" class="App\Service\Instagram\InstagramClientRegistry" lazy="true">
+            <argument type="service" id="app.instagram_client_factory"/>
+        </service>
+        <service id="app.instagram_messenger_user_maker" class="App\Service\Instagram\InstagramMessengerUserMaker"
+                 lazy="true"/>
+        <service id="app.instagram_registry" class="App\Service\InstagramRegistry" lazy="true">
+            <argument type="service" id="app.instagram_factory"/>
+        </service>
+        <service id="app.instagram_messenger_user_finder_factory"
+                 class="App\Service\Instagram\InstagramMessengerUserFinderFactory" lazy="true">
+            <argument type="tagged_locator" tag="app.instagram_messenger_user_finder" index-by="finder"/>
+        </service>
+        <service id="app.instagram_messenger_user_finder_persisted"
+                 class="App\Service\Instagram\UserFinder\PersistedInstagramMessengerUserFinder" lazy="true">
+            <argument type="service" id="app.repository.messenger_user"/>
+            <tag name="app.instagram_messenger_user_finder" finder="persisted"/>
+        </service>
+        <service id="app.instagram_messenger_user_finder_open_search"
+                 class="App\Service\Instagram\UserFinder\OpenSearchInstagramMessengerUserFinder" lazy="true">
+            <argument type="service" id="app.http_client_factory"/>
+            <argument type="service" id="logger"/>
+            <tag name="app.instagram_messenger_user_finder" finder="open-query"/>
+        </service>
+        <service id="app.instagram_messenger_user_provider"
+                 class="App\Service\Instagram\InstagramMessengerUserProvider" lazy="true">
+            <argument type="service" id="app.instagram_messenger_user_finder_factory"/>
+        </service>
+        <service id="app.instagram_user_upserter" class="App\Service\Instagram\InstagramUserUpserter" lazy="true">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.repository.messenger_user"/>
+        </service>
+    </services>
+</container>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.encoder.telegram_command" class="App\Serializer\Telegram\TelegramCommandEncoder">
+            <tag name="serializer.encoder"/>
+        </service>
+        <service id="app.normalizer.telegram_conversation_state"
+                 class="App\Serializer\Telegram\TelegramConversationStateNormalizer">
+            <tag name="serializer.normalizer" priority="-970"/>
+        </service>
+        <service id="app.normalizer.telegram_conversation_state_create_feedback"
+                 class="App\Serializer\Telegram\CreateFeedbackTelegramConversationStateNormalizer">
+            <argument type="service" id="app.normalizer.telegram_conversation_state"/>
+            <argument type="service" id="app.normalizer.telegram_conversation_state"/>
+            <argument type="service" id="app.normalizer.search_term_transfer"/>
+            <argument type="service" id="app.normalizer.search_term_transfer"/>
+            <tag name="serializer.normalizer" priority="-969"/>
+        </service>
+        <service id="app.normalizer.telegram_conversation_state_search_feedback"
+                 class="App\Serializer\Telegram\SearchFeedbackTelegramConversationStateNormalizer">
+            <argument type="service" id="app.normalizer.telegram_conversation_state"/>
+            <argument type="service" id="app.normalizer.telegram_conversation_state"/>
+            <argument type="service" id="app.normalizer.search_term_transfer"/>
+            <argument type="service" id="app.normalizer.search_term_transfer"/>
+            <tag name="serializer.normalizer" priority="-968"/>
+        </service>
+    </services>
+</container>

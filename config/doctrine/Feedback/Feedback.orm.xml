@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Entity\Feedback\Feedback" repository-class="App\Repository\Feedback\FeedbackRepository"
+            table="feedbacks">
+
+        <indexes>
+            <index fields="searchTermNormalizedText"/>
+        </indexes>
+
+        <id name="id" column="id" type="integer">
+            <generator/>
+            <options>
+                <option name="unsigned">true</option>
+            </options>
+        </id>
+        <many-to-one field="messengerUser" target-entity="App\Entity\Messenger\MessengerUser"/>
+        <field name="searchTermText" column="search_term_text"/>
+        <field name="searchTermNormalizedText" column="search_term_normalized_text"/>
+        <field name="searchTermType" column="search_term_type" type="smallint" enum-type="App\Enum\Feedback\SearchTermType">
+            <options>
+                <option name="unsigned">true</option>
+            </options>
+        </field>
+        <field name="searchTermMessenger" column="search_term_messenger" type="smallint" enum-type="App\Enum\Messenger\Messenger" nullable="true">
+            <options>
+                <option name="unsigned">true</option>
+            </options>
+        </field>
+        <field name="searchTermMessengerUsername" column="search_term_messenger_username" nullable="true"/>
+        <many-to-one field="searchTermMessengerUser" target-entity="App\Entity\Messenger\MessengerUser"/>
+        <field name="rating" column="rating" type="smallint" enum-type="App\Enum\Feedback\Rating"/>
+        <field name="description" column="description" type="text" nullable="true"/>
+        <field name="createdAt" column="created_at" type="datetime" nullable="true"/>
+        <field name="updatedAt" column="updated_at" type="datetime" nullable="true"/>
+    </entity>
+</doctrine-mapping>

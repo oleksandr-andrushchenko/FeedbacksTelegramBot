@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.feedback_creator_options" class="App\Entity\Feedback\FeedbackCreatorOptions">
+            <argument>%app.feedback_creator_options%</argument>
+        </service>
+        <service id="app.feedback_creator" class="App\Service\Feedback\FeedbackCreator" lazy="true">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.validator"/>
+        </service>
+        <service id="app.feedback_search_creator" class="App\Service\Feedback\FeedbackSearchCreator" lazy="true">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.validator"/>
+        </service>
+        <service id="app.feedback_searcher" class="App\Service\Feedback\FeedbackSearcher" lazy="true">
+            <argument type="service" id="app.repository.feedback"/>
+        </service>
+
+        <service id="app.feedback_search_term_parser_instagram"
+                 class="App\Service\Feedback\SearchTerm\InstagramSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_facebook"
+                 class="App\Service\Feedback\SearchTerm\FacebookSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_telegram"
+                 class="App\Service\Feedback\SearchTerm\TelegramSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_twitter"
+                 class="App\Service\Feedback\SearchTerm\TwitterSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_tiktok"
+                 class="App\Service\Feedback\SearchTerm\TiktokSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_youtube"
+                 class="App\Service\Feedback\SearchTerm\YoutubeSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_onlyfans"
+                 class="App\Service\Feedback\SearchTerm\OnlyfansSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_reddit"
+                 class="App\Service\Feedback\SearchTerm\RedditSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_email"
+                 class="App\Service\Feedback\SearchTerm\EmailSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_name"
+                 class="App\Service\Feedback\SearchTerm\NameSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_parser_phone_number"
+                 class="App\Service\Feedback\SearchTerm\PhoneNumberSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_unknown_messenger"
+                 class="App\Service\Feedback\SearchTerm\UnknownMessengerSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_url"
+                 class="App\Service\Feedback\SearchTerm\UrlSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_unknown"
+                 class="App\Service\Feedback\SearchTerm\UnknownSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_factory"
+                 class="App\Service\Feedback\SearchTerm\SearchTermParserFactory" lazy="true">
+            <argument type="tagged_locator" tag="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser" class="App\Service\Feedback\SearchTerm\SearchTermParser" lazy="true">
+            <argument type="service" id="app.feedback_search_term_parser_factory"/>
+        </service>
+    </services>
+</container>

@@ -1,0 +1,23 @@
+App\Entity\Feedback\Feedback:
+  feedback_13_telegram_instagram_profile_url:
+    __construct:
+      messengerUser: '@messenger_user_1_telegram'
+      searchTermText: 'https://instagram.com/<(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>'
+      searchTermNormalizedText: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
+      searchTermType: <(\App\Enum\Feedback\SearchTermType::instagram_username)>
+      searchTermMessengerUser: null
+      searchTermMessenger: <(\App\Enum\Messenger\Messenger::instagram)>
+      searchTermMessengerUsername: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
+      rating: <(\App\Enum\Feedback\Rating::neutral)>
+      description: 'neutral'
+  feedback_23_telegram_instagram_username:
+    __construct:
+      messengerUser: '@messenger_user_2_telegram'
+      searchTermText: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
+      searchTermNormalizedText: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
+      searchTermType: <(\App\Enum\Feedback\SearchTermType::instagram_username)>
+      searchTermMessengerUser: null
+      searchTermMessenger: <(\App\Enum\Messenger\Messenger::instagram)>
+      searchTermMessengerUsername: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
+      rating: <(\App\Enum\Feedback\Rating::extremely_satisfied)>
+      description: 'awesome'

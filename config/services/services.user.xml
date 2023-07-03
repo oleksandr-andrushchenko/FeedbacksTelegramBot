@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.user_upserter" class="App\Service\User\UserUpserter" lazy="true">
+            <argument type="service" id="app.repository.user"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
+        <service id="app.user_rating_syncer" class="App\Service\User\UserRatingSyncer" lazy="true">
+            <argument type="service" id="app.repository.feedback"/>
+        </service>
+        <service id="app.user_finder" class="App\Service\User\UserFinder" lazy="true"/>
+    </services>
+</container>

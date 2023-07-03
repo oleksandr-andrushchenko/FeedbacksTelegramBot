@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.telegram_message_sender" class="App\Tests\Fake\Service\Telegram\FakeTelegramMessageSender" lazy="true"/>
+        <service id="app.telegram_chat_action_sender" class="App\Tests\Fake\Service\Telegram\FakeTelegramChatActionSender" lazy="true"/>
+        <service id="app.instagram_messenger_user_provider" class="App\Tests\Fake\Service\Instagram\FakeInstagramMessengerUserProvider" lazy="true">
+            <tag name="app.telegram_user_finder" finder="open-query"/>
+        </service>
+        <service id="translator" class="App\Tests\Fake\Service\FakeTranslator" lazy="true"/>
+    </services>
+</container>
