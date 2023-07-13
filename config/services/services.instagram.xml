@@ -8,19 +8,11 @@
         <service id="app.instagram_client_factory" class="App\Service\Instagram\InstagramClientFactory" lazy="true">
             <argument type="service" id="cache"/>
         </service>
-        <service id="app.instagram_factory" class="App\Service\Instagram\InstagramFactory" lazy="true">
-            <argument>%app.instagram_options%</argument>
-            <argument type="service" id="app.instagram_client_registry"/>
-            <argument type="service" id="logger"/>
-        </service>
         <service id="app.instagram_client_registry" class="App\Service\Instagram\InstagramClientRegistry" lazy="true">
             <argument type="service" id="app.instagram_client_factory"/>
         </service>
         <service id="app.instagram_messenger_user_maker" class="App\Service\Instagram\InstagramMessengerUserMaker"
                  lazy="true"/>
-        <service id="app.instagram_registry" class="App\Service\InstagramRegistry" lazy="true">
-            <argument type="service" id="app.instagram_factory"/>
-        </service>
         <service id="app.instagram_messenger_user_finder_factory"
                  class="App\Service\Instagram\InstagramMessengerUserFinderFactory" lazy="true">
             <argument type="tagged_locator" tag="app.instagram_messenger_user_finder" index-by="finder"/>

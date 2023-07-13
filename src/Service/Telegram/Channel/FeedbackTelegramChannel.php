@@ -20,10 +20,33 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
 
     protected function getCommands(TelegramAwareHelper $tg): iterable
     {
-        yield new TelegramCommand(self::START, fn () => $tg->startConversation(ChooseFeedbackActionTelegramConversation::class));
-        yield new TelegramCommand(self::CREATE_FEEDBACK, fn () => $tg->startConversation(CreateFeedbackTelegramConversation::class), key: 'create_feedback');
-        yield new TelegramCommand(self::SEARCH_FEEDBACK, fn () => $tg->startConversation(SearchFeedbackTelegramConversation::class), key: 'search_feedback');
-        yield new TelegramCommand(self::RESTART, fn () => $tg->stopConversations()->replyOk('feedbacks.reply.restart.ok')->startConversation(ChooseFeedbackActionTelegramConversation::class), key: 'restart_feedbacks', beforeConversations: true);
+        yield new TelegramCommand(
+            self::START,
+            fn () => $tg->startConversation(ChooseFeedbackActionTelegramConversation::class)
+        );
+
+        yield new TelegramCommand(
+            self::CREATE_FEEDBACK,
+            fn () => $tg->startConversation(CreateFeedbackTelegramConversation::class),
+            keyboardOnly: false,
+            key: 'create'
+        );
+
+        yield new TelegramCommand(
+            self::SEARCH_FEEDBACK,
+            fn () => $tg->startConversation(SearchFeedbackTelegramConversation::class),
+            keyboardOnly: false,
+            key: 'search'
+        );
+
+        yield new TelegramCommand(
+            self::RESTART,
+            fn () => $tg->stopConversations()->replyOk('feedbacks.reply.restart.ok')->startConversation(ChooseFeedbackActionTelegramConversation::class),
+            keyboardOnly: false,
+            key: 'restart',
+            beforeConversations: true
+        );
+
         // todo: "who've been looking for me" command
         // todo: "list my feedbacks" command
         // todo: "list feedbacks on me" command

@@ -4,6 +4,7 @@
         xsi:schemaLocation="http://symfony.com/schema/routing
         https://symfony.com/schema/routing/routing-1.0.xsd">
 
+    <route id="app.web.index" path="/" controller="app.controller.site::index" methods="GET"/>
     <route id="app.web.telegram.webhook" path="/telegram/webhook/{bot}" controller="app.controller.telegram::webhook"
            methods="POST">
         <default key="bot">default</default>

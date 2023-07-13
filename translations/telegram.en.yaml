@@ -20,12 +20,12 @@ icon:
   number: '#'
 feedbacks:
   #  name: Feedbacks
-  name: Top secret
+  name: wild_s_local_bot
   #  short_description: Create and read feedbacks
-  short_description: Top secret
-  description:
-    #    .: This bot allows you to create and read feedbacks on persons or companies
-    .: Top secret
+  short_description: ""
+#  description: This bot allows you to create and read feedbacks on persons or companies
+  description: ""
+  commands:
     start: 🎬 Start
     create: ✏️ Add feedback
     search: 🔍 Find feedback

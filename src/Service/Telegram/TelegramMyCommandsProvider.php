@@ -24,15 +24,15 @@ class TelegramMyCommandsProvider
         $channel = $this->channelRegistry->getTelegramChannel($telegram->getName());
 
         $nonFallbackCommands = array_values(
-            array_filter((array) $channel->getTelegramCommands($telegram), fn ($command) => !$command instanceof FallbackTelegramCommand)
+            array_filter(iterator_to_array($channel->getTelegramCommands($telegram)), fn (TelegramCommandInterface $command) => $command instanceof TelegramCommand)
         );
 
         $adminChatScopeCommands = array_values(
-            array_filter($nonFallbackCommands, fn ($command) => !$command->getKeyboardOnly())
+            array_filter($nonFallbackCommands, fn (TelegramCommandInterface $command) => !$command->getKeyboardOnly())
         );
 
         $defaultScopeCommands = array_values(
-            array_filter($adminChatScopeCommands, fn ($command) => !$command->getAdminOnly())
+            array_filter($adminChatScopeCommands, fn (TelegramCommandInterface $command) => true)
         );
 
         $defaultScope = new BotCommandScopeDefault();

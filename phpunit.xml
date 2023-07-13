@@ -22,10 +22,27 @@
         <server name="SYMFONY_PHPUNIT_VERSION" value="9.5"/>
         <server name="KERNEL_CLASS" value="App\Tests\Kernel"/>
 
+        <env name="KERNEL_CLASS" value="App\Tests\Kernel"/>
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
-        <env name="TELEGRAM_FEEDBACKS_API_TOKEN" value="any"/>
-        <env name="TELEGRAM_DEFAULT_CHECK_UPDATE_DUPLICATES" value="true"/>
-        <env name="TELEGRAM_DEFAULT_PROCESS_ADMIN_ONLY" value="false"/>
+
+<!--        should be synced with:-->
+<!--        1) .env-->
+<!--        1) phpunit.xml-->
+<!--        2) serverless.yml-->
+
+        <env name="APP_ENV" value="test"/>
+        <env name="APP_SECRET" value="$ecretf0rt3st"/>
+        <env name="WEB_BASE_URL" value="http://localhost"/>
+        <env name="TELEGRAM_WEBHOOK_BASE_URL" value="http://localhost"/>
+        <env name="TELEGRAM_FEEDBACKS_USERNAME" value="any"/>
+        <env name="TELEGRAM_FEEDBACKS_API_TOKEN" value="0:any"/>
+        <env name="TELEGRAM_FEEDBACKS_ADMIN_IDS" value='["409525390"]'/>
+        <env name="TELEGRAM_FEEDBACKS_LANGUAGE_CODES" value='["en","uk","ru"]'/>
+        <env name="TELEGRAM_FEEDBACKS_ADMIN_CHAT_IDS" value='["409525390"]'/>
+        <env name="TELEGRAM_FEEDBACKS_CHECK_UPDATE_DUPLICATES" value="true"/>
+        <env name="TELEGRAM_FEEDBACKS_PROCESS_ADMIN_ONLY" value="false"/>
+        <env name="FEEDBACK_CREATOR_USER_TARGET_MESSENGER_REQUIRED" value="false"/>
+        <env name="DATABASE_URL" value="mysql://app:1111@mysql:3306/app_test?serverVersion=8&amp;charset=utf8mb4"/>
 
         <const name="PHPUNIT_TESTSUITE" value="true"/>
     </php>

@@ -34,7 +34,7 @@
             <argument type="service" id="app.telegram_registry"/>
             <argument type="service" id="app.telegram_commands_remover"/>
 
-            <tag name="console.command" command="telegram:commands:delete"/>
+            <tag name="console.command" command="telegram:commands:remove"/>
         </service>
         <service id="app.command.telegram_descriptions_update" class="App\Command\Telegram\TelegramDescriptionsUpdateCommand" lazy="true">
             <argument type="service" id="app.telegram_registry"/>

@@ -5,6 +5,9 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="app.controller.site" class="App\Controller\SiteController">
+            <tag name="controller.service_arguments"/>
+        </service>
         <service id="app.controller.telegram" class="App\Controller\Telegram\TelegramController">
             <argument type="service" id="app.telegram_registry"/>
             <argument type="service" id="app.telegram_update_handler"/>

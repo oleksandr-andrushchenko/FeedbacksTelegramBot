@@ -1,12 +1,15 @@
 {
-    "doctrine/annotations": {
-        "version": "1.14",
+    "bref/symfony-bridge": {
+        "version": "0.2",
         "recipe": {
-            "repo": "github.com/symfony/recipes",
+            "repo": "github.com/symfony/recipes-contrib",
             "branch": "main",
-            "version": "1.10",
-            "ref": "64d8583af5ea57b7afa4aba4b159907f3a148b05"
-        }
+            "version": "0.1",
+            "ref": "073e577186ef96e4f26df1f8a3dc14a48826d364"
+        },
+        "files": [
+            "serverless.yml"
+        ]
     },
     "doctrine/doctrine-bundle": {
         "version": "2.8",
@@ -57,6 +60,18 @@
         },
         "files": [
             "config/packages/nelmio_alice.yaml"
+        ]
+    },
+    "nyholm/psr7": {
+        "version": "1.6",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "1.0",
+            "ref": "4a8c0345442dcca1d8a2c65633dcf0285dd5a5a2"
+        },
+        "files": [
+            "config/packages/nyholm_psr7.yaml"
         ]
     },
     "phpunit/phpunit": {

@@ -41,7 +41,9 @@
             <argument type="service" id="app.telegram_chat_provider"/>
         </service>
         <service id="app.telegram_my_commands_provider" class="App\Service\Telegram\TelegramMyCommandsProvider"
-                 lazy="true"/>
+                 lazy="true">
+            <argument type="service" id="app.telegram_channel_registry"/>
+        </service>
         <service id="app.telegram_webhook_updater" class="App\Service\Telegram\TelegramWebhookUpdater" lazy="true"/>
         <service id="app.telegram_webhook_remover" class="App\Service\Telegram\TelegramWebhookRemover" lazy="true"/>
         <service id="app.telegram_webhook_info_provider" class="App\Service\Telegram\TelegramWebhookInfoProvider"

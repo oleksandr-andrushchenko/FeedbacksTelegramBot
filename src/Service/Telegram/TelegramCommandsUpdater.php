@@ -37,7 +37,7 @@ class TelegramCommandsUpdater
                     'command' => $command->getName(),
                     'description' => $this->telegramTranslator->transTelegram(
                         $myCommands->getLanguageCode(),
-                        sprintf('%s.description.%s', $telegram->getName()->name, $command->getKey())
+                        sprintf('%s.commands.%s', $telegram->getName()->name, $command->getKey())
                     ),
                 ],
                 $myCommands->getCommands()

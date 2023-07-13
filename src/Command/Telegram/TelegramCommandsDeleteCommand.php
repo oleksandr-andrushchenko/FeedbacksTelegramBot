@@ -30,7 +30,7 @@ class TelegramCommandsDeleteCommand extends Command
     {
         $this
             ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot name')
-            ->setDescription('Update telegram bot commands')
+            ->setDescription('Delete telegram bot commands')
         ;
     }
 
