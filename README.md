@@ -1,8 +1,7 @@
-# https://bref.sh/docs/
+# Serverless
+* https://bref.sh/docs/
 
 # Run ngrok tunnel
-
-[//]: # (`ngrok http --host-header=rewrite https://feedbacks.localhost`)
 `ngrok http --host-header=rewrite http://localhost:8000`
 
 # Refresh db

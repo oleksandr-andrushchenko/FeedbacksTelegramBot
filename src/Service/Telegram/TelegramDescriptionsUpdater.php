@@ -7,6 +7,7 @@ namespace App\Service\Telegram;
 class TelegramDescriptionsUpdater
 {
     public function __construct(
+        private readonly string $appStage,
         private readonly TelegramTranslator $telegramTranslator,
         private ?array $myNames = null,
         private ?array $myDescriptions = null,
@@ -26,7 +27,7 @@ class TelegramDescriptionsUpdater
         $this->myShortDescriptions = [];
 
         foreach ($telegram->getOptions()->getLanguageCodes() as $languageCode) {
-            $name = $this->telegramTranslator->transTelegram($languageCode, sprintf('%s.name', $telegram->getName()->name));
+            $name = $this->telegramTranslator->transTelegram($languageCode, sprintf('%s.name.%s', $telegram->getName()->name, $this->appStage));
             $this->myNames[] = $name;
             $telegram->setMyName([
                 'name' => $name,

@@ -20,7 +20,10 @@ icon:
   number: '#'
 feedbacks:
   #  name: Feedbacks
-  name: wild_s_local_bot
+  name:
+    local: wild_s_local_bot
+    dev: wild_s_dev_bot
+    prod: wild_s_prod_bot
   #  short_description: Create and read feedbacks
   short_description: ""
 #  description: This bot allows you to create and read feedbacks on persons or companies

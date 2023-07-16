@@ -30,6 +30,7 @@
 <!--        1) phpunit.xml-->
 <!--        2) serverless.yml-->
 
+        <env name="APP_STATE" value="local"/>
         <env name="APP_ENV" value="test"/>
         <env name="APP_SECRET" value="$ecretf0rt3st"/>
         <env name="WEB_BASE_URL" value="http://localhost"/>
