@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Command\Telegram;
 
+use App\Service\Telegram\Api\TelegramWebhookInfoProvider;
+use App\Service\Telegram\Api\TelegramWebhookRemover;
 use App\Service\Telegram\TelegramRegistry;
-use App\Service\Telegram\TelegramWebhookInfoProvider;
-use App\Service\Telegram\TelegramWebhookRemover;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

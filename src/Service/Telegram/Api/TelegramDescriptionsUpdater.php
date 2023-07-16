@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Telegram;
+namespace App\Service\Telegram\Api;
+
+use App\Service\Telegram\Telegram;
+use App\Service\Telegram\TelegramTranslator;
 
 class TelegramDescriptionsUpdater
 {

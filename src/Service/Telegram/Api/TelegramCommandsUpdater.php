@@ -2,11 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Telegram;
+namespace App\Service\Telegram\Api;
 
-class TelegramCommandsRemover
+use App\Service\Telegram\Telegram;
+use App\Service\Telegram\TelegramCommandInterface;
+use App\Service\Telegram\TelegramMyCommands;
+use App\Service\Telegram\TelegramMyCommandsProvider;
+use App\Service\Telegram\TelegramTranslator;
+
+class TelegramCommandsUpdater
 {
     public function __construct(
+        private readonly TelegramTranslator $telegramTranslator,
         private readonly TelegramMyCommandsProvider $telegramMyCommandsProvider,
         private ?array $myCommands = null,
     )
@@ -18,7 +25,7 @@ class TelegramCommandsRemover
      * @param Telegram $telegram
      * @return void
      */
-    public function removeTelegramCommands(Telegram $telegram): void
+    public function updateTelegramCommands(Telegram $telegram): void
     {
         $this->myCommands = [];
 
@@ -31,10 +38,20 @@ class TelegramCommandsRemover
 
             $data['language_code'] = $myCommands->getLanguageCode();
             $data['scope'] = $myCommands->getScope()->jsonSerialize();
+            $data['commands'] = array_map(
+                fn (TelegramCommandInterface $command) => [
+                    'command' => $command->getName(),
+                    'description' => $this->telegramTranslator->transTelegram(
+                        $myCommands->getLanguageCode(),
+                        sprintf('%s.commands.%s', $telegram->getName()->name, $command->getKey())
+                    ),
+                ],
+                $myCommands->getCommands()
+            );
 
             $this->myCommands[] = $myCommands;
 
-            $telegram->deleteMyCommands($data);
+            $telegram->setMyCommands($data);
         }
     }
 

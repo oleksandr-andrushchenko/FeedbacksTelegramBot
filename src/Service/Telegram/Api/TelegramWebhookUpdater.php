@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Telegram;
+namespace App\Service\Telegram\Api;
 
 use App\Exception\Telegram\TelegramException;
+use App\Service\Telegram\Telegram;
 use InvalidArgumentException;
 
 class TelegramWebhookUpdater

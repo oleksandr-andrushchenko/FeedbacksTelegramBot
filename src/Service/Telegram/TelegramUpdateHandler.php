@@ -44,7 +44,7 @@ class TelegramUpdateHandler
             return;
         }
 
-        if ($this->existingUpdateChecker->checExistingUpdate($telegram)) {
+        if ($this->existingUpdateChecker->checkExistingUpdate($telegram)) {
             return;
         }
 

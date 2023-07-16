@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Command\Telegram;
 
+use App\Service\Telegram\Api\TelegramWebhookUpdater;
 use App\Service\Telegram\TelegramRegistry;
-use App\Service\Telegram\TelegramWebhookUpdater;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

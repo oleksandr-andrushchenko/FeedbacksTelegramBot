@@ -44,9 +44,9 @@
                  lazy="true">
             <argument type="service" id="app.telegram_channel_registry"/>
         </service>
-        <service id="app.telegram_webhook_updater" class="App\Service\Telegram\TelegramWebhookUpdater" lazy="true"/>
-        <service id="app.telegram_webhook_remover" class="App\Service\Telegram\TelegramWebhookRemover" lazy="true"/>
-        <service id="app.telegram_webhook_info_provider" class="App\Service\Telegram\TelegramWebhookInfoProvider"
+        <service id="app.telegram_webhook_updater" class="App\Service\Telegram\Api\TelegramWebhookUpdater" lazy="true"/>
+        <service id="app.telegram_webhook_remover" class="App\Service\Telegram\Api\TelegramWebhookRemover" lazy="true"/>
+        <service id="app.telegram_webhook_info_provider" class="App\Service\Telegram\Api\TelegramWebhookInfoProvider"
                  lazy="true"/>
         <service id="app.telegram_user_provider" class="App\Service\Telegram\TelegramUserProvider" lazy="true"/>
         <service id="app.telegram_chat_provider" class="App\Service\Telegram\TelegramChatProvider" lazy="true"/>
@@ -89,21 +89,20 @@
         <service id="app.telegram_keyboard_factory" class="App\Service\Telegram\TelegramKeyboardFactory" lazy="true">
             <argument type="service" id="app.telegram_translator"/>
         </service>
-        <service id="app.telegram_message_provider" class="App\Service\Telegram\TelegramMessageProvider" lazy="true"/>
-        <service id="app.telegram_commands_updater" class="App\Service\Telegram\TelegramCommandsUpdater" lazy="true">
+        <service id="app.telegram_commands_updater" class="App\Service\Telegram\Api\TelegramCommandsUpdater" lazy="true">
             <argument type="service" id="app.telegram_translator"/>
             <argument type="service" id="app.telegram_my_commands_provider"/>
         </service>
-        <service id="app.telegram_commands_remover" class="App\Service\Telegram\TelegramCommandsRemover" lazy="true">
+        <service id="app.telegram_commands_remover" class="App\Service\Telegram\Api\TelegramCommandsRemover" lazy="true">
             <argument type="service" id="app.telegram_my_commands_provider"/>
         </service>
-        <service id="app.telegram_descriptions_updater" class="App\Service\Telegram\TelegramDescriptionsUpdater"
+        <service id="app.telegram_descriptions_updater" class="App\Service\Telegram\Api\TelegramDescriptionsUpdater"
                  lazy="true">
             <argument type="string">%app.stage%</argument>
             <argument type="service" id="app.telegram_translator"/>
         </service>
-        <service id="app.telegram_message_sender" class="App\Service\Telegram\TelegramMessageSender" lazy="true"/>
-        <service id="app.telegram_chat_action_sender" class="App\Service\Telegram\TelegramChatActionSender"
+        <service id="app.telegram_message_sender" class="App\Service\Telegram\Api\TelegramMessageSender" lazy="true"/>
+        <service id="app.telegram_chat_action_sender" class="App\Service\Telegram\Api\TelegramChatActionSender"
                  lazy="true"/>
         <service id="app.telegram_client_registry" class="App\Service\Telegram\TelegramClientRegistry" lazy="true">
             <argument type="service" id="app.telegram_client_factory"/>

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command\Telegram;
 
-use App\Service\Telegram\TelegramCommandsRemover;
+use App\Service\Telegram\Api\TelegramCommandsRemover;
 use App\Service\Telegram\TelegramRegistry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Fake\Service\Telegram;
+namespace App\Tests\Fake\Service\Telegram\Api;
 
+use App\Service\Telegram\Api\TelegramMessageSenderInterface;
 use App\Service\Telegram\Telegram;
-use App\Service\Telegram\TelegramMessageSenderInterface;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Request;

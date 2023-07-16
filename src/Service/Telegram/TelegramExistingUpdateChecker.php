@@ -23,7 +23,7 @@ class TelegramExistingUpdateChecker
      * @param Telegram $telegram
      * @return bool
      */
-    public function checExistingUpdate(Telegram $telegram): bool
+    public function checkExistingUpdate(Telegram $telegram): bool
     {
         if (!$telegram->getOptions()->checkUpdateDuplicates()) {
             return false;

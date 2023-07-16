@@ -6,6 +6,8 @@ namespace App\Service\Telegram;
 
 use App\Entity\Telegram\TelegramConversation;
 use App\Enum\Telegram\TelegramView;
+use App\Service\Telegram\Api\TelegramChatActionSenderInterface;
+use App\Service\Telegram\Api\TelegramMessageSenderInterface;
 use Longman\TelegramBot\ChatAction;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\KeyboardButton;

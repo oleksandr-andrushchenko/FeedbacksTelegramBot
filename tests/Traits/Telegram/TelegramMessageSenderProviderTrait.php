@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Traits\Telegram;
 
-use App\Tests\Fake\Service\Telegram\FakeTelegramMessageSender;
+use App\Tests\Fake\Service\Telegram\Api\FakeTelegramMessageSender;
 
 trait TelegramMessageSenderProviderTrait
 {

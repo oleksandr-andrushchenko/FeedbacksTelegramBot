@@ -68,15 +68,4 @@ class TelegramCommandFinder
 
         return null;
     }
-
-    public function findCommandByKey(string $key, iterable $commands): ?TelegramCommandInterface
-    {
-        foreach ($commands as $command) {
-            if ($command->getKey() === $key) {
-                return $command;
-            }
-        }
-
-        return null;
-    }
 }

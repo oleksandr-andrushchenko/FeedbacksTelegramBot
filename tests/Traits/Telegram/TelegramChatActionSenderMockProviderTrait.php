@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Traits\Telegram;
 
-use App\Service\Telegram\TelegramChatActionSender;
+use App\Service\Telegram\Api\TelegramChatActionSender;
 use PHPUnit\Framework\MockObject\MockObject;
 
 trait TelegramChatActionSenderMockProviderTrait
