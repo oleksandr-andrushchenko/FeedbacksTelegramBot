@@ -12,7 +12,7 @@ interface TelegramCommandInterface
 
     public function getCallback(): Closure;
 
-    public function getKeyboardOnly(): bool;
+    public function isMenu(): bool;
 
     public function getKey(): ?string;
 

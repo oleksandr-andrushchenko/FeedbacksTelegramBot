@@ -43,9 +43,9 @@ feedbacks:
     country: 🌎 My Country
     restart: 🔄 Restart
   ask:
-    choose_country:
-      country: Select country please.
-    choose_action:
+    country:
+      country: Select your country please.
+    action:
       action: Select action please.
     create:
       search_term: Enter search term please, it could be messenger profile url, nickname, email, phone number, website, person or company name, etc.
@@ -64,11 +64,11 @@ feedbacks:
       payment_invoice_title: '"%plan%" subscription'
       payment_invoice_description: "No limits on feedbacks creation and searching for the next period: %plan%"
   keyboard:
-    choose_country:
+    country:
       country: "%icon% %name%"
-      other: Other
-      absent: Not in the list
-    choose_action:
+      other: "%icon% Other"
+      absent: "%icon% Not in the list"
+    action:
       create: ✏️ Add feedback
       search: 🔍 Find feedback
       premium: ⭐️ Get Premium
@@ -86,6 +86,9 @@ feedbacks:
   reply:
     start:
       fail: Unknown error has occurred, we are working on this already, try later please.
+    country:
+      canceled: Country selection has been canceled.
+      ok: "Your country has been successfully updated: %icon% %name%"
     create:
       canceled: Feedback adding has been canceled.
       ok: Feedback has been successfully added.
@@ -112,6 +115,11 @@ feedbacks:
       ok: Restart has been successfully made.
       fail: Unknown error has occurred, we are working on this already, try later please.
   view:
+    country:
+      title: Due to worldwide popularity of our bot, its important to know from where you are.
+      your_country_known: "Your country: %icon% %name%"
+      your_country_unknown: "%icon% We do not know your country yet"
+      summary: Bot use your country to determinate search scope, available payment methods etc.
     premium:
       title: Due to huge amount of user requests, our bot, by default, has next limitations.
       create_title: "For feedback adding:"

@@ -10,7 +10,7 @@ class FallbackTelegramCommand implements TelegramCommandInterface
 {
     public function __construct(
         private readonly Closure $callback,
-        private readonly bool $keyboardOnly = false,
+        private readonly bool $menu = false,
         private readonly bool $beforeConversations = false,
     )
     {
@@ -26,9 +26,9 @@ class FallbackTelegramCommand implements TelegramCommandInterface
         return $this->callback;
     }
 
-    public function getKeyboardOnly(): bool
+    public function isMenu(): bool
     {
-        return $this->keyboardOnly;
+        return $this->menu;
     }
 
     public function getKey(): ?string

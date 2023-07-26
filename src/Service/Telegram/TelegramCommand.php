@@ -11,12 +11,12 @@ class TelegramCommand extends FallbackTelegramCommand implements TelegramCommand
     public function __construct(
         private readonly string $name,
         readonly Closure $callback,
-        readonly bool $keyboardOnly = true,
+        readonly bool $menu = false,
         private readonly ?string $key = null,
         readonly bool $beforeConversations = false,
     )
     {
-        parent::__construct($callback, $keyboardOnly, $beforeConversations);
+        parent::__construct($callback, $menu, $beforeConversations);
     }
 
     public function getName(): string

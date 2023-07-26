@@ -11,3 +11,6 @@ till: Till
 day: Day
 month: Month
 year: Year
+
+icon:
+  globe: 🌎

@@ -28,7 +28,7 @@ class TelegramMyCommandsProvider
         );
 
         $adminChatScopeCommands = array_values(
-            array_filter($nonFallbackCommands, fn (TelegramCommandInterface $command) => !$command->getKeyboardOnly())
+            array_filter($nonFallbackCommands, fn (TelegramCommandInterface $command) => $command->isMenu())
         );
 
         $defaultScopeCommands = array_values(

@@ -6,7 +6,6 @@ namespace App\Service\Telegram\Conversation;
 
 use App\Entity\Telegram\TelegramConversationState;
 use App\Service\Feedback\FeedbackUserSubscriptionManager;
-use App\Service\Intl\CountryProvider;
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
 use App\Service\Telegram\Chat\FeedbackSubscriptionsTelegramChatSender;
 use App\Service\Telegram\TelegramAwareHelper;
@@ -21,7 +20,6 @@ class ChooseFeedbackActionTelegramConversation extends TelegramConversation impl
         readonly TelegramAwareHelper $awareHelper,
         private readonly FeedbackUserSubscriptionManager $userSubscriptionManager,
         private readonly FeedbackSubscriptionsTelegramChatSender $subscriptionsChatSender,
-        private readonly CountryProvider $countryProvider,
     )
     {
         parent::__construct($awareHelper, new TelegramConversationState());
@@ -86,9 +84,9 @@ class ChooseFeedbackActionTelegramConversation extends TelegramConversation impl
             return $this->askAction($tg);
         }
 
-//        if ($tg->matchText(FeedbackTelegramChannel::COUNTRY) || $tg->matchText($this->getCountryButton($tg)->getText())) {
-//            return $tg->stopConversation($conversation)->startConversation(ChooseFeedbackCountryTelegramConversation::class)->null();
-//        }
+        if ($tg->matchText(FeedbackTelegramChannel::COUNTRY)) {
+            return $tg->stopConversation($conversation)->startConversation(ChooseFeedbackCountryTelegramConversation::class)->null();
+        }
 
         $tg->replyWrong();
 
@@ -97,37 +95,26 @@ class ChooseFeedbackActionTelegramConversation extends TelegramConversation impl
 
     public static function getActionAsk(TelegramAwareHelper $tg): string
     {
-        return $tg->trans('feedbacks.ask.choose_action.action');
+        return $tg->trans('feedbacks.ask.action.action');
     }
 
     public static function getCreateButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('feedbacks.keyboard.choose_action.create');
+        return $tg->button('feedbacks.keyboard.action.create');
     }
 
     public static function getSearchButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('feedbacks.keyboard.choose_action.search');
+        return $tg->button('feedbacks.keyboard.action.search');
     }
 
     public static function getPremiumButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('feedbacks.keyboard.choose_action.premium');
+        return $tg->button('feedbacks.keyboard.action.premium');
     }
 
     public static function getSubscriptionsButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('feedbacks.keyboard.choose_action.subscriptions');
-    }
-
-    public function getCountryButton(TelegramAwareHelper $tg): KeyboardButton
-    {
-        $countryCode = $tg->getTelegram()->getMessengerUser()->getUser()->getCountryCode();
-        $country = $this->countryProvider->getCountry($countryCode);
-
-        return $tg->button('feedbacks.keyboard.choose_action.country', [
-            'icon' => $this->countryProvider->getCountryIcon($country),
-            'name' => $this->countryProvider->getCountryName($country, $tg->getLanguageCode()),
-        ]);
+        return $tg->button('feedbacks.keyboard.action.subscriptions');
     }
 }

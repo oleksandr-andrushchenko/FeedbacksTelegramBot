@@ -46,11 +46,11 @@ readonly class FeedbackSubscriptionPlan
         return $this->countries;
     }
 
-    public function getPrice(string $countryFilter = null): float
+    public function getPrice(string $countryCode = null): float
     {
-        if ($countryFilter !== null) {
+        if ($countryCode !== null) {
             foreach ($this->getPrices() as $country => $price) {
-                if ($country === $countryFilter) {
+                if ($country === $countryCode) {
                     return $price;
                 }
             }

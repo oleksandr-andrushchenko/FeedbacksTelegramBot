@@ -39,15 +39,20 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         parent::__construct($awareHelper, $conversationFactory);
     }
 
+    /**
+     * Should be synced with: ChooseFeedbackActionTelegramConversation
+     * @param TelegramAwareHelper $tg
+     * @return iterable
+     */
     protected function getCommands(TelegramAwareHelper $tg): iterable
     {
-        yield new TelegramCommand(self::START, fn () => $this->start($tg));
-        yield new TelegramCommand(self::CREATE_FEEDBACK, fn () => $this->create($tg), keyboardOnly: false, key: 'create');
-        yield new TelegramCommand(self::SEARCH_FEEDBACK, fn () => $this->search($tg), keyboardOnly: false, key: 'search');
-        yield new TelegramCommand(self::GET_PREMIUM, fn () => $this->premium($tg), keyboardOnly: false, key: 'premium');
-        yield new TelegramCommand(self::SUBSCRIPTIONS, fn () => $this->subscriptions($tg), keyboardOnly: false, key: 'subscriptions');
-        yield new TelegramCommand(self::COUNTRY, fn () => $this->country($tg), keyboardOnly: false, key: 'country');
-        yield new TelegramCommand(self::RESTART, fn () => $this->restart($tg), keyboardOnly: false, key: 'restart', beforeConversations: true);
+        yield new TelegramCommand(self::START, fn () => $this->start($tg), menu: false);
+        yield new TelegramCommand(self::CREATE_FEEDBACK, fn () => $this->create($tg), menu: true, key: 'create');
+        yield new TelegramCommand(self::SEARCH_FEEDBACK, fn () => $this->search($tg), menu: true, key: 'search');
+        yield new TelegramCommand(self::GET_PREMIUM, fn () => $this->premium($tg), menu: false, key: 'premium');
+        yield new TelegramCommand(self::SUBSCRIPTIONS, fn () => $this->subscriptions($tg), menu: true, key: 'subscriptions');
+        yield new TelegramCommand(self::COUNTRY, fn () => $this->country($tg), menu: true, key: 'country');
+        yield new TelegramCommand(self::RESTART, fn () => $this->restart($tg), menu: true, key: 'restart', beforeConversations: true);
 
         // todo: "who've been looking for me" command
         // todo: "list my feedbacks" command

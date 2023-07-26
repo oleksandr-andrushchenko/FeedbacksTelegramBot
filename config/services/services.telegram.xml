@@ -174,7 +174,6 @@
                  class="App\Service\Telegram\Conversation\ChooseFeedbackActionTelegramConversation" lazy="true">
             <argument type="service" id="app.feedback_user_subscription_manager"/>
             <argument type="service" id="app.feedback_subscriptions_telegram_chat_sender"/>
-            <argument type="service" id="app.intl_country_provider"/>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.telegram_conversation_create_feedback" parent="app.telegram_conversation"

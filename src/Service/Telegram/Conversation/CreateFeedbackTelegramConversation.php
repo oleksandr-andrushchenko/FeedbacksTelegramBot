@@ -16,7 +16,6 @@ use App\Object\Feedback\SearchTermTransfer;
 use App\Service\Feedback\FeedbackCreator;
 use App\Service\Feedback\SearchTerm\SearchTermParserOnlyInterface;
 use App\Service\Telegram\TelegramAwareHelper;
-use App\Service\Util\Array\ArrayPosEraser;
 use App\Service\Util\Array\ArrayValueEraser;
 use App\Service\Validator;
 use Longman\TelegramBot\Entities\KeyboardButton;
