@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.intl_telegram_bot_currencies_fetcher" class="App\Service\Intl\TelegramBotCurrenciesFetcher" lazy="true"/>
+        <service id="app.intl_currency_provider" class="App\Service\Intl\CurrencyProvider" lazy="true">
+            <argument type="string">%app.default_currency%</argument>
+            <argument>%app.currencies_path%</argument>
+            <argument type="service" id="app.normalizer.intl_currency"/>
+        </service>
+        <service id="app.intl_country_provider" class="App\Service\Intl\CountryProvider" lazy="true">
+            <argument type="service" id="translator"/>
+            <argument>%app.countries%</argument>
+        </service>
+    </services>
+</container>
