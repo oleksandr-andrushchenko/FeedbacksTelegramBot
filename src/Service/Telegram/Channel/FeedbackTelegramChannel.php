@@ -62,7 +62,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         yield new FallbackTelegramCommand(fn () => $this->fallback($tg));
     }
 
-    public function start(TelegramAwareHelper $tg): mixed
+    public function start(TelegramAwareHelper $tg): null
     {
         $countries = $this->countryProvider->getCountries($tg->getLanguageCode());
 
@@ -71,36 +71,36 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
 
             $tg->getTelegram()->getMessengerUser()?->getUser()->setCountryCode($country->getCode());
 
-            return $tg->startConversation(ChooseFeedbackActionTelegramConversation::class);
+            return $tg->startConversation(ChooseFeedbackActionTelegramConversation::class)->null();
         }
 
-        return $tg->startConversation(ChooseFeedbackCountryTelegramConversation::class);
+        return $tg->startConversation(ChooseFeedbackCountryTelegramConversation::class)->null();
     }
 
-    public function create(TelegramAwareHelper $tg): mixed
+    public function create(TelegramAwareHelper $tg): null
     {
-        return $tg->startConversation(CreateFeedbackTelegramConversation::class);
+        return $tg->startConversation(CreateFeedbackTelegramConversation::class)->null();
     }
 
-    public function search(TelegramAwareHelper $tg): mixed
+    public function search(TelegramAwareHelper $tg): null
     {
-        return $tg->startConversation(SearchFeedbackTelegramConversation::class);
+        return $tg->startConversation(SearchFeedbackTelegramConversation::class)->null();
     }
 
-    public function premium(TelegramAwareHelper $tg): mixed
+    public function premium(TelegramAwareHelper $tg): null
     {
         if ($this->userSubscriptionManager->hasActiveSubscription($tg->getTelegram()->getMessengerUser())) {
             return $this->subscriptions($tg);
         }
 
-        return $tg->startConversation(GetFeedbackPremiumTelegramConversation::class);
+        return $tg->startConversation(GetFeedbackPremiumTelegramConversation::class)->null();
     }
 
-    public function subscriptions(TelegramAwareHelper $tg): mixed
+    public function subscriptions(TelegramAwareHelper $tg): null
     {
         $this->subscriptionsChatSender->sendFeedbackSubscriptions($tg);
 
-        return $tg->startConversation(ChooseFeedbackActionTelegramConversation::class);
+        return $tg->startConversation(ChooseFeedbackActionTelegramConversation::class)->null();
     }
 
     public function acceptPayment(TelegramPayment $payment, TelegramAwareHelper $tg): void
@@ -117,21 +117,20 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         $tg->stopConversations()->startConversation(ChooseFeedbackActionTelegramConversation::class);
     }
 
-    public function country(TelegramAwareHelper $tg): mixed
+    public function country(TelegramAwareHelper $tg): null
     {
-        return $tg->startConversation(ChooseFeedbackCountryTelegramConversation::class);
+        return $tg->startConversation(ChooseFeedbackCountryTelegramConversation::class)->null();
     }
 
-    public function restart(TelegramAwareHelper $tg): mixed
+    public function restart(TelegramAwareHelper $tg): null
     {
         $tg->stopConversations()->replyOk('feedbacks.reply.restart.ok');
 
-//        return $tg->startConversation(ChooseFeedbackActionTelegramConversation::class);
         return $this->start($tg);
     }
 
-    public function fallback(TelegramAwareHelper $tg): mixed
+    public function fallback(TelegramAwareHelper $tg): null
     {
-        return $tg->replyWrong()->startConversation(ChooseFeedbackActionTelegramConversation::class);
+        return $tg->replyWrong()->startConversation(ChooseFeedbackActionTelegramConversation::class)->null();
     }
 }
