@@ -1101,7 +1101,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                 ->setStep(CreateFeedbackTelegramConversation::STEP_CANCEL_PRESSED),
             shouldSeeReply: [
                 $this->trans('reply.icon.upset') . ' ' . $this->trans('feedbacks.reply.create.canceled'),
-                ChooseFeedbackActionTelegramConversation::getChooseActionAsk($this->tg),
+                ChooseFeedbackActionTelegramConversation::getActionAsk($this->tg),
             ],
             shouldSeeKeyboard: [
                 ChooseFeedbackActionTelegramConversation::getCreateButton($this->tg),
@@ -1168,7 +1168,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             state: $state,
             shouldSeeReply: [
                 $this->trans('reply.icon.ok') . ' ' . $this->trans('feedbacks.reply.create.ok'),
-                ChooseFeedbackActionTelegramConversation::getChooseActionAsk($this->tg),
+                ChooseFeedbackActionTelegramConversation::getActionAsk($this->tg),
             ],
             shouldSeeKeyboard: [
                 ChooseFeedbackActionTelegramConversation::getCreateButton($this->tg),
@@ -1291,7 +1291,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     {
         return [
             $this->trans('feedbacks.ask.create.confirm'),
-            $this->renderView(TelegramView::ENTITY_FEEDBACK, [
+            $this->renderView(TelegramView::FEEDBACK, [
                 'search_term' => $state->getSearchTerm(),
                 'rating' => $state->getRating(),
                 'description' => $state->getDescription(),

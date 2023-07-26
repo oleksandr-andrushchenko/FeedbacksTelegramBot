@@ -1,6 +1,7 @@
 App\Entity\Feedback\Feedback:
   feedback_13_telegram_instagram_profile_url:
     __construct:
+      user: '@user_1'
       messengerUser: '@messenger_user_1_telegram'
       searchTermText: 'https://instagram.com/<(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>'
       searchTermNormalizedText: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
@@ -10,8 +11,10 @@ App\Entity\Feedback\Feedback:
       searchTermMessengerUsername: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
       rating: <(\App\Enum\Feedback\Rating::neutral)>
       description: 'neutral'
+      isPremium: false
   feedback_23_telegram_instagram_username:
     __construct:
+      user: '@user_2'
       messengerUser: '@messenger_user_2_telegram'
       searchTermText: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
       searchTermNormalizedText: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
@@ -21,3 +24,4 @@ App\Entity\Feedback\Feedback:
       searchTermMessengerUsername: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
       rating: <(\App\Enum\Feedback\Rating::extremely_satisfied)>
       description: 'awesome'
+      isPremium: false

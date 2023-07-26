@@ -14,9 +14,16 @@
         </id>
         <field name="name" column="name" nullable="true"/>
         <field name="username" column="username" nullable="true"/>
-        <field name="languageCode" column="language_code" length="5" nullable="true"/>
+        <field name="languageCode" column="language_code" length="2" nullable="true"/>
         <field name="rating" column="rating" type="smallint" enum-type="App\Enum\Feedback\Rating" nullable="true"/>
-        <field name="createdAt" column="created_at" type="datetime" nullable="true"/>
+        <field name="countryCode" column="country_code" length="2" nullable="true"/>
+        <field name="phoneNumber" column="phone_number" type="bigint" nullable="true">
+            <options>
+                <option name="unsigned">true</option>
+            </options>
+        </field>
+        <field name="email" column="email" length="128" nullable="true"/>
+        <field name="createdAt" column="created_at" type="datetime_immutable" nullable="true"/>
         <field name="updatedAt" column="updated_at" type="datetime" nullable="true"/>
     </entity>
 </doctrine-mapping>

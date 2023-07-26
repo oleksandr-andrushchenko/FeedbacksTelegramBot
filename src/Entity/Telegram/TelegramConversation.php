@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Entity\Telegram;
 
 use App\Entity\Messenger\MessengerUser;
-use App\Enum\Telegram\TelegramConversationStatus;
 use DateTimeImmutable;
 use DateTimeInterface;
 
@@ -15,7 +14,7 @@ class TelegramConversation
         private readonly MessengerUser $messengerUser,
         private readonly int $chatId,
         private string $class,
-        private TelegramConversationStatus $status = TelegramConversationStatus::ACTIVE,
+        private bool $isActive = true,
         private ?array $state = null,
         private ?DateTimeInterface $createdAt = null,
         private ?DateTimeInterface $updatedAt = null,
@@ -46,21 +45,21 @@ class TelegramConversation
         return $this->class;
     }
 
-    public function setClass(string $class): static
+    public function isActive(): bool
     {
-        $this->class = $class;
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }
 
-    public function getStatus(): TelegramConversationStatus
+    public function setClass(string $class): static
     {
-        return $this->status;
-    }
-
-    public function setStatus(TelegramConversationStatus $status): self
-    {
-        $this->status = $status;
+        $this->class = $class;
 
         return $this;
     }

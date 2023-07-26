@@ -6,7 +6,6 @@ namespace App\Repository\Telegram;
 
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramConversation;
-use App\Enum\Telegram\TelegramConversationStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -64,7 +63,7 @@ class TelegramConversationRepository extends ServiceEntityRepository
     {
         return $this->findBy([
             'messengerUser' => $messengerUser,
-            'status' => TelegramConversationStatus::ACTIVE,
+            'isActive' => true,
         ]);
     }
 }

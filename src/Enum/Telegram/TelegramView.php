@@ -6,5 +6,7 @@ namespace App\Enum\Telegram;
 
 enum TelegramView: string
 {
-    case ENTITY_FEEDBACK = 'entity/feedback';
+    case FEEDBACK = 'feedback';
+    case FEEDBACK_USER_SUBSCRIPTION = 'feedback_user_subscription';
+    case DESCRIBE_PREMIUM = 'describe_premium';
 }

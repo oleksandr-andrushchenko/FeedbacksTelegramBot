@@ -700,7 +700,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                 ->setStep(SearchFeedbackTelegramConversation::STEP_CANCEL_PRESSED),
             shouldSeeReply: [
                 $this->trans('reply.icon.upset') . ' ' . $this->trans('feedbacks.reply.search.canceled'),
-                ChooseFeedbackActionTelegramConversation::getChooseActionAsk($this->tg),
+                ChooseFeedbackActionTelegramConversation::getActionAsk($this->tg),
             ],
             shouldSeeKeyboard: [
                 ChooseFeedbackActionTelegramConversation::getCreateButton($this->tg),
@@ -759,16 +759,16 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         if ($count === 0) {
             $shouldSeeReply[] = $this->trans('reply.icon.upset') . ' ' . $this->trans('feedbacks.reply.search.empty_list', ['search_term' => $state->getSearchTerm()->getText()]);
         } else {
-            $shouldSeeReply[] = $this->trans('feedbacks.reply.search.ok_1', [
-                'search_term' => $state->getSearchTerm()->getText(),
-                'search_term_type' => sprintf('feedbacks.search_term_type.%s', $state->getSearchTerm()->getType()->name),
-            ]);
+            $shouldSeeReply[] = $this->trans('feedbacks.reply.search.title', [
+                    'search_term' => $state->getSearchTerm()->getText(),
+                    'search_term_type' => sprintf('feedbacks.search_term_type.%s', $state->getSearchTerm()->getType()->name),
+                ]) . ':';
 
             foreach ($shouldSeeReplyFeedbacks as $index => $shouldSeeReplyFeedback) {
                 $shouldSeeReply[] = $this->getFeedbackReply($index + 1, $shouldSeeReplyFeedback);
             }
 
-            $shouldSeeReply[] = $this->trans('reply.icon.ok') . ' ' . $this->trans('feedbacks.reply.search.ok_2', ['count' => $count]);
+            $shouldSeeReply[] = $this->trans('reply.icon.ok') . ' ' . $this->trans('feedbacks.reply.search.summary', ['count' => $count]);
         }
 
         $feedbackSearchRepository = $this->getFeedbackSearchRepository();
@@ -778,7 +778,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             state: $state,
             shouldSeeReply: [
                 ...$shouldSeeReply,
-                ChooseFeedbackActionTelegramConversation::getChooseActionAsk($this->tg),
+                ChooseFeedbackActionTelegramConversation::getActionAsk($this->tg),
             ],
             shouldSeeKeyboard: [
                 ChooseFeedbackActionTelegramConversation::getCreateButton($this->tg),
@@ -837,7 +837,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         $feedback = $this->getFeedbackRepository()->find($feedbackId);
 //        $feedback->getSearchTermMessengerUser()->setName($searchTermMessangeUserName);
 
-        return $this->renderView(TelegramView::ENTITY_FEEDBACK, [
+        return $this->renderView(TelegramView::FEEDBACK, [
             'number' => $number,
             'search_term' => (new SearchTermTransfer($feedback->getSearchTermText()))
                 ->setType($feedback->getSearchTermType())
@@ -892,7 +892,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     {
         return [
             $this->trans('feedbacks.ask.search.confirm'),
-            $this->renderView(TelegramView::ENTITY_FEEDBACK, [
+            $this->renderView(TelegramView::FEEDBACK, [
                 'search_term' => $state->getSearchTerm(),
             ]),
         ];

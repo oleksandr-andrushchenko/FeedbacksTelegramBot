@@ -22,7 +22,7 @@ class SearchFeedbackTelegramConversationState extends TelegramConversationState
         return $this->searchTerm;
     }
 
-    public function setSearchTerm(?SearchTermTransfer $searchTerm): self
+    public function setSearchTerm(?SearchTermTransfer $searchTerm): static
     {
         $this->searchTerm = $searchTerm;
 
@@ -34,7 +34,7 @@ class SearchFeedbackTelegramConversationState extends TelegramConversationState
         return $this->change;
     }
 
-    public function setChange(?bool $change): self
+    public function setChange(?bool $change): static
     {
         $this->change = $change;
 

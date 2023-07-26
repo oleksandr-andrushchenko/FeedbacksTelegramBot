@@ -8,6 +8,7 @@ use App\Entity\Telegram\CreateFeedbackTelegramConversationState;
 use App\Enum\Feedback\Rating;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Telegram\TelegramView;
+use App\Exception\Feedback\CreateFeedbackLimitExceeded;
 use App\Exception\Messenger\SameMessengerUserException;
 use App\Exception\ValidatorException;
 use App\Object\Feedback\FeedbackTransfer;
@@ -54,10 +55,32 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
             return $tg->replyWrong()->null();
         }
 
+        if ($tg->matchText($this->getBackButton($tg)->getText())) {
+            if ($this->state->getStep() === self::STEP_SEARCH_TERM_TYPE_ASKED) {
+                return $this->askSearchTerm($tg);
+            }
+
+            if ($this->state->getStep() === self::STEP_RATING_ASKED) {
+                if ($this->state->getSearchTerm()->getPossibleTypes() === null) {
+                    return $this->askSearchTerm($tg);
+                }
+
+                return $this->askSearchTermType($tg);
+            }
+
+            if ($this->state->getStep() === self::STEP_DESCRIPTION_ASKED) {
+                return $this->askRating($tg);
+            }
+
+            if ($this->state->getStep() === self::STEP_CONFIRM_ASKED) {
+                return $this->askDescription($tg);
+            }
+        }
+
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
             $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
-            return $tg->cancelConversation($conversation)
+            return $tg->stopConversation($conversation)
                 ->replyUpset('feedbacks.reply.create.canceled')
                 ->startConversation(ChooseFeedbackActionTelegramConversation::class)
                 ->null()
@@ -181,6 +204,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
             $tg->trans('feedbacks.ask.create.search_term_type'),
             $tg->keyboard(...[
                 ...$this->getSearchTermTypeButtons($sortedPossibleTypes, $tg),
+                $this->getBackButton($tg),
                 $this->getCancelButton($tg),
             ])
         );
@@ -228,6 +252,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
             ($change ? '' : $this->getStep(2)) . $tg->trans('feedbacks.ask.create.rating'),
             $tg->keyboard(...[
                 ...$this->getRatingButtons($tg),
+                $this->getBackButton($tg),
                 $this->getCancelButton($tg),
             ])
         );
@@ -276,6 +301,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
             $buttons[] = $this->getMakeEmptyButton($tg);
         }
 
+        $buttons[] = $this->getBackButton($tg);
         $buttons[] = $this->getCancelButton($tg);
 
         $tg->reply(
@@ -330,7 +356,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
         $tg->reply($tg->trans('feedbacks.ask.create.confirm'))
             ->replyView(
-                TelegramView::ENTITY_FEEDBACK,
+                TelegramView::FEEDBACK,
                 [
                     'search_term' => $this->state->getSearchTerm(),
                     'rating' => $this->state->getRating(),
@@ -341,6 +367,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
                     $this->getChangeSearchTermButton($tg),
                     $this->getChangeRatingButton($tg),
                     $this->state->getDescription() === null ? $this->getAddDescriptionButton($tg) : $this->getChangeDescriptionButton($tg),
+                    $this->getBackButton($tg),
                     $this->getCancelButton($tg)
                 ),
                 disableWebPagePreview: true
@@ -384,8 +411,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
             // todo: change text to something like: "want to add more?"
             return $tg->replyOk('feedbacks.reply.create.ok')
-                ->finishConversation($conversation)
-                ->startConversation(ChooseFeedbackActionTelegramConversation::class)
+                ->stopConversation($conversation)->startConversation(ChooseFeedbackActionTelegramConversation::class)
                 ->null()
             ;
         } catch (ValidatorException $exception) {
@@ -410,6 +436,13 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
             $tg->replyFail('feedbacks.reply.create.fail.same_messenger_user');
 
             return $this->askConfirm($tg);
+        } catch (CreateFeedbackLimitExceeded $exception) {
+            $tg->replyFail('feedbacks.reply.create.fail.limit_exceeded', [
+                'period' => $tg->trans($exception->getPeriodKey(), domain: null),
+                'limit' => $exception->getLimit(),
+            ]);
+
+            return $tg->stopConversation($conversation)->startConversation(ChooseFeedbackCountryTelegramConversation::class)->null();
         }
     }
 
@@ -502,6 +535,11 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
     public static function getConfirmButton(TelegramAwareHelper $tg): KeyboardButton
     {
         return $tg->button('keyboard.confirm');
+    }
+
+    public static function getBackButton(TelegramAwareHelper $tg): KeyboardButton
+    {
+        return $tg->button('keyboard.back');
     }
 
     public static function getCancelButton(TelegramAwareHelper $tg): KeyboardButton

@@ -16,8 +16,8 @@ class TelegramTranslator
     {
     }
 
-    public function transTelegram(?string $languageCode, string $id, array $parameters = []): string
+    public function transTelegram(?string $languageCode, string $id, array $parameters = [], ?string $domain = 'telegram'): string
     {
-        return $this->translator->trans($id, $this->arrayKeyQuoter->quoteKeys($parameters), 'telegram', $languageCode);
+        return $this->translator->trans($id, $this->arrayKeyQuoter->quoteKeys($parameters), $domain, $languageCode);
     }
 }

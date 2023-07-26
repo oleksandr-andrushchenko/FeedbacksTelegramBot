@@ -16,17 +16,31 @@
                  class="App\Serializer\Telegram\CreateFeedbackTelegramConversationStateNormalizer">
             <argument type="service" id="app.normalizer.telegram_conversation_state"/>
             <argument type="service" id="app.normalizer.telegram_conversation_state"/>
-            <argument type="service" id="app.normalizer.search_term_transfer"/>
-            <argument type="service" id="app.normalizer.search_term_transfer"/>
+            <argument type="service" id="app.normalizer.feedback_search_term_transfer"/>
+            <argument type="service" id="app.normalizer.feedback_search_term_transfer"/>
             <tag name="serializer.normalizer" priority="-969"/>
         </service>
         <service id="app.normalizer.telegram_conversation_state_search_feedback"
                  class="App\Serializer\Telegram\SearchFeedbackTelegramConversationStateNormalizer">
             <argument type="service" id="app.normalizer.telegram_conversation_state"/>
             <argument type="service" id="app.normalizer.telegram_conversation_state"/>
-            <argument type="service" id="app.normalizer.search_term_transfer"/>
-            <argument type="service" id="app.normalizer.search_term_transfer"/>
+            <argument type="service" id="app.normalizer.feedback_search_term_transfer"/>
+            <argument type="service" id="app.normalizer.feedback_search_term_transfer"/>
             <tag name="serializer.normalizer" priority="-968"/>
+        </service>
+        <service id="app.normalizer.telegram_conversation_state_get_feedback_premium"
+                 class="App\Serializer\Telegram\GetFeedbackPremiumTelegramConversationStateNormalizer">
+            <argument type="service" id="app.normalizer.telegram_conversation_state"/>
+            <argument type="service" id="app.normalizer.telegram_conversation_state"/>
+            <argument type="service" id="app.normalizer.feedback_subscription_plan"/>
+            <argument type="service" id="app.normalizer.feedback_subscription_plan"/>
+            <argument type="service" id="app.normalizer.telegram_payment_method"/>
+            <argument type="service" id="app.normalizer.telegram_payment_method"/>
+            <tag name="serializer.normalizer" priority="-968"/>
+        </service>
+        <service id="app.normalizer.telegram_payment_method" class="App\Serializer\Telegram\TelegramPaymentMethodNormalizer"
+                 lazy="true">
+            <tag name="serializer.normalizer" priority="-967"/>
         </service>
     </services>
 </container>

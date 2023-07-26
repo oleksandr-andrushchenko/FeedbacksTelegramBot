@@ -16,6 +16,7 @@ readonly class TelegramOptions
         private array $adminChatIds,
         private bool $checkUpdateDuplicates,
         private bool $processAdminOnly,
+        private bool $acceptPayments,
     )
     {
     }
@@ -63,5 +64,10 @@ readonly class TelegramOptions
     public function processAdminOnly(): bool
     {
         return $this->processAdminOnly;
+    }
+
+    public function acceptPayments(): bool
+    {
+        return $this->acceptPayments;
     }
 }

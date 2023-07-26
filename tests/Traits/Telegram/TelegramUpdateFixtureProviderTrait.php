@@ -29,7 +29,7 @@ trait TelegramUpdateFixtureProviderTrait
                 'is_bot' => false,
                 'first_name' => 'Wild.s',
                 'username' => 'wild_snowgirl',
-                'language_code' => 'en',
+                'language_code' => 'uk',
                 'is_premium' => true,
             ],
             'chat' => [

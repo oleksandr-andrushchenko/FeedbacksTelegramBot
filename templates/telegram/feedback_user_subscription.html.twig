@@ -1,0 +1,35 @@
+{% set channel = 'feedbacks' %}
+{% if number is defined %}
+    {{ transTelegram('icon.number', language_code) ~ number }}:
+{% endif %}
+{% apply spaceless %}
+    {% set first_line = [] %}
+
+    {% set first_line = first_line|merge([
+        transTelegram('feedbacks.subscription_plan.' ~ subscription.subscriptionPlan.name, language_code)
+    ]) %}
+
+    {% set first_line = first_line|merge([
+        '[' ~ subscription.payment.price.currency ~ ' ' ~ subscription.payment.price.amount ~ ',00]'
+    ]) %}
+
+    {% set first_line = first_line|merge([
+        is_subscription_active ? '🟢' : '⚪️'
+    ]) %}
+
+    {% set first_line = first_line|merge([
+        '[' ~ (is_subscription_active ? 'active' : 'inactive')|trans({}, null, language_code)|lower ~ ']'
+    ]) %}
+
+    {{ first_line|join(' ')|raw }}
+{% endapply %}
+
+{% apply spaceless %}
+    {% set second_line = [] %}
+
+    {% set second_line = second_line|merge([
+        subscription.createdAt.format(datetime_format) ~ ' - ' ~ subscription.expireAt.format(datetime_format) ~ ' GMT'
+    ]) %}
+
+    {{ second_line|join(' ')|raw }}
+{% endapply %}

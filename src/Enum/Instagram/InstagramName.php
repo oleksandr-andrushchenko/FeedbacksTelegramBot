@@ -9,11 +9,14 @@ enum InstagramName: int
     case default = 0;
     case feedbacks = 1;
 
-    public static function fromString(string $value): self
+    public static function fromName(string $name): ?self
     {
-        return match ($value) {
-            'default' => self::default,
-            'feedbacks' => self::feedbacks,
-        };
+        foreach (self::cases() as $enum) {
+            if ($enum->name === $name) {
+                return $enum;
+            }
+        }
+
+        return null;
     }
 }

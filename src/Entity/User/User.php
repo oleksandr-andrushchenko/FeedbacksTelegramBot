@@ -15,6 +15,9 @@ class User
         private ?string $name = null,
         private ?string $languageCode = null,
         private ?Rating $rating = null,
+        private ?string $countryCode = null,
+        private ?int $phoneNumber = null,
+        private ?string $email = null,
         private ?DateTimeInterface $createdAt = null,
         private ?DateTimeInterface $updatedAt = null,
         private ?int $id = null,
@@ -74,6 +77,42 @@ class User
     public function setRating(?Rating $rating): self
     {
         $this->rating = $rating;
+
+        return $this;
+    }
+
+    public function getPhoneNumber(): ?int
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(?int $phoneNumber): self
+    {
+        $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    public function getCountryCode(): ?string
+    {
+        return $this->countryCode;
+    }
+
+    public function setCountryCode(?string $countryCode): self
+    {
+        $this->countryCode = $countryCode;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): self
+    {
+        $this->email = $email;
 
         return $this;
     }

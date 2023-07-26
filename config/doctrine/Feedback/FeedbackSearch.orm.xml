@@ -13,6 +13,7 @@
                 <option name="unsigned">true</option>
             </options>
         </id>
+        <many-to-one field="user" target-entity="App\Entity\User\User"/>
         <many-to-one field="messengerUser" target-entity="App\Entity\Messenger\MessengerUser"/>
         <field name="searchTermText" column="search_term_text"/>
         <field name="searchTermNormalizedText" column="search_term_normalized_text"/>
@@ -28,7 +29,8 @@
         </field>
         <field name="searchTermMessengerUsername" column="search_term_messenger_username" nullable="true"/>
         <many-to-one field="searchTermMessengerUser" target-entity="App\Entity\Messenger\MessengerUser"/>
-        <field name="createdAt" column="created_at" type="datetime" nullable="true"/>
+        <field name="isPremium" column="is_premium" type="boolean"/>
+        <field name="createdAt" column="created_at" type="datetime_immutable" nullable="true"/>
         <field name="updatedAt" column="updated_at" type="datetime" nullable="true"/>
     </entity>
 </doctrine-mapping>

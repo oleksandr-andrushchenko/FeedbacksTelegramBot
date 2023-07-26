@@ -11,5 +11,8 @@
         <service id="app.repository.telegram_conversation" class="App\Repository\Telegram\TelegramConversationRepository">
             <argument type="service" id="doctrine"/>
         </service>
+        <service id="app.repository.telegram_payment" class="App\Repository\Telegram\TelegramPaymentRepository">
+            <argument type="service" id="doctrine"/>
+        </service>
     </services>
 </container>

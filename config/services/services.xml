@@ -13,5 +13,6 @@
             <argument type="service" id="validator"/>
         </service>
         <service id="app.http_client_factory" class="App\Service\HttpClientFactory" lazy="true"/>
+        <service id="app.uuid_generator" class="App\Service\UuidGenerator" lazy="true"/>
     </services>
 </container>

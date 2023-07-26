@@ -20,6 +20,7 @@ class TelegramOptionsFactory
             array_map(fn ($id) => (int) $id, $options['admin_chat_ids']),
             $options['check_update_duplicates'],
             $options['process_admin_only'],
+            $options['accept_payments'],
         );
     }
 }

@@ -11,7 +11,6 @@ use App\Entity\Telegram\TelegramConversationState;
 use App\Entity\User\User;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
-use App\Enum\Telegram\TelegramConversationStatus;
 use App\Enum\Telegram\TelegramName;
 use App\Enum\Telegram\TelegramView;
 use App\Object\Feedback\SearchTermTransfer;
@@ -209,7 +208,7 @@ trait TelegramCommandFunctionalTrait
         ;
 
         $this->assertTelegramCommandState($expectedState);
-        $this->assertEquals(TelegramConversationStatus::CANCELLED, $this->getConversation()->getStatus());
+        $this->assertEquals(false, $this->getConversation()->isActive());
     }
 
     protected function typeConfirm(
@@ -226,7 +225,7 @@ trait TelegramCommandFunctionalTrait
             ->shouldSeeKeyboard(...$shouldSeeKeyboard)
         ;
 
-        $this->assertEquals(TelegramConversationStatus::FINISHED, $this->getConversation()->getStatus());
+        $this->assertEquals(false, $this->getConversation()->isActive());
     }
 
     protected function shouldSeeReply(...$expectedReplies): static

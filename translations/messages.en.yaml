@@ -2,3 +2,12 @@ yes: Yes
 no: No
 
 press_yes_or_no: Press Yes or No please
+datetime_format: m/d H:i
+date_format: m/d
+active: Active
+inactive: Inactive
+bought: Bought
+till: Till
+day: Day
+month: Month
+year: Year

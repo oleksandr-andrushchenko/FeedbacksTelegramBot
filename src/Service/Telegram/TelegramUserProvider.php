@@ -20,6 +20,7 @@ class TelegramUserProvider
             'getInlineQuery',
             'getChosenInlineResult',
             'getCallbackQuery',
+            'getPreCheckoutQuery',
         ];
         foreach ($updateMethods as $updateMethod) {
             $object = call_user_func([$update, $updateMethod]);

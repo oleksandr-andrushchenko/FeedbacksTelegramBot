@@ -11,13 +11,14 @@ enum TelegramChatType: int
     case supergroup = 2;
     case channel = 3;
 
-    public static function fromString(string $value): self
+    public static function fromName(string $name): ?self
     {
-        return match ($value) {
-            'private' => self::private,
-            'group' => self::group,
-            'supergroup' => self::supergroup,
-            'channel' => self::channel,
-        };
+        foreach (self::cases() as $enum) {
+            if ($enum->name === $name) {
+                return $enum;
+            }
+        }
+
+        return null;
     }
 }

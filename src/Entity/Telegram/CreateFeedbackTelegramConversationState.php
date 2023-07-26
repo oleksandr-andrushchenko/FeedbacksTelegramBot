@@ -25,7 +25,7 @@ class CreateFeedbackTelegramConversationState extends TelegramConversationState
         return $this->searchTerm;
     }
 
-    public function setSearchTerm(?SearchTermTransfer $searchTerm): self
+    public function setSearchTerm(?SearchTermTransfer $searchTerm): static
     {
         $this->searchTerm = $searchTerm;
 
@@ -37,7 +37,7 @@ class CreateFeedbackTelegramConversationState extends TelegramConversationState
         return $this->rating;
     }
 
-    public function setRating(?Rating $rating): self
+    public function setRating(?Rating $rating): static
     {
         $this->rating = $rating;
 
@@ -49,7 +49,7 @@ class CreateFeedbackTelegramConversationState extends TelegramConversationState
         return $this->description;
     }
 
-    public function setDescription(?string $description): self
+    public function setDescription(?string $description): static
     {
         $this->description = $description;
 
@@ -61,7 +61,7 @@ class CreateFeedbackTelegramConversationState extends TelegramConversationState
         return $this->change;
     }
 
-    public function setChange(?bool $change): self
+    public function setChange(?bool $change): static
     {
         $this->change = $change;
 

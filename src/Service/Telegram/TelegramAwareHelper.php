@@ -61,6 +61,11 @@ class TelegramAwareHelper
         return $this->getTelegram()->getMessengerUser()?->getLanguageCode();
     }
 
+    public function getCountryCode(): ?string
+    {
+        return $this->getTelegram()->getMessengerUser()?->getUser()->getCountryCode();
+    }
+
     public function startConversation(string $conversationClass): static
     {
         $this->conversationManager->startTelegramConversation($this->getTelegram(), $conversationClass);
@@ -75,23 +80,16 @@ class TelegramAwareHelper
         return $this;
     }
 
-    public function cancelConversation(TelegramConversation $conversation): static
+    public function stopConversation(TelegramConversation $conversation): static
     {
-        $this->conversationManager->cancelTelegramConversation($conversation);
-
-        return $this;
-    }
-
-    public function finishConversation(TelegramConversation $conversation): static
-    {
-        $this->conversationManager->finishTelegramConversation($conversation);
+        $this->conversationManager->stopTelegramConversation($conversation);
 
         return $this;
     }
 
     public function replyView(
         string|TelegramView $template,
-        array $context,
+        array $context = [],
         Keyboard $keyboard = null,
         string $parseMode = 'HTML',
         bool $protectContent = null,
@@ -134,39 +132,39 @@ class TelegramAwareHelper
         return $this;
     }
 
-    public function trans(string $id, array $parameters = []): string
+    public function trans(string $id, array $parameters = [], ?string $domain = 'telegram'): string
     {
-        return $this->translator->transTelegram($this->getLanguageCode(), $id, $parameters);
+        return $this->translator->transTelegram($this->getLanguageCode(), $id, $parameters, $domain);
     }
 
-    public function replyOk(string $transId = 'reply.ok', array $transParameters = []): static
+    public function replyOk(string $transId = 'reply.ok', array $transParameters = [], ?string $domain = 'telegram'): static
     {
-        $this->reply($this->trans('reply.icon.ok') . ' ' . $this->trans($transId, $transParameters));
+        $this->reply($this->trans('reply.icon.ok') . ' ' . $this->trans($transId, $transParameters, $domain));
 //        $this->reply($this->trans('reply.icon.ok'));
 
         return $this;
     }
 
-    public function replyFail(string $transId = 'reply.fail', array $transParameters = []): static
+    public function replyFail(string $transId = 'reply.fail', array $transParameters = [], ?string $domain = 'telegram'): static
     {
         // todo: find command by key
-        $this->reply($this->trans('reply.icon.fail') . ' ' . $this->trans($transId, array_merge(['restart_command' => '/restart'], $transParameters)));
+        $this->reply($this->trans('reply.icon.fail') . ' ' . $this->trans($transId, array_merge(['restart_command' => '/restart'], $transParameters), $domain));
 //        $this->reply($this->trans('reply.icon.fail'));
 
         return $this;
     }
 
-    public function replyWrong(string $transId = 'reply.wrong', array $transParameters = []): static
+    public function replyWrong(string $transId = 'reply.wrong', array $transParameters = [], ?string $domain = 'telegram'): static
     {
-        $this->reply($this->trans('reply.icon.wrong') . ' ' . $this->trans($transId, $transParameters));
+        $this->reply($this->trans('reply.icon.wrong') . ' ' . $this->trans($transId, $transParameters, $domain));
 //        $this->reply($this->trans('reply.icon.wrong'));
 
         return $this;
     }
 
-    public function replyUpset(string $transId = 'reply.upset', array $transParameters = []): static
+    public function replyUpset(string $transId = 'reply.upset', array $transParameters = [], ?string $domain = 'telegram'): static
     {
-        $this->reply($this->trans('reply.icon.upset') . ' ' . $this->trans($transId, $transParameters));
+        $this->reply($this->trans('reply.icon.upset') . ' ' . $this->trans($transId, $transParameters, $domain));
 //        $this->reply($this->trans('reply.icon.upset'));
 
         return $this;

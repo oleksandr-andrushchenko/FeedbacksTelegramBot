@@ -34,6 +34,9 @@ use Throwable;
  * @method ServerResponse setMyShortDescription(array $data)
  * @method ServerResponse setChatMenuButton(array $data)
  * @method ServerResponse sendChatAction(array $data)
+ * @method ServerResponse sendInvoice(array $data)
+ * @method ServerResponse createInvoiceLink(array $data)
+ * @method ServerResponse answerPreCheckoutQuery(array $data)
  */
 class Telegram
 {

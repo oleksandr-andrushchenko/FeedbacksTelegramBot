@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Service\Feedback;
 
 use App\Entity\Feedback\FeedbackSearch;
+use App\Entity\Feedback\FeedbackSearchCreatorOptions;
+use App\Exception\Feedback\CreateFeedbackSearchLimitExceeded;
 use App\Exception\ValidatorException;
 use App\Object\Feedback\FeedbackSearchTransfer;
 use App\Service\Validator;
@@ -13,8 +15,11 @@ use Doctrine\ORM\EntityManagerInterface;
 class FeedbackSearchCreator
 {
     public function __construct(
+        private readonly FeedbackSearchCreatorOptions $options,
         private readonly EntityManagerInterface $entityManager,
         private readonly Validator $validator,
+        private readonly UserCreateFeedbackSearchStatisticsProvider $userStatisticsProvider,
+        private readonly FeedbackUserSubscriptionManager $userSubscriptionManager,
     )
     {
     }
@@ -22,6 +27,7 @@ class FeedbackSearchCreator
     /**
      * @param FeedbackSearchTransfer $feedbackSearchTransfer
      * @return FeedbackSearch
+     * @throws CreateFeedbackSearchLimitExceeded
      * @throws ValidatorException
      */
     public function createFeedbackSearch(FeedbackSearchTransfer $feedbackSearchTransfer): FeedbackSearch
@@ -29,10 +35,17 @@ class FeedbackSearchCreator
         $this->validator->validate($feedbackSearchTransfer);
 
         $messengerUser = $feedbackSearchTransfer->getMessengerUser();
+        $isPremium = $this->userSubscriptionManager->hasActiveSubscription($messengerUser);
+
+        if (!$isPremium) {
+            $this->checkLimits($feedbackSearchTransfer);
+        }
+
         $searchTermTransfer = $feedbackSearchTransfer->getSearchTerm();
         $searchTermMessengerUser = null;
 
         $feedbackSearch = new FeedbackSearch(
+            $messengerUser->getUser(),
             $messengerUser,
             $searchTermTransfer->getText(),
             $searchTermTransfer->getNormalizedText() ?? $searchTermTransfer->getText(),
@@ -40,9 +53,32 @@ class FeedbackSearchCreator
             $searchTermMessengerUser,
             $searchTermTransfer->getMessenger(),
             $searchTermTransfer->getMessengerUsername(),
+            $isPremium
         );
         $this->entityManager->persist($feedbackSearch);
 
         return $feedbackSearch;
+    }
+
+    /**
+     * @param FeedbackSearchTransfer $feedbackSearchTransfer
+     * @return void
+     * @throws CreateFeedbackSearchLimitExceeded
+     */
+    private function checkLimits(FeedbackSearchTransfer $feedbackSearchTransfer): void
+    {
+        $user = $feedbackSearchTransfer->getMessengerUser()->getUser();
+        $periodLimits = [
+            'day' => $this->options->userPerDayLimit(),
+            'month' => $this->options->userPerMonthLimit(),
+            'year' => $this->options->userPerYearLimit(),
+        ];
+        $periodCounts = $this->userStatisticsProvider->getUserCreateFeedbackSearchStatistics(array_keys($periodLimits), $user);
+
+        foreach ($periodCounts as $periodKey => $periodCount) {
+            if ($periodCount >= $periodLimits[$periodKey]) {
+                throw new CreateFeedbackSearchLimitExceeded($periodKey, $periodLimits[$periodKey]);
+            }
+        }
     }
 }

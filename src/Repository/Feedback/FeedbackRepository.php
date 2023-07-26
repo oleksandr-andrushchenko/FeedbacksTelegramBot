@@ -45,7 +45,7 @@ class FeedbackRepository extends ServiceEntityRepository
     public function avgRatingByUser(User $user): ?int
     {
         $rating = $this->createQueryBuilder('f')
-            ->select('avg(f.rating) AS avg')
+            ->select('AVG(f.rating)')
             ->andWhere('f.searchTermUser = :user')
             ->setParameter('user', $user)
             ->andWhere('f.rating <> 0')

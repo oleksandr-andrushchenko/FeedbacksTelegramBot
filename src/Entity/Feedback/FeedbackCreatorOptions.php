@@ -4,22 +4,34 @@ declare(strict_types=1);
 
 namespace App\Entity\Feedback;
 
-/**
- * todo: params though constructor & use factory method (static method & call in services)
- */
 readonly class FeedbackCreatorOptions
 {
-    private bool $userTargetMessengerRequired;
-
     public function __construct(
-        array $options,
+        private bool $userTargetMessengerRequired,
+        private int $userPerDayLimit,
+        private int $userPerMonthLimit,
+        private int $userPerYearLimit,
     )
     {
-        $this->userTargetMessengerRequired = $options['user_target_messenger_required'];
     }
 
     public function userTargetMessengerRequired(): bool
     {
         return $this->userTargetMessengerRequired;
+    }
+
+    public function userPerDayLimit(): int
+    {
+        return $this->userPerDayLimit;
+    }
+
+    public function userPerMonthLimit(): int
+    {
+        return $this->userPerMonthLimit;
+    }
+
+    public function userPerYearLimit(): int
+    {
+        return $this->userPerYearLimit;
     }
 }

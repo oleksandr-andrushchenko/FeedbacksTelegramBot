@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity\Feedback;
 
 use App\Entity\Messenger\MessengerUser;
+use App\Entity\User\User;
 use App\Enum\Feedback\Rating;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
@@ -14,6 +15,7 @@ use DateTimeInterface;
 class Feedback
 {
     public function __construct(
+        private readonly User $user,
         private readonly MessengerUser $messengerUser,
         private readonly string $searchTermText,
         private readonly string $searchTermNormalizedText,
@@ -22,7 +24,8 @@ class Feedback
         private readonly ?Messenger $searchTermMessenger,
         private readonly ?string $searchTermMessengerUsername,
         private readonly Rating $rating,
-        private readonly ?string $description = null,
+        private readonly ?string $description,
+        private readonly bool $isPremium,
         private ?DateTimeInterface $createdAt = null,
         private ?DateTimeInterface $updatedAt = null,
         private ?int $id = null,
@@ -36,6 +39,11 @@ class Feedback
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
     }
 
     public function getMessengerUser(): MessengerUser
@@ -81,6 +89,11 @@ class Feedback
     public function getDescription(): ?string
     {
         return $this->description;
+    }
+
+    public function isPremium(): bool
+    {
+        return $this->isPremium;
     }
 
     public function getCreatedAt(): ?DateTimeInterface

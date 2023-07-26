@@ -20,3 +20,5 @@
 ###> bref/symfony-bridge ###
 /.serverless/
 ###< bref/symfony-bridge ###
+
+/data/currencies.json

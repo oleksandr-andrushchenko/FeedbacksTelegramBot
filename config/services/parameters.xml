@@ -22,6 +22,7 @@
                 <parameter key="admin_chat_ids" type="collection"/>
                 <parameter key="check_update_duplicates">true</parameter>
                 <parameter key="process_admin_only">false</parameter>
+                <parameter key="accept_payments">false</parameter>
             </parameter>
             <parameter key="feedbacks" type="collection">
                 <parameter key="api_token">%env(TELEGRAM_FEEDBACKS_API_TOKEN)%</parameter>
@@ -33,11 +34,84 @@
                 <parameter key="admin_chat_ids">%env(json:TELEGRAM_FEEDBACKS_ADMIN_CHAT_IDS)%</parameter>
                 <parameter key="check_update_duplicates">%env(bool:TELEGRAM_FEEDBACKS_CHECK_UPDATE_DUPLICATES)%</parameter>
                 <parameter key="process_admin_only">%env(bool:TELEGRAM_FEEDBACKS_PROCESS_ADMIN_ONLY)%</parameter>
+                <parameter key="accept_payments">true</parameter>
             </parameter>
         </parameter>
 
         <parameter key="app.feedback_creator_options" type="collection">
             <parameter key="user_target_messenger_required">%env(bool:FEEDBACK_CREATOR_USER_TARGET_MESSENGER_REQUIRED)%</parameter>
+            <parameter key="user_per_day_limit">2</parameter>
+            <parameter key="user_per_month_limit">50</parameter>
+            <parameter key="user_per_year_limit">300</parameter>
         </parameter>
+
+        <parameter key="app.feedback_search_creator_options" type="collection">
+            <parameter key="user_per_day_limit">3</parameter>
+            <parameter key="user_per_month_limit">10</parameter>
+            <parameter key="user_per_year_limit">50</parameter>
+        </parameter>
+
+        <parameter key="app.feedback_subscription_plans" type="collection">
+            <parameter key="one_day" type="collection">
+                <parameter key="duration">+1 day</parameter>
+                <parameter key="default_price">1.99</parameter>
+                <parameter key="prices" type="collection">
+                    <parameter key="ua">0.99</parameter>
+                </parameter>
+            </parameter>
+            <parameter key="three_days" type="collection">
+                <parameter key="duration">+3 days</parameter>
+                <parameter key="default_price">2.99</parameter>
+                <parameter key="prices" type="collection">
+                    <parameter key="ua">1.99</parameter>
+                </parameter>
+            </parameter>
+            <parameter key="one_month" type="collection">
+                <parameter key="duration">+1 month</parameter>
+                <parameter key="default_price">4.99</parameter>
+                <parameter key="prices" type="collection">
+                    <parameter key="ua">3.99</parameter>
+                </parameter>
+            </parameter>
+            <parameter key="six_months" type="collection">
+                <parameter key="duration">+6 months</parameter>
+                <parameter key="default_price">19.99</parameter>
+                <parameter key="prices" type="collection">
+                    <parameter key="ua">14.99</parameter>
+                </parameter>
+            </parameter>
+            <parameter key="one_year" type="collection">
+                <parameter key="duration">+1 year</parameter>
+                <parameter key="default_price">29.99</parameter>
+                <parameter key="prices" type="collection">
+                    <parameter key="ua">19.99</parameter>
+                </parameter>
+            </parameter>
+        </parameter>
+
+        <parameter key="app.telegram_payment_methods" type="collection">
+            <parameter key="portmone" type="collection">
+                <parameter key="token">%env(FEEDBACKS_PORTMONE_TOKEN)%</parameter>
+                <parameter key="currency">UAH</parameter>
+                <parameter key="countries" type="collection">
+                    <parameter>ua</parameter>
+                    <parameter>ru</parameter>
+                </parameter>
+            </parameter>
+            <parameter key="sberbank" type="collection">
+                <parameter key="token">%env(FEEDBACKS_SBERBANK_TOKEN)%</parameter>
+                <parameter key="currency">RUB</parameter>
+                <parameter key="countries" type="collection">
+                    <parameter>ru</parameter>
+                </parameter>
+            </parameter>
+            <parameter key="stripe" type="collection">
+                <parameter key="token">%env(FEEDBACKS_STRIPE_TOKEN)%</parameter>
+                <parameter key="currency">USD</parameter>
+            </parameter>
+        </parameter>
+
+        <parameter key="app.currencies_path">%kernel.project_dir%/data/currencies.json</parameter>
+        <parameter key="app.default_currency">USD</parameter>
     </parameters>
 </container>

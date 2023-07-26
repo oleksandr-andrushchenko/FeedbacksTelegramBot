@@ -17,7 +17,7 @@ class RestartFeedbacksTelegramCommandFunctionalTest extends TelegramCommandFunct
         $this->type(FeedbackTelegramChannel::RESTART)
             ->shouldSeeReply(
                 $this->trans('reply.icon.ok') . ' ' . $this->trans('feedbacks.reply.restart.ok'),
-                ChooseFeedbackActionTelegramConversation::getChooseActionAsk($this->tg),
+                ChooseFeedbackActionTelegramConversation::getActionAsk($this->tg),
             )
             ->shouldSeeKeyboard(
                 ChooseFeedbackActionTelegramConversation::getCreateButton($this->tg),

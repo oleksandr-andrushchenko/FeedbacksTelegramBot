@@ -15,8 +15,8 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class CreateFeedbackTelegramConversationStateNormalizer implements NormalizerInterface, DenormalizerInterface
 {
     public function __construct(
-        private readonly NormalizerInterface $telegramConversationStateNormalizer,
-        private readonly DenormalizerInterface $telegramConversationStateDenormalizer,
+        private readonly NormalizerInterface $baseConversationStateNormalizer,
+        private readonly DenormalizerInterface $baseConversationStateDenormalizer,
         private readonly NormalizerInterface $searchTermTransferNormalizer,
         private readonly DenormalizerInterface $searchTermTransferDenormalizer,
     )
@@ -32,7 +32,7 @@ class CreateFeedbackTelegramConversationStateNormalizer implements NormalizerInt
      */
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
-        return array_merge($this->telegramConversationStateNormalizer->normalize($object, $format, $context), [
+        return array_merge($this->baseConversationStateNormalizer->normalize($object, $format, $context), [
             'search_term' => $object->getSearchTerm() === null ? null : $this->searchTermTransferNormalizer->normalize($object->getSearchTerm(), $format, $context),
             'rating' => $object->getRating()?->value,
             'description' => $object->getDescription(),
@@ -48,7 +48,7 @@ class CreateFeedbackTelegramConversationStateNormalizer implements NormalizerInt
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): TelegramConversationState
     {
         /** @var CreateFeedbackTelegramConversationState $object */
-        $object = $this->telegramConversationStateDenormalizer->denormalize($data, $type, $format, $context);
+        $object = $this->baseConversationStateDenormalizer->denormalize($data, $type, $format, $context);
 
         $object
             ->setSearchTerm(isset($data['search_term']) ? $this->searchTermTransferDenormalizer->denormalize($data['search_term'], SearchTermTransfer::class, $format, $context) : null)

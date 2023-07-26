@@ -22,3 +22,5 @@
 * soft deletes
 * subscribe on specific feedbacks
 * generate badge (picture) with username/rating to post in messengers
+* store DTs as UTC: https://www.doctrine-project.org/projects/doctrine-orm/en/2.15/cookbook/working-with-datetime.html#handling-different-timezones-with-the-datetime-type
+* 

@@ -24,7 +24,7 @@
         <field name="name" column="name" nullable="true"/>
         <field name="languageCode" column="language_code" length="5" nullable="true"/>
         <many-to-one field="user" target-entity="App\Entity\User\User"/>
-        <field name="createdAt" column="created_at" type="datetime" nullable="true"/>
+        <field name="createdAt" column="created_at" type="datetime_immutable" nullable="true"/>
         <field name="updatedAt" column="updated_at" type="datetime" nullable="true"/>
     </entity>
 </doctrine-mapping>
