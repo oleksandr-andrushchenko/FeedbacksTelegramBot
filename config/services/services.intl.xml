@@ -15,5 +15,11 @@
             <argument type="service" id="translator"/>
             <argument>%app.countries%</argument>
         </service>
+        <service id="app.intl_locale_provider" class="App\Service\Intl\LocaleProvider" lazy="true">
+            <argument type="string">en</argument>
+            <argument type="service" id="translator"/>
+            <argument>%app.locales%</argument>
+            <argument type="service" id="app.intl_country_provider"/>
+        </service>
     </services>
 </container>
