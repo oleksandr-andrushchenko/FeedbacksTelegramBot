@@ -1,0 +1,10 @@
+{% trans_default_domain 'telegram.country' %}
+{{ 'icon.info'|trans({}, 'telegram') }} {{ 'title'|trans }}
+
+{% apply spaceless %}
+{% if country %}
+    {{ 'known'|trans({'%icon%': icon, '%name%': name}) }}
+{% else %}
+    {{ 'unknown'|trans({'%icon%': '🌎'}) }}
+{% endif %}
+{% endapply %}

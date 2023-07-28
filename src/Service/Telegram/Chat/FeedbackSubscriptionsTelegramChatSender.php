@@ -29,7 +29,7 @@ class FeedbackSubscriptionsTelegramChatSender
         $tg->reply($tg->trans('feedbacks.reply.subscriptions.title') . ':');
 
         foreach ($userSubscriptions as $index => $userSubscription) {
-            $tg->replyView(TelegramView::FEEDBACK_USER_SUBSCRIPTION, [
+            $tg->replyView(TelegramView::SUBSCRIPTION, [
                 'number' => $index + 1,
                 'subscription' => $userSubscription,
                 'is_subscription_active' => $this->userSubscriptionManager->isSubscriptionActive($userSubscription),

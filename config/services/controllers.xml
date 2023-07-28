@@ -6,6 +6,7 @@
 
     <services>
         <service id="app.controller.site" class="App\Controller\SiteController">
+            <argument type="service" id="app.site_view_response_factory"/>
             <tag name="controller.service_arguments"/>
         </service>
         <service id="app.controller.telegram" class="App\Controller\Telegram\TelegramController">

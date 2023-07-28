@@ -1,12 +1,12 @@
-{% set channel = 'feedbacks' %}
+{% trans_default_domain 'telegram' %}
 {% if number is defined %}
-    {{ transTelegram('icon.number', language_code) ~ number }}:
+    {{ 'icon.number'|trans ~ number }}:
 {% endif %}
 {% apply spaceless %}
     {% set first_line = [] %}
 
     {% set first_line = first_line|merge([
-        transTelegram('feedbacks.subscription_plan.' ~ subscription.subscriptionPlan.name, language_code)
+        ('feedbacks.subscription_plan.' ~ subscription.subscriptionPlan.name)|trans
     ]) %}
 
     {% set first_line = first_line|merge([
@@ -18,7 +18,7 @@
     ]) %}
 
     {% set first_line = first_line|merge([
-        '[' ~ (is_subscription_active ? 'active' : 'inactive')|trans({}, null, language_code)|lower ~ ']'
+        '[' ~ (is_subscription_active ? 'active' : 'inactive')|trans({}, null)|lower ~ ']'
     ]) %}
 
     {{ first_line|join(' ')|raw }}

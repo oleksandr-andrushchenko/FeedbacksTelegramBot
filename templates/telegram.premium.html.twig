@@ -1,0 +1,12 @@
+{% trans_default_domain 'telegram.premium' %}
+{{ 'icon.info'|trans({}, 'telegram') }} {{ 'title'|trans }}
+
+{% for name,command in commands %}
+{% include 'command.html.twig' with {name: name, command: command.command} %}
+
+{% for period,limit in command.limits %}
+ - {{ 'limit_item'|trans({'%period%': period|trans({}, null), '%limit%': limit})|raw }}
+{% endfor %}
+
+{% endfor %}
+{{ 'icon.info'|trans({}, 'telegram') }} {{ 'summary'|trans }}

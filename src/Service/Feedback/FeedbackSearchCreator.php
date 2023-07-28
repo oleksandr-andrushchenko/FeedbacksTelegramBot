@@ -24,6 +24,11 @@ class FeedbackSearchCreator
     {
     }
 
+    public function getOptions(): FeedbackSearchCreatorOptions
+    {
+        return $this->options;
+    }
+
     /**
      * @param FeedbackSearchTransfer $feedbackSearchTransfer
      * @return FeedbackSearch

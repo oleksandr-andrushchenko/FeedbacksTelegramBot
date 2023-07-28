@@ -351,6 +351,6 @@ trait TelegramCommandFunctionalTrait
 
     protected function renderView(string|TelegramView $template, array $context): string
     {
-        return $this->getTelegramTemplateRenderer()->renderTelegramTemplate($this->getUpdateLanguageCode(), $template, $context);
+        return $this->getTelegramTemplateRenderer()->renderTelegramTemplate($template, $context, $this->getUpdateLanguageCode());
     }
 }

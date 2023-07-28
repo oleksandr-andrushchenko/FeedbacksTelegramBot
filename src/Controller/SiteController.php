@@ -4,29 +4,35 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Enum\Site\SitePage;
+use App\Service\Site\SiteViewResponseFactory;
 use Symfony\Component\HttpFoundation\Response;
 
 class SiteController
 {
+    public function __construct(
+        private readonly SiteViewResponseFactory $viewResponseFactory,
+    )
+    {
+    }
+
     public function index(): Response
     {
-        return new Response(
-            join('', [
-                '<!DOCTYPE html>',
-                '<html>',
-                '<head><title>Contacts</title><meta name="robots" content="noindex"></head>',
-                '<body>',
-                join('<br/>', [
-                    '<h1 style="font-size: medium">If you have questions or any suggestions, please reach me out by:</h1>',
-                    'telegram: <a href="https://t.me/wild_snowgirl" target="_blank">wild_snowgirl</a>',
-                    'instagram: <a href="https://www.instagram.com/wild.snowgirl/" target="_blank">wild.snowgirl</a>',
-                    'github: <a href="https://github.com/oleksandr-andrushchenko" target="_blank">oleksandr-andrushchenko</a>',
-                    'linkedin: <a href="https://www.linkedin.com/in/oleksandr-andrushchenko-26ab3078/" target="_blank">oleksandr-andrushchenko-26ab3078</a>',
-                    'email: <a href="mailto:oleksandr.andrushchenko1988@gmail.com">oleksandr.andrushchenko1988@gmail.com</a>',
-                ]),
-                '</body>',
-                '</html>',
-            ])
-        );
+        return $this->viewResponseFactory->createViewResponse(SitePage::INDEX);
+    }
+
+    public function privacyPolicy(): Response
+    {
+        return $this->viewResponseFactory->createViewResponse(SitePage::PRIVACY_POLICY);
+    }
+
+    public function termsOfUse(): Response
+    {
+        return $this->viewResponseFactory->createViewResponse(SitePage::TERMS_OF_USE);
+    }
+
+    public function contacts(): Response
+    {
+        return $this->viewResponseFactory->createViewResponse(SitePage::CONTACTS);
     }
 }

@@ -11,6 +11,7 @@ use App\Service\Telegram\Payment\TelegramPaymentManager;
 use Longman\TelegramBot\TelegramLog;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Translation\LocaleSwitcher;
 
 class TelegramUpdateHandler
 {
@@ -23,6 +24,7 @@ class TelegramUpdateHandler
         private readonly TelegramChannelRegistry $channelRegistry,
         private readonly TelegramCommandFinder $commandFinder,
         private readonly TelegramPaymentManager $paymentManager,
+        private readonly LocaleSwitcher $localeSwitcher,
         private readonly LoggerInterface $logger,
     )
     {
@@ -56,6 +58,7 @@ class TelegramUpdateHandler
 
         $messengerUser = $this->messengerUserUpserter->upsertTelegramMessengerUser($telegram);
         $telegram->setMessengerUser($messengerUser);
+        $this->localeSwitcher->setLocale($telegram->getMessengerUser()?->getUser()?->getLanguageCode() ?? $this->localeSwitcher->getLocale());
 
         TelegramLog::initialize($this->logger, $this->logger);
 

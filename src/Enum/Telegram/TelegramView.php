@@ -7,7 +7,19 @@ namespace App\Enum\Telegram;
 enum TelegramView: string
 {
     case FEEDBACK = 'feedback';
-    case FEEDBACK_USER_SUBSCRIPTION = 'feedback_user_subscription';
-    case DESCRIBE_PREMIUM = 'describe_premium';
-    case DESCRIBE_COUNTRY = 'describe_country';
+    case SUBSCRIPTION = 'subscription';
+    case PREMIUM = 'premium';
+    case START = 'start';
+    case CREATE = 'create';
+    case SEARCH = 'search';
+    case COUNTRY = 'country';
+
+    public function view(string $locale = null): string
+    {
+        if ($locale === null) {
+            return 'telegram.' . $this->value . '.html.twig';
+        }
+
+        return 'telegram.' . $this->value . '.' . $locale . '.html.twig';
+    }
 }

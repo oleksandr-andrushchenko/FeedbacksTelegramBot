@@ -47,7 +47,7 @@ readonly class Instagram
     public function findInstagramUserByUsername(string $username): null|InstagramUser|MessengerUser
     {
         try {
-            $response = file_get_contents(sprintf('https://www.instagram.com/web/search/topsearch/?query=%s', $username));
+            $response = file_get_contents(sprintf('https://www.instagram.com/site/search/topsearch/?query=%s', $username));
             $data = json_decode($response, true);
 
             if (!is_array($data) || !isset($data['users']) || !is_array($data['users'])) {

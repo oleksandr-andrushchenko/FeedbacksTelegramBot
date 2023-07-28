@@ -17,7 +17,8 @@ provider:
     APP_STAGE: dev
     APP_ENV: prod
     APP_SECRET: ${ssm:/feedbacks/${sls:stage}/APP_SECRET}
-    WEB_BASE_URL: ${ssm:/feedbacks/${sls:stage}/WEB_BASE_URL}
+#    todo: change WEB_BASE_URL -> SITE_BASE_URL
+    SITE_BASE_URL: ${ssm:/feedbacks/${sls:stage}/WEB_BASE_URL}
     TELEGRAM_WEBHOOK_BASE_URL: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_WEBHOOK_BASE_URL}
     TELEGRAM_FEEDBACKS_USERNAME: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_FEEDBACKS_USERNAME}
     TELEGRAM_FEEDBACKS_API_TOKEN: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_FEEDBACKS_API_TOKEN}

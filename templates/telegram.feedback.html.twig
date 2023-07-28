@@ -1,5 +1,6 @@
+{% trans_default_domain 'telegram' %}
 {% if number is defined %}
-    {{ transTelegram('icon.number', language_code) ~ number }}:
+    {{ 'icon.number'|trans ~ number }}:
 {% endif %}
 {% apply spaceless %}
     {% set search_term_line = [] %}
@@ -41,7 +42,7 @@
     {% endif %}
 
     {% set search_term_line = search_term_line|merge([
-        '(' ~ transTelegram('feedbacks.search_term_type.' ~ search_term.type.name, language_code) ~ ')'
+        '(' ~ ('feedbacks.search_term_type.' ~ search_term.type.name)|trans ~ ')'
     ]) %}
 
     {{ search_term_line|join(' ')|raw }}
@@ -49,7 +50,7 @@
 
 {% apply spaceless %}
     {% if rating is defined %}
-        {{ transTelegram('feedbacks.rating.' ~ rating.name, language_code, {'rating': rating.value}) }}
+        {{ ('feedbacks.rating.' ~ rating.name)|trans({'%rating%': rating.value}) }}
     {% endif %}
 {% endapply %}
 

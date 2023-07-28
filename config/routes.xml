@@ -3,4 +3,14 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing
         https://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <import resource="routes/site.xml" prefix="/{_locale}" name-prefix="app.site_" trailing-slash-on-root="false">
+        <requirement key="_locale">en|uk|ru</requirement>
+    </import>
+
+    <route id="app.telegram_webhook" path="/telegram/webhook/{bot}" controller="app.controller.telegram::webhook"
+           methods="POST">
+        <default key="bot">default</default>
+    </route>
+
 </routes>

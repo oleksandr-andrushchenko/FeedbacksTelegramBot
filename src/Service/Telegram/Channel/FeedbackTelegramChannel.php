@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Service\Telegram\Channel;
 
 use App\Entity\Telegram\TelegramPayment;
+use App\Enum\Telegram\TelegramView;
 use App\Service\Feedback\FeedbackUserSubscriptionManager;
 use App\Service\Intl\CountryProvider;
+use App\Service\Site\SiteUrlGenerator;
 use App\Service\Telegram\Chat\FeedbackSubscriptionsTelegramChatSender;
 use App\Service\Telegram\Conversation\ChooseFeedbackActionTelegramConversation;
 use App\Service\Telegram\Conversation\ChooseFeedbackCountryTelegramConversation;
@@ -17,6 +19,7 @@ use App\Service\Telegram\FallbackTelegramCommand;
 use App\Service\Telegram\TelegramCommand;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Service\Telegram\TelegramConversationFactory;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannelInterface
 {
@@ -34,6 +37,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         private readonly CountryProvider $countryProvider,
         private readonly FeedbackUserSubscriptionManager $userSubscriptionManager,
         private readonly FeedbackSubscriptionsTelegramChatSender $subscriptionsChatSender,
+        private readonly SiteUrlGenerator $siteUrlGenerator,
     )
     {
         parent::__construct($awareHelper, $conversationFactory);
@@ -58,12 +62,15 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         // todo: "list my feedbacks" command
         // todo: "list feedbacks on me" command
         // todo: "subscribe on mine/somebodies feedbacks" command
+        // todo: add /delete command
 
         yield new FallbackTelegramCommand(fn () => $this->fallback($tg));
     }
 
     public function start(TelegramAwareHelper $tg): null
     {
+        $this->describe($tg);
+
         $countries = $this->countryProvider->getCountries($tg->getLanguageCode());
 
         if (count($countries) === 1) {
@@ -75,6 +82,22 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         }
 
         return $tg->startConversation(ChooseFeedbackCountryTelegramConversation::class)->null();
+    }
+
+    public function describe(TelegramAwareHelper $tg): void
+    {
+        $commands = [];
+        foreach ($this->getCommands($tg) as $command) {
+            if ($command->getKey() !== null) {
+                $commands[$command->getKey()] = $command->getName();
+            }
+        }
+
+        $tg->replyView(TelegramView::START, [
+            'commands' => $commands,
+            'privacy_policy_link' => $this->siteUrlGenerator->generate('app.site_privacy_policy', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            'terms_of_use_link' => $this->siteUrlGenerator->generate('app.site_terms_of_use', [], UrlGeneratorInterface::ABSOLUTE_URL),
+        ], disableWebPagePreview: true);
     }
 
     public function create(TelegramAwareHelper $tg): null

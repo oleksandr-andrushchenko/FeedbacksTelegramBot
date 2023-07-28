@@ -17,6 +17,7 @@ use App\Service\Feedback\FeedbackSubscriptionPlanProvider;
 use App\Service\Feedback\FeedbackUserSubscriptionManager;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\CurrencyProvider;
+use App\Service\Telegram\Channel\FeedbackTelegramChannel;
 use App\Service\Telegram\Chat\FeedbackSubscriptionsTelegramChatSender;
 use App\Service\Telegram\Payment\TelegramPaymentManager;
 use App\Service\Telegram\Payment\TelegramPaymentMethodProvider;
@@ -100,20 +101,28 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         return null;
     }
 
-    public function describe(TelegramAwareHelper $tg): null
+    public function describe(TelegramAwareHelper $tg): void
     {
-        return $tg->replyView(TelegramView::DESCRIBE_PREMIUM, [
-            'create_limits' => [
-                'day' => $this->creatorOptions->userPerDayLimit(),
-                'month' => $this->creatorOptions->userPerMonthLimit(),
-                'year' => $this->creatorOptions->userPerYearLimit(),
+        $tg->replyView(TelegramView::PREMIUM, [
+            'commands' => [
+                'create' => [
+                    'command' => FeedbackTelegramChannel::CREATE_FEEDBACK,
+                    'limits' => [
+                        'day' => $this->creatorOptions->userPerDayLimit(),
+                        'month' => $this->creatorOptions->userPerMonthLimit(),
+                        'year' => $this->creatorOptions->userPerYearLimit(),
+                    ],
+                ],
+                'search' => [
+                    'command' => FeedbackTelegramChannel::SEARCH_FEEDBACK,
+                    'limits' => [
+                        'day' => $this->searchCreatorOptions->userPerDayLimit(),
+                        'month' => $this->searchCreatorOptions->userPerMonthLimit(),
+                        'year' => $this->searchCreatorOptions->userPerYearLimit(),
+                    ],
+                ],
             ],
-            'search_limits' => [
-                'day' => $this->searchCreatorOptions->userPerDayLimit(),
-                'month' => $this->searchCreatorOptions->userPerMonthLimit(),
-                'year' => $this->searchCreatorOptions->userPerYearLimit(),
-            ],
-        ])->null();
+        ]);
     }
 
     public function askSubscriptionPlan(TelegramAwareHelper $tg): null

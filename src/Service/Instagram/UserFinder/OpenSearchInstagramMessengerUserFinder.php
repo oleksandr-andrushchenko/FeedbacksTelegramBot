@@ -28,7 +28,7 @@ class OpenSearchInstagramMessengerUserFinder implements InstagramMessengerUserFi
         }
 
         try {
-            $response = $client->get(sprintf('https://www.instagram.com/web/search/topsearch/?query=%s', $username));
+            $response = $client->get(sprintf('https://www.instagram.com/site/search/topsearch/?query=%s', $username));
             $data = json_decode($response->getBody()->getContents(), true);
 
             if (!isset($data['users']) || !is_array($data['users'])) {

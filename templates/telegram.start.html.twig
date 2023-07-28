@@ -1,0 +1,13 @@
+{% trans_default_domain 'telegram.start' %}
+{{ 'icon.info'|trans({}, 'telegram') }} {{ 'title'|trans }}
+
+{{ 'icon.attention'|trans({}, 'telegram') }} {{ 'agreements'|trans({'%privacy_policy_link%': privacy_policy_link, '%terms_of_use_link%': terms_of_use_link})|raw }}
+
+{{ 'commands_title'|trans }}
+
+{% for name,command in commands %}
+<b>{{ ('icon.' ~ name)|trans({}, null) }} <u>{{ ('command.' ~ name)|trans({}, null) }}</u> {{ command }}</b>
+{{ name|trans }}
+
+{% endfor %}
+{{ 'icon.info'|trans({}, 'telegram') }} {{ 'summary'|trans }}

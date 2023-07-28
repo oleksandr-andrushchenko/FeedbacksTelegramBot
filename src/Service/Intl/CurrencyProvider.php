@@ -11,7 +11,7 @@ class CurrencyProvider
 {
     public function __construct(
         private readonly string $defaultCode,
-        private readonly string $sourcePath,
+        private readonly string $dataPath,
         private DenormalizerInterface $denormalizer,
         private ?array $currencies = null,
     )
@@ -40,7 +40,7 @@ class CurrencyProvider
     public function getCurrencies(): array
     {
         if ($this->currencies === null) {
-            $response = file_get_contents($this->sourcePath);
+            $response = file_get_contents($this->dataPath);
             $data = json_decode($response, true);
 
             $this->currencies = array_map(fn ($data) => $this->denormalizer->denormalize($data, Currency::class), $data);

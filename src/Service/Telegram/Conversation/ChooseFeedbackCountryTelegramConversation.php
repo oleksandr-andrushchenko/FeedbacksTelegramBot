@@ -65,16 +65,16 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
         return null;
     }
 
-    public function describe(TelegramAwareHelper $tg): null
+    public function describe(TelegramAwareHelper $tg): void
     {
         $countryCode = $tg->getTelegram()?->getMessengerUser()->getUser()->getCountryCode();
         $country = $countryCode === null ? null : $this->provider->getCountry($countryCode);
 
-        return $tg->replyView(TelegramView::DESCRIBE_COUNTRY, [
+        $tg->replyView(TelegramView::COUNTRY, [
             'country' => $country,
             'icon' => $country === null ? null : $this->provider->getCountryIcon($country),
             'name' => $country === null ? null : $this->provider->getCountryName($country),
-        ])->null();
+        ]);
     }
 
     public function askGuessCountry(array $countries, TelegramAwareHelper $tg): null
@@ -128,6 +128,8 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
     public function onCountryAnswer(TelegramAwareHelper $tg, Conversation $conversation): null
     {
         if ($tg->matchText($this->getAbsentCountryButton($tg)->getText())) {
+            $tg->getTelegram()->getMessengerUser()->getUser()->setCountryCode(null);
+
             return $tg->stopConversation($conversation)->startConversation(ChooseFeedbackActionTelegramConversation::class)->null();
         }
 
@@ -188,14 +190,14 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
     public static function getOtherCountryButton(TelegramAwareHelper $tg): KeyboardButton
     {
         return $tg->button('feedbacks.keyboard.country.other', [
-            'icon' => $tg->trans('icon.globe', domain: null),
+            'icon' => $tg->trans('icon.globe'),
         ]);
     }
 
     public static function getAbsentCountryButton(TelegramAwareHelper $tg): KeyboardButton
     {
         return $tg->button('feedbacks.keyboard.country.absent', [
-            'icon' => $tg->trans('icon.globe', domain: null),
+            'icon' => $tg->trans('icon.globe'),
         ]);
     }
 

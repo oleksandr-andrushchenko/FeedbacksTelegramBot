@@ -1,0 +1,14 @@
+{% trans_default_domain 'site.terms_of_use' %}
+
+{% extends 'site.layout.html.twig' %}
+
+{% block title %}{{ 'title'|trans }}{% endblock %}
+
+{% block h1 %}{{ 'h1'|trans }}{% endblock %}
+
+{% block content %}
+    <p class="fs-5">{{ 'headline'|trans }}</p>
+    <p>{{ 'list_headline'|trans }}:</p>
+    @todo
+    <br>
+{% endblock %}

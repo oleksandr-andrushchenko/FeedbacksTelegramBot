@@ -7,31 +7,15 @@ namespace App\Service;
 use App\Service\Util\Array\ArrayKeyQuoter;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class Translator
+class Translator implements TranslatorInterface
 {
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly ArrayKeyQuoter $arrayKeyQuoter,
-        private ?string $domain = null,
-        private ?string $locale = null,
+        private readonly ?string $domain = null,
+        private readonly ?string $locale = null,
     )
     {
-    }
-
-    public function withDomain(?string $domain): self
-    {
-        $new = clone $this;
-        $new->domain = $domain;
-
-        return $new;
-    }
-
-    public function withLocale(?string $locale): self
-    {
-        $new = clone $this;
-        $new->locale = $locale;
-
-        return $new;
     }
 
     public function trans(string $id, array $parameters = [], string $domain = null, string $locale = null): string
@@ -42,5 +26,10 @@ class Translator
             $domain ?? $this->domain,
             $locale ?? $this->locale,
         );
+    }
+
+    public function getLocale(): string
+    {
+        return $this->translator->getLocale();
     }
 }

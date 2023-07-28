@@ -8,26 +8,26 @@
         <parameter key="app.countries" type="collection">
             <parameter key="am" type="collection">
                 <parameter key="currency">AMD</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>hy</parameter>
                     <parameter>ru</parameter>
                 </parameter>
             </parameter>
             <parameter key="au" type="collection">
                 <parameter key="currency">AUD</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>en</parameter>
                 </parameter>
             </parameter>
             <parameter key="at" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>de</parameter>
                 </parameter>
             </parameter>
             <parameter key="az" type="collection">
                 <parameter key="currency">AZN</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>az</parameter>
                     <parameter>tr</parameter>
                     <parameter>ru</parameter>
@@ -35,250 +35,250 @@
             </parameter>
             <parameter key="bh" type="collection">
                 <parameter key="currency">BHD</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>ar</parameter>
                 </parameter>
             </parameter>
             <parameter key="by" type="collection">
                 <parameter key="currency">BYN</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>be</parameter>
                     <parameter>ru</parameter>
                 </parameter>
             </parameter>
             <parameter key="be" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>fr</parameter>
                 </parameter>
             </parameter>
             <parameter key="br" type="collection">
                 <parameter key="currency">BRL</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>pt</parameter>
                 </parameter>
             </parameter>
             <parameter key="bg" type="collection">
                 <parameter key="currency">BGR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>bg</parameter>
                     <parameter>ru</parameter>
                 </parameter>
             </parameter>
             <parameter key="ca" type="collection">
                 <parameter key="currency">CAD</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>en</parameter>
                     <parameter>fr</parameter>
                 </parameter>
             </parameter>
             <parameter key="cl" type="collection">
                 <parameter key="currency">CLP</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>es</parameter>
                 </parameter>
             </parameter>
             <parameter key="cn" type="collection">
                 <parameter key="currency">CNY</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>zh</parameter>
                 </parameter>
             </parameter>
             <parameter key="cr" type="collection">
                 <parameter key="currency">CRC</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>es</parameter>
                 </parameter>
             </parameter>
             <parameter key="hr" type="collection">
                 <parameter key="currency">HRK</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>hr</parameter>
                     <parameter>sr</parameter>
                 </parameter>
             </parameter>
             <parameter key="cy" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>el</parameter>
                 </parameter>
             </parameter>
             <parameter key="cz" type="collection">
                 <parameter key="currency">CZK</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>cs</parameter>
                 </parameter>
             </parameter>
             <parameter key="dk" type="collection">
                 <parameter key="currency">DKK</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>da</parameter>
                 </parameter>
             </parameter>
             <parameter key="eg" type="collection">
                 <parameter key="currency">EGP</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>ar</parameter>
                 </parameter>
             </parameter>
             <parameter key="ee" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>et</parameter>
                 </parameter>
             </parameter>
             <parameter key="fi" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>fi</parameter>
                 </parameter>
             </parameter>
             <parameter key="fr" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>fr</parameter>
                 </parameter>
             </parameter>
             <parameter key="ge" type="collection">
                 <parameter key="currency">GEL</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>ka</parameter>
                 </parameter>
             </parameter>
             <parameter key="de" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>de</parameter>
                 </parameter>
             </parameter>
             <parameter key="gr" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>el</parameter>
                 </parameter>
             </parameter>
             <parameter key="hk" type="collection">
                 <parameter key="currency">HKD</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>zh</parameter>
                 </parameter>
             </parameter>
             <parameter key="hu" type="collection">
                 <parameter key="currency">HUF</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>hu</parameter>
                 </parameter>
             </parameter>
             <parameter key="mo" type="collection">
                 <parameter key="currency">MOP</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>zh</parameter>
                 </parameter>
             </parameter>
             <parameter key="kw" type="collection">
                 <parameter key="currency">KWD</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>ar</parameter>
                 </parameter>
             </parameter>
             <parameter key="uy" type="collection">
                 <parameter key="currency">UYU</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>es</parameter>
                 </parameter>
             </parameter>
             <parameter key="mc" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>fr</parameter>
                 </parameter>
             </parameter>
             <parameter key="py" type="collection">
                 <parameter key="currency">PYG</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>es</parameter>
                 </parameter>
             </parameter>
             <parameter key="pe" type="collection">
                 <parameter key="currency">PEN</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>es</parameter>
                 </parameter>
             </parameter>
             <parameter key="is" type="collection">
                 <parameter key="currency">ISK</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>is</parameter>
                 </parameter>
             </parameter>
             <parameter key="in" type="collection">
                 <parameter key="currency">INR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>hi</parameter>
                 </parameter>
             </parameter>
             <parameter key="ie" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>en</parameter>
                 </parameter>
             </parameter>
             <parameter key="il" type="collection">
                 <parameter key="currency">ILS</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>he</parameter>
                 </parameter>
             </parameter>
             <parameter key="it" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>it</parameter>
                 </parameter>
             </parameter>
             <parameter key="jp" type="collection">
                 <parameter key="currency">JPY</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>ja</parameter>
                 </parameter>
             </parameter>
             <parameter key="kz" type="collection">
                 <parameter key="currency">KZT</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>kk</parameter>
                     <parameter>ru</parameter>
                 </parameter>
             </parameter>
             <parameter key="kg" type="collection">
                 <parameter key="currency">KGS</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>ky</parameter>
                     <parameter>ru</parameter>
                 </parameter>
             </parameter>
             <parameter key="lv" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>lv</parameter>
                     <parameter>ru</parameter>
                 </parameter>
             </parameter>
             <parameter key="li" type="collection">
                 <parameter key="currency">CHF</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>fr</parameter>
                     <parameter>de</parameter>
                 </parameter>
             </parameter>
             <parameter key="lt" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>lt</parameter>
                     <parameter>ru</parameter>
                 </parameter>
             </parameter>
             <parameter key="lu" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>lb</parameter>
                     <parameter>fr</parameter>
                     <parameter>ge</parameter>
@@ -287,51 +287,51 @@
             </parameter>
             <parameter key="mk" type="collection">
                 <parameter key="currency">MKD</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>mk</parameter>
                 </parameter>
             </parameter>
             <parameter key="mt" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>mt</parameter>
                 </parameter>
             </parameter>
             <parameter key="mx" type="collection">
                 <parameter key="currency">MXN</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>es</parameter>
                 </parameter>
             </parameter>
             <parameter key="md" type="collection">
                 <parameter key="currency">MDL</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>ro</parameter>
                     <parameter>ru</parameter>
                 </parameter>
             </parameter>
             <parameter key="me" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>sr</parameter>
                     <parameter>ru</parameter>
                 </parameter>
             </parameter>
             <parameter key="nl" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>nl</parameter>
                 </parameter>
             </parameter>
             <parameter key="nz" type="collection">
                 <parameter key="currency">NZD</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>en</parameter>
                 </parameter>
             </parameter>
             <parameter key="no" type="collection">
                 <parameter key="currency">NOK</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>no</parameter>
                     <parameter>nn</parameter>
                     <parameter>nb</parameter>
@@ -339,108 +339,108 @@
             </parameter>
             <parameter key="om" type="collection">
                 <parameter key="currency">OMR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>ar</parameter>
                 </parameter>
             </parameter>
             <parameter key="pa" type="collection">
                 <parameter key="currency">PAB</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>es</parameter>
                 </parameter>
             </parameter>
             <parameter key="pl" type="collection">
                 <parameter key="currency">PLN</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>pl</parameter>
                 </parameter>
             </parameter>
             <parameter key="pt" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>pt</parameter>
                 </parameter>
             </parameter>
             <parameter key="pr" type="collection">
                 <parameter key="currency">USD</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>es</parameter>
                     <parameter>en</parameter>
                 </parameter>
             </parameter>
             <parameter key="qa" type="collection">
                 <parameter key="currency">QAR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>ar</parameter>
                 </parameter>
             </parameter>
             <parameter key="ro" type="collection">
                 <parameter key="currency">RON</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>ro</parameter>
                 </parameter>
             </parameter>
             <parameter key="ru" type="collection">
                 <parameter key="currency">RUB</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>ru</parameter>
                 </parameter>
             </parameter>
             <parameter key="sa" type="collection">
                 <parameter key="currency">SAR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>ar</parameter>
                 </parameter>
             </parameter>
             <parameter key="rs" type="collection">
                 <parameter key="currency">RSD</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>sr</parameter>
                 </parameter>
             </parameter>
             <parameter key="sg" type="collection">
                 <parameter key="currency">SGD</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>zh</parameter>
                 </parameter>
             </parameter>
             <parameter key="sk" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>sk</parameter>
                 </parameter>
             </parameter>
             <parameter key="si" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>sl</parameter>
                 </parameter>
             </parameter>
             <parameter key="za" type="collection">
                 <parameter key="currency">ZAR</parameter>
-                <parameter key="language_codes" type="collection"/>
+                <parameter key="locales" type="collection"/>
             </parameter>
             <parameter key="kr" type="collection">
                 <parameter key="currency">KRW</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>ko</parameter>
                 </parameter>
             </parameter>
             <parameter key="es" type="collection">
                 <parameter key="currency">EUR</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>es</parameter>
                 </parameter>
             </parameter>
             <parameter key="se" type="collection">
                 <parameter key="currency">SEK</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>sv</parameter>
                 </parameter>
             </parameter>
             <parameter key="ch" type="collection">
                 <parameter key="currency">CHF</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>fr</parameter>
                     <parameter>de</parameter>
                     <parameter>it</parameter>
@@ -448,32 +448,32 @@
             </parameter>
             <parameter key="tw" type="collection">
                 <parameter key="currency">TWD</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>zh</parameter>
                 </parameter>
             </parameter>
             <parameter key="tj" type="collection">
                 <parameter key="currency">TJS</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>tg</parameter>
                     <parameter>tr</parameter>
                 </parameter>
             </parameter>
             <parameter key="th" type="collection">
                 <parameter key="currency">THB</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>th</parameter>
                 </parameter>
             </parameter>
             <parameter key="tr" type="collection">
                 <parameter key="currency">TRY</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>tr</parameter>
                 </parameter>
             </parameter>
             <parameter key="tm" type="collection">
                 <parameter key="currency">TMT</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>tk</parameter>
                     <parameter>tr</parameter>
                     <parameter>ru</parameter>
@@ -481,45 +481,45 @@
             </parameter>
             <parameter key="ua" type="collection">
                 <parameter key="currency">UAH</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>uk</parameter>
                     <parameter>ru</parameter>
                 </parameter>
             </parameter>
             <parameter key="ae" type="collection">
                 <parameter key="currency">AED</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>ar</parameter>
                 </parameter>
             </parameter>
             <parameter key="gb" type="collection">
                 <parameter key="currency">GBP</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>en</parameter>
                 </parameter>
             </parameter>
             <parameter key="us" type="collection">
                 <parameter key="currency">USD</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>en</parameter>
                     <parameter>es</parameter>
                 </parameter>
             </parameter>
             <parameter key="uy" type="collection">
                 <parameter key="currency">UYU</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>es</parameter>
                 </parameter>
             </parameter>
             <parameter key="uz" type="collection">
                 <parameter key="currency">UZS</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>uz</parameter>
                 </parameter>
             </parameter>
             <parameter key="vn" type="collection">
                 <parameter key="currency">VND</parameter>
-                <parameter key="language_codes" type="collection">
+                <parameter key="locales" type="collection">
                     <parameter>vi</parameter>
                 </parameter>
             </parameter>

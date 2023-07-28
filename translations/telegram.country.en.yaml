@@ -1,0 +1,3 @@
+title: Due to worldwide popularity of our bot, its important to know from where you are. Bot use your country to determinate search scope, available payment methods etc.
+known: "Your current country: %icon% %name%"
+unknown: "%icon% We do not know your country yet"

@@ -25,6 +25,11 @@ class FeedbackCreator
     {
     }
 
+    public function getOptions(): FeedbackCreatorOptions
+    {
+        return $this->options;
+    }
+
     /**
      * @param FeedbackTransfer $feedbackTransfer
      * @return Feedback

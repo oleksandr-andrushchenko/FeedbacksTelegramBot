@@ -97,7 +97,7 @@ class TelegramAwareHelper
     ): static
     {
         $this->chatActionSender->sendChatAction($this->getTelegram(), $this->getChatId(), ChatAction::TYPING);
-        $content = $this->templateRenderer->renderTelegramTemplate($this->getLanguageCode(), $template, $context);
+        $content = $this->templateRenderer->renderTelegramTemplate($template, $context, $this->getLanguageCode());
 
         $this->messageSender->sendTelegramMessage(
             $this->getTelegram(),
@@ -139,8 +139,9 @@ class TelegramAwareHelper
 
     public function replyOk(string $transId = 'reply.ok', array $transParameters = [], ?string $domain = 'telegram'): static
     {
-        $this->reply($this->trans('reply.icon.ok') . ' ' . $this->trans($transId, $transParameters, $domain));
-//        $this->reply($this->trans('reply.icon.ok'));
+//        $this->reply($this->trans('reply.icon.ok') . ' ' . $this->trans($transId, $transParameters, $domain));
+        $this->reply($this->trans($transId, $transParameters, $domain));
+        $this->reply($this->trans('reply.icon.ok'));
 
         return $this;
     }
@@ -148,24 +149,27 @@ class TelegramAwareHelper
     public function replyFail(string $transId = 'reply.fail', array $transParameters = [], ?string $domain = 'telegram'): static
     {
         // todo: find command by key
-        $this->reply($this->trans('reply.icon.fail') . ' ' . $this->trans($transId, array_merge(['restart_command' => '/restart'], $transParameters), $domain));
-//        $this->reply($this->trans('reply.icon.fail'));
+//        $this->reply($this->trans('reply.icon.fail') . ' ' . $this->trans($transId, array_merge(['restart_command' => '/restart'], $transParameters), $domain));
+        $this->reply($this->trans($transId, $transParameters, $domain));
+        $this->reply($this->trans('reply.icon.fail'));
 
         return $this;
     }
 
     public function replyWrong(string $transId = 'reply.wrong', array $transParameters = [], ?string $domain = 'telegram'): static
     {
-        $this->reply($this->trans('reply.icon.wrong') . ' ' . $this->trans($transId, $transParameters, $domain));
-//        $this->reply($this->trans('reply.icon.wrong'));
+//        $this->reply($this->trans('reply.icon.wrong') . ' ' . $this->trans($transId, $transParameters, $domain));
+        $this->reply($this->trans($transId, $transParameters, $domain));
+        $this->reply($this->trans('reply.icon.wrong'));
 
         return $this;
     }
 
     public function replyUpset(string $transId = 'reply.upset', array $transParameters = [], ?string $domain = 'telegram'): static
     {
-        $this->reply($this->trans('reply.icon.upset') . ' ' . $this->trans($transId, $transParameters, $domain));
-//        $this->reply($this->trans('reply.icon.upset'));
+//        $this->reply($this->trans('reply.icon.upset') . ' ' . $this->trans($transId, $transParameters, $domain));
+        $this->reply($this->trans($transId, $transParameters, $domain));
+        $this->reply($this->trans('reply.icon.upset'));
 
         return $this;
     }

@@ -33,7 +33,7 @@
         <env name="APP_STATE" value="local"/>
         <env name="APP_ENV" value="test"/>
         <env name="APP_SECRET" value="$ecretf0rt3st"/>
-        <env name="WEB_BASE_URL" value="http://localhost"/>
+        <env name="SITE_BASE_URL" value="http://localhost"/>
         <env name="TELEGRAM_WEBHOOK_BASE_URL" value="http://localhost"/>
         <env name="TELEGRAM_FEEDBACKS_USERNAME" value="any"/>
         <env name="TELEGRAM_FEEDBACKS_API_TOKEN" value="0:any"/>

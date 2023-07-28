@@ -15,6 +15,7 @@ use App\Object\Feedback\FeedbackTransfer;
 use App\Object\Feedback\SearchTermTransfer;
 use App\Service\Feedback\FeedbackCreator;
 use App\Service\Feedback\SearchTerm\SearchTermParserOnlyInterface;
+use App\Service\Telegram\Channel\FeedbackTelegramChannel;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Service\Util\Array\ArrayValueEraser;
 use App\Service\Validator;
@@ -47,6 +48,8 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
     public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
     {
         if ($this->state->getStep() === null) {
+            $this->describe($tg);
+
             return $this->askSearchTerm($tg);
         }
 
@@ -107,6 +110,20 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         }
 
         return null;
+    }
+
+    public function describe(TelegramAwareHelper $tg): void
+    {
+        $options = $this->feedbackCreator->getOptions();
+
+        $tg->replyView(TelegramView::CREATE, [
+            'limits' => [
+                'day' => $options->userPerDayLimit(),
+                'month' => $options->userPerMonthLimit(),
+                'year' => $options->userPerYearLimit(),
+            ],
+            'premium_command' => FeedbackTelegramChannel::GET_PREMIUM,
+        ]);
     }
 
     public function askSearchTerm(TelegramAwareHelper $tg, bool $change = null): null
@@ -439,6 +456,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
             $tg->replyFail('feedbacks.reply.create.fail.limit_exceeded', [
                 'period' => $tg->trans($exception->getPeriodKey(), domain: null),
                 'limit' => $exception->getLimit(),
+                'premium_command' => FeedbackTelegramChannel::GET_PREMIUM,
             ]);
 
             return $tg->stopConversation($conversation)->startConversation(ChooseFeedbackCountryTelegramConversation::class)->null();

@@ -13,4 +13,17 @@ month: Month
 year: Year
 
 icon:
-  globe: 🌎
+  create: ✏️
+  search: 🔍
+  premium: ⭐️
+  subscriptions: ⭐️
+  country: 🌎
+  restart: 🔄
+
+command:
+  create: Add feedback
+  search: Find feedback
+  premium: Get Premium
+  subscriptions: My Premium
+  country: My Country
+  restart: Restart

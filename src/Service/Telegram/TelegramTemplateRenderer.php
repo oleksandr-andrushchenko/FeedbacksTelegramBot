@@ -15,10 +15,9 @@ class TelegramTemplateRenderer
     {
     }
 
-    public function renderTelegramTemplate(?string $languageCode, string|TelegramView $template, array $context = []): string
+    public function renderTelegramTemplate(TelegramView $template, array $context = [], string $locale = null): string
     {
-        $context['language_code'] = $languageCode;
-
-        return $this->twig->render(sprintf('telegram/%s.html.twig', is_string($template) ? $template : $template->value), $context);
+        // todo: remove locale (locale set up to locale switcher in update handler)
+        return $this->twig->render($template->view(), $context);
     }
 }

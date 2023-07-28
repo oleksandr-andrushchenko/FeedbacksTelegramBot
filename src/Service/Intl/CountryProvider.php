@@ -11,7 +11,7 @@ class CountryProvider
 {
     public function __construct(
         private readonly TranslatorInterface $translator,
-        private readonly array $sourceCountries,
+        private readonly array $data,
         private ?array $countries = null,
     )
     {
@@ -49,11 +49,11 @@ class CountryProvider
         if ($this->countries === null) {
             $countries = [];
 
-            foreach ($this->sourceCountries as $code => $countryData) {
+            foreach ($this->data as $code => $country) {
                 $countries[] = new Country(
                     $code,
-                    $countryData['currency'],
-                    $countryData['language_codes'] ?? []
+                    $country['currency'],
+                    $country['locales'] ?? []
                 );
             }
 
@@ -63,7 +63,7 @@ class CountryProvider
         $countries = $this->countries;
 
         if ($languageCode !== null) {
-            $countries = array_filter($countries, fn (Country $country) => in_array($languageCode, $country->getLanguageCodes(), true));
+            $countries = array_filter($countries, fn (Country $country) => in_array($languageCode, $country->getLocales(), true));
         }
 
         return $countries;

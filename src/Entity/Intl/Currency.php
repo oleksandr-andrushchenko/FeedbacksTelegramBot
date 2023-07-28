@@ -52,4 +52,9 @@ readonly class Currency
     {
         return $this->spaceBetween;
     }
+
+    public function __toString(): string
+    {
+        return $this->code;
+    }
 }

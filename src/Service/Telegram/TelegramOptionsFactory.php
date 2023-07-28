@@ -15,7 +15,7 @@ class TelegramOptionsFactory
             $options['username'],
             $options['webhook_url'],
             $options['webhook_certificate_path'],
-            $options['language_codes'],
+            $options['locales'],
             array_map(fn ($id) => (int) $id, $options['admin_ids']),
             array_map(fn ($id) => (int) $id, $options['admin_chat_ids']),
             $options['check_update_duplicates'],
