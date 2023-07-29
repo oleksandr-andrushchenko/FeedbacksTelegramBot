@@ -162,7 +162,9 @@
             <argument type="service" id="app.feedback_user_subscription_manager"/>
         </service>
         <service id="app.hints_telegram_chat_switcher"
-                 class="App\Service\Telegram\Chat\HintsTelegramChatSwitcher" lazy="true"/>
+                 class="App\Service\Telegram\Chat\HintsTelegramChatSwitcher" lazy="true">
+            <argument type="service" id="twig"/>
+        </service>
         <service id="app.telegram_conversation" class="App\Service\Telegram\Conversation\TelegramConversation"
                  abstract="true" lazy="true">
             <argument type="service" id="app.telegram_aware_helper"/>

@@ -6,16 +6,26 @@ namespace App\Service\Telegram\Chat;
 
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
 use App\Service\Telegram\TelegramAwareHelper;
+use Twig\Environment;
 
 class HintsTelegramChatSwitcher
 {
+    public function __construct(
+        private readonly Environment $twig,
+    )
+    {
+    }
+
     public function toggleHints(TelegramAwareHelper $tg): null
     {
         $messengerUser = $tg->getTelegram()->getMessengerUser();
         $messengerUser->setIsShowHints(!$messengerUser->isShowHints());
 
         $transParameters = [
-            'command' => FeedbackTelegramChannel::HINTS,
+            'command' => $this->twig->render('command.html.twig', [
+                'name' => 'hints',
+                'command' => FeedbackTelegramChannel::HINTS,
+            ]),
         ];
 
         if ($messengerUser->isShowHints()) {
