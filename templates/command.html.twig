@@ -1,1 +1,2 @@
-{{ command }} {{ ('icon.' ~ name)|trans({}, null) }} <b><u>{{ ('command.' ~ name)|trans({}, null) }}</u></b>
+{% trans_default_domain 'tg.feedbacks' %}
+<b>{{ command }} {{ ('icon.' ~ name)|trans }} <u>{{ ('command.' ~ name)|trans }}</u></b>

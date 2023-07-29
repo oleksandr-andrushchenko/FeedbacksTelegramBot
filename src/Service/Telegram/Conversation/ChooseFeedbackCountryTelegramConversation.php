@@ -48,7 +48,7 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
             $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
             return $tg->stopConversation($conversation)
-                ->replyUpset('feedbacks.reply.country.canceled')
+                ->replyUpset('reply.country.canceled')
                 ->startConversation(ChooseFeedbackActionTelegramConversation::class)
                 ->null()
             ;
@@ -106,7 +106,7 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
 
         $tg->getTelegram()->getMessengerUser()->getUser()->setCountryCode($country->getCode());
 
-        $tg->replyOk('feedbacks.reply.country.ok', [
+        $tg->replyOk('reply.country.ok', [
             'icon' => $this->provider->getCountryIcon($country),
             'name' => $this->provider->getCountryName($country),
         ]);
@@ -145,7 +145,7 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
 
         $tg->getTelegram()->getMessengerUser()->getUser()->setCountryCode($country->getCode());
 
-        $tg->replyOk('feedbacks.reply.country.ok', [
+        $tg->replyOk('reply.country.ok', [
             'icon' => $this->provider->getCountryIcon($country),
             'name' => $this->provider->getCountryName($country),
         ]);
@@ -165,10 +165,10 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
 
     public function getCountryButton(Country $country, TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('feedbacks.keyboard.country.country', [
-            'icon' => $this->provider->getCountryIcon($country),
-            'name' => $this->provider->getCountryName($country, $tg->getLanguageCode()),
-        ]);
+        return $tg->button(join(' ', [
+            $this->provider->getCountryIcon($country),
+            $this->provider->getCountryName($country, $tg->getLanguageCode()),
+        ]));
     }
 
     public function getCountryByButton(string $button, array $countries, TelegramAwareHelper $tg): ?Country
@@ -184,25 +184,29 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
 
     public static function getCountryAsk(TelegramAwareHelper $tg): string
     {
-        return $tg->trans('feedbacks.ask.country.country');
+        return $tg->trans('ask.country.country');
     }
 
     public static function getOtherCountryButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('feedbacks.keyboard.country.other', [
-            'icon' => $tg->trans('icon.globe'),
-        ]);
+        return $tg->button(
+            $tg->trans('keyboard.country.other', [
+                'icon' => $tg->trans('icon.globe'),
+            ])
+        );
     }
 
     public static function getAbsentCountryButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('feedbacks.keyboard.country.absent', [
-            'icon' => $tg->trans('icon.globe'),
-        ]);
+        return $tg->button(
+            $tg->trans('keyboard.country.absent', [
+                'icon' => $tg->trans('icon.globe'),
+            ])
+        );
     }
 
     public static function getCancelButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('keyboard.cancel');
+        return $tg->button($tg->trans('keyboard.cancel'));
     }
 }

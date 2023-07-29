@@ -1,0 +1,27 @@
+icon:
+  create: ✏️
+  search: 🔍
+  premium: ⭐️
+  subscriptions: 🌟
+  country: 🌎
+  restart: 🔄
+  purge: ✂️
+
+command:
+  create: Add feedback
+  search: Find feedback
+  premium: Get Premium
+  subscriptions: My Premium
+  country: My Country
+  restart: Restart
+  purge: Purge
+
+#  name: Feedbacks
+name:
+  local: wild_s_local_bot
+  dev: wild_s_dev_bot
+  prod: wild_s_prod_bot
+#  short_description: Create and read feedbacks
+short_description: ""
+#  description: This bot allows you to create and read feedbacks on persons or companies
+description: ""

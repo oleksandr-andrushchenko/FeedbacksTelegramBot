@@ -7,7 +7,7 @@
 {% block h1 %}{{ 'h1'|trans }}{% endblock %}
 
 {% block content %}
-    <p class="fs-5">{{ 'headline'|trans({'%create_icon%': 'icon.create'|trans({}, null)})|raw }}</p>
-    <p>{{ 'list_headline'|trans({'%search_icon%': 'icon.search'|trans({}, null)})|raw }}</p>
+    <p class="fs-5">{{ 'headline'|trans({'%create_icon%': 'icon.create'|trans({}, 'tg.feedbacks')})|raw }}</p>
+    <p>{{ 'list_headline'|trans({'%search_icon%': 'icon.search'|trans({}, 'tg.feedbacks')})|raw }}</p>
     <br>
 {% endblock %}

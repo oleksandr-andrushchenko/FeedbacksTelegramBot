@@ -1,0 +1,161 @@
+yes: Yes
+no: No
+
+press_yes_or_no: Press Yes or No please
+datetime_format: m/d H:i
+date_format: m/d
+active: Active
+inactive: Inactive
+bought: Bought
+till: Till
+day: Day
+month: Month
+year: Year
+
+username: Username
+name: Name
+language: Language
+country: Country
+phone_number: Phone number
+email: Email
+
+icon:
+  number: '#'
+  info: ℹ️
+  attention: ‼️
+  globe: 🌎
+
+payment_method:
+  liqpay: 🇺🇦 LiqPay
+  portmone: 🇺🇦 Portmone
+  sberbank: 🇷🇺 Sberbank
+  stripe: 🇺🇸🌎 Stripe
+
+ask:
+  country:
+    country: Select your country please.
+  action:
+    action: Select an action please.
+  create:
+    search_term: Enter search term please, it could be messenger profile url, nickname, email, phone number, website, person or company name, etc.
+    search_term_type: Enter search term type please, or use keyboard above.
+    rating: Enter your score number please, or use keyboard above.
+    description: Enter your feedback please, it could be any details about your experience.
+    confirm: Confirm feedback creation?
+  search:
+    search_term: Enter search term please, it could be messenger profile url, nickname, email, phone number, website, person or company name, etc.
+    search_term_type: Enter search term type please, or use keyboard above.
+    confirm: Confirm feedback search?
+  premium:
+    subscription_plan: Select a subscription plan from the menu above please.
+    payment_method: Select a payment method from the menu above please.
+    payment: Proceed with the payment instructions above please.
+    payment_invoice_title: '"%plan%" subscription'
+    payment_invoice_description: "No limits on feedbacks creation and searching for the next period: %plan%"
+  purge:
+    confirm: Confirm data purge?
+
+keyboard:
+  confirm: 👌 Confirm
+  yes: ✅ Yes
+  no: ❌ No
+  back: ⬅️ Get back
+  cancel: ❌ Cancel
+  skip: ⏩ Skip
+  leave_as: Leave as "%text%"
+  make_empty: Make empty
+  leave_empty: Leave empty
+  country:
+    other: "%icon% Other"
+    absent: "%icon% Not in the list"
+  create:
+    change_search_term: 📝 Change search term
+    change_rating: 📝 Change rate
+    add_description: 📝 Add details
+    change_description: 📝 Change details
+  search:
+    change_search_term: 📝 Change search term
+  premium:
+    subscription_plan: "%plan% [%currency% %price%]"
+
+reply:
+  ok: Completed successfully.
+  fail: "Unknown error has occurred!\r\n1) make sure everything was properly organized and repeat; or\r\n2) use /%restart_command% command; or\r\n3) Try again later please."
+  wrong: I don't understand you.
+  icon:
+    ok: 🫡
+    fail: 🤕
+    wrong: 🤔
+    upset: 😐
+  purge:
+    ok: Purge has been successfully made, now you can leave the bot.
+    canceled: Purge dialog has been canceled.
+  start:
+    fail: Unknown error has occurred, we are working on this already, try later please.
+  country:
+    canceled: Country selection has been canceled.
+    ok: "Your country has been successfully updated: %icon% %name%"
+  create:
+    canceled: Feedback adding has been canceled.
+    ok: Feedback has been successfully added.
+    fail:
+      unknown: "Unknown error has occurred!\r\n1) make sure everything was properly organized and repeat; or\r\n2) use /%restart_command% command; or\r\n3) Try again later please."
+      same_messenger_user: Feedbacks on yourself is not allowed.
+      limit_exceeded: "You have reached feedback creation limit (%limit%) for the next period: %period%. Try again later or buy premium subscription %premium_command% please."
+  search:
+    canceled: Feedback search has been canceled.
+    empty_list: No feedbacks were found by "%search_term%".
+    title: "Feedbacks have been successfully found by \"%search_term%\" (%search_term_type%)"
+    summary: "Total feedbacks count found: %count%"
+    fail: "Unknown error has occurred!\r\n1) make sure everything was properly organized and repeat; or\r\n2) use /%restart_command% command; or\r\n3) Try again later please."
+    limit_exceeded: "You have reached feedback searching limit (%limit%) for the next period: %period%. Try again later or buy premium subscription %premium_command% please."
+  premium:
+    canceled: Getting premium has been canceled.
+  payment:
+    ok: Your payment for "%plan%" premium subscription has been received. Premium subscription will expire on %expire_at% GMT.
+  subscriptions:
+    empty_list: You do not have subscriptions
+    title: Your subscriptions
+    summary: "Total count: %count%"
+  restart:
+    ok: Restart has been successfully made.
+    fail: Unknown error has occurred, we are working on this already, try later please.
+
+search_term_type:
+  messenger_profile_url: Social network or messenger profile link
+  instagram_username: Instagram user
+  facebook_username: Facebook user
+  telegram_username: Telegram user
+  twitter_username: Twitter user
+  tiktok_username: Tiktok user
+  youtube_username: Youtube user
+  onlyfans_username: Onlyfans user
+  reddit_username: Reddit user
+  messenger_username: Social network or messenger user
+  email: 📫 Email address
+  person_name: Person name
+  organization_name: Company or organization name
+  place_name: Place name
+  phone_number: 📞 Phone number
+  unknown: Anybody or Anything
+  url: 🌎 Webpage
+
+search_term_type_icon:
+  phone: 📞
+  email: 📫
+
+rating:
+  extremely_unsatisfied: 👎👎👎 [%rating%] extremely unsatisfied
+  very_unsatisfied: 👎👎 [%rating%] very unsatisfied
+  unsatisfied: 👎 [%rating%] unsatisfied
+  neutral: 🤔 [%rating%] neutral
+  satisfied: ❤️ [+%rating%] satisfied
+  very_satisfied: ❤️❤️ [+%rating%] very satisfied
+  extremely_satisfied: ❤️❤️❤️ [+%rating%] extremely satisfied
+
+subscription_plan:
+  one_day: 1 day
+  three_days: 3 days
+  one_month: 1 month
+  six_months: 6 months
+  one_year: 1 year

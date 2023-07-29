@@ -74,7 +74,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
             $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
             return $tg->stopConversation($conversation)
-                ->replyUpset('feedbacks.reply.search.canceled')
+                ->replyUpset('reply.search.canceled')
                 ->startConversation(ChooseFeedbackActionTelegramConversation::class)
                 ->null()
             ;
@@ -125,7 +125,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
         $buttons[] = $this->getCancelButton($tg);
 
         $tg->reply(
-            ($change ? '' : $this->getStep(1)) . $tg->trans('feedbacks.ask.search.search_term'),
+            ($change ? '' : $this->getStep(1)) . $tg->trans('ask.search.search_term'),
             $tg->keyboard(...$buttons)
         );
 
@@ -195,7 +195,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
         $sortedPossibleTypes = SearchTermType::sort($possibleTypes);
 
         $tg->reply(
-            $tg->trans('feedbacks.ask.search.search_term_type'),
+            $tg->trans('ask.search.search_term_type'),
             $tg->keyboard(...[
                 ...$this->getSearchTermTypeButtons($sortedPossibleTypes, $tg),
                 $this->getBackButton($tg),
@@ -238,7 +238,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
 
         $this->searchTermParser->parseWithNetwork($this->state->getSearchTerm());
 
-        $tg->reply($tg->trans('feedbacks.ask.search.confirm'))
+        $tg->reply($tg->trans('ask.search.confirm'))
             ->replyView(
                 TelegramView::FEEDBACK,
                 [
@@ -286,14 +286,14 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
             $count = count($feedbacks);
 
             if ($count === 0) {
-                return $tg->replyUpset('feedbacks.reply.search.empty_list', ['search_term' => $feedbackSearch->getSearchTermText()])
+                return $tg->replyUpset('reply.search.empty_list', ['search_term' => $feedbackSearch->getSearchTermText()])
                     ->stopConversation($conversation)->startConversation(ChooseFeedbackActionTelegramConversation::class)
                     ->null()
                 ;
             }
 
             $tg->reply(
-                $tg->trans('feedbacks.reply.search.title', [
+                $tg->trans('reply.search.title', [
                     'search_term' => $feedbackSearch->getSearchTermNormalizedText() ?? $feedbackSearch->getSearchTermText(),
                     'search_term_type' => $this->getSearchTermTypeButton($feedbackSearch->getSearchTermType(), $tg)->getText(),
                 ]) . ':',
@@ -328,7 +328,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
                 );
             }
 
-            return $tg->replyOk('feedbacks.reply.search.summary', ['count' => $count])
+            return $tg->replyOk('reply.search.summary', ['count' => $count])
                 ->stopConversation($conversation)->startConversation(ChooseFeedbackActionTelegramConversation::class)
                 ->null()
             ;
@@ -341,8 +341,8 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
 
             return $tg->replyFail()->null();
         } catch (CreateFeedbackSearchLimitExceeded $exception) {
-            $tg->replyFail('feedbacks.reply.search.fail.limit_exceeded', [
-                'period' => $tg->trans($exception->getPeriodKey(), domain: null),
+            $tg->replyFail('reply.search.fail.limit_exceeded', [
+                'period' => $tg->trans($exception->getPeriodKey()),
                 'limit' => $exception->getLimit(),
                 'premium_command' => FeedbackTelegramChannel::GET_PREMIUM,
             ]);
@@ -363,7 +363,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
 
     public static function getSearchTermTypeButton(SearchTermType $type, TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button(sprintf('feedbacks.search_term_type.%s', $type->name));
+        return $tg->button($tg->trans(sprintf('search_term_type.%s', $type->name)));
     }
 
     public static function getSearchTermTypeByButton(string $button, TelegramAwareHelper $tg): ?SearchTermType
@@ -379,27 +379,27 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
 
     public static function getLeaveAsButton(string $text, TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('keyboard.leave_as', ['text' => $text]);
+        return $tg->button($tg->trans('keyboard.leave_as', ['text' => $text]));
     }
 
     public static function getChangeSearchTermButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('feedbacks.keyboard.search.change_search_term');
+        return $tg->button($tg->trans('keyboard.search.change_search_term'));
     }
 
     public static function getConfirmButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('keyboard.confirm');
+        return $tg->button($tg->trans('keyboard.confirm'));
     }
 
     public static function getBackButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('keyboard.back');
+        return $tg->button($tg->trans('keyboard.back'));
     }
 
     public static function getCancelButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('keyboard.cancel');
+        return $tg->button($tg->trans('keyboard.cancel'));
     }
 
     private function getStep(int|string $num): string

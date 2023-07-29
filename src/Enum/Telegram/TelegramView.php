@@ -18,9 +18,9 @@ enum TelegramView: string
     public function view(string $locale = null): string
     {
         if ($locale === null) {
-            return 'telegram.' . $this->value . '.html.twig';
+            return 'tg.' . $this->value . '.html.twig';
         }
 
-        return 'telegram.' . $this->value . '.' . $locale . '.html.twig';
+        return 'tg.' . $this->value . '.' . $locale . '.html.twig';
     }
 }

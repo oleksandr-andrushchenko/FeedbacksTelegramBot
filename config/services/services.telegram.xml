@@ -85,18 +85,13 @@
             <argument type="service" id="translation.locale_switcher"/>
             <argument type="service" id="logger"/>
         </service>
-        <service id="app.telegram_translator" class="App\Service\Telegram\TelegramTranslator" lazy="true">
-            <argument type="service" id="app.translator"/>
-        </service>
         <service id="app.telegram_template_renderer" class="App\Service\Telegram\TelegramTemplateRenderer" lazy="true">
             <argument type="service" id="twig"/>
         </service>
-        <service id="app.telegram_keyboard_factory" class="App\Service\Telegram\TelegramKeyboardFactory" lazy="true">
-            <argument type="service" id="app.telegram_translator"/>
-        </service>
+        <service id="app.telegram_keyboard_factory" class="App\Service\Telegram\TelegramKeyboardFactory" lazy="true"/>
         <service id="app.telegram_commands_updater" class="App\Service\Telegram\Api\TelegramCommandsUpdater"
                  lazy="true">
-            <argument type="service" id="app.telegram_translator"/>
+            <argument type="service" id="app.translator"/>
             <argument type="service" id="app.telegram_my_commands_provider"/>
         </service>
         <service id="app.telegram_commands_remover" class="App\Service\Telegram\Api\TelegramCommandsRemover"
@@ -106,7 +101,7 @@
         <service id="app.telegram_descriptions_updater" class="App\Service\Telegram\Api\TelegramDescriptionsUpdater"
                  lazy="true">
             <argument>%app.stage%</argument>
-            <argument type="service" id="app.telegram_translator"/>
+            <argument type="service" id="app.translator"/>
         </service>
         <service id="app.telegram_message_sender" class="App\Service\Telegram\Api\TelegramMessageSender" lazy="true"/>
         <service id="app.telegram_chat_action_sender" class="App\Service\Telegram\Api\TelegramChatActionSender"
@@ -154,7 +149,7 @@
         <service id="app.telegram_aware_helper" class="App\Service\Telegram\TelegramAwareHelper" lazy="true">
             <argument type="service" id="app.telegram_keyboard_factory"/>
             <argument type="service" id="app.telegram_message_sender"/>
-            <argument type="service" id="app.telegram_translator"/>
+            <argument type="service" id="app.translator"/>
             <argument type="service" id="app.telegram_conversation_manager"/>
             <argument type="service" id="app.telegram_template_renderer"/>
             <argument type="service" id="app.telegram_chat_action_sender"/>

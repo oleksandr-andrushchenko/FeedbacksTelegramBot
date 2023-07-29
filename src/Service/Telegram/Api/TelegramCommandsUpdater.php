@@ -41,10 +41,7 @@ class TelegramCommandsUpdater
             $data['commands'] = array_map(
                 fn (TelegramCommandInterface $command) => [
                     'command' => $command->getName(),
-                    'description' => $this->translator->trans(
-                        sprintf('%s.command.%s', $telegram->getName()->name, $command->getKey()),
-                        locale: $myCommands->getLanguageCode()
-                    ),
+                    'description' => $this->getDescription($telegram, $command, $myCommands),
                 ],
                 $myCommands->getCommands()
             );
@@ -61,5 +58,20 @@ class TelegramCommandsUpdater
     public function getMyCommands(): ?array
     {
         return $this->myCommands;
+    }
+
+    private function getDescription(
+        Telegram $telegram,
+        TelegramCommandInterface $command,
+        TelegramMyCommands $myCommands
+    ): string
+    {
+        $domain = sprintf('tg.%s', $telegram->getName()->name);
+        $locale = $myCommands->getLanguageCode();
+
+        $icon = $this->translator->trans(sprintf('icon.%s', $command->getKey()), domain: $domain, locale: $locale);
+        $name = $this->translator->trans(sprintf('command.%s', $command->getKey()), domain: $domain, locale: $locale);
+
+        return sprintf('%s %s', $icon, $name);
     }
 }

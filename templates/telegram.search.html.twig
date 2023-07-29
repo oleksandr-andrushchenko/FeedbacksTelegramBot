@@ -1,9 +1,0 @@
-{% trans_default_domain 'telegram.search' %}
-{{ 'icon.info'|trans({}, 'telegram') }} {{ 'title'|trans }}
-
-{{ 'icon.info'|trans({}, 'telegram') }} {{ 'limits'|trans }}
-{% for period,limit in limits %}
- - {{ 'limit_item'|trans({'%period%': period|trans({}, null), '%limit%': limit})|raw }}
-{% endfor %}
-
-{{ 'icon.info'|trans({}, 'telegram') }} {{ 'premium'|trans({'%command%': include('command.html.twig', {name: 'premium', command: premium_command})})|raw }}

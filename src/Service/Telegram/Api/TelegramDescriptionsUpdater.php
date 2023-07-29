@@ -10,7 +10,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class TelegramDescriptionsUpdater
 {
     public function __construct(
-        private readonly string $appStage,
+        private readonly string $stage,
         private readonly TranslatorInterface $translator,
         private ?array $myNames = null,
         private ?array $myDescriptions = null,
@@ -29,20 +29,22 @@ class TelegramDescriptionsUpdater
         $this->myDescriptions = [];
         $this->myShortDescriptions = [];
 
+        $domain = sprintf('tg.%s', $telegram->getName()->name);
+
         foreach ($telegram->getOptions()->getLanguageCodes() as $languageCode) {
-            $name = $this->translator->trans(sprintf('%s.name.%s', $telegram->getName()->name, $this->appStage), locale: $languageCode);
+            $name = $this->translator->trans(sprintf('name.%s', $this->stage), domain: $domain, locale: $languageCode);
             $this->myNames[] = $name;
             $telegram->setMyName([
                 'name' => $name,
                 'language_code' => $languageCode,
             ]);
-            $description = $this->translator->trans(sprintf('%s.description', $telegram->getName()->name), locale: $languageCode);
+            $description = $this->translator->trans('description', domain: $domain, locale: $languageCode);
             $this->myDescriptions[] = $description;
             $telegram->setMyDescription([
                 'description' => $description,
                 'language_code' => $languageCode,
             ]);
-            $shortDescription = $this->translator->trans(sprintf('%s.short_description', $telegram->getName()->name), locale: $languageCode);
+            $shortDescription = $this->translator->trans('short_description', domain: $domain, locale: $languageCode);
             $this->myShortDescriptions[] = $shortDescription;
             $telegram->setMyShortDescription([
                 'short_description' => $shortDescription,

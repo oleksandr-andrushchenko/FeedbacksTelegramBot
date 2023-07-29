@@ -19,7 +19,6 @@ use App\Service\Telegram\Telegram;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Service\Telegram\TelegramChatProvider;
 use App\Service\Telegram\TelegramKeyboardFactory;
-use App\Service\Telegram\TelegramTranslator;
 use App\Service\Telegram\TelegramUserProvider;
 use App\Tests\Traits\EntityManagerProviderTrait;
 use App\Tests\Traits\Feedback\SearchTermParserProviderTrait;
@@ -28,11 +27,13 @@ use App\Tests\Traits\Instagram\InstagramMessengerUserProviderTrait;
 use App\Tests\Traits\Messenger\MessengerUserProfileUrlProviderTrait;
 use App\Tests\Traits\Messenger\MessengerUserRepositoryProviderTrait;
 use App\Tests\Traits\SerializerProviderTrait;
+use App\Tests\Traits\TranslatorProviderTrait;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\KeyboardButton;
 use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Request;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 trait TelegramCommandFunctionalTrait
 {
@@ -41,7 +42,7 @@ trait TelegramCommandFunctionalTrait
     use TelegramRegistryProviderTrait;
     use TelegramMessageSenderMockProviderTrait;
     use TelegramMessageSenderProviderTrait;
-    use TelegramTranslatorProviderTrait;
+    use TranslatorProviderTrait;
     use TelegramKeyboardFactoryProviderTrait;
     use TelegramConversationRepositoryProviderTrait;
     use EntityManagerProviderTrait;
@@ -62,7 +63,7 @@ trait TelegramCommandFunctionalTrait
     protected TelegramAwareHelper $tg;
     protected ?Update $update;
     protected ?TelegramConversation $conversation;
-    protected TelegramTranslator $translator;
+    protected TranslatorInterface $translator;
     protected TelegramKeyboardFactory $keyboardFactory;
     protected TelegramUserProvider $userProvider;
     protected TelegramChatProvider $chatProvider;
@@ -73,7 +74,7 @@ trait TelegramCommandFunctionalTrait
         $this->tg = $this->getTelegramAwareHelper()->withTelegram($this->telegram);
         $this->update = $this->getTelegramMessageUpdateFixture('any');
         $this->conversation = null;
-        $this->translator = $this->getTelegramTranslator();
+        $this->translator = $this->getTranslator();
         $this->keyboardFactory = $this->getTelegramKeyboardFactory();
         $this->userProvider = $this->getTelegramUserProvider();
         $this->chatProvider = $this->getTelegramChatProvider();

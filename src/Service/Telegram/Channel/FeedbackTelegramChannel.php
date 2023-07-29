@@ -30,8 +30,8 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     public const GET_PREMIUM = '/premium';
     public const SUBSCRIPTIONS = '/subscriptions';
     public const COUNTRY = '/country';
-    public const RESTART = '/restart';
     public const PURGE = '/purge';
+    public const RESTART = '/restart';
 
     public function __construct(
         TelegramAwareHelper $awareHelper,
@@ -58,8 +58,8 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         yield new TelegramCommand(self::GET_PREMIUM, fn () => $this->premium($tg), menu: true, key: 'premium');
         yield new TelegramCommand(self::SUBSCRIPTIONS, fn () => $this->subscriptions($tg), menu: true, key: 'subscriptions');
         yield new TelegramCommand(self::COUNTRY, fn () => $this->country($tg), menu: true, key: 'country');
-        yield new TelegramCommand(self::RESTART, fn () => $this->restart($tg), menu: true, key: 'restart', beforeConversations: true);
         yield new TelegramCommand(self::PURGE, fn () => $this->purge($tg), menu: true, key: 'purge');
+        yield new TelegramCommand(self::RESTART, fn () => $this->restart($tg), menu: true, key: 'restart', beforeConversations: true);
 
         // todo: "who've been looking for me" command
         // todo: "list my feedbacks" command
@@ -133,9 +133,9 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     {
         $userSubscription = $this->userSubscriptionManager->createByTelegramPayment($payment);
 
-        $tg->replyOk('feedbacks.reply.payment.ok', [
-            'plan' => $tg->trans(sprintf('feedbacks.subscription_plan.%s', $userSubscription->getSubscriptionPlan()->name)),
-            'expire_at' => $userSubscription->getExpireAt()->format($tg->trans('datetime_format', domain: null)),
+        $tg->replyOk('reply.payment.ok', [
+            'plan' => $tg->trans(sprintf('subscription_plan.%s', $userSubscription->getSubscriptionPlan()->name)),
+            'expire_at' => $userSubscription->getExpireAt()->format($tg->trans('datetime_format')),
         ]);
 
         // todo: show buttons (or continue active conversation)
@@ -150,7 +150,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
 
     public function restart(TelegramAwareHelper $tg): null
     {
-        $tg->stopConversations()->replyOk('feedbacks.reply.restart.ok');
+        $tg->stopConversations()->replyOk('reply.restart.ok');
 
         return $this->start($tg);
     }

@@ -1,0 +1,9 @@
+{% trans_default_domain 'tg.purge' %}
+{{ 'icon.info'|trans({}, 'tg') }} {{ 'title'|trans }}
+
+{{ 'icon.info'|trans({}, 'tg') }} {{ 'items'|trans }}
+{% for item in items %}
+ - {{ item|trans({}, 'tg') }}
+{% endfor %}
+
+{{ 'icon.info'|trans({}, 'tg') }} {{ 'summary'|trans }}

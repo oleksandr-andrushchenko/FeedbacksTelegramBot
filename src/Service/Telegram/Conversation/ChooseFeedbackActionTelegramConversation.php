@@ -99,26 +99,26 @@ class ChooseFeedbackActionTelegramConversation extends TelegramConversation impl
 
     public static function getActionAsk(TelegramAwareHelper $tg): string
     {
-        return $tg->trans('feedbacks.ask.action.action');
+        return $tg->trans('ask.action.action');
     }
 
     public static function getCreateButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('feedbacks.keyboard.action.create');
+        return $tg->button($tg->transCommand('create'));
     }
 
     public static function getSearchButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('feedbacks.keyboard.action.search');
+        return $tg->button($tg->transCommand('search'));
     }
 
     public static function getPremiumButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('feedbacks.keyboard.action.premium');
+        return $tg->button($tg->transCommand('premium'));
     }
 
     public static function getSubscriptionsButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('feedbacks.keyboard.action.subscriptions');
+        return $tg->button($tg->transCommand('subscriptions'));
     }
 }

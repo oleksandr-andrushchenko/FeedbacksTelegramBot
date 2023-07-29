@@ -1,0 +1,9 @@
+{% trans_default_domain 'tg.search' %}
+{{ 'icon.info'|trans({}, 'tg') }} {{ 'title'|trans }}
+
+{{ 'icon.info'|trans({}, 'tg') }} {{ 'limits'|trans }}
+{% for period,limit in limits %}
+ - {{ 'limit_item'|trans({'%period%': period|trans({}, 'tg'), '%limit%': limit})|raw }}
+{% endfor %}
+
+{{ 'icon.info'|trans({}, 'tg') }} {{ 'premium'|trans({'%command%': include('command.html.twig', {name: 'premium', command: premium_command})})|raw }}

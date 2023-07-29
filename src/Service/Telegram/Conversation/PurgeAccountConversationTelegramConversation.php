@@ -102,11 +102,11 @@ class PurgeAccountConversationTelegramConversation extends TelegramConversation 
 
     public static function getConfirmButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('keyboard.confirm');
+        return $tg->button($tg->trans('keyboard.confirm'));
     }
 
     public static function getCancelButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('keyboard.cancel');
+        return $tg->button($tg->trans('keyboard.cancel'));
     }
 }

@@ -83,7 +83,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
             $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
             return $tg->stopConversation($conversation)
-                ->replyUpset('feedbacks.reply.create.canceled')
+                ->replyUpset('reply.create.canceled')
                 ->startConversation(ChooseFeedbackActionTelegramConversation::class)
                 ->null()
             ;
@@ -142,7 +142,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         $buttons[] = $this->getCancelButton($tg);
 
         $tg->reply(
-            ($change ? '' : $this->getStep(1)) . $tg->trans('feedbacks.ask.create.search_term'),
+            ($change ? '' : $this->getStep(1)) . $tg->trans('ask.create.search_term'),
             $tg->keyboard(...$buttons)
         );
 
@@ -217,7 +217,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         }
 
         $tg->reply(
-            $tg->trans('feedbacks.ask.create.search_term_type'),
+            $tg->trans('ask.create.search_term_type'),
             $tg->keyboard(...[
                 ...$this->getSearchTermTypeButtons($sortedPossibleTypes, $tg),
                 $this->getBackButton($tg),
@@ -265,7 +265,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         $this->state->setStep(self::STEP_RATING_ASKED);
 
         $tg->reply(
-            ($change ? '' : $this->getStep(2)) . $tg->trans('feedbacks.ask.create.rating'),
+            ($change ? '' : $this->getStep(2)) . $tg->trans('ask.create.rating'),
             $tg->keyboard(...[
                 ...$this->getRatingButtons($tg),
                 $this->getBackButton($tg),
@@ -321,7 +321,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         $buttons[] = $this->getCancelButton($tg);
 
         $tg->reply(
-            ($change ? '' : $this->getStep(3)) . $tg->trans('feedbacks.ask.create.description'),
+            ($change ? '' : $this->getStep(3)) . $tg->trans('ask.create.description'),
             $tg->keyboard(...$buttons)
         );
 
@@ -370,7 +370,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
         $this->searchTermParser->parseWithNetwork($this->state->getSearchTerm());
 
-        $tg->reply($tg->trans('feedbacks.ask.create.confirm'))
+        $tg->reply($tg->trans('ask.create.confirm'))
             ->replyView(
                 TelegramView::FEEDBACK,
                 [
@@ -426,7 +426,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
             );
 
             // todo: change text to something like: "want to add more?"
-            return $tg->replyOk('feedbacks.reply.create.ok')
+            return $tg->replyOk('reply.create.ok')
                 ->stopConversation($conversation)->startConversation(ChooseFeedbackActionTelegramConversation::class)
                 ->null()
             ;
@@ -449,12 +449,12 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
             return $this->askConfirm($tg);
         } catch (SameMessengerUserException) {
-            $tg->replyFail('feedbacks.reply.create.fail.same_messenger_user');
+            $tg->replyFail('reply.create.fail.same_messenger_user');
 
             return $this->askConfirm($tg);
         } catch (CreateFeedbackLimitExceeded $exception) {
-            $tg->replyFail('feedbacks.reply.create.fail.limit_exceeded', [
-                'period' => $tg->trans($exception->getPeriodKey(), domain: null),
+            $tg->replyFail('reply.create.fail.limit_exceeded', [
+                'period' => $tg->trans($exception->getPeriodKey()),
                 'limit' => $exception->getLimit(),
                 'premium_command' => FeedbackTelegramChannel::GET_PREMIUM,
             ]);
@@ -475,7 +475,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
     public static function getSearchTermTypeButton(SearchTermType $type, TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button(sprintf('feedbacks.search_term_type.%s', $type->name));
+        return $tg->button($tg->trans(sprintf('search_term_type.%s', $type->name)));
     }
 
     public static function getSearchTermTypeByButton(string $button, TelegramAwareHelper $tg): ?SearchTermType
@@ -500,7 +500,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
     public static function getRatingButton(Rating $rating, TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button(sprintf('feedbacks.rating.%s', $rating->name), ['rating' => $rating->value]);
+        return $tg->button($tg->trans(sprintf('rating.%s', $rating->name), ['rating' => $rating->value]));
     }
 
     public static function getRatingByButton(string $button, TelegramAwareHelper $tg): ?Rating
@@ -516,52 +516,52 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
     public static function getLeaveAsButton(string $text, TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('keyboard.leave_as', ['text' => $text]);
+        return $tg->button($tg->trans('keyboard.leave_as', ['text' => $text]));
     }
 
     public static function getLeaveEmptyButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('keyboard.leave_empty');
+        return $tg->button($tg->trans('keyboard.leave_empty'));
     }
 
     public static function getMakeEmptyButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('keyboard.make_empty');
+        return $tg->button($tg->trans('keyboard.make_empty'));
     }
 
     public static function getChangeSearchTermButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('feedbacks.keyboard.create.change_search_term');
+        return $tg->button($tg->trans('keyboard.create.change_search_term'));
     }
 
     public static function getChangeRatingButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('feedbacks.keyboard.create.change_rating');
+        return $tg->button($tg->trans('keyboard.create.change_rating'));
     }
 
     public static function getAddDescriptionButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('feedbacks.keyboard.create.add_description');
+        return $tg->button($tg->trans('keyboard.create.add_description'));
     }
 
     public static function getChangeDescriptionButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('feedbacks.keyboard.create.change_description');
+        return $tg->button($tg->trans('keyboard.create.change_description'));
     }
 
     public static function getConfirmButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('keyboard.confirm');
+        return $tg->button($tg->trans('keyboard.confirm'));
     }
 
     public static function getBackButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('keyboard.back');
+        return $tg->button($tg->trans('keyboard.back'));
     }
 
     public static function getCancelButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('keyboard.cancel');
+        return $tg->button($tg->trans('keyboard.cancel'));
     }
 
     private function getStep(int|string $num): string

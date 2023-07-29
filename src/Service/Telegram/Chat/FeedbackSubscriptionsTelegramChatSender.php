@@ -23,21 +23,21 @@ class FeedbackSubscriptionsTelegramChatSender
         $count = count($userSubscriptions);
 
         if ($count === 0) {
-            return $tg->replyUpset('feedbacks.reply.subscriptions.empty_list')->null();
+            return $tg->replyUpset('reply.subscriptions.empty_list')->null();
         }
 
-        $tg->reply($tg->trans('feedbacks.reply.subscriptions.title') . ':');
+        $tg->reply($tg->trans('reply.subscriptions.title') . ':');
 
         foreach ($userSubscriptions as $index => $userSubscription) {
             $tg->replyView(TelegramView::SUBSCRIPTION, [
                 'number' => $index + 1,
                 'subscription' => $userSubscription,
                 'is_subscription_active' => $this->userSubscriptionManager->isSubscriptionActive($userSubscription),
-                'datetime_format' => $tg->trans('datetime_format', domain: null),
-                'date_format' => $tg->trans('date_format', domain: null),
+                'datetime_format' => $tg->trans('datetime_format'),
+                'date_format' => $tg->trans('date_format'),
             ]);
         }
 
-        return $tg->replyOk('feedbacks.reply.subscriptions.summary', ['count' => $count])->null();
+        return $tg->replyOk('reply.subscriptions.summary', ['count' => $count])->null();
     }
 }

@@ -80,7 +80,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
             $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
             return $tg->stopConversation($conversation)
-                ->replyUpset('feedbacks.reply.premium.canceled')
+                ->replyUpset('reply.premium.canceled')
                 ->startConversation(ChooseFeedbackActionTelegramConversation::class)
                 ->null()
             ;
@@ -213,8 +213,8 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
             $tg->getTelegram()->getMessengerUser(),
             $tg->getChatId(),
             $this->state->getPaymentMethod()->getName(),
-            $tg->trans('feedbacks.ask.premium.payment_invoice_title', $transParameters),
-            $tg->trans('feedbacks.ask.premium.payment_invoice_description', $transParameters),
+            $tg->trans('ask.premium.payment_invoice_title', $transParameters),
+            $tg->trans('ask.premium.payment_invoice_description', $transParameters),
             $this->getSubscriptionPlanButton($subscriptionPlan, $tg)->getText(),
             $subscriptionPlan->getName()->name,
             [],
@@ -240,7 +240,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
 
     public static function getSubscriptionPlanAsk(TelegramAwareHelper $tg): string
     {
-        return $tg->trans('feedbacks.ask.premium.subscription_plan');
+        return $tg->trans('ask.premium.subscription_plan');
     }
 
     /**
@@ -271,16 +271,16 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
     {
         $price = $this->getPrice($subscriptionPlan, $tg);
 
-        return $tg->button('feedbacks.keyboard.premium.subscription_plan', [
+        return $tg->button($tg->trans('keyboard.premium.subscription_plan', [
             'plan' => $this->getSubscriptionPlanText($subscriptionPlan, $tg),
             'price' => sprintf('%d,00', $price->getAmount()),
             'currency' => $price->getCurrency(),
-        ]);
+        ]));
     }
 
     public function getSubscriptionPlanText(FeedbackSubscriptionPlan $subscriptionPlan, TelegramAwareHelper $tg): string
     {
-        return $tg->trans(sprintf('feedbacks.subscription_plan.%s', $subscriptionPlan->getName()->name));
+        return $tg->trans(sprintf('subscription_plan.%s', $subscriptionPlan->getName()->name));
     }
 
     public function getSubscriptionPlanByButton(string $button, TelegramAwareHelper $tg): ?FeedbackSubscriptionPlan
@@ -296,7 +296,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
 
     public static function getPaymentMethodAsk(TelegramAwareHelper $tg): string
     {
-        return $tg->trans('feedbacks.ask.premium.payment_method');
+        return $tg->trans('ask.premium.payment_method');
     }
 
     /**
@@ -313,7 +313,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
 
     public static function getPaymentMethodButton(TelegramPaymentMethod $paymentMethod, TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button(sprintf('payment_method.%s', $paymentMethod->getName()->name));
+        return $tg->button($tg->trans(sprintf('payment_method.%s', $paymentMethod->getName()->name)));
     }
 
     public function getPaymentMethodByButton(string $button, TelegramAwareHelper $tg): ?TelegramPaymentMethod
@@ -329,17 +329,17 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
 
     public static function getPaymentAsk(TelegramAwareHelper $tg): string
     {
-        return $tg->trans('feedbacks.ask.premium.payment');
+        return $tg->trans('ask.premium.payment');
     }
 
     public static function getBackButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('keyboard.back');
+        return $tg->button($tg->trans('keyboard.back'));
     }
 
     public static function getCancelButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('keyboard.cancel');
+        return $tg->button($tg->trans('keyboard.cancel'));
     }
 
     private function getStep(int|string $num): string

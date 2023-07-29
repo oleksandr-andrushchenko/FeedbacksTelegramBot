@@ -1,4 +1,4 @@
-{% trans_default_domain 'telegram' %}
+{% trans_default_domain 'tg' %}
 {% if number is defined %}
     {{ 'icon.number'|trans ~ number }}:
 {% endif %}
@@ -6,7 +6,7 @@
     {% set first_line = [] %}
 
     {% set first_line = first_line|merge([
-        ('feedbacks.subscription_plan.' ~ subscription.subscriptionPlan.name)|trans
+        ('subscription_plan.' ~ subscription.subscriptionPlan.name)|trans
     ]) %}
 
     {% set first_line = first_line|merge([
@@ -18,7 +18,7 @@
     ]) %}
 
     {% set first_line = first_line|merge([
-        '[' ~ (is_subscription_active ? 'active' : 'inactive')|trans({}, null)|lower ~ ']'
+        '[' ~ (is_subscription_active ? 'active' : 'inactive')|trans({}, 'tg')|lower ~ ']'
     ]) %}
 
     {{ first_line|join(' ')|raw }}

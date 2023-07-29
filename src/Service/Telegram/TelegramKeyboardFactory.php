@@ -9,12 +9,6 @@ use Longman\TelegramBot\Entities\KeyboardButton;
 
 class TelegramKeyboardFactory
 {
-    public function __construct(
-        protected readonly TelegramTranslator $translator,
-    )
-    {
-    }
-
     public function createTelegramKeyboard(...$buttons): Keyboard
     {
         return new Keyboard(
@@ -28,8 +22,8 @@ class TelegramKeyboardFactory
         );
     }
 
-    public function createTelegramButton(?string $languageCode, string $transId, array $transParameters = []): KeyboardButton
+    public function createTelegramButton(string $text): KeyboardButton
     {
-        return new KeyboardButton($this->translator->trans($transId, $transParameters, locale: $languageCode));
+        return new KeyboardButton($text);
     }
 }

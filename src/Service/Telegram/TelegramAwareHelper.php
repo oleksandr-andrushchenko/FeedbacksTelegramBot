@@ -11,6 +11,7 @@ use App\Service\Telegram\Api\TelegramMessageSenderInterface;
 use Longman\TelegramBot\ChatAction;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\KeyboardButton;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class TelegramAwareHelper
 {
@@ -19,7 +20,7 @@ class TelegramAwareHelper
     public function __construct(
         private readonly TelegramKeyboardFactory $keyboardFactory,
         private readonly TelegramMessageSenderInterface $messageSender,
-        private readonly TelegramTranslator $translator,
+        private readonly TranslatorInterface $translator,
         private readonly TelegramConversationManager $conversationManager,
         private readonly TelegramTemplateRenderer $templateRenderer,
         private readonly TelegramChatActionSenderInterface $chatActionSender,
@@ -132,12 +133,12 @@ class TelegramAwareHelper
         return $this;
     }
 
-    public function trans(string $id, array $parameters = [], ?string $domain = 'telegram'): string
+    public function trans(string $id, array $parameters = [], ?string $domain = 'tg'): string
     {
-        return $this->translator->trans($id, $parameters, $domain, locale: $this->getLanguageCode());
+        return $this->translator->trans($id, $parameters, $domain, $this->getLanguageCode());
     }
 
-    public function replyOk(string $transId = 'reply.ok', array $transParameters = [], ?string $domain = 'telegram'): static
+    public function replyOk(string $transId = 'reply.ok', array $transParameters = [], ?string $domain = 'tg'): static
     {
 //        $this->reply($this->trans('reply.icon.ok') . ' ' . $this->trans($transId, $transParameters, $domain));
         $this->reply($this->trans($transId, $transParameters, $domain));
@@ -146,7 +147,7 @@ class TelegramAwareHelper
         return $this;
     }
 
-    public function replyFail(string $transId = 'reply.fail', array $transParameters = [], ?string $domain = 'telegram'): static
+    public function replyFail(string $transId = 'reply.fail', array $transParameters = [], ?string $domain = 'tg'): static
     {
         // todo: find command by key
 //        $this->reply($this->trans('reply.icon.fail') . ' ' . $this->trans($transId, array_merge(['restart_command' => '/restart'], $transParameters), $domain));
@@ -156,7 +157,7 @@ class TelegramAwareHelper
         return $this;
     }
 
-    public function replyWrong(string $transId = 'reply.wrong', array $transParameters = [], ?string $domain = 'telegram'): static
+    public function replyWrong(string $transId = 'reply.wrong', array $transParameters = [], ?string $domain = 'tg'): static
     {
 //        $this->reply($this->trans('reply.icon.wrong') . ' ' . $this->trans($transId, $transParameters, $domain));
         $this->reply($this->trans($transId, $transParameters, $domain));
@@ -165,7 +166,7 @@ class TelegramAwareHelper
         return $this;
     }
 
-    public function replyUpset(string $transId = 'reply.upset', array $transParameters = [], ?string $domain = 'telegram'): static
+    public function replyUpset(string $transId = 'reply.upset', array $transParameters = [], ?string $domain = 'tg'): static
     {
 //        $this->reply($this->trans('reply.icon.upset') . ' ' . $this->trans($transId, $transParameters, $domain));
         $this->reply($this->trans($transId, $transParameters, $domain));
@@ -179,9 +180,19 @@ class TelegramAwareHelper
         return $this->keyboardFactory->createTelegramKeyboard(...$buttons);
     }
 
-    public function button(string $transId, array $transParameters = []): KeyboardButton
+    public function button(string $text): KeyboardButton
     {
-        return $this->keyboardFactory->createTelegramButton($this->getLanguageCode(), $transId, $transParameters);
+        return $this->keyboardFactory->createTelegramButton($text);
+    }
+
+    public function transCommand(string $key): string
+    {
+        $domain = sprintf('tg.%s', $this->getTelegram()->getName()->name);
+
+        return join(' ', [
+            $this->trans(sprintf('icon.%s', $key), domain: $domain),
+            $this->trans(sprintf('command.%s', $key), domain: $domain),
+        ]);
     }
 
     public function null(): null

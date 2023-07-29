@@ -1029,7 +1029,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                 CreateFeedbackTelegramConversation::getChangeSearchTermButton($this->tg)->getText(),
                 $description,
                 CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_ASKED,
-                $this->trans('feedbacks.ask.create.search_term'),
+                $this->trans('ask.create.search_term'),
                 [
                     CreateFeedbackTelegramConversation::getLeaveAsButton($searchTerm->getText(), $this->tg),
                     CreateFeedbackTelegramConversation::getCancelButton($this->tg),
@@ -1039,7 +1039,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                 CreateFeedbackTelegramConversation::getChangeRatingButton($this->tg)->getText(),
                 $description,
                 CreateFeedbackTelegramConversation::STEP_RATING_ASKED,
-                $this->trans('feedbacks.ask.create.rating'),
+                $this->trans('ask.create.rating'),
                 [
                     ...CreateFeedbackTelegramConversation::getRatingButtons($this->tg),
                     CreateFeedbackTelegramConversation::getCancelButton($this->tg),
@@ -1049,7 +1049,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                 CreateFeedbackTelegramConversation::getAddDescriptionButton($this->tg)->getText(),
                 null,
                 CreateFeedbackTelegramConversation::STEP_DESCRIPTION_ASKED,
-                $this->trans('feedbacks.ask.create.description'),
+                $this->trans('ask.create.description'),
                 [
                     CreateFeedbackTelegramConversation::getLeaveEmptyButton($this->tg),
                     CreateFeedbackTelegramConversation::getCancelButton($this->tg),
@@ -1059,7 +1059,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                 CreateFeedbackTelegramConversation::getChangeDescriptionButton($this->tg)->getText(),
                 $description,
                 CreateFeedbackTelegramConversation::STEP_DESCRIPTION_ASKED,
-                $this->trans('feedbacks.ask.create.description'),
+                $this->trans('ask.create.description'),
                 [
                     CreateFeedbackTelegramConversation::getLeaveAsButton($description, $this->tg),
                     CreateFeedbackTelegramConversation::getMakeEmptyButton($this->tg),
@@ -1100,7 +1100,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             expectedState: (clone $state)
                 ->setStep(CreateFeedbackTelegramConversation::STEP_CANCEL_PRESSED),
             shouldSeeReply: [
-                $this->trans('reply.icon.upset') . ' ' . $this->trans('feedbacks.reply.create.canceled'),
+                $this->trans('reply.icon.upset') . ' ' . $this->trans('reply.create.canceled'),
                 ChooseFeedbackActionTelegramConversation::getActionAsk($this->tg),
             ],
             shouldSeeKeyboard: [
@@ -1167,7 +1167,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         $this->typeConfirm(
             state: $state,
             shouldSeeReply: [
-                $this->trans('reply.icon.ok') . ' ' . $this->trans('feedbacks.reply.create.ok'),
+                $this->trans('reply.icon.ok') . ' ' . $this->trans('reply.create.ok'),
                 ChooseFeedbackActionTelegramConversation::getActionAsk($this->tg),
             ],
             shouldSeeKeyboard: [
@@ -1231,7 +1231,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     private function getShouldSeeReplyOnSearchTermTypeAsked(): array
     {
         return [
-            $this->trans('feedbacks.ask.create.search_term_type'),
+            $this->trans('ask.create.search_term_type'),
         ];
     }
 
@@ -1246,7 +1246,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     private function getShouldSeeReplyOnSearchTermAsked(): array
     {
         return [
-            sprintf('[1/3] %s', $this->trans('feedbacks.ask.create.search_term')),
+            sprintf('[1/3] %s', $this->trans('ask.create.search_term')),
         ];
     }
 
@@ -1260,7 +1260,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     private function getShouldSeeReplyOnRatingAsked(): array
     {
         return [
-            sprintf('[2/3] %s', $this->trans('feedbacks.ask.create.rating')),
+            sprintf('[2/3] %s', $this->trans('ask.create.rating')),
         ];
     }
 
@@ -1275,7 +1275,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     private function getShouldSeeReplyOnDescriptionAsked(): array
     {
         return [
-            sprintf('[3/3] %s', $this->trans('feedbacks.ask.create.description')),
+            sprintf('[3/3] %s', $this->trans('ask.create.description')),
         ];
     }
 
@@ -1290,7 +1290,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     private function getShouldSeeReplyOnConfirmAsked(CreateFeedbackTelegramConversationState $state): array
     {
         return [
-            $this->trans('feedbacks.ask.create.confirm'),
+            $this->trans('ask.create.confirm'),
             $this->renderView(TelegramView::FEEDBACK, [
                 'search_term' => $state->getSearchTerm(),
                 'rating' => $state->getRating(),
