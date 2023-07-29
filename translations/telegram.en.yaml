@@ -29,14 +29,6 @@ icon:
   attention: ‼️
   globe: 🌎
 
-command:
-  create: Add feedback
-  search: Find feedback
-  premium: Get Premium
-  subscriptions: My Premium
-  country: My Country
-  restart: Restart
-
 payment_method:
   liqpay: 🇺🇦 LiqPay
   portmone: 🇺🇦 Portmone
@@ -57,7 +49,7 @@ feedbacks:
     create: ✏️ Add feedback
     search: 🔍 Find feedback
     premium: ⭐️ Get Premium
-    subscriptions: ⭐️ My Premium
+    subscriptions: 🌟 My Premium
     country: 🌎 My Country
     restart: 🔄 Restart
     purge: ✂️ Purge
@@ -65,7 +57,7 @@ feedbacks:
     country:
       country: Select your country please.
     action:
-      action: Select action please.
+      action: Select an action please.
     create:
       search_term: Enter search term please, it could be messenger profile url, nickname, email, phone number, website, person or company name, etc.
       search_term_type: Enter search term type please, or use keyboard above.
@@ -91,7 +83,7 @@ feedbacks:
       create: ✏️ Add feedback
       search: 🔍 Find feedback
       premium: ⭐️ Get Premium
-      subscriptions: ⭐️ My Premium
+      subscriptions: 🌟 My Premium
       country: "My Country: %icon% %name%"
     create:
       change_search_term: 📝 Change search term

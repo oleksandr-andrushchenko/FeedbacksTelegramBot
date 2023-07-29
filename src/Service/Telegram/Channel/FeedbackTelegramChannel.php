@@ -55,7 +55,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         yield new TelegramCommand(self::START, fn () => $this->start($tg), menu: false);
         yield new TelegramCommand(self::CREATE_FEEDBACK, fn () => $this->create($tg), menu: true, key: 'create');
         yield new TelegramCommand(self::SEARCH_FEEDBACK, fn () => $this->search($tg), menu: true, key: 'search');
-        yield new TelegramCommand(self::GET_PREMIUM, fn () => $this->premium($tg), menu: false, key: 'premium');
+        yield new TelegramCommand(self::GET_PREMIUM, fn () => $this->premium($tg), menu: true, key: 'premium');
         yield new TelegramCommand(self::SUBSCRIPTIONS, fn () => $this->subscriptions($tg), menu: true, key: 'subscriptions');
         yield new TelegramCommand(self::COUNTRY, fn () => $this->country($tg), menu: true, key: 'country');
         yield new TelegramCommand(self::RESTART, fn () => $this->restart($tg), menu: true, key: 'restart', beforeConversations: true);
