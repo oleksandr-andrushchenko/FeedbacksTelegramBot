@@ -1100,7 +1100,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             expectedState: (clone $state)
                 ->setStep(CreateFeedbackTelegramConversation::STEP_CANCEL_PRESSED),
             shouldSeeReply: [
-                $this->trans('reply.icon.upset') . ' ' . $this->trans('reply.create.canceled'),
+                $this->trans('reply.create.canceled'),
                 ChooseFeedbackActionTelegramConversation::getActionAsk($this->tg),
             ],
             shouldSeeKeyboard: [
@@ -1167,7 +1167,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         $this->typeConfirm(
             state: $state,
             shouldSeeReply: [
-                $this->trans('reply.icon.ok') . ' ' . $this->trans('reply.create.ok'),
+                $this->trans('reply.create.ok'),
                 ChooseFeedbackActionTelegramConversation::getActionAsk($this->tg),
             ],
             shouldSeeKeyboard: [
@@ -1246,6 +1246,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     private function getShouldSeeReplyOnSearchTermAsked(): array
     {
         return [
+            'title',
+            'limits',
             sprintf('[1/3] %s', $this->trans('ask.create.search_term')),
         ];
     }

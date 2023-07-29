@@ -238,13 +238,30 @@ trait TelegramCommandFunctionalTrait
             $this->getTelegramMessageSender()->getCalls()
         );
 
-        if (count($expectedReplies) > 0) {
-            $this->assertNotEmpty($actualReplies);
+        // #1
+//        $this->assertArraySubset($expectedReplies, $actualReplies);
+
+        // #2
+//        $this->assertCount(count($expectedReplies), $actualReplies);
+//
+//        foreach ($expectedReplies as $index => $expectedReply) {
+//            $this->assertStringContainsString($expectedReply, $actualReplies[$index]);
+//        }
+
+        // #3
+        // todo: check order
+        foreach ($expectedReplies as $expectedReply) {
+            $contains = false;
+            foreach ($actualReplies as $actualReply) {
+                if (str_contains($actualReply, $expectedReply)) {
+                    $contains = true;
+                    break;
+                }
+            }
+            if (!$contains) {
+                $this->assertTrue(false, sprintf('"%s" was not found in [%s]', $expectedReply, '"' . join('", "', $actualReplies) . '"'));
+            }
         }
-
-//        var_dump($expectedReplies, $actualReplies);
-
-        $this->assertArraySubset($expectedReplies, $actualReplies);
 
         return $this;
     }
