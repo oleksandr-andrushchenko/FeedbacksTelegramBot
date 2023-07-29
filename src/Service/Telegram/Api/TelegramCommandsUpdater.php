@@ -8,12 +8,12 @@ use App\Service\Telegram\Telegram;
 use App\Service\Telegram\TelegramCommandInterface;
 use App\Service\Telegram\TelegramMyCommands;
 use App\Service\Telegram\TelegramMyCommandsProvider;
-use App\Service\Telegram\TelegramTranslator;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class TelegramCommandsUpdater
 {
     public function __construct(
-        private readonly TelegramTranslator $telegramTranslator,
+        private readonly TranslatorInterface $translator,
         private readonly TelegramMyCommandsProvider $telegramMyCommandsProvider,
         private ?array $myCommands = null,
     )
@@ -41,9 +41,9 @@ class TelegramCommandsUpdater
             $data['commands'] = array_map(
                 fn (TelegramCommandInterface $command) => [
                     'command' => $command->getName(),
-                    'description' => $this->telegramTranslator->transTelegram(
-                        $myCommands->getLanguageCode(),
-                        sprintf('%s.command.%s', $telegram->getName()->name, $command->getKey())
+                    'description' => $this->translator->trans(
+                        sprintf('%s.command.%s', $telegram->getName()->name, $command->getKey()),
+                        locale: $myCommands->getLanguageCode()
                     ),
                 ],
                 $myCommands->getCommands()

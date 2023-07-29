@@ -7,17 +7,21 @@ namespace App\Service\Telegram;
 use App\Service\Util\Array\ArrayKeyQuoter;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class TelegramTranslator
+class TelegramTranslator implements TranslatorInterface
 {
     public function __construct(
         private readonly TranslatorInterface $translator,
-        private readonly ArrayKeyQuoter $arrayKeyQuoter,
     )
     {
     }
 
-    public function transTelegram(?string $languageCode, string $id, array $parameters = [], ?string $domain = 'telegram'): string
+    public function trans(string $id, array $parameters = [], string $domain = null, string $locale = null): string
     {
-        return $this->translator->trans($id, $this->arrayKeyQuoter->quoteKeys($parameters), $domain, $languageCode);
+        return $this->translator->trans($id, $parameters, $domain === null ? 'translator' : $domain, $locale);
+    }
+
+    public function getLocale(): string
+    {
+        return $this->translator->getLocale();
     }
 }

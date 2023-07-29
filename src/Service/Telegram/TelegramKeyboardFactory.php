@@ -30,6 +30,6 @@ class TelegramKeyboardFactory
 
     public function createTelegramButton(?string $languageCode, string $transId, array $transParameters = []): KeyboardButton
     {
-        return new KeyboardButton($this->translator->transTelegram($languageCode, $transId, $transParameters));
+        return new KeyboardButton($this->translator->trans($transId, $transParameters, locale: $languageCode));
     }
 }

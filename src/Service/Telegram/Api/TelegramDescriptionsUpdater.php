@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Service\Telegram\Api;
 
 use App\Service\Telegram\Telegram;
-use App\Service\Telegram\TelegramTranslator;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class TelegramDescriptionsUpdater
 {
     public function __construct(
         private readonly string $appStage,
-        private readonly TelegramTranslator $telegramTranslator,
+        private readonly TranslatorInterface $translator,
         private ?array $myNames = null,
         private ?array $myDescriptions = null,
         private ?array $myShortDescriptions = null,
@@ -30,19 +30,19 @@ class TelegramDescriptionsUpdater
         $this->myShortDescriptions = [];
 
         foreach ($telegram->getOptions()->getLanguageCodes() as $languageCode) {
-            $name = $this->telegramTranslator->transTelegram($languageCode, sprintf('%s.name.%s', $telegram->getName()->name, $this->appStage));
+            $name = $this->translator->trans(sprintf('%s.name.%s', $telegram->getName()->name, $this->appStage), locale: $languageCode);
             $this->myNames[] = $name;
             $telegram->setMyName([
                 'name' => $name,
                 'language_code' => $languageCode,
             ]);
-            $description = $this->telegramTranslator->transTelegram($languageCode, sprintf('%s.description', $telegram->getName()->name));
+            $description = $this->translator->trans(sprintf('%s.description', $telegram->getName()->name), locale: $languageCode);
             $this->myDescriptions[] = $description;
             $telegram->setMyDescription([
                 'description' => $description,
                 'language_code' => $languageCode,
             ]);
-            $shortDescription = $this->telegramTranslator->transTelegram($languageCode, sprintf('%s.short_description', $telegram->getName()->name));
+            $shortDescription = $this->translator->trans(sprintf('%s.short_description', $telegram->getName()->name), locale: $languageCode);
             $this->myShortDescriptions[] = $shortDescription;
             $telegram->setMyShortDescription([
                 'short_description' => $shortDescription,

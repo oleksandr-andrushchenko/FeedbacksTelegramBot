@@ -346,7 +346,7 @@ trait TelegramCommandFunctionalTrait
 
     protected function trans(string $id, array $parameters = []): string
     {
-        return $this->translator->transTelegram($this->getUpdateLanguageCode(), $id, $parameters);
+        return $this->translator->trans($id, $parameters, locale: $this->getUpdateLanguageCode());
     }
 
     protected function renderView(string|TelegramView $template, array $context): string

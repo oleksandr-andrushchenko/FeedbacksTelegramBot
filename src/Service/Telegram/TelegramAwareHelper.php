@@ -134,7 +134,7 @@ class TelegramAwareHelper
 
     public function trans(string $id, array $parameters = [], ?string $domain = 'telegram'): string
     {
-        return $this->translator->transTelegram($this->getLanguageCode(), $id, $parameters, $domain);
+        return $this->translator->trans($id, $parameters, $domain, locale: $this->getLanguageCode());
     }
 
     public function replyOk(string $transId = 'reply.ok', array $transParameters = [], ?string $domain = 'telegram'): static

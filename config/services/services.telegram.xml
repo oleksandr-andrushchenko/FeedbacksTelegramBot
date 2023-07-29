@@ -86,8 +86,7 @@
             <argument type="service" id="logger"/>
         </service>
         <service id="app.telegram_translator" class="App\Service\Telegram\TelegramTranslator" lazy="true">
-            <argument type="service" id="translator"/>
-            <argument type="service" id="app.array_key_quoter"/>
+            <argument type="service" id="app.translator"/>
         </service>
         <service id="app.telegram_template_renderer" class="App\Service\Telegram\TelegramTemplateRenderer" lazy="true">
             <argument type="service" id="twig"/>
