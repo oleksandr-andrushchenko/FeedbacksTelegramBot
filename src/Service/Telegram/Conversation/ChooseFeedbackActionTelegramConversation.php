@@ -88,6 +88,10 @@ class ChooseFeedbackActionTelegramConversation extends TelegramConversation impl
             return $tg->stopConversation($conversation)->startConversation(ChooseFeedbackCountryTelegramConversation::class)->null();
         }
 
+        if ($tg->matchText(FeedbackTelegramChannel::PURGE)) {
+            return $tg->stopConversation($conversation)->startConversation(PurgeAccountConversationTelegramConversation::class)->null();
+        }
+
         $tg->replyWrong();
 
         return $this->askAction($tg);

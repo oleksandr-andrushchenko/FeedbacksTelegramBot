@@ -14,6 +14,7 @@ use App\Service\Telegram\Conversation\ChooseFeedbackActionTelegramConversation;
 use App\Service\Telegram\Conversation\ChooseFeedbackCountryTelegramConversation;
 use App\Service\Telegram\Conversation\GetFeedbackPremiumTelegramConversation;
 use App\Service\Telegram\Conversation\CreateFeedbackTelegramConversation;
+use App\Service\Telegram\Conversation\PurgeAccountConversationTelegramConversation;
 use App\Service\Telegram\Conversation\SearchFeedbackTelegramConversation;
 use App\Service\Telegram\FallbackTelegramCommand;
 use App\Service\Telegram\TelegramCommand;
@@ -30,6 +31,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     public const SUBSCRIPTIONS = '/subscriptions';
     public const COUNTRY = '/country';
     public const RESTART = '/restart';
+    public const PURGE = '/purge';
 
     public function __construct(
         TelegramAwareHelper $awareHelper,
@@ -57,6 +59,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         yield new TelegramCommand(self::SUBSCRIPTIONS, fn () => $this->subscriptions($tg), menu: true, key: 'subscriptions');
         yield new TelegramCommand(self::COUNTRY, fn () => $this->country($tg), menu: true, key: 'country');
         yield new TelegramCommand(self::RESTART, fn () => $this->restart($tg), menu: true, key: 'restart', beforeConversations: true);
+        yield new TelegramCommand(self::PURGE, fn () => $this->purge($tg), menu: true, key: 'purge');
 
         // todo: "who've been looking for me" command
         // todo: "list my feedbacks" command
@@ -150,6 +153,11 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         $tg->stopConversations()->replyOk('feedbacks.reply.restart.ok');
 
         return $this->start($tg);
+    }
+
+    public function purge(TelegramAwareHelper $tg): null
+    {
+        return $tg->startConversation(PurgeAccountConversationTelegramConversation::class)->null();
     }
 
     public function fallback(TelegramAwareHelper $tg): null

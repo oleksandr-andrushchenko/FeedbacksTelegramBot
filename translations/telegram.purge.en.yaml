@@ -1,0 +1,3 @@
+title: This command allows you to remove your personal information from our database.
+items: "Next information, if it stored, are going to be deleted:"
+summary: If you decide to remove your information, make sure to delete the bot just after the confirmation. Otherwise, it will collect your information automatically on any next interaction.

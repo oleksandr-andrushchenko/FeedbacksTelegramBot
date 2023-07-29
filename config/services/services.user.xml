@@ -13,5 +13,8 @@
             <argument type="service" id="app.repository.feedback"/>
         </service>
         <service id="app.user_finder" class="App\Service\User\UserFinder" lazy="true"/>
+        <service id="app.user_data_purger" class="App\Service\User\UserDataPurger" lazy="true">
+            <argument type="service" id="app.repository.messenger_user"/>
+        </service>
     </services>
 </container>

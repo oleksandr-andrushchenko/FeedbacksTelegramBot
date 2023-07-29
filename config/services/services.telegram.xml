@@ -213,5 +213,10 @@
             <argument type="service" id="app.feedback_search_creator_options"/>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
+        <service id="app.telegram_conversation_purge_account" parent="app.telegram_conversation"
+                 class="App\Service\Telegram\Conversation\PurgeAccountConversationTelegramConversation" lazy="true">
+            <argument type="service" id="app.user_data_purger"/>
+            <tag name="app.telegram_conversation_feedbacks"/>
+        </service>
     </services>
 </container>

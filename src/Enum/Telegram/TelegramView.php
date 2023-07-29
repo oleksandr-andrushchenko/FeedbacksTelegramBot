@@ -13,6 +13,7 @@ enum TelegramView: string
     case CREATE = 'create';
     case SEARCH = 'search';
     case COUNTRY = 'country';
+    case PURGE = 'purge';
 
     public function view(string $locale = null): string
     {

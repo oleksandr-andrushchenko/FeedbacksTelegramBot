@@ -59,10 +59,9 @@ class MessengerUserRepository extends ServiceEntityRepository
         ]);
     }
 
-    public function findOneByMessengerAndUser(Messenger $messenger, User $user): ?MessengerUser
+    public function findByUser(User $user): array
     {
-        return $this->findOneBy([
-            'messenger' => $messenger,
+        return $this->findBy([
             'user' => $user,
         ]);
     }

@@ -6,7 +6,8 @@
 {{ 'commands_title'|trans }}
 
 {% for name,command in commands %}
-<b>{{ ('icon.' ~ name)|trans({}, null) }} <u>{{ ('command.' ~ name)|trans({}, null) }}</u> {{ command }}</b>
+{% include 'command.html.twig' with {name: name, command: command} %}
+
 {{ name|trans }}
 
 {% endfor %}

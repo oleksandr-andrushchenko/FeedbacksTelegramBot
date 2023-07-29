@@ -1,0 +1,9 @@
+{% trans_default_domain 'telegram.purge' %}
+{{ 'icon.info'|trans({}, 'telegram') }} {{ 'title'|trans }}
+
+{{ 'icon.info'|trans({}, 'telegram') }} {{ 'items'|trans }}
+{% for item in items %}
+ - {{ item|trans({}, null) }}
+{% endfor %}
+
+{{ 'icon.info'|trans({}, 'telegram') }} {{ 'summary'|trans }}

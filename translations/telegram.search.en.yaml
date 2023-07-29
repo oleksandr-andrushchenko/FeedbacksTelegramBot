@@ -1,4 +1,4 @@
-title: This command allows you to find any feedbacks (reports, complains or gratitudes) on interested user, organization or place.
+title: This command allows you to find feedbacks (reports, complains or gratitudes) on interested user, organization or place.
 limits: "Due to complexity and huge amount of user requests, this command, by default, has next limitations:"
 limit_item: <b>%limit%</b> tries for a <b>%period%</b>
 premium: Premium subscription plan allows you to use our bot without any limitations, try %command% command please.

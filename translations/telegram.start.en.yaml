@@ -7,4 +7,5 @@ premium: Buy premium subscription to stay unlimited.
 subscriptions: List your premium subscriptions.
 country: Choose your country.
 restart: Stop current dialog and restart the bot.
+purge: Remove stored user data.
 summary: All commands are available in menu and the most important ones are present in keyboard menu.

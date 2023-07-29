@@ -20,12 +20,14 @@ class User
         private ?string $email = null,
         private ?DateTimeInterface $createdAt = null,
         private ?DateTimeInterface $updatedAt = null,
+        private ?DateTimeInterface $purgedAt = null,
         private ?int $id = null,
     )
     {
         $this->id = null;
         $this->createdAt = $this->createdAt ?? new DateTimeImmutable();
         $this->updatedAt = $this->updatedAt ?? null;
+        $this->purgedAt = $this->purgedAt ?? null;
     }
 
     public function getId(): ?int
@@ -137,6 +139,18 @@ class User
     public function setUpdatedAt(?DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getPurgedAt(): ?DateTimeInterface
+    {
+        return $this->purgedAt;
+    }
+
+    public function setPurgedAt(?DateTimeInterface $purgedAt): self
+    {
+        $this->purgedAt = $purgedAt;
 
         return $this;
     }

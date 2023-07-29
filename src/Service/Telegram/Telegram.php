@@ -37,6 +37,7 @@ use Throwable;
  * @method ServerResponse sendInvoice(array $data)
  * @method ServerResponse createInvoiceLink(array $data)
  * @method ServerResponse answerPreCheckoutQuery(array $data)
+ * @method ServerResponse leaveChat(array $data)
  */
 class Telegram
 {

@@ -12,6 +12,13 @@ day: Day
 month: Month
 year: Year
 
+username: Username
+name: Name
+language: Language
+country: Country
+phone_number: Phone number
+email: Email
+
 icon:
   create: ✏️
   search: 🔍
@@ -19,6 +26,7 @@ icon:
   subscriptions: ⭐️
   country: 🌎
   restart: 🔄
+  purge: ✂️
 
 command:
   create: Add feedback
@@ -27,3 +35,4 @@ command:
   subscriptions: My Premium
   country: My Country
   restart: Restart
+  purge: Purge

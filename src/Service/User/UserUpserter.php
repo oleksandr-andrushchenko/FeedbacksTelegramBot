@@ -38,7 +38,7 @@ class UserUpserter
         }
 
         if (empty($user->getUsername()) && !empty($messengerUser->getUsername())) {
-            $user->setUsername($messengerUser->getUser());
+            $user->setUsername($messengerUser->getUsername());
         }
 
         if (empty($user->getName()) && !empty($messengerUser->getName())) {

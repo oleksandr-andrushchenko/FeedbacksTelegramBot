@@ -8,6 +8,9 @@ keyboard:
   leave_as: Leave as "%text%"
   make_empty: Make empty
   leave_empty: Leave empty
+ask:
+  purge:
+    confirm: Confirm data purge?
 reply:
   ok: Completed successfully.
   fail: "Unknown error has occurred!\r\n1) make sure everything was properly organized and repeat; or\r\n2) use /%restart_command% command; or\r\n3) Try again later please."
@@ -17,6 +20,9 @@ reply:
     fail: 🤕
     wrong: 🤔
     upset: 😐
+  purge:
+    ok: Purge has been successfully made, now you can leave the bot.
+    canceled: Purge dialog has been canceled.
 icon:
   number: '#'
   info: ℹ️
@@ -54,6 +60,7 @@ feedbacks:
     subscriptions: ⭐️ My Premium
     country: 🌎 My Country
     restart: 🔄 Restart
+    purge: ✂️ Purge
   ask:
     country:
       country: Select your country please.

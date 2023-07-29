@@ -1,4 +1,4 @@
 title: Feedbacks
 h1: Feedbacks
-headline: First of all, our bot allows you to <u><b>%create_icon% Add Feedbacks</b></u> (reports, complains or gratitudes) anonymously on persons, organizations or places.
-list_headline: "Secondly, next most important function allows you to <u><b>%search_icon% Find Feedbacks</b> </u>(check, verify) on persons, organizations and places. Try it by yourself."
+headline: Our bot allows you to %create_icon% <u><b>Add Feedbacks</b></u> (reports, complains or gratitudes) anonymously on persons, organizations or places.
+list_headline: "Secondly, next most important function allows you to %search_icon% <u><b>Find Feedbacks</b> </u>(check, verify) on persons, organizations and places. Try it by yourself."
