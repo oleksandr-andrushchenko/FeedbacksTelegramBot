@@ -6,6 +6,7 @@ search: Search for feedbacks (report, check, verify) on user or organization.
 premium: Buy premium subscription to stay unlimited.
 subscriptions: List your premium subscriptions.
 country: Choose your country.
-restart: Stop current dialog and restart the bot.
+hints: Toggle help hints like this.
 purge: Remove stored user data.
+restart: Stop current dialog and restart the bot.
 summary: All commands are available in menu and the most important ones are present in keyboard menu.

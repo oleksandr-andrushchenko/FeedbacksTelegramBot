@@ -144,6 +144,7 @@
             <argument type="service" id="app.feedback_user_subscription_manager"/>
             <argument type="service" id="app.feedback_subscriptions_telegram_chat_sender"/>
             <argument type="service" id="app.site_url_generator"/>
+            <argument type="service" id="app.hints_telegram_chat_switcher"/>
             <tag name="app.telegram_channel" channel="feedbacks"/>
         </service>
         <service id="app.telegram_aware_helper" class="App\Service\Telegram\TelegramAwareHelper" lazy="true">
@@ -160,6 +161,8 @@
                  class="App\Service\Telegram\Chat\FeedbackSubscriptionsTelegramChatSender" lazy="true">
             <argument type="service" id="app.feedback_user_subscription_manager"/>
         </service>
+        <service id="app.hints_telegram_chat_switcher"
+                 class="App\Service\Telegram\Chat\HintsTelegramChatSwitcher" lazy="true"/>
         <service id="app.telegram_conversation" class="App\Service\Telegram\Conversation\TelegramConversation"
                  abstract="true" lazy="true">
             <argument type="service" id="app.telegram_aware_helper"/>
@@ -174,6 +177,7 @@
                  class="App\Service\Telegram\Conversation\ChooseFeedbackActionTelegramConversation" lazy="true">
             <argument type="service" id="app.feedback_user_subscription_manager"/>
             <argument type="service" id="app.feedback_subscriptions_telegram_chat_sender"/>
+            <argument type="service" id="app.hints_telegram_chat_switcher"/>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.telegram_conversation_create_feedback" parent="app.telegram_conversation"

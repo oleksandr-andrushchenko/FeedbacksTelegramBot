@@ -103,6 +103,10 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
 
     public function describe(TelegramAwareHelper $tg): void
     {
+        if (!$tg->getTelegram()->getMessengerUser()->isShowHints()) {
+            return;
+        }
+
         $tg->replyView(TelegramView::PREMIUM, [
             'commands' => [
                 'create' => [

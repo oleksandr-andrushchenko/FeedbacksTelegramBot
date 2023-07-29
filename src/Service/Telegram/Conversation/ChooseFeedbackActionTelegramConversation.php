@@ -8,6 +8,7 @@ use App\Entity\Telegram\TelegramConversationState;
 use App\Service\Feedback\FeedbackUserSubscriptionManager;
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
 use App\Service\Telegram\Chat\FeedbackSubscriptionsTelegramChatSender;
+use App\Service\Telegram\Chat\HintsTelegramChatSwitcher;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Entity\Telegram\TelegramConversation as Conversation;
 use Longman\TelegramBot\Entities\KeyboardButton;
@@ -20,6 +21,7 @@ class ChooseFeedbackActionTelegramConversation extends TelegramConversation impl
         readonly TelegramAwareHelper $awareHelper,
         private readonly FeedbackUserSubscriptionManager $userSubscriptionManager,
         private readonly FeedbackSubscriptionsTelegramChatSender $subscriptionsChatSender,
+        private readonly HintsTelegramChatSwitcher $hintsChatSwitcher,
     )
     {
         parent::__construct($awareHelper, new TelegramConversationState());
@@ -49,11 +51,9 @@ class ChooseFeedbackActionTelegramConversation extends TelegramConversation impl
 
         if ($this->userSubscriptionManager->hasActiveSubscription($tg->getTelegram()->getMessengerUser())) {
             $keyboards[] = $this->getSubscriptionsButton($tg);
-        } else {
+        } elseif ($tg->getTelegram()->getOptions()->acceptPayments()) {
             $keyboards[] = $this->getPremiumButton($tg);
         }
-
-//        $keyboards[] = $this->getCountryButton($tg);
 
         return $tg->reply($this->getActionAsk($tg), $tg->keyboard(...$keyboards))->null();
     }
@@ -75,6 +75,12 @@ class ChooseFeedbackActionTelegramConversation extends TelegramConversation impl
                 return $this->askAction($tg);
             }
 
+            if (!$tg->getTelegram()->getOptions()->acceptPayments()) {
+                $tg->replyFail('reply.action.fail.not_accept_payments');
+
+                return $this->askAction($tg);
+            }
+
             return $tg->stopConversation($conversation)->startConversation(GetFeedbackPremiumTelegramConversation::class)->null();
         }
 
@@ -90,6 +96,12 @@ class ChooseFeedbackActionTelegramConversation extends TelegramConversation impl
 
         if ($tg->matchText(FeedbackTelegramChannel::PURGE)) {
             return $tg->stopConversation($conversation)->startConversation(PurgeAccountConversationTelegramConversation::class)->null();
+        }
+
+        if ($tg->matchText(FeedbackTelegramChannel::HINTS)) {
+            $this->hintsChatSwitcher->toggleHints($tg);
+
+            return $this->askAction($tg);
         }
 
         $tg->replyWrong();

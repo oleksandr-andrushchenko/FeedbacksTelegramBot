@@ -114,6 +114,10 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
     public function describe(TelegramAwareHelper $tg): void
     {
+        if (!$tg->getTelegram()->getMessengerUser()->isShowHints()) {
+            return;
+        }
+
         $options = $this->feedbackCreator->getOptions();
 
         $tg->replyView(TelegramView::CREATE, [

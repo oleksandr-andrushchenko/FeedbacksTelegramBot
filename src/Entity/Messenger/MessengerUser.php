@@ -18,6 +18,7 @@ class MessengerUser
         private ?string $name = null,
         private ?string $languageCode = null,
         private ?User $user = null,
+        private bool $isShowHints = true,
         private ?DateTimeInterface $createdAt = null,
         private ?DateTimeInterface $updatedAt = null,
         private ?int $id = null,
@@ -94,6 +95,18 @@ class MessengerUser
     public function setLanguageCode(?string $languageCode): self
     {
         $this->languageCode = $languageCode;
+
+        return $this;
+    }
+
+    public function isShowHints(): bool
+    {
+        return $this->isShowHints;
+    }
+
+    public function setIsShowHints(bool $isShowHints): self
+    {
+        $this->isShowHints = $isShowHints;
 
         return $this;
     }

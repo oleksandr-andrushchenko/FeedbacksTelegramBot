@@ -26,9 +26,9 @@ class FeedbackSubscriptionsTelegramChatSender
             return $tg->replyUpset('reply.subscriptions.empty_list')->null();
         }
 
-        $tg->reply($tg->trans('reply.subscriptions.title') . ':');
+        $tg->reply($tg->trans('reply.subscriptions.title'));
 
-        foreach ($userSubscriptions as $index => $userSubscription) {
+        foreach (array_reverse($userSubscriptions, true) as $index => $userSubscription) {
             $tg->replyView(TelegramView::SUBSCRIPTION, [
                 'number' => $index + 1,
                 'subscription' => $userSubscription,

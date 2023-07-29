@@ -116,6 +116,7 @@ class TelegramAwareHelper
     public function reply(
         string $text,
         Keyboard $keyboard = null,
+        string $parseMode = null,
         bool $protectContent = null,
         bool $disableWebPagePreview = null
     ): static
@@ -126,6 +127,7 @@ class TelegramAwareHelper
             $this->getChatId(),
             $text,
             keyboard: $keyboard,
+            parseMode: $parseMode,
             protectContent: $protectContent,
             disableWebPagePreview: $disableWebPagePreview
         );
@@ -138,10 +140,15 @@ class TelegramAwareHelper
         return $this->translator->trans($id, $parameters, $domain, $this->getLanguageCode());
     }
 
-    public function replyOk(string $transId = 'reply.ok', array $transParameters = [], ?string $domain = 'tg'): static
+    public function replyOk(
+        string $transId = 'reply.ok',
+        array $transParameters = [],
+        ?string $domain = 'tg',
+        string $parseMode = null,
+    ): static
     {
 //        $this->reply($this->trans('reply.icon.ok') . ' ' . $this->trans($transId, $transParameters, $domain));
-        $this->reply($this->trans($transId, $transParameters, $domain));
+        $this->reply($this->trans($transId, $transParameters, $domain), parseMode: $parseMode);
         $this->reply($this->trans('reply.icon.ok'));
 
         return $this;

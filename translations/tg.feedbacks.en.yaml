@@ -6,6 +6,7 @@ icon:
   country: 🌎
   restart: 🔄
   purge: ✂️
+  hints: ℹ️
 
 command:
   create: Add feedback
@@ -15,6 +16,7 @@ command:
   country: My Country
   restart: Restart
   purge: Purge
+  hints: Toggle Hints
 
 #  name: Feedbacks
 name:

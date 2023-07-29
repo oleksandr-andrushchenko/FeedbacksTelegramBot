@@ -97,6 +97,10 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
 
     public function describe(TelegramAwareHelper $tg): void
     {
+        if (!$tg->getTelegram()->getMessengerUser()->isShowHints()) {
+            return;
+        }
+
         $options = $this->feedbackSearchCreator->getOptions();
 
         $tg->replyView(TelegramView::SEARCH, [

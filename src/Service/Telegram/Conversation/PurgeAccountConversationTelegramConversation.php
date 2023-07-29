@@ -56,6 +56,10 @@ class PurgeAccountConversationTelegramConversation extends TelegramConversation 
 
     public function describe(TelegramAwareHelper $tg): void
     {
+        if (!$tg->getTelegram()->getMessengerUser()->isShowHints()) {
+            return;
+        }
+
         $tg->replyView(TelegramView::PURGE, [
             'items' => [
                 'username',

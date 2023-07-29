@@ -7,8 +7,9 @@
 
 {% for name,command in commands %}
 {% include 'command.html.twig' with {name: name, command: command} %}:
-
 {{ name|trans }}
 
 {% endfor %}
 {{ 'icon.info'|trans({}, 'tg') }} {{ 'summary'|trans }}
+
+{% include 'tg.hints.html.twig' %}

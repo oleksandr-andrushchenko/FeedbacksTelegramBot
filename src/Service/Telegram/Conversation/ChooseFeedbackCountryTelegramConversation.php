@@ -67,6 +67,10 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
 
     public function describe(TelegramAwareHelper $tg): void
     {
+        if (!$tg->getTelegram()->getMessengerUser()->isShowHints()) {
+            return;
+        }
+
         $countryCode = $tg->getTelegram()?->getMessengerUser()->getUser()->getCountryCode();
         $country = $countryCode === null ? null : $this->provider->getCountry($countryCode);
 

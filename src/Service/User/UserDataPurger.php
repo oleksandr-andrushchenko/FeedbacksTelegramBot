@@ -35,6 +35,7 @@ class UserDataPurger
                 ->setUsername(null)
                 ->setName(null)
                 ->setLanguageCode(null)
+                ->setIsShowHints(true)
             ;
         }
     }
