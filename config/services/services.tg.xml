@@ -159,7 +159,7 @@
         </service>
         <service id="app.telegram_invoice_sender" class="App\Service\Telegram\Api\TelegramInvoiceSender" lazy="true"/>
         <service id="app.subscriptions_telegram_chat_sender"
-                 class="App\Service\Telegram\Chat\FeedbackSubscriptionsTelegramChatSender" lazy="true">
+                 class="App\Service\Telegram\Chat\SubscriptionsTelegramChatSender" lazy="true">
             <argument type="service" id="app.feedback_user_subscription_manager"/>
         </service>
         <service id="app.hints_telegram_chat_switcher"
