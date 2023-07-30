@@ -146,6 +146,7 @@
             <argument type="service" id="app.site_url_generator"/>
             <argument type="service" id="app.hints_telegram_chat_switcher"/>
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
+            <argument type="service" id="app.premium_describe_telegram_chat_sender"/>
             <tag name="app.telegram_channel" channel="feedbacks"/>
         </service>
         <service id="app.telegram_aware_helper" class="App\Service\Telegram\TelegramAwareHelper" lazy="true">
@@ -169,6 +170,11 @@
         <service id="app.choose_action_telegram_chat_sender"
                  class="App\Service\Telegram\Chat\ChooseActionTelegramChatSender" lazy="true">
             <argument type="service" id="app.feedback_user_subscription_manager"/>
+        </service>
+        <service id="app.premium_describe_telegram_chat_sender"
+                 class="App\Service\Telegram\Chat\PremiumDescribeTelegramChatSender" lazy="true">
+            <argument type="service" id="app.feedback_creator_options"/>
+            <argument type="service" id="app.feedback_search_creator_options"/>
         </service>
         <service id="app.telegram_conversation" class="App\Service\Telegram\Conversation\TelegramConversation"
                  abstract="true" lazy="true">
@@ -207,9 +213,8 @@
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.intl_currency_provider"/>
             <argument type="service" id="app.telegram_payment_manager"/>
-            <argument type="service" id="app.feedback_creator_options"/>
-            <argument type="service" id="app.feedback_search_creator_options"/>
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
+            <argument type="service" id="app.premium_describe_telegram_chat_sender"/>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.telegram_conversation_purge_account" parent="app.telegram_conversation"

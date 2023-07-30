@@ -4,20 +4,17 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram\Conversation;
 
-use App\Entity\Feedback\FeedbackCreatorOptions;
-use App\Entity\Feedback\FeedbackSearchCreatorOptions;
 use App\Entity\Feedback\FeedbackSubscriptionPlan;
 use App\Entity\Money;
 use App\Entity\Telegram\GetFeedbackPremiumTelegramConversationState;
 use App\Entity\Telegram\TelegramConversation as Conversation;
 use App\Entity\Telegram\TelegramPaymentMethod;
-use App\Enum\Telegram\TelegramView;
 use App\Exception\ValidatorException;
 use App\Service\Feedback\FeedbackSubscriptionPlanProvider;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\CurrencyProvider;
-use App\Service\Telegram\Channel\FeedbackTelegramChannel;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
+use App\Service\Telegram\Chat\PremiumDescribeTelegramChatSender;
 use App\Service\Telegram\Payment\TelegramPaymentManager;
 use App\Service\Telegram\Payment\TelegramPaymentMethodProvider;
 use App\Service\Telegram\TelegramAwareHelper;
@@ -42,9 +39,8 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         private readonly CountryProvider $countryProvider,
         private readonly CurrencyProvider $currencyProvider,
         private readonly TelegramPaymentManager $paymentManager,
-        private readonly FeedbackCreatorOptions $creatorOptions,
-        private readonly FeedbackSearchCreatorOptions $searchCreatorOptions,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
+        private readonly PremiumDescribeTelegramChatSender $premiumDescribeChatSender,
     )
     {
         parent::__construct($awareHelper, new GetFeedbackPremiumTelegramConversationState());
@@ -97,26 +93,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
             return;
         }
 
-        $tg->replyView(TelegramView::PREMIUM, [
-            'commands' => [
-                'create' => [
-                    'command' => FeedbackTelegramChannel::CREATE_FEEDBACK,
-                    'limits' => [
-                        'day' => $this->creatorOptions->userPerDayLimit(),
-                        'month' => $this->creatorOptions->userPerMonthLimit(),
-                        'year' => $this->creatorOptions->userPerYearLimit(),
-                    ],
-                ],
-                'search' => [
-                    'command' => FeedbackTelegramChannel::SEARCH_FEEDBACK,
-                    'limits' => [
-                        'day' => $this->searchCreatorOptions->userPerDayLimit(),
-                        'month' => $this->searchCreatorOptions->userPerMonthLimit(),
-                        'year' => $this->searchCreatorOptions->userPerYearLimit(),
-                    ],
-                ],
-            ],
-        ]);
+        $this->premiumDescribeChatSender->sendPremiumDescribe($tg);
     }
 
     public function askSubscriptionPlan(TelegramAwareHelper $tg): null

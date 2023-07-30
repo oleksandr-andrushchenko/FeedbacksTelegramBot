@@ -18,23 +18,23 @@ class SubscriptionsTelegramChatSender
 
     public function sendFeedbackSubscriptions(TelegramAwareHelper $tg): null
     {
-        $userSubscriptions = $this->userSubscriptionManager->getSubscriptions($tg->getTelegram()->getMessengerUser());
+        $subscriptions = $this->userSubscriptionManager->getSubscriptions($tg->getTelegram()->getMessengerUser());
 
-        $count = count($userSubscriptions);
+        $count = count($subscriptions);
 
         if ($count === 0) {
             return $tg->replyUpset('reply.subscriptions.empty_list')->null();
         }
 
-        $tg->reply($tg->trans('reply.subscriptions.title'));
+        $tg->reply($tg->trans('reply.subscriptions.title', ['count' => $count]));
 
-        foreach (array_reverse($userSubscriptions, true) as $index => $userSubscription) {
+        foreach (array_reverse($subscriptions, true) as $index => $userSubscription) {
             $tg->replyView(TelegramView::SUBSCRIPTION, [
                 'number' => $index + 1,
                 'subscription' => $userSubscription,
             ]);
         }
 
-        return $tg->replyOk('reply.subscriptions.summary', ['count' => $count])->null();
+        return null;
     }
 }
