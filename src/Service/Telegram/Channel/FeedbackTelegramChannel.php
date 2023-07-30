@@ -73,7 +73,6 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         // todo: "list my feedbacks" command
         // todo: "list feedbacks on me" command
         // todo: "subscribe on mine/somebodies feedbacks" command
-        // todo: add /delete command
 
         yield new FallbackTelegramCommand(fn () => $this->fallback($tg));
     }
@@ -136,8 +135,8 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
 
         $tg->replyView(TelegramView::START, [
             'commands' => $commands,
-            'privacy_policy_link' => $this->siteUrlGenerator->generate('app.site_privacy_policy', [], UrlGeneratorInterface::ABSOLUTE_URL),
-            'terms_of_use_link' => $this->siteUrlGenerator->generate('app.site_terms_of_use', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            'privacy_policy_link' => $this->siteUrlGenerator->generate('app.site_privacy_policy', referenceType: UrlGeneratorInterface::ABSOLUTE_URL),
+            'terms_of_use_link' => $this->siteUrlGenerator->generate('app.site_terms_of_use', referenceType: UrlGeneratorInterface::ABSOLUTE_URL),
         ], disableWebPagePreview: true);
     }
 
