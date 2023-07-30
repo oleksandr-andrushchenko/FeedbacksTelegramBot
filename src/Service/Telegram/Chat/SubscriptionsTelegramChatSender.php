@@ -8,7 +8,7 @@ use App\Enum\Telegram\TelegramView;
 use App\Service\Feedback\FeedbackUserSubscriptionManager;
 use App\Service\Telegram\TelegramAwareHelper;
 
-class FeedbackSubscriptionsTelegramChatSender
+class SubscriptionsTelegramChatSender
 {
     public function __construct(
         private readonly FeedbackUserSubscriptionManager $userSubscriptionManager,
@@ -32,9 +32,6 @@ class FeedbackSubscriptionsTelegramChatSender
             $tg->replyView(TelegramView::SUBSCRIPTION, [
                 'number' => $index + 1,
                 'subscription' => $userSubscription,
-                'is_subscription_active' => $this->userSubscriptionManager->isSubscriptionActive($userSubscription),
-                'datetime_format' => $tg->trans('datetime_format'),
-                'date_format' => $tg->trans('date_format'),
             ]);
         }
 

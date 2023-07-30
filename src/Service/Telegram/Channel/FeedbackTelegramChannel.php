@@ -10,7 +10,7 @@ use App\Service\Feedback\FeedbackUserSubscriptionManager;
 use App\Service\Intl\CountryProvider;
 use App\Service\Site\SiteUrlGenerator;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
-use App\Service\Telegram\Chat\FeedbackSubscriptionsTelegramChatSender;
+use App\Service\Telegram\Chat\SubscriptionsTelegramChatSender;
 use App\Service\Telegram\Chat\HintsTelegramChatSwitcher;
 use App\Service\Telegram\Conversation\ChooseFeedbackCountryTelegramConversation;
 use App\Service\Telegram\Conversation\GetFeedbackPremiumTelegramConversation;
@@ -40,7 +40,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         TelegramConversationFactory $conversationFactory,
         private readonly CountryProvider $countryProvider,
         private readonly FeedbackUserSubscriptionManager $userSubscriptionManager,
-        private readonly FeedbackSubscriptionsTelegramChatSender $subscriptionsChatSender,
+        private readonly SubscriptionsTelegramChatSender $subscriptionsChatSender,
         private readonly SiteUrlGenerator $siteUrlGenerator,
         private readonly HintsTelegramChatSwitcher $hintsChatSwitcher,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,

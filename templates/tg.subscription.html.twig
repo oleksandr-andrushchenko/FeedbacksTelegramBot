@@ -1,9 +1,10 @@
 {% trans_default_domain 'tg' %}
 {% if number is defined %}
-    {{ 'icon.number'|trans ~ number }}:
+{{ 'icon.number'|trans ~ number }}:
 {% endif %}
 {% apply spaceless %}
     {% set first_line = [] %}
+    {% set is_subscription_active = 'now'|date('U') < subscription.expireAt|date('U') %}
 
     {% set first_line = first_line|merge([
         ('subscription_plan.' ~ subscription.subscriptionPlan.name)|trans
@@ -28,7 +29,7 @@
     {% set second_line = [] %}
 
     {% set second_line = second_line|merge([
-        subscription.createdAt.format(datetime_format) ~ ' - ' ~ subscription.expireAt.format(datetime_format) ~ ' GMT'
+        subscription.createdAt.format('datetime_format'|trans) ~ ' - ' ~ subscription.expireAt.format('datetime_format'|trans) ~ ' GMT'
     ]) %}
 
     {{ second_line|join(' ')|raw }}

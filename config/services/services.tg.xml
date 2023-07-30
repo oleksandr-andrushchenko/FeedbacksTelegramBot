@@ -142,7 +142,7 @@
             <argument type="service" id="app.telegram_conversation_factory_feedbacks"/>
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.feedback_user_subscription_manager"/>
-            <argument type="service" id="app.feedback_subscriptions_telegram_chat_sender"/>
+            <argument type="service" id="app.subscriptions_telegram_chat_sender"/>
             <argument type="service" id="app.site_url_generator"/>
             <argument type="service" id="app.hints_telegram_chat_switcher"/>
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
@@ -158,7 +158,7 @@
             <argument type="service" id="app.telegram_chat_provider"/>
         </service>
         <service id="app.telegram_invoice_sender" class="App\Service\Telegram\Api\TelegramInvoiceSender" lazy="true"/>
-        <service id="app.feedback_subscriptions_telegram_chat_sender"
+        <service id="app.subscriptions_telegram_chat_sender"
                  class="App\Service\Telegram\Chat\FeedbackSubscriptionsTelegramChatSender" lazy="true">
             <argument type="service" id="app.feedback_user_subscription_manager"/>
         </service>
@@ -207,8 +207,6 @@
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.intl_currency_provider"/>
             <argument type="service" id="app.telegram_payment_manager"/>
-            <argument type="service" id="app.feedback_user_subscription_manager"/>
-            <argument type="service" id="app.feedback_subscriptions_telegram_chat_sender"/>
             <argument type="service" id="app.feedback_creator_options"/>
             <argument type="service" id="app.feedback_search_creator_options"/>
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>

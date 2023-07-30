@@ -14,12 +14,10 @@ use App\Entity\Telegram\TelegramPaymentMethod;
 use App\Enum\Telegram\TelegramView;
 use App\Exception\ValidatorException;
 use App\Service\Feedback\FeedbackSubscriptionPlanProvider;
-use App\Service\Feedback\FeedbackUserSubscriptionManager;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\CurrencyProvider;
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
-use App\Service\Telegram\Chat\FeedbackSubscriptionsTelegramChatSender;
 use App\Service\Telegram\Payment\TelegramPaymentManager;
 use App\Service\Telegram\Payment\TelegramPaymentMethodProvider;
 use App\Service\Telegram\TelegramAwareHelper;
@@ -44,8 +42,6 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         private readonly CountryProvider $countryProvider,
         private readonly CurrencyProvider $currencyProvider,
         private readonly TelegramPaymentManager $paymentManager,
-        private readonly FeedbackUserSubscriptionManager $userSubscriptionManager,
-        private readonly FeedbackSubscriptionsTelegramChatSender $subscriptionsChatSender,
         private readonly FeedbackCreatorOptions $creatorOptions,
         private readonly FeedbackSearchCreatorOptions $searchCreatorOptions,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
@@ -57,14 +53,6 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
     public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
     {
         if ($this->state->getStep() === null) {
-            if ($this->userSubscriptionManager->hasActiveSubscription($tg->getTelegram()->getMessengerUser())) {
-                $this->subscriptionsChatSender->sendFeedbackSubscriptions($tg);
-
-                $tg->stopConversation($conversation);
-
-                return $this->chooseActionChatSender->sendActions($tg);
-            }
-
             $this->describe($tg);
 
             return $this->askSubscriptionPlan($tg);
