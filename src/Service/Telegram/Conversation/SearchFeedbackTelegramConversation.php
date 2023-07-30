@@ -299,7 +299,8 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
                 $tg->trans('reply.search.title', [
                     'search_term' => $feedbackSearch->getSearchTermNormalizedText() ?? $feedbackSearch->getSearchTermText(),
                     'search_term_type' => $this->getSearchTermTypeButton($feedbackSearch->getSearchTermType(), $tg)->getText(),
-                ]) . ':',
+                    'count' => $count,
+                ]),
                 disableWebPagePreview: true
             );
 
@@ -331,7 +332,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
                 );
             }
 
-            $tg->stopConversation($conversation)->replyOk('reply.search.summary', ['count' => $count]);
+            $tg->stopConversation($conversation);
 
             return $this->chooseActionChatSender->sendActions($tg);
         } catch (ValidatorException $exception) {
