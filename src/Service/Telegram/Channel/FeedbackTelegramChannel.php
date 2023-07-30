@@ -65,7 +65,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
 
         yield new TelegramCommand(self::SUBSCRIPTIONS, fn () => $this->subscriptions($tg), menu: true, key: 'subscriptions');
         yield new TelegramCommand(self::COUNTRY, fn () => $this->country($tg), menu: true, key: 'country');
-        yield new TelegramCommand(self::HINTS, fn () => $this->hints($tg), menu: true, key: 'hints');
+        yield new TelegramCommand(self::HINTS, fn () => $this->hints($tg), menu: true, key: 'hints', beforeConversations: true);
         yield new TelegramCommand(self::PURGE, fn () => $this->purge($tg), menu: true, key: 'purge');
         yield new TelegramCommand(self::RESTART, fn () => $this->restart($tg), menu: true, key: 'restart', beforeConversations: true);
 
@@ -187,16 +187,11 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         return $tg->startConversation(ChooseFeedbackCountryTelegramConversation::class)->null();
     }
 
-    public function restart(TelegramAwareHelper $tg): null
-    {
-        $tg->stopConversations()->replyOk('reply.restart.ok');
-
-        return $this->start($tg);
-    }
-
     public function hints(TelegramAwareHelper $tg): null
     {
         $this->hintsChatSwitcher->toggleHints($tg);
+
+        $tg->stopConversations();
 
         return $this->chooseActionChatSender->sendActions($tg);
     }
@@ -204,5 +199,12 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     public function purge(TelegramAwareHelper $tg): null
     {
         return $tg->startConversation(PurgeAccountConversationTelegramConversation::class)->null();
+    }
+
+    public function restart(TelegramAwareHelper $tg): null
+    {
+        $tg->stopConversations()->replyOk('reply.restart.ok');
+
+        return $this->start($tg);
     }
 }
