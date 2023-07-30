@@ -18,6 +18,7 @@ use App\Service\Feedback\FeedbackUserSubscriptionManager;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\CurrencyProvider;
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
+use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\Chat\FeedbackSubscriptionsTelegramChatSender;
 use App\Service\Telegram\Payment\TelegramPaymentManager;
 use App\Service\Telegram\Payment\TelegramPaymentMethodProvider;
@@ -47,6 +48,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         private readonly FeedbackSubscriptionsTelegramChatSender $subscriptionsChatSender,
         private readonly FeedbackCreatorOptions $creatorOptions,
         private readonly FeedbackSearchCreatorOptions $searchCreatorOptions,
+        private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
     )
     {
         parent::__construct($awareHelper, new GetFeedbackPremiumTelegramConversationState());
@@ -58,7 +60,9 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
             if ($this->userSubscriptionManager->hasActiveSubscription($tg->getTelegram()->getMessengerUser())) {
                 $this->subscriptionsChatSender->sendFeedbackSubscriptions($tg);
 
-                return $tg->stopConversation($conversation)->startConversation(ChooseFeedbackActionTelegramConversation::class)->null();
+                $tg->stopConversation($conversation);
+
+                return $this->chooseActionChatSender->sendActions($tg);
             }
 
             $this->describe($tg);
@@ -79,11 +83,9 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
             $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
-            return $tg->stopConversation($conversation)
-                ->replyUpset('reply.premium.canceled')
-                ->startConversation(ChooseFeedbackActionTelegramConversation::class)
-                ->null()
-            ;
+            $tg->stopConversation($conversation)->replyUpset('reply.premium.canceled');
+
+            return $this->chooseActionChatSender->sendActions($tg);
         }
 
         if ($this->state->getStep() === self::STEP_SUBSCRIPTION_PLAN_ASKED) {
@@ -225,7 +227,9 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
             $this->getPrice($subscriptionPlan, $tg)
         );
 
-        return $tg->stopConversation($conversation)->startConversation(ChooseFeedbackActionTelegramConversation::class)->null();
+        $tg->stopConversation($conversation);
+
+        return $this->chooseActionChatSender->sendActions($tg);
     }
 
     public function onPaymentAnswer(TelegramAwareHelper $tg, Conversation $conversation): null

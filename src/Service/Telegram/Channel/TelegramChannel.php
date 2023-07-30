@@ -20,11 +20,11 @@ abstract class TelegramChannel implements TelegramChannelInterface
 
     abstract protected function getCommands(TelegramAwareHelper $tg): iterable;
 
-    public function getTelegramCommands(Telegram $telegram): iterable
+    public function getTelegramCommands(Telegram $telegram): array
     {
         $tg = $this->awareHelper->withTelegram($telegram);
 
-        return $this->getCommands($tg);
+        return iterator_to_array($this->getCommands($tg));
     }
 
     public function getTelegramConversationFactory(): TelegramConversationFactory

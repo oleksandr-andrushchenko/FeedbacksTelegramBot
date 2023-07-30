@@ -6,17 +6,16 @@ namespace App\Service\Telegram;
 
 use Closure;
 
-class TelegramCommand extends FallbackTelegramCommand implements TelegramCommandInterface
+readonly class TelegramCommand implements TelegramCommandInterface
 {
     public function __construct(
-        private readonly string $name,
-        readonly Closure $callback,
-        readonly bool $menu = false,
-        private readonly ?string $key = null,
-        readonly bool $beforeConversations = false,
+        private string $name,
+        private Closure $callback,
+        private bool $menu = false,
+        private ?string $key = null,
+        private bool $beforeConversations = false,
     )
     {
-        parent::__construct($callback, $menu, $beforeConversations);
     }
 
     public function getName(): string
@@ -24,8 +23,23 @@ class TelegramCommand extends FallbackTelegramCommand implements TelegramCommand
         return $this->name;
     }
 
+    public function getCallback(): Closure
+    {
+        return $this->callback;
+    }
+
+    public function isMenu(): bool
+    {
+        return $this->menu;
+    }
+
     public function getKey(): ?string
     {
         return $this->key;
+    }
+
+    public function getBeforeConversations(): bool
+    {
+        return $this->beforeConversations;
     }
 }

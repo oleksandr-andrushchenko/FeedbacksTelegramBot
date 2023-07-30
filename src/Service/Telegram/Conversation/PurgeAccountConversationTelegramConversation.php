@@ -6,6 +6,7 @@ namespace App\Service\Telegram\Conversation;
 
 use App\Entity\Telegram\TelegramConversationState;
 use App\Enum\Telegram\TelegramView;
+use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Entity\Telegram\TelegramConversation as Conversation;
 use App\Service\User\UserDataPurger;
@@ -20,6 +21,7 @@ class PurgeAccountConversationTelegramConversation extends TelegramConversation 
     public function __construct(
         readonly TelegramAwareHelper $awareHelper,
         private readonly UserDataPurger $userDataPurger,
+        private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
     )
     {
         parent::__construct($awareHelper, new TelegramConversationState());
@@ -40,11 +42,9 @@ class PurgeAccountConversationTelegramConversation extends TelegramConversation 
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
             $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
-            return $tg->stopConversation($conversation)
-                ->replyUpset('reply.purge.canceled')
-                ->startConversation(ChooseFeedbackActionTelegramConversation::class)
-                ->null()
-            ;
+            $tg->stopConversation($conversation)->replyUpset('reply.purge.canceled');
+
+            return $this->chooseActionChatSender->sendActions($tg);
         }
 
         if ($this->state->getStep() === self::STEP_CONFIRM_ASKED) {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Telegram;
 
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
-use App\Service\Telegram\Conversation\ChooseFeedbackActionTelegramConversation;
+use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Tests\Traits\Telegram\TelegramCommandFunctionalTrait;
 
 class StartFeedbacksTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestCase
@@ -18,11 +18,11 @@ class StartFeedbacksTelegramCommandFunctionalTest extends TelegramCommandFunctio
             ->shouldSeeReply(
                 'title',
                 'agreements',
-                ChooseFeedbackActionTelegramConversation::getActionAsk($this->tg)
+                ChooseActionTelegramChatSender::getActionAsk($this->tg)
             )
             ->shouldSeeKeyboard(
-                ChooseFeedbackActionTelegramConversation::getCreateButton($this->tg),
-                ChooseFeedbackActionTelegramConversation::getSearchButton($this->tg)
+                ChooseActionTelegramChatSender::getCreateButton($this->tg),
+                ChooseActionTelegramChatSender::getSearchButton($this->tg)
             )
         ;
     }

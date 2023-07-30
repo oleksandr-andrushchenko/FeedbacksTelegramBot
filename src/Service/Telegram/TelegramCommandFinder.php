@@ -8,16 +8,19 @@ class TelegramCommandFinder
 {
     /**
      * @param string|null $commandName
-     * @param iterable|TelegramCommandInterface $commands
-     * @return TelegramCommandInterface|null
+     * @param TelegramCommandInterface[] $commands
+     * @return TelegramCommand|null
      */
-    public function findBeforeConversationCommand(?string $commandName, iterable $commands): ?TelegramCommandInterface
+    public function findBeforeConversationCommand(?string $commandName, array $commands): ?TelegramCommand
     {
         if ($commandName === null) {
             return null;
         }
 
         foreach ($commands as $command) {
+            if (!$command instanceof TelegramCommand) {
+                continue;
+            }
             if ($commandName !== $command->getName()) {
                 continue;
             }
@@ -34,16 +37,19 @@ class TelegramCommandFinder
 
     /**
      * @param string|null $commandName
-     * @param iterable|TelegramCommandInterface $commands
-     * @return TelegramCommandInterface|null
+     * @param TelegramCommandInterface[] $commands
+     * @return TelegramCommand|null
      */
-    public function findCommand(?string $commandName, iterable $commands): ?TelegramCommandInterface
+    public function findCommand(?string $commandName, array $commands): ?TelegramCommand
     {
         if ($commandName === null) {
             return null;
         }
 
         foreach ($commands as $command) {
+            if (!$command instanceof TelegramCommand) {
+                continue;
+            }
             if ($commandName !== $command->getName()) {
                 continue;
             }
@@ -55,10 +61,10 @@ class TelegramCommandFinder
     }
 
     /**
-     * @param iterable|TelegramCommandInterface $commands
-     * @return TelegramCommandInterface|null
+     * @param TelegramCommandInterface[] $commands
+     * @return FallbackTelegramCommand|null
      */
-    public function findFallbackCommand(iterable $commands): ?TelegramCommandInterface
+    public function findFallbackCommand(array $commands): ?FallbackTelegramCommand
     {
         foreach ($commands as $command) {
             if ($command instanceof FallbackTelegramCommand) {

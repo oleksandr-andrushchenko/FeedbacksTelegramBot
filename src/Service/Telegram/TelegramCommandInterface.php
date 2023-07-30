@@ -8,13 +8,5 @@ use Closure;
 
 interface TelegramCommandInterface
 {
-    public function getName(): string;
-
     public function getCallback(): Closure;
-
-    public function isMenu(): bool;
-
-    public function getKey(): ?string;
-
-    public function getBeforeConversations(): bool;
 }

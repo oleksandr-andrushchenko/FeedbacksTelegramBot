@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Traits\Telegram;
 
-use App\Service\Telegram\TelegramCommandInterface;
 use App\Tests\Fixtures;
 use Longman\TelegramBot\Entities\Update;
 

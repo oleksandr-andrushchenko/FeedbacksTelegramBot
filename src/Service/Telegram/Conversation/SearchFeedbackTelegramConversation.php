@@ -16,6 +16,7 @@ use App\Service\Feedback\FeedbackSearcher;
 use App\Service\Feedback\FeedbackSearchCreator;
 use App\Service\Feedback\SearchTerm\SearchTermParserOnlyInterface;
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
+use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Entity\Telegram\TelegramConversation as Conversation;
 use App\Service\Validator;
@@ -39,6 +40,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
         private readonly FeedbackSearcher $feedbackSearcher,
         private readonly SearchTermParserOnlyInterface $searchTermParser,
         private readonly EntityManagerInterface $entityManager,
+        private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
     )
     {
         parent::__construct($awareHelper, new SearchFeedbackTelegramConversationState());
@@ -73,11 +75,9 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
             $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
-            return $tg->stopConversation($conversation)
-                ->replyUpset('reply.search.canceled')
-                ->startConversation(ChooseFeedbackActionTelegramConversation::class)
-                ->null()
-            ;
+            $tg->stopConversation($conversation)->replyUpset('reply.search.canceled');
+
+            return $this->chooseActionChatSender->sendActions($tg);
         }
 
         if ($this->state->getStep() === self::STEP_SEARCH_TERM_ASKED) {
@@ -290,10 +290,9 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
             $count = count($feedbacks);
 
             if ($count === 0) {
-                return $tg->replyUpset('reply.search.empty_list', ['search_term' => $feedbackSearch->getSearchTermText()])
-                    ->stopConversation($conversation)->startConversation(ChooseFeedbackActionTelegramConversation::class)
-                    ->null()
-                ;
+                $tg->stopConversation($conversation)->replyUpset('reply.search.empty_list', ['search_term' => $feedbackSearch->getSearchTermText()]);
+
+                return $this->chooseActionChatSender->sendActions($tg);
             }
 
             $tg->reply(
@@ -332,10 +331,9 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
                 );
             }
 
-            return $tg->replyOk('reply.search.summary', ['count' => $count])
-                ->stopConversation($conversation)->startConversation(ChooseFeedbackActionTelegramConversation::class)
-                ->null()
-            ;
+            $tg->stopConversation($conversation)->replyOk('reply.search.summary', ['count' => $count]);
+
+            return $this->chooseActionChatSender->sendActions($tg);
         } catch (ValidatorException $exception) {
             if ($exception->isFirstProperty('search_term')) {
                 $tg->reply($exception->getFirstMessage());

@@ -16,6 +16,7 @@ use App\Object\Feedback\SearchTermTransfer;
 use App\Service\Feedback\FeedbackCreator;
 use App\Service\Feedback\SearchTerm\SearchTermParserOnlyInterface;
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
+use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Service\Util\Array\ArrayValueEraser;
 use App\Service\Validator;
@@ -40,6 +41,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         private readonly FeedbackCreator $feedbackCreator,
         private readonly SearchTermParserOnlyInterface $searchTermParser,
         private readonly ArrayValueEraser $arrayValueEraser,
+        private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
     )
     {
         parent::__construct($awareHelper, new CreateFeedbackTelegramConversationState());
@@ -82,11 +84,9 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
             $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
-            return $tg->stopConversation($conversation)
-                ->replyUpset('reply.create.canceled')
-                ->startConversation(ChooseFeedbackActionTelegramConversation::class)
-                ->null()
-            ;
+            $tg->stopConversation($conversation)->replyUpset('reply.create.canceled');
+
+            return $this->chooseActionChatSender->sendActions($tg);
         }
 
         if ($this->state->getStep() === self::STEP_SEARCH_TERM_ASKED) {
@@ -430,10 +430,9 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
             );
 
             // todo: change text to something like: "want to add more?"
-            return $tg->replyOk('reply.create.ok')
-                ->stopConversation($conversation)->startConversation(ChooseFeedbackActionTelegramConversation::class)
-                ->null()
-            ;
+            $tg->stopConversation($conversation)->replyOk('reply.create.ok');
+
+            return $this->chooseActionChatSender->sendActions($tg);
         } catch (ValidatorException $exception) {
             if ($exception->isFirstProperty('search_term') || $exception->isFirstProperty('type')) {
                 $tg->reply($exception->getFirstMessage());

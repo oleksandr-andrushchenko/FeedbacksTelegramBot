@@ -65,7 +65,7 @@ class TelegramUpdateHandler
         $channel = $this->channelRegistry->getTelegramChannel($telegram->getName());
 
         $text = $telegram->getUpdate()?->getMessage()?->getText();
-        $commands = iterator_to_array($channel->getTelegramCommands($telegram));
+        $commands = $channel->getTelegramCommands($telegram);
 
         if ($update->getPreCheckoutQuery() !== null) {
             if ($telegram->getOptions()->acceptPayments()) {

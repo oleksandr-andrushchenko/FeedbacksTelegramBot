@@ -16,7 +16,7 @@ use App\Enum\Telegram\TelegramView;
 use App\Object\Feedback\SearchTermTransfer;
 use App\Object\Messenger\MessengerUserTransfer;
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
-use App\Service\Telegram\Conversation\ChooseFeedbackActionTelegramConversation;
+use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\Conversation\SearchFeedbackTelegramConversation;
 use App\Tests\Fixtures;
 use App\Tests\Traits\Feedback\FeedbackRepositoryProviderTrait;
@@ -67,9 +67,9 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         self::setUp();
 
         yield sprintf('start_step_as_%s', 'text') => [
-            'command' => ChooseFeedbackActionTelegramConversation::getSearchButton($this->tg)->getText(),
-            'conversationClass' => ChooseFeedbackActionTelegramConversation::class,
-            'conversationState' => new TelegramConversationState(ChooseFeedbackActionTelegramConversation::STEP_ACTION_ASKED),
+            'command' => ChooseActionTelegramChatSender::getSearchButton($this->tg)->getText(),
+            'conversationClass' => null,
+            'conversationState' => null,
         ];
 
         yield sprintf('start_step_as_%s', 'command') => [
@@ -700,11 +700,11 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                 ->setStep(SearchFeedbackTelegramConversation::STEP_CANCEL_PRESSED),
             shouldSeeReply: [
                 $this->trans('reply.search.canceled'),
-                ChooseFeedbackActionTelegramConversation::getActionAsk($this->tg),
+                ChooseActionTelegramChatSender::getActionAsk($this->tg),
             ],
             shouldSeeKeyboard: [
-                ChooseFeedbackActionTelegramConversation::getCreateButton($this->tg),
-                ChooseFeedbackActionTelegramConversation::getSearchButton($this->tg),
+                ChooseActionTelegramChatSender::getCreateButton($this->tg),
+                ChooseActionTelegramChatSender::getSearchButton($this->tg),
             ],
             conversationClass: SearchFeedbackTelegramConversation::class
         );
@@ -778,11 +778,11 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             state: $state,
             shouldSeeReply: [
                 ...$shouldSeeReply,
-                ChooseFeedbackActionTelegramConversation::getActionAsk($this->tg),
+                ChooseActionTelegramChatSender::getActionAsk($this->tg),
             ],
             shouldSeeKeyboard: [
-                ChooseFeedbackActionTelegramConversation::getCreateButton($this->tg),
-                ChooseFeedbackActionTelegramConversation::getSearchButton($this->tg),
+                ChooseActionTelegramChatSender::getCreateButton($this->tg),
+                ChooseActionTelegramChatSender::getSearchButton($this->tg),
             ],
             conversationClass: SearchFeedbackTelegramConversation::class
         );

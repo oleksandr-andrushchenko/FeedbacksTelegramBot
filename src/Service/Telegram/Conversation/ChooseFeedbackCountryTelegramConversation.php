@@ -8,6 +8,7 @@ use App\Entity\Intl\Country;
 use App\Entity\Telegram\TelegramConversationState;
 use App\Enum\Telegram\TelegramView;
 use App\Service\Intl\CountryProvider;
+use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Entity\Telegram\TelegramConversation as Conversation;
 use Longman\TelegramBot\Entities\KeyboardButton;
@@ -21,6 +22,7 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
     public function __construct(
         readonly TelegramAwareHelper $awareHelper,
         private readonly CountryProvider $provider,
+        private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
     )
     {
         parent::__construct($awareHelper, new TelegramConversationState());
@@ -47,11 +49,9 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
             $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
-            return $tg->stopConversation($conversation)
-                ->replyUpset('reply.country.canceled')
-                ->startConversation(ChooseFeedbackActionTelegramConversation::class)
-                ->null()
-            ;
+            $tg->stopConversation($conversation)->replyUpset('reply.country.canceled');
+
+            return $this->chooseActionChatSender->sendActions($tg);
         }
 
         if ($this->state->getStep() === self::STEP_GUESS_COUNTRY_ASKED) {
@@ -115,7 +115,9 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
             'name' => $this->provider->getCountryName($country),
         ]);
 
-        return $tg->stopConversation($conversation)->startConversation(ChooseFeedbackActionTelegramConversation::class)->null();
+        $tg->stopConversation($conversation);
+
+        return $this->chooseActionChatSender->sendActions($tg);
     }
 
     public function askCountry(TelegramAwareHelper $tg): null
@@ -134,7 +136,9 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
         if ($tg->matchText($this->getAbsentCountryButton($tg)->getText())) {
             $tg->getTelegram()->getMessengerUser()->getUser()->setCountryCode(null);
 
-            return $tg->stopConversation($conversation)->startConversation(ChooseFeedbackActionTelegramConversation::class)->null();
+            $tg->stopConversation($conversation);
+
+            return $this->chooseActionChatSender->sendActions($tg);
         }
 
         $countries = $this->provider->getCountries();
@@ -154,7 +158,9 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
             'name' => $this->provider->getCountryName($country),
         ]);
 
-        return $tg->stopConversation($conversation)->startConversation(ChooseFeedbackActionTelegramConversation::class)->null();
+        $tg->stopConversation($conversation);
+
+        return $this->chooseActionChatSender->sendActions($tg);
     }
 
     /**
