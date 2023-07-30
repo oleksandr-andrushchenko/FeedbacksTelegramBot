@@ -760,15 +760,14 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             $shouldSeeReply[] = $this->trans('reply.search.empty_list', ['search_term' => $state->getSearchTerm()->getText()]);
         } else {
             $shouldSeeReply[] = $this->trans('reply.search.title', [
-                    'search_term' => $state->getSearchTerm()->getText(),
-                    'search_term_type' => sprintf('search_term_type.%s', $state->getSearchTerm()->getType()->name),
-                ]) . ':';
+                'search_term' => $state->getSearchTerm()->getText(),
+                'search_term_type' => sprintf('search_term_type.%s', $state->getSearchTerm()->getType()->name),
+                'count' => $count,
+            ]);
 
             foreach ($shouldSeeReplyFeedbacks as $index => $shouldSeeReplyFeedback) {
                 $shouldSeeReply[] = $this->getFeedbackReply($index + 1, $shouldSeeReplyFeedback);
             }
-
-            $shouldSeeReply[] = $this->trans('reply.search.summary', ['count' => $count]);
         }
 
         $feedbackSearchRepository = $this->getFeedbackSearchRepository();
