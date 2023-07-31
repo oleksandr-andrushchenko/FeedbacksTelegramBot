@@ -28,6 +28,7 @@
             <argument>%app.telegram_options%</argument>
             <argument type="service" id="app.telegram_options_factory"/>
             <argument type="service" id="app.telegram_client_registry"/>
+            <argument type="service" id="app.telegram_request_checker"/>
             <argument type="service" id="logger"/>
         </service>
         <service id="app.telegram_active_conversation_invoker"
@@ -59,11 +60,16 @@
             <argument type="service" id="app.messenger_user_upserter"/>
             <argument type="service" id="app.user_upserter"/>
         </service>
-        <service id="app.telegram_existing_update_checker" class="App\Service\Telegram\TelegramExistingUpdateChecker"
+        <service id="app.telegram_update_checker" class="App\Service\Telegram\TelegramUpdateChecker"
                  lazy="true">
             <argument type="service" id="app.repository.telegram_update"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="logger"/>
+        </service>
+        <service id="app.telegram_request_checker" class="App\Service\Telegram\TelegramRequestChecker"
+                 lazy="true">
+            <argument type="service" id="app.repository.telegram_request"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
         <service id="app.telegram_non_admin_update_checker" class="App\Service\Telegram\TelegramNonAdminUpdateChecker"
                  lazy="true">
@@ -75,7 +81,7 @@
         </service>
         <service id="app.telegram_update_handler" class="App\Service\Telegram\TelegramUpdateHandler" lazy="true">
             <argument type="service" id="app.telegram_update_factory"/>
-            <argument type="service" id="app.telegram_existing_update_checker"/>
+            <argument type="service" id="app.telegram_update_checker"/>
             <argument type="service" id="app.telegram_non_admin_update_checker"/>
             <argument type="service" id="app.telegram_conversation_manager"/>
             <argument type="service" id="app.telegram_messenger_user_upserter"/>

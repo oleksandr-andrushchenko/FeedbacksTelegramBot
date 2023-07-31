@@ -41,6 +41,7 @@
         <env name="TELEGRAM_FEEDBACKS_LANGUAGE_CODES" value='["en","uk","ru"]'/>
         <env name="TELEGRAM_FEEDBACKS_ADMIN_CHAT_IDS" value='["409525390"]'/>
         <env name="TELEGRAM_FEEDBACKS_CHECK_UPDATE_DUPLICATES" value="true"/>
+        <env name="TELEGRAM_FEEDBACKS_CHECK_REQUESTS" value="true"/>
         <env name="TELEGRAM_FEEDBACKS_PROCESS_ADMIN_ONLY" value="false"/>
         <env name="FEEDBACK_CREATOR_USER_TARGET_MESSENGER_REQUIRED" value="false"/>
         <env name="FEEDBACKS_LIQPAY_TOKEN" value=""/>

@@ -48,6 +48,7 @@ class Telegram
         private readonly TelegramName $name,
         private readonly TelegramOptions $options,
         private readonly TelegramClientRegistry $clientRegistry,
+        private readonly TelegramRequestChecker $requestChecker,
         private readonly LoggerInterface $logger,
     )
     {
@@ -97,13 +98,39 @@ class Telegram
      */
     public function __call(string $name, array $arguments): mixed
     {
+        $request = $this->requestChecker->checkTelegramRequest($this, $name, $arguments[0] ?? []);
+        $response = $this->request($name, $arguments);
+
+        if ($response instanceof ServerResponse) {
+            $request?->setResponse($response->getRawData());
+
+            if (!$response->isOk()) {
+                throw new TelegramException(
+                    sprintf('Error: %d %s', $response->getErrorCode(), $response->getDescription())
+                );
+            }
+        } else {
+            $this->logger->info(sprintf('unknown "%s" response object', get_class($response)));
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param string $name
+     * @param array $arguments
+     * @return mixed
+     * @throws TelegramException
+     */
+    private function request(string $name, array $arguments): mixed
+    {
         try {
             if (method_exists($this->getClient(), $name)) {
-                return $this->checkResponse($this->getClient()->{$name}(...$arguments));
+                return $this->getClient()->{$name}(...$arguments);
             }
 
             try {
-                return $this->checkResponse(TelegramRequest::{$name}(...$arguments));
+                return TelegramRequest::{$name}(...$arguments);
             } catch (InnerTelegramException $exception) {
                 if (str_contains($exception->getMessage(), 'action') && str_contains($exception->getMessage(), 'doesn\'t exist')) {
                     // copied from TelegramRequest::send
@@ -121,7 +148,7 @@ class Telegram
                         throw new InvalidBotTokenException();
                     }
 
-                    return $this->checkResponse($response);
+                    return $response;
                 }
 
                 throw $exception;
@@ -139,22 +166,6 @@ class Telegram
 
             throw new TelegramException($message, 0, $exception);
         }
-    }
-
-    /**
-     * @param $response
-     * @return mixed
-     * @throws TelegramException
-     */
-    private function checkResponse($response): mixed
-    {
-        if ($response instanceof ServerResponse && !$response->isOk()) {
-            throw new TelegramException(
-                sprintf('Error: %d %s', $response->getErrorCode(), $response->getDescription())
-            );
-        }
-
-        return $response;
     }
 
     private function getClient(): TelegramClient

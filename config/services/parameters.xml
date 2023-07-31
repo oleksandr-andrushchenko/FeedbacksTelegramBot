@@ -19,7 +19,8 @@
             <parameter key="admin_ids">%env(json:TELEGRAM_FEEDBACKS_ADMIN_IDS)%</parameter>
             <parameter key="locales">%env(json:TELEGRAM_FEEDBACKS_LANGUAGE_CODES)%</parameter>
             <parameter key="admin_chat_ids">%env(json:TELEGRAM_FEEDBACKS_ADMIN_CHAT_IDS)%</parameter>
-            <parameter key="check_update_duplicates">%env(bool:TELEGRAM_FEEDBACKS_CHECK_UPDATE_DUPLICATES)%</parameter>
+            <parameter key="check_updates">%env(bool:TELEGRAM_FEEDBACKS_CHECK_UPDATE_DUPLICATES)%</parameter>
+            <parameter key="check_requests">%env(bool:TELEGRAM_FEEDBACKS_CHECK_REQUESTS)%</parameter>
             <parameter key="process_admin_only">%env(bool:TELEGRAM_FEEDBACKS_PROCESS_ADMIN_ONLY)%</parameter>
             <parameter key="accept_payments">true</parameter>
         </parameter>
@@ -35,7 +36,8 @@
                     <parameter>en</parameter>
                 </parameter>
                 <parameter key="admin_chat_ids" type="collection"/>
-                <parameter key="check_update_duplicates">true</parameter>
+                <parameter key="check_updates">true</parameter>
+                <parameter key="check_requests">true</parameter>
                 <parameter key="process_admin_only">false</parameter>
                 <parameter key="accept_payments">false</parameter>
             </parameter>

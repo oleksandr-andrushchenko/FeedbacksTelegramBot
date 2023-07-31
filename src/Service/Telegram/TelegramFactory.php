@@ -13,7 +13,8 @@ class TelegramFactory
     public function __construct(
         private readonly array $options,
         private readonly TelegramOptionsFactory $optionsFactory,
-        private readonly TelegramClientRegistry $telegramClientRegistry,
+        private readonly TelegramClientRegistry $clientRegistry,
+        private readonly TelegramRequestChecker $requestChecker,
         private readonly LoggerInterface $logger,
     )
     {
@@ -33,7 +34,8 @@ class TelegramFactory
         return new Telegram(
             $telegramName,
             $this->optionsFactory->createTelegramOptions($this->options[$telegramName->name]),
-            $this->telegramClientRegistry,
+            $this->clientRegistry,
+            $this->requestChecker,
             $this->logger,
         );
     }

@@ -14,7 +14,8 @@ readonly class TelegramOptions
         private array $languageCodes,
         private array $adminIds,
         private array $adminChatIds,
-        private bool $checkUpdateDuplicates,
+        private bool $checkUpdates,
+        private bool $checkRequests,
         private bool $processAdminOnly,
         private bool $acceptPayments,
     )
@@ -56,9 +57,14 @@ readonly class TelegramOptions
         return $this->adminChatIds;
     }
 
-    public function checkUpdateDuplicates(): bool
+    public function checkUpdates(): bool
     {
-        return $this->checkUpdateDuplicates;
+        return $this->checkUpdates;
+    }
+
+    public function checkRequests(): bool
+    {
+        return $this->checkRequests;
     }
 
     public function processAdminOnly(): bool

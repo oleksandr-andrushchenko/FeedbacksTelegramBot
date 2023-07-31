@@ -17,7 +17,7 @@ class TelegramUpdateHandler
 {
     public function __construct(
         private readonly TelegramUpdateFactory $updateFactory,
-        private readonly TelegramExistingUpdateChecker $existingUpdateChecker,
+        private readonly TelegramUpdateChecker $updateChecker,
         private readonly TelegramNonAdminUpdateChecker $nonAdminUpdateChecker,
         private readonly TelegramConversationManager $conversationManager,
         private readonly TelegramMessengerUserUpserter $messengerUserUpserter,
@@ -43,16 +43,16 @@ class TelegramUpdateHandler
         $update = $this->updateFactory->createUpdate($telegram, $request);
         $telegram->setUpdate($update);
 
-//        if ($telegram->getUpdate()?->getMessage() === null) {
-//            return;
-//        }
+        // todo: after country selection - link to che channel
+        // todo: add site links (to bot)
+        // todo: add left a comment button
 
         // todo: remove on production
         if ($this->nonAdminUpdateChecker->checkNonAdminUpdate($telegram)) {
             return;
         }
 
-        if ($this->existingUpdateChecker->checkExistingUpdate($telegram)) {
+        if ($this->updateChecker->checkTelegramUpdate($telegram)) {
             return;
         }
 

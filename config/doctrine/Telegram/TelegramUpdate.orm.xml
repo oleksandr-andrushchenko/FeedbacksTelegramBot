@@ -13,6 +13,7 @@
                 <option name="unsigned">true</option>
             </options>
         </id>
-        <field name="createdAt" column="created_at" type="datetime_immutable" nullable="true"/>
+        <field name="data" column="data" type="json"/>
+        <field name="createdAt" column="created_at" type="datetime_immutable"/>
     </entity>
 </doctrine-mapping>

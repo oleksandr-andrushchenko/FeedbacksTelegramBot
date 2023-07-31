@@ -11,10 +11,10 @@ class TelegramUpdate
 {
     public function __construct(
         private readonly int $id,
-        private ?DateTimeInterface $createdAt = null,
+        private readonly array $data,
+        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
     )
     {
-        $this->createdAt = $this->createdAt ?? new DateTimeImmutable();
     }
 
     public function getId(): int
@@ -22,15 +22,13 @@ class TelegramUpdate
         return $this->id;
     }
 
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
     public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(?DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 }

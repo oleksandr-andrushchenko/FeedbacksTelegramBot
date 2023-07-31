@@ -18,7 +18,8 @@ class TelegramOptionsFactory
             $options['locales'],
             array_map(fn ($id) => (int) $id, $options['admin_ids']),
             array_map(fn ($id) => (int) $id, $options['admin_chat_ids']),
-            $options['check_update_duplicates'],
+            $options['check_updates'],
+            $options['check_requests'],
             $options['process_admin_only'],
             $options['accept_payments'],
         );
