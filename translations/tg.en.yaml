@@ -56,6 +56,8 @@ ask:
     payment_invoice_description: "No limits on feedbacks creation and searching for the next period: %plan%"
   purge:
     confirm: Confirm data purge?
+  message:
+    text: Enter your message please.
 
 keyboard:
   confirm: 👌 Confirm
@@ -123,6 +125,9 @@ reply:
     title: "You have %count% premium subscription(-s):"
   hints:
     ok: Help hints were %now% for your account. Use %command% to %will% them.
+  message:
+    ok: Your message has been sent. Thank you!
+    canceled: Message adding dialog has been canceled.
   restart:
     ok: Restart has been successfully made.
     fail: Unknown error has occurred, we are working on this already, try later please.

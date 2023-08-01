@@ -8,5 +8,8 @@
         <service id="app.repository.user" class="App\Repository\User\UserRepository">
             <argument type="service" id="doctrine"/>
         </service>
+        <service id="app.repository.user_feedback_message" class="App\Repository\User\UserFeedbackMessageRepository">
+            <argument type="service" id="doctrine"/>
+        </service>
     </services>
 </container>

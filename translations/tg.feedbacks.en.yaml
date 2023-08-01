@@ -7,6 +7,7 @@ icon:
   restart: 🔄
   purge: ✂️
   hints: ℹ️
+  message: ✉️
 
 command:
   create: Add feedback
@@ -17,6 +18,7 @@ command:
   restart: Restart
   purge: Purge
   hints: Toggle Hints
+  message: Write to us
 
 #  name: Feedbacks
 name:

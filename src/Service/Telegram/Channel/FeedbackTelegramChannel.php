@@ -16,6 +16,7 @@ use App\Service\Telegram\Chat\HintsTelegramChatSwitcher;
 use App\Service\Telegram\Conversation\ChooseFeedbackCountryTelegramConversation;
 use App\Service\Telegram\Conversation\GetFeedbackPremiumTelegramConversation;
 use App\Service\Telegram\Conversation\CreateFeedbackTelegramConversation;
+use App\Service\Telegram\Conversation\LeaveFeedbackMessageTelegramConversation;
 use App\Service\Telegram\Conversation\PurgeAccountConversationTelegramConversation;
 use App\Service\Telegram\Conversation\SearchFeedbackTelegramConversation;
 use App\Service\Telegram\FallbackTelegramCommand;
@@ -34,6 +35,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     public const COUNTRY = '/country';
     public const HINTS = '/hints';
     public const PURGE = '/purge';
+    public const MESSAGE = '/message';
     public const RESTART = '/restart';
 
     public function __construct(
@@ -69,12 +71,16 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         yield new TelegramCommand(self::COUNTRY, fn () => $this->country($tg), menu: true, key: 'country', beforeConversations: true);
         yield new TelegramCommand(self::HINTS, fn () => $this->hints($tg), menu: true, key: 'hints', beforeConversations: true);
         yield new TelegramCommand(self::PURGE, fn () => $this->purge($tg), menu: true, key: 'purge', beforeConversations: true);
+        yield new TelegramCommand(self::MESSAGE, fn () => $this->message($tg), menu: true, key: 'message', beforeConversations: true);
         yield new TelegramCommand(self::RESTART, fn () => $this->restart($tg), menu: true, key: 'restart', beforeConversations: true);
 
         // todo: "who've been looking for me" command
         // todo: "list my feedbacks" command
         // todo: "list feedbacks on me" command
         // todo: "subscribe on mine/somebodies feedbacks" command
+        // todo: after country selection - link to che channel
+        // todo: add site links (to bot)
+        // todo: add left a comment button
 
         yield new FallbackTelegramCommand(fn () => $this->fallback($tg));
     }
@@ -228,6 +234,11 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     public function purge(TelegramAwareHelper $tg): null
     {
         return $tg->stopConversations()->startConversation(PurgeAccountConversationTelegramConversation::class)->null();
+    }
+
+    public function message(TelegramAwareHelper $tg): null
+    {
+        return $tg->stopConversations()->startConversation(LeaveFeedbackMessageTelegramConversation::class)->null();
     }
 
     public function restart(TelegramAwareHelper $tg): null

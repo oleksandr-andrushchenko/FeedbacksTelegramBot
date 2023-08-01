@@ -43,10 +43,6 @@ class TelegramUpdateHandler
         $update = $this->updateFactory->createUpdate($telegram, $request);
         $telegram->setUpdate($update);
 
-        // todo: after country selection - link to che channel
-        // todo: add site links (to bot)
-        // todo: add left a comment button
-
         // todo: remove on production
         if ($this->nonAdminUpdateChecker->checkNonAdminUpdate($telegram)) {
             return;

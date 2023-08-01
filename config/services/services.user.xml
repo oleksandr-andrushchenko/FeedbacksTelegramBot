@@ -16,5 +16,9 @@
         <service id="app.user_data_purger" class="App\Service\User\UserDataPurger" lazy="true">
             <argument type="service" id="app.repository.messenger_user"/>
         </service>
+        <service id="app.user_feedback_message_creator" class="App\Service\User\UserFeedbackMessageCreator">
+            <argument type="service" id="app.validator"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
     </services>
 </container>
