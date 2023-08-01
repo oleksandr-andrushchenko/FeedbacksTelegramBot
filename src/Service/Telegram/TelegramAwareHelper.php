@@ -192,16 +192,6 @@ class TelegramAwareHelper
         return $this->keyboardFactory->createTelegramButton($text);
     }
 
-    public function transCommand(string $key): string
-    {
-        $domain = sprintf('tg.%s', $this->getTelegram()->getName()->name);
-
-        return join(' ', [
-            $this->trans(sprintf('icon.%s', $key), domain: $domain),
-            $this->trans(sprintf('command.%s', $key), domain: $domain),
-        ]);
-    }
-
     public function null(): null
     {
         return null;

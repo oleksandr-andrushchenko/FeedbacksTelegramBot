@@ -19,14 +19,12 @@ class MessengerUser
         private ?string $languageCode = null,
         private ?User $user = null,
         private bool $isShowHints = true,
-        private ?DateTimeInterface $createdAt = null,
+        private bool $isShowExtendedKeyboard = false,
+        private DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
         private ?int $id = null,
     )
     {
-        $this->id = null;
-        $this->createdAt = $this->createdAt ?? new DateTimeImmutable();
-        $this->updatedAt = $this->updatedAt ?? null;
     }
 
     public function getId(): ?int
@@ -107,6 +105,18 @@ class MessengerUser
     public function setIsShowHints(bool $isShowHints): self
     {
         $this->isShowHints = $isShowHints;
+
+        return $this;
+    }
+
+    public function isShowExtendedKeyboard(): bool
+    {
+        return $this->isShowExtendedKeyboard;
+    }
+
+    public function setIsShowExtendedKeyboard(bool $isShowExtendedKeyboard): self
+    {
+        $this->isShowExtendedKeyboard = $isShowExtendedKeyboard;
 
         return $this;
     }

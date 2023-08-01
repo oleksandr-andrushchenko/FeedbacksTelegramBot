@@ -29,7 +29,12 @@
                 <option name="default">true</option>
             </options>
         </field>
-        <field name="createdAt" column="created_at" type="datetime_immutable" nullable="true"/>
+        <field name="isShowExtendedKeyboard" column="is_show_extended_keyboard">
+            <options>
+                <option name="default">false</option>
+            </options>
+        </field>
+        <field name="createdAt" column="created_at" type="datetime_immutable"/>
         <field name="updatedAt" column="updated_at" type="datetime" nullable="true"/>
     </entity>
 </doctrine-mapping>

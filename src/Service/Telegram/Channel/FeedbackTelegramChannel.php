@@ -90,17 +90,40 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         if ($tg->matchText($this->chooseActionChatSender->getCreateButton($tg)->getText())) {
             return $this->create($tg);
         }
-
         if ($tg->matchText($this->chooseActionChatSender->getSearchButton($tg)->getText())) {
             return $this->search($tg);
         }
-
         if ($tg->matchText($this->chooseActionChatSender->getPremiumButton($tg)->getText())) {
             return $this->premium($tg);
         }
-
         if ($tg->matchText($this->chooseActionChatSender->getSubscriptionsButton($tg)->getText())) {
             return $this->subscriptions($tg);
+        }
+
+        if ($tg->getTelegram()->getMessengerUser()->isShowExtendedKeyboard()) {
+            if ($tg->matchText($this->chooseActionChatSender->getCountryButton($tg)->getText())) {
+                return $this->country($tg);
+            }
+            if ($tg->matchText($this->chooseActionChatSender->getHintsButton($tg)->getText())) {
+                return $this->hints($tg);
+            }
+            if ($tg->matchText($this->chooseActionChatSender->getPurgeButton($tg)->getText())) {
+                return $this->purge($tg);
+            }
+            if ($tg->matchText($this->chooseActionChatSender->getRestartButton($tg)->getText())) {
+                return $this->restart($tg);
+            }
+            if ($tg->matchText($this->chooseActionChatSender->getShowLessButton($tg)->getText())) {
+                $tg->getTelegram()->getMessengerUser()->setIsShowExtendedKeyboard(false);
+
+                return $this->chooseActionChatSender->sendActions($tg);
+            }
+        } else {
+            if ($tg->matchText($this->chooseActionChatSender->getShowMoreButton($tg)->getText())) {
+                $tg->getTelegram()->getMessengerUser()->setIsShowExtendedKeyboard(true);
+
+                return $this->chooseActionChatSender->sendActions($tg);
+            }
         }
 
         $tg->replyWrong();

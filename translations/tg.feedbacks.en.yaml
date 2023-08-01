@@ -16,9 +16,9 @@ command:
   subscriptions: My Premium
   country: My Country
   restart: Restart
-  purge: Purge
+  purge: Purge Account
   hints: Toggle Hints
-  message: Write to us
+  message: Left a Comment
 
 #  name: Feedbacks
 name:

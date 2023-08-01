@@ -81,6 +81,8 @@ keyboard:
     change_search_term: 📝 Change search term
   premium:
     subscription_plan: "%plan% [%currency% %price%]"
+  more: Show more
+  less: Show less
 
 reply:
   ok: Completed successfully.
