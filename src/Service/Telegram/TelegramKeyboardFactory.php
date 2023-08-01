@@ -13,7 +13,7 @@ class TelegramKeyboardFactory
     {
         return new Keyboard(
             [
-                'keyboard' => array_map(fn ($button) => [$button], $buttons),
+                'keyboard' => array_map(fn ($button) => is_array($button) ? $button : [$button], $buttons),
                 'is_persistent' => true,
                 'resize_keyboard' => true,
                 'one_time_keyboard' => false,

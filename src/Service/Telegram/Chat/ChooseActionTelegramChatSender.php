@@ -18,15 +18,22 @@ class ChooseActionTelegramChatSender
 
     public function sendActions(TelegramAwareHelper $tg): null
     {
-        $keyboards = [
-            $this->getCreateButton($tg),
-            $this->getSearchButton($tg),
-        ];
+        $keyboards = [];
+
+        if ($tg->getTelegram()->getMessengerUser()->isShowExtendedKeyboard()) {
+            $keyboards[] = $this->getCreateButton($tg);
+            $keyboards[] = $this->getSearchButton($tg);
+        } else {
+            $keyboards[] = [
+                $this->getCreateButton($tg),
+                $this->getSearchButton($tg),
+            ];
+        }
 
         if ($this->userSubscriptionManager->hasActiveSubscription($tg->getTelegram()->getMessengerUser())) {
-            $keyboards[] = $this->getSubscriptionsButton($tg);
+            $keyboards[] = [$this->getSubscriptionsButton($tg)];
         } elseif ($tg->getTelegram()->getOptions()->acceptPayments()) {
-            $keyboards[] = $this->getPremiumButton($tg);
+            $keyboards[] = [$this->getPremiumButton($tg)];
         }
 
         if ($tg->getTelegram()->getMessengerUser()->isShowExtendedKeyboard()) {
@@ -36,7 +43,7 @@ class ChooseActionTelegramChatSender
             $keyboards[] = $this->getRestartButton($tg);
             $keyboards[] = $this->getShowLessButton($tg);
         } else {
-            $keyboards[] = $this->getShowMoreButton($tg);
+            $keyboards[count($keyboards) - 1][] = $this->getShowMoreButton($tg);
         }
 
         return $tg->reply($this->getActionAsk($tg), $tg->keyboard(...$keyboards))->null();
