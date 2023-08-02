@@ -14,6 +14,7 @@ class FeedbackSearchCreatorOptionsFactory
             $options['user_per_day_limit'],
             $options['user_per_month_limit'],
             $options['user_per_year_limit'],
+            $options['log_activities'],
         );
     }
 }

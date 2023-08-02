@@ -21,6 +21,7 @@
             <argument type="service" id="app.validator"/>
             <argument type="service" id="app.feedback_user_create_feedback_statistics"/>
             <argument type="service" id="app.feedback_user_subscription_manager"/>
+            <argument type="service" id="app.logger_activity"/>
         </service>
         <service id="app.feedback_search_creator" class="App\Service\Feedback\FeedbackSearchCreator" lazy="true">
             <argument type="service" id="app.feedback_search_creator_options"/>
@@ -28,6 +29,7 @@
             <argument type="service" id="app.validator"/>
             <argument type="service" id="app.feedback_user_create_feedback_search_statistics"/>
             <argument type="service" id="app.feedback_user_subscription_manager"/>
+            <argument type="service" id="app.logger_activity"/>
         </service>
         <service id="app.feedback_searcher" class="App\Service\Feedback\FeedbackSearcher" lazy="true">
             <argument type="service" id="app.repository.feedback"/>

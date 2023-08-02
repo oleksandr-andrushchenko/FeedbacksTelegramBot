@@ -10,6 +10,7 @@ readonly class FeedbackSearchCreatorOptions
         private int $userPerDayLimit,
         private int $userPerMonthLimit,
         private int $userPerYearLimit,
+        private bool $logActivities,
     )
     {
     }
@@ -29,12 +30,8 @@ readonly class FeedbackSearchCreatorOptions
         return $this->userPerYearLimit;
     }
 
-    public function getLimits(): array
+    public function logActivities(): bool
     {
-        return [
-            'day' => $this->userPerDayLimit(),
-            'month' => $this->userPerMonthLimit(),
-            'year' => $this->userPerYearLimit(),
-        ];
+        return $this->logActivities;
     }
 }

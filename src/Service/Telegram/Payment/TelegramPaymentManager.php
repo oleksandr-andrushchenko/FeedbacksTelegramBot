@@ -7,6 +7,7 @@ namespace App\Service\Telegram\Payment;
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Money;
 use App\Entity\Telegram\TelegramPayment;
+use App\Entity\Telegram\TelegramPaymentManagerOptions;
 use App\Entity\User\User;
 use App\Enum\Telegram\TelegramPaymentMethodName;
 use App\Enum\Telegram\TelegramPaymentStatus;
@@ -14,6 +15,7 @@ use App\Exception\Telegram\PaymentNotFoundException;
 use App\Exception\Telegram\UnknownPaymentException;
 use App\Repository\Telegram\TelegramPaymentRepository;
 use App\Service\Intl\CurrencyProvider;
+use App\Service\Logger\ActivityLogger;
 use App\Service\Telegram\Api\TelegramInvoiceSender;
 use App\Service\Telegram\Telegram;
 use App\Service\UuidGenerator;
@@ -27,12 +29,14 @@ use Longman\TelegramBot\Entities\Payments\SuccessfulPayment;
 class TelegramPaymentManager
 {
     public function __construct(
+        private readonly TelegramPaymentManagerOptions $options,
         private readonly TelegramInvoiceSender $invoiceSender,
         private readonly TelegramPaymentMethodProvider $paymentMethodProvider,
         private readonly CurrencyProvider $currencyProvider,
         private readonly EntityManagerInterface $entityManager,
         private readonly TelegramPaymentRepository $paymentRepository,
         private readonly UuidGenerator $uuidGenerator,
+        private readonly ActivityLogger $activityLogger,
     )
     {
     }
@@ -65,6 +69,10 @@ class TelegramPaymentManager
             $payload
         );
         $this->entityManager->persist($payment);
+
+        if ($this->options->logActivities()) {
+            $this->activityLogger->logActivity($payment);
+        }
 
         $this->invoiceSender->sendInvoice(
             $telegram,
@@ -107,6 +115,10 @@ class TelegramPaymentManager
         $payment->setStatus(TelegramPaymentStatus::PRE_CHECKOUT_RECEIVED);
         $payment->setUpdatedAt(new DateTimeImmutable());
 
+        if ($this->options->logActivities()) {
+            $this->activityLogger->logActivity($payment);
+        }
+
         return $payment;
     }
 
@@ -126,6 +138,10 @@ class TelegramPaymentManager
 
         $payment->setStatus(TelegramPaymentStatus::SUCCESSFUL_PAYMENT_RECEIVED);
         $payment->setUpdatedAt(new DateTimeImmutable());
+
+        if ($this->options->logActivities()) {
+            $this->activityLogger->logActivity($payment);
+        }
 
         return $payment;
     }

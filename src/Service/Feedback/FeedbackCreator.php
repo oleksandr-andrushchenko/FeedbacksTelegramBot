@@ -10,6 +10,7 @@ use App\Exception\Feedback\CreateFeedbackLimitExceeded;
 use App\Exception\Messenger\SameMessengerUserException;
 use App\Exception\ValidatorException;
 use App\Object\Feedback\FeedbackTransfer;
+use App\Service\Logger\ActivityLogger;
 use App\Service\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -21,6 +22,7 @@ class FeedbackCreator
         private readonly Validator $validator,
         private readonly UserCreateFeedbackStatisticsProvider $userStatisticsProvider,
         private readonly FeedbackUserSubscriptionManager $userSubscriptionManager,
+        private readonly ActivityLogger $activityLogger,
     )
     {
     }
@@ -67,6 +69,10 @@ class FeedbackCreator
             $messengerUser->getUser()?->getCountryCode()
         );
         $this->entityManager->persist($feedback);
+
+        if ($this->options->logActivities()) {
+            $this->activityLogger->logActivity($feedback);
+        }
 
         return $feedback;
     }

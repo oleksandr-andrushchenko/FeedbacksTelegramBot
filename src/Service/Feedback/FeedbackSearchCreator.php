@@ -9,6 +9,7 @@ use App\Entity\Feedback\FeedbackSearchCreatorOptions;
 use App\Exception\Feedback\CreateFeedbackSearchLimitExceeded;
 use App\Exception\ValidatorException;
 use App\Object\Feedback\FeedbackSearchTransfer;
+use App\Service\Logger\ActivityLogger;
 use App\Service\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -20,6 +21,7 @@ class FeedbackSearchCreator
         private readonly Validator $validator,
         private readonly UserCreateFeedbackSearchStatisticsProvider $userStatisticsProvider,
         private readonly FeedbackUserSubscriptionManager $userSubscriptionManager,
+        private readonly ActivityLogger $activityLogger,
     )
     {
     }
@@ -62,6 +64,10 @@ class FeedbackSearchCreator
             $messengerUser->getUser()?->getCountryCode()
         );
         $this->entityManager->persist($feedbackSearch);
+
+        if ($this->options->logActivities()) {
+            $this->activityLogger->logActivity($feedbackSearch);
+        }
 
         return $feedbackSearch;
     }

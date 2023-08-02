@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Telegram;
 
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
-use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
+use App\Service\Telegram\Conversation\RestartConversationTelegramConversation;
 use App\Tests\Traits\Telegram\TelegramCommandFunctionalTrait;
 
 class RestartFeedbacksTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestCase
@@ -16,12 +16,12 @@ class RestartFeedbacksTelegramCommandFunctionalTest extends TelegramCommandFunct
     {
         $this->type(FeedbackTelegramChannel::RESTART)
             ->shouldSeeReply(
-                $this->trans('reply.restart.ok'),
-                ChooseActionTelegramChatSender::getActionAsk($this->tg),
+                'title',
+                'ask.restart.confirm',
             )
             ->shouldSeeKeyboard(
-                ChooseActionTelegramChatSender::getCreateButton($this->tg),
-                ChooseActionTelegramChatSender::getSearchButton($this->tg),
+                RestartConversationTelegramConversation::getConfirmButton($this->tg),
+                RestartConversationTelegramConversation::getCancelButton($this->tg),
             )
         ;
     }

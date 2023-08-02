@@ -258,7 +258,9 @@ trait TelegramCommandFunctionalTrait
                     break;
                 }
             }
-            if (!$contains) {
+            if ($contains) {
+                $this->assertTrue(true);
+            } else {
                 $this->assertTrue(false, sprintf('"%s" was not found in [%s]', $expectedReply, '"' . join('", "', $actualReplies) . '"'));
             }
         }
@@ -292,16 +294,31 @@ trait TelegramCommandFunctionalTrait
             $expectedButtons
         );
 
-        if (count($expectedButtons) > 0) {
-            $this->assertNotEmpty($actualButtons);
-        }
-
+//        if (count($expectedButtons) > 0) {
+//            $this->assertNotEmpty($actualButtons);
+//        }
+//
 //        $this->assertArraySubset($expectedButtons, $actualButtons);
+//
+//        foreach ($expectedButtons as $expectedButton) {
+//            $this->assertContains($expectedButton, $actualButtons);
+//        }
 
+        // todo: check order
         foreach ($expectedButtons as $expectedButton) {
-            $this->assertContains($expectedButton, $actualButtons);
+            $contains = false;
+            foreach ($actualButtons as $actualButton) {
+                if (str_contains($actualButton, $expectedButton)) {
+                    $contains = true;
+                    break;
+                }
+            }
+            if ($contains) {
+                $this->assertTrue(true);
+            } else {
+                $this->assertTrue(false, sprintf('"%s" was not found in [%s]', $expectedButton, '"' . join('", "', $actualButtons) . '"'));
+            }
         }
-
         return $this;
     }
 

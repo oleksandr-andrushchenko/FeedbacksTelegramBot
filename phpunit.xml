@@ -27,8 +27,8 @@
 
 <!--        should be synced with:-->
 <!--        1) .env-->
-<!--        1) phpunit.xml-->
-<!--        2) serverless.yml-->
+<!--        2) .env.dist-->
+<!--        3) serverless.yml-->
 
         <env name="APP_STATE" value="local"/>
         <env name="APP_ENV" value="test"/>
@@ -40,9 +40,12 @@
         <env name="TELEGRAM_FEEDBACKS_ADMIN_IDS" value='["409525390"]'/>
         <env name="TELEGRAM_FEEDBACKS_LANGUAGE_CODES" value='["en","uk","ru"]'/>
         <env name="TELEGRAM_FEEDBACKS_ADMIN_CHAT_IDS" value='["409525390"]'/>
-        <env name="TELEGRAM_FEEDBACKS_CHECK_UPDATE_DUPLICATES" value="true"/>
+        <env name="TELEGRAM_FEEDBACKS_CHECK_UPDATES" value="true"/>
         <env name="TELEGRAM_FEEDBACKS_CHECK_REQUESTS" value="true"/>
         <env name="TELEGRAM_FEEDBACKS_PROCESS_ADMIN_ONLY" value="false"/>
+        <env name="TELEGRAM_ACTIVITIES_TOKEN" value="0:any"/>
+        <env name="TELEGRAM_ACTIVITIES_CHANNEL" value="0"/>
+        <env name="LOG_ACTIVITIES" value="false"/>
         <env name="FEEDBACK_CREATOR_USER_TARGET_MESSENGER_REQUIRED" value="false"/>
         <env name="FEEDBACKS_LIQPAY_TOKEN" value=""/>
         <env name="FEEDBACKS_PORTMONE_TOKEN" value=""/>

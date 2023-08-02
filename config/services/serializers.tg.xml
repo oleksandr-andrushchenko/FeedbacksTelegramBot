@@ -42,5 +42,10 @@
                  lazy="true">
             <tag name="serializer.normalizer" priority="-967"/>
         </service>
+        <service id="app.normalizer.telegram_payment" class="App\Serializer\Telegram\TelegramPaymentNormalizer"
+                 lazy="true">
+            <argument type="service" id="app.normalizer.money"/>
+            <tag name="serializer.normalizer" priority="-966"/>
+        </service>
     </services>
 </container>

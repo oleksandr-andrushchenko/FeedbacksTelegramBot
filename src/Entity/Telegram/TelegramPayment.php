@@ -78,24 +78,24 @@ class TelegramPayment
         return $this->payload;
     }
 
-    public function getPreCheckoutQuery(): array
+    public function getPreCheckoutQuery(): ?array
     {
         return $this->preCheckoutQuery;
     }
 
-    public function setPreCheckoutQuery(array $preCheckoutQuery): self
+    public function setPreCheckoutQuery(?array $preCheckoutQuery): self
     {
         $this->preCheckoutQuery = $preCheckoutQuery;
 
         return $this;
     }
 
-    public function getSuccessfulPayment(): array
+    public function getSuccessfulPayment(): ?array
     {
         return $this->successfulPayment;
     }
 
-    public function setSuccessfulPayment(array $successfulPayment): self
+    public function setSuccessfulPayment(?array $successfulPayment): self
     {
         $this->successfulPayment = $successfulPayment;
 

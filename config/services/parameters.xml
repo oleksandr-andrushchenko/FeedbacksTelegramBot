@@ -11,6 +11,19 @@
         <parameter key="app.default_locale">en</parameter>
         <parameter key="app.default_currency">USD</parameter>
 
+        <parameter key="app.telegram_activities_token">%env(TELEGRAM_ACTIVITIES_TOKEN)%</parameter>
+        <parameter key="app.telegram_activities_channel">%env(TELEGRAM_ACTIVITIES_CHANNEL)%</parameter>
+
+        <parameter key="app.log_activities">%env(bool:LOG_ACTIVITIES)%</parameter>
+
+        <parameter key="app.log_activities_feedback_create">%app.log_activities%</parameter>
+        <parameter key="app.log_activities_feedback_search">%app.log_activities%</parameter>
+        <parameter key="app.log_activities_telegram_payment_manager">%app.log_activities%</parameter>
+
+        <parameter key="app.telegram_payment_manager_options" type="collection">
+            <parameter key="log_activities">%app.log_activities_telegram_payment_manager%</parameter>
+        </parameter>
+
         <parameter key="app.feedback_telegram_options" type="collection">
             <parameter key="api_token">%env(TELEGRAM_FEEDBACKS_API_TOKEN)%</parameter>
             <parameter key="username">%env(TELEGRAM_FEEDBACKS_USERNAME)%</parameter>
@@ -19,7 +32,7 @@
             <parameter key="admin_ids">%env(json:TELEGRAM_FEEDBACKS_ADMIN_IDS)%</parameter>
             <parameter key="locales">%env(json:TELEGRAM_FEEDBACKS_LANGUAGE_CODES)%</parameter>
             <parameter key="admin_chat_ids">%env(json:TELEGRAM_FEEDBACKS_ADMIN_CHAT_IDS)%</parameter>
-            <parameter key="check_updates">%env(bool:TELEGRAM_FEEDBACKS_CHECK_UPDATE_DUPLICATES)%</parameter>
+            <parameter key="check_updates">%env(bool:TELEGRAM_FEEDBACKS_CHECK_UPDATES)%</parameter>
             <parameter key="check_requests">%env(bool:TELEGRAM_FEEDBACKS_CHECK_REQUESTS)%</parameter>
             <parameter key="process_admin_only">%env(bool:TELEGRAM_FEEDBACKS_PROCESS_ADMIN_ONLY)%</parameter>
             <parameter key="accept_payments">true</parameter>
@@ -49,12 +62,14 @@
             <parameter key="user_per_day_limit">2</parameter>
             <parameter key="user_per_month_limit">50</parameter>
             <parameter key="user_per_year_limit">300</parameter>
+            <parameter key="log_activities">%app.log_activities_feedback_create%</parameter>
         </parameter>
 
         <parameter key="app.feedback_search_creator_options" type="collection">
             <parameter key="user_per_day_limit">3</parameter>
             <parameter key="user_per_month_limit">10</parameter>
             <parameter key="user_per_year_limit">50</parameter>
+            <parameter key="log_activities">%app.log_activities_feedback_search%</parameter>
         </parameter>
 
         <parameter key="app.feedback_subscription_plans" type="collection">

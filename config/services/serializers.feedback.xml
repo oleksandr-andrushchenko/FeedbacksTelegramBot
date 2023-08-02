@@ -15,5 +15,11 @@
                  lazy="true">
             <tag name="serializer.normalizer" priority="-987"/>
         </service>
+        <service id="app.normalizer.feedback" class="App\Serializer\Feedback\FeedbackNormalizer" lazy="true">
+            <tag name="serializer.normalizer" priority="-986"/>
+        </service>
+        <service id="app.normalizer.feedback" class="App\Serializer\Feedback\FeedbackSearchNormalizer" lazy="true">
+            <tag name="serializer.normalizer" priority="-985"/>
+        </service>
     </services>
 </container>
