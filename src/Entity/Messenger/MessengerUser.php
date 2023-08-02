@@ -20,7 +20,7 @@ class MessengerUser
         private ?User $user = null,
         private bool $isShowHints = true,
         private bool $isShowExtendedKeyboard = false,
-        private DateTimeInterface $createdAt = new DateTimeImmutable(),
+        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
         private ?int $id = null,
     )
@@ -124,13 +124,6 @@ class MessengerUser
     public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(?DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     public function getUpdatedAt(): ?DateTimeInterface

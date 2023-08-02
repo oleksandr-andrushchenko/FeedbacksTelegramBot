@@ -23,14 +23,12 @@ class FeedbackSearch
         private readonly ?Messenger $searchTermMessenger,
         private readonly ?string $searchTermMessengerUsername,
         private readonly bool $isPremium,
-        private ?DateTimeInterface $createdAt = null,
+        private readonly ?string $countryCode = null,
+        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
         private ?int $id = null,
     )
     {
-        $this->id = null;
-        $this->createdAt = $this->createdAt ?? new DateTimeImmutable();
-        $this->updatedAt = $this->updatedAt ?? null;
     }
 
     public function getId(): ?int
@@ -83,16 +81,14 @@ class FeedbackSearch
         return $this->isPremium;
     }
 
+    public function getCountryCode(): ?string
+    {
+        return $this->countryCode;
+    }
+
     public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(?DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     public function getUpdatedAt(): ?DateTimeInterface

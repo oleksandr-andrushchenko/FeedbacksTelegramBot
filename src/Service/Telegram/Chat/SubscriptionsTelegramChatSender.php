@@ -23,7 +23,7 @@ class SubscriptionsTelegramChatSender
         $count = count($subscriptions);
 
         if ($count === 0) {
-            return $tg->replyUpset('reply.subscriptions.empty_list')->null();
+            return $tg->replyUpset($tg->trans('reply.subscriptions.empty_list'))->null();
         }
 
         $tg->reply($tg->trans('reply.subscriptions.title', ['count' => $count]));

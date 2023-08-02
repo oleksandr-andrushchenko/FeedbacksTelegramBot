@@ -56,6 +56,8 @@ ask:
     payment_invoice_description: "No limits on feedbacks creation and searching for the next period: %plan%"
   purge:
     confirm: Confirm data purge?
+  restart:
+    confirm: Confirm bot restart?
   message:
     text: Enter your message please.
 
@@ -81,6 +83,9 @@ keyboard:
     change_search_term: 📝 Change search term
   premium:
     subscription_plan: "%plan% [%currency% %price%]"
+  hints:
+    turn_on: Enable Hints
+    turn_off: Disable Hints
   more: Show more
   less: Show less
 
@@ -103,7 +108,7 @@ reply:
       not_accept_payments: We do not accept payments now. Try again later please.
   country:
     canceled: Country selection dialog has been canceled.
-    ok: "Your country has been successfully updated: %icon% %name%"
+    ok: "Your country has been successfully updated on %icon% %name%"
   create:
     canceled: Feedback adding dialog has been canceled.
     ok: Feedback has been successfully added.
@@ -115,8 +120,9 @@ reply:
     canceled: Feedback search dialog has been canceled.
     empty_list: No feedbacks were found by "%search_term%".
     title: "There are %count% feedback(-s) have been successfully found by \"%search_term%\" (%search_term_type%):"
-    fail: "Unknown error has occurred!\r\n1) make sure everything was properly organized and repeat; or\r\n2) use /%restart_command% command; or\r\n3) Try again later please."
-    limit_exceeded: "You have reached feedback searching limit (%limit%) for the next period: %period%. Try again later or buy premium subscription %premium_command% please."
+    fail:
+      unknown: "Unknown error has occurred!\r\n1) make sure everything was properly organized and repeat; or\r\n2) use /%restart_command% command; or\r\n3) Try again later please."
+      limit_exceeded: "You have reached feedback searching limit (%limit%) for the next period: %period%. Try again later or buy premium subscription %premium_command% please."
   premium:
     already_have: "You have active premium subscription already:"
     canceled: Getting premium dialog has been canceled.
@@ -132,6 +138,7 @@ reply:
     canceled: Message adding dialog has been canceled.
   restart:
     ok: Restart has been successfully made.
+    canceled: Restart dialog has been canceled.
     fail: Unknown error has occurred, we are working on this already, try later please.
 
 search_term_type:

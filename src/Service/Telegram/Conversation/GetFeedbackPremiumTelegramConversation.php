@@ -55,7 +55,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         }
 
         if ($tg->matchText(null) && $this->state->getStep() !== self::STEP_PAYMENT_ASKED) {
-            return $tg->replyWrong()->null();
+            return $tg->replyWrong($tg->trans('reply.wrong'))->null();
         }
 
         if ($tg->matchText($this->getBackButton($tg)->getText())) {
@@ -67,7 +67,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
             $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
-            $tg->stopConversation($conversation)->replyUpset('reply.premium.canceled');
+            $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.premium.canceled'));
 
             return $this->chooseActionChatSender->sendActions($tg);
         }
@@ -114,7 +114,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         $subscriptionPlan = $this->getSubscriptionPlanByButton($tg->getText(), $tg);
 
         if ($subscriptionPlan === null) {
-            $tg->replyWrong();
+            $tg->replyWrong($tg->trans('reply.wrong'));
 
             return $this->askSubscriptionPlan($tg);
         }
@@ -150,7 +150,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         $paymentMethod = $this->getPaymentMethodByButton($tg->getText(), $tg);
 
         if ($paymentMethod === null) {
-            $tg->replyWrong();
+            $tg->replyWrong($tg->trans('reply.wrong'));
 
             return $this->askPaymentMethod($tg);
         }
@@ -202,7 +202,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         $preCheckoutQuery = $tg->getTelegram()->getUpdate()->getPreCheckoutQuery();
 
         if ($preCheckoutQuery === null) {
-            $tg->replyWrong();
+            $tg->replyWrong($tg->trans('reply.wrong'));
 
             return $this->askPayment($tg, $conversation);
         }

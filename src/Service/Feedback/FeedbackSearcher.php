@@ -32,7 +32,7 @@ class FeedbackSearcher
             ->getResult()
         ;
 
-        return array_values(array_filter($feedbacks, function (Feedback $feedback) use ($feedbackSearch) {
+        $feedbacks = array_values(array_filter($feedbacks, function (Feedback $feedback) use ($feedbackSearch) {
             if (
                 $feedbackSearch->getSearchTermType() !== SearchTermType::unknown
                 && $feedback->getSearchTermType() !== SearchTermType::unknown
@@ -50,5 +50,16 @@ class FeedbackSearcher
 
             return true;
         }));
+
+//        order by requester country
+        $countryCode = $feedbackSearch->getCountryCode();
+
+        usort($feedbacks, fn (Feedback $a, Feedback $b) => match (true) {
+            $a->getCountryCode() === $countryCode && $b->getCountryCode() !== $countryCode => 1,
+            $a->getCountryCode() !== $countryCode && $b->getCountryCode() === $countryCode => -1,
+            default => 0,
+        });
+
+        return $feedbacks;
     }
 }

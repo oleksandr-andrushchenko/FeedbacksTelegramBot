@@ -43,13 +43,13 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
         }
 
         if ($tg->matchText(null)) {
-            return $tg->replyWrong()->null();
+            return $tg->replyWrong($tg->trans('reply.wrong'))->null();
         }
 
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
             $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
-            $tg->stopConversation($conversation)->replyUpset('reply.country.canceled');
+            $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.country.canceled'));
 
             return $this->chooseActionChatSender->sendActions($tg);
         }
@@ -103,17 +103,17 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
         $country = $this->getCountryByButton($tg->getText(), $countries, $tg);
 
         if ($country === null) {
-            $tg->replyWrong();
+            $tg->replyWrong($tg->trans('reply.wrong'));
 
             return $this->askGuessCountry($countries, $tg);
         }
 
         $tg->getTelegram()->getMessengerUser()->getUser()->setCountryCode($country->getCode());
 
-        $tg->replyOk('reply.country.ok', [
+        $tg->replyOk($tg->trans('reply.country.ok', [
             'icon' => $this->provider->getCountryIcon($country),
             'name' => $this->provider->getCountryName($country),
-        ]);
+        ]));
 
         $tg->stopConversation($conversation);
 
@@ -146,17 +146,17 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
         $country = $this->getCountryByButton($tg->getText(), $countries, $tg);
 
         if ($country === null) {
-            $tg->replyWrong();
+            $tg->replyWrong($tg->trans('reply.wrong'));
 
             return $this->askCountry($tg);
         }
 
         $tg->getTelegram()->getMessengerUser()->getUser()->setCountryCode($country->getCode());
 
-        $tg->replyOk('reply.country.ok', [
+        $tg->replyOk($tg->trans('reply.country.ok', [
             'icon' => $this->provider->getCountryIcon($country),
             'name' => $this->provider->getCountryName($country),
-        ]);
+        ]));
 
         $tg->stopConversation($conversation);
 

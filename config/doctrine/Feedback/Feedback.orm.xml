@@ -36,7 +36,8 @@
         <field name="rating" column="rating" type="smallint" enum-type="App\Enum\Feedback\Rating"/>
         <field name="description" column="description" type="text" nullable="true"/>
         <field name="isPremium" column="is_premium" type="boolean"/>
-        <field name="createdAt" column="created_at" type="datetime_immutable" nullable="true"/>
-        <field name="updatedAt" column="updated_at" type="datetime" nullable="true"/>
+        <field name="countryCode" column="country_code" length="2" nullable="true"/>
+        <field name="createdAt" column="created_at" type="datetime_immutable"/>
+        <field name="updatedAt" column="updated_at" type="datetime_immutable" nullable="true"/>
     </entity>
 </doctrine-mapping>

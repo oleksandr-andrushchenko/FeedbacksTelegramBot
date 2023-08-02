@@ -73,7 +73,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         ];
 
         yield sprintf('start_step_as_%s', 'command') => [
-            'command' => FeedbackTelegramChannel::SEARCH_FEEDBACK,
+            'command' => FeedbackTelegramChannel::SEARCH,
         ];
     }
 

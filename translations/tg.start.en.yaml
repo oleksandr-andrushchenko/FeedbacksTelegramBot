@@ -8,5 +8,6 @@ subscriptions: List your premium subscriptions.
 country: Choose your country.
 hints: Toggle help hints like this.
 purge: Remove stored user data.
-restart: Stop current dialog and restart the bot.
+message: Left feedback message about the bot.
+restart: Stop current dialog, restore default settings and restart the bot.
 summary: All commands are available in menu and the most important ones are present in keyboard menu.

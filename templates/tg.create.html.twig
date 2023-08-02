@@ -6,6 +6,6 @@
     - {{ 'limit_item'|trans({'%period%': period|trans({}, 'tg'), '%limit%': limit})|raw }}
 {% endfor %}
 
-{{ 'icon.info'|trans({}, 'tg') }} {{ 'premium'|trans({'%command%': include('command.html.twig', {name: 'premium', command: premium_command})})|raw }}
+{{ 'icon.info'|trans({}, 'tg') }} {{ 'premium'|trans({'%command%': include('tg.command.html.twig', {name: 'premium'})})|raw }}
 
 {% include 'tg.hints.html.twig' %}

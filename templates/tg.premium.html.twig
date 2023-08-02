@@ -2,7 +2,7 @@
 {{ 'icon.info'|trans({}, 'tg') }} {{ 'title'|trans }}
 
 {% for name,command in commands %}
-{% include 'command.html.twig' with {name: name, command: command.command} %}:
+{% include 'tg.command.html.twig' with {name: name} %}:
 
 {% for period,limit in command.limits %}
  - {{ 'limit_item'|trans({'%period%': period|trans({}, 'tg'), '%limit%': limit})|raw }}

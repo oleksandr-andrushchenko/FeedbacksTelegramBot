@@ -6,6 +6,7 @@ namespace App\Enum\Telegram;
 
 enum TelegramView: string
 {
+    case COMMAND = 'command';
     case FEEDBACK = 'feedback';
     case SUBSCRIPTION = 'subscription';
     case PREMIUM = 'premium';
@@ -15,6 +16,7 @@ enum TelegramView: string
     case COUNTRY = 'country';
     case PURGE = 'purge';
     case MESSAGE = 'message';
+    case RESTART = 'restart';
 
     public function view(string $locale = null): string
     {

@@ -37,13 +37,13 @@ class LeaveFeedbackMessageTelegramConversation extends TelegramConversation impl
         }
 
         if ($tg->matchText(null)) {
-            return $tg->replyWrong()->null();
+            return $tg->replyWrong($tg->trans('reply.wrong'))->null();
         }
 
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
             $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
-            $tg->stopConversation($conversation)->replyUpset('reply.message.canceled');
+            $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.message.canceled'));
 
             return $this->chooseActionChatSender->sendActions($tg);
         }
@@ -82,7 +82,7 @@ class LeaveFeedbackMessageTelegramConversation extends TelegramConversation impl
                 )
             );
 
-            $tg->stopConversation($conversation)->replyOk('reply.message.ok');
+            $tg->stopConversation($conversation)->replyOk($tg->trans('reply.message.ok'));
 
             return $this->chooseActionChatSender->sendActions($tg);
         } catch (ValidatorException $exception) {

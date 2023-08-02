@@ -63,7 +63,8 @@ class FeedbackCreator
             $searchTermTransfer->getMessengerUsername(),
             $feedbackTransfer->getRating(),
             $feedbackTransfer->getDescription(),
-            $isPremium
+            $isPremium,
+            $messengerUser->getUser()?->getCountryCode()
         );
         $this->entityManager->persist($feedback);
 

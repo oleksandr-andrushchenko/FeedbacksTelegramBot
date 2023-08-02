@@ -18,7 +18,7 @@ command:
   restart: Restart
   purge: Purge Account
   hints: Toggle Hints
-  message: Left a Comment
+  message: Left Comment
 
 #  name: Feedbacks
 name:

@@ -1,1 +1,1 @@
-{{ 'icon.info'|trans({}, 'tg') }} {{ 'toggle_hint'|trans({'%command%': include('command.html.twig', {name: 'hints', command: constant('App\\Service\\Telegram\\Channel\\FeedbackTelegramChannel::HINTS')})}, 'tg')|raw }}
+{{ 'icon.info'|trans({}, 'tg') }} {{ 'toggle_hint'|trans({'%command%': include('tg.command.html.twig', {name: 'hints'})}, 'tg')|raw }}

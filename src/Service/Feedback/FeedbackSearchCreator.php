@@ -58,7 +58,8 @@ class FeedbackSearchCreator
             $searchTermMessengerUser,
             $searchTermTransfer->getMessenger(),
             $searchTermTransfer->getMessengerUsername(),
-            $isPremium
+            $isPremium,
+            $messengerUser->getUser()?->getCountryCode()
         );
         $this->entityManager->persist($feedbackSearch);
 

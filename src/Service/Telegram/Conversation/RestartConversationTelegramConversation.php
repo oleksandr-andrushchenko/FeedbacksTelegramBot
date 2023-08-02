@@ -7,12 +7,12 @@ namespace App\Service\Telegram\Conversation;
 use App\Entity\Telegram\TelegramConversationState;
 use App\Enum\Telegram\TelegramView;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
+use App\Service\Telegram\Chat\StartTelegramCommandHandler;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Entity\Telegram\TelegramConversation as Conversation;
-use App\Service\User\UserDataPurger;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
-class PurgeAccountConversationTelegramConversation extends TelegramConversation implements TelegramConversationInterface
+class RestartConversationTelegramConversation extends TelegramConversation implements TelegramConversationInterface
 {
     public const STEP_CONFIRM_ASKED = 10;
     public const STEP_CONFIRMED = 20;
@@ -20,8 +20,8 @@ class PurgeAccountConversationTelegramConversation extends TelegramConversation 
 
     public function __construct(
         readonly TelegramAwareHelper $awareHelper,
-        private readonly UserDataPurger $userDataPurger,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
+        private readonly StartTelegramCommandHandler $startHandler,
     )
     {
         parent::__construct($awareHelper, new TelegramConversationState());
@@ -42,7 +42,7 @@ class PurgeAccountConversationTelegramConversation extends TelegramConversation 
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
             $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
-            $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.purge.canceled'));
+            $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.restart.canceled'));
 
             return $this->chooseActionChatSender->sendActions($tg);
         }
@@ -60,16 +60,7 @@ class PurgeAccountConversationTelegramConversation extends TelegramConversation 
             return;
         }
 
-        $tg->replyView(TelegramView::PURGE, [
-            'items' => [
-                'username',
-                'name',
-                'language',
-                'country',
-                'phone_number',
-                'email',
-            ],
-        ]);
+        $tg->replyView(TelegramView::RESTART);
     }
 
     public function askConfirm(TelegramAwareHelper $tg): null
@@ -92,16 +83,19 @@ class PurgeAccountConversationTelegramConversation extends TelegramConversation 
 
         $this->state->setStep(self::STEP_CONFIRMED);
 
-        $this->userDataPurger->purgeUserData($tg->getTelegram()->getMessengerUser()->getUser());
+        $tg->getTelegram()->getMessengerUser()?->setIsShowHints(true)?->setIsShowExtendedKeyboard(false);
+        $tg->getTelegram()->getMessengerUser()?->getUser()->setCountryCode(null);
 
-        $tg->replyOk($tg->trans('reply.purge.ok'))->stopConversation($conversation);
+        $tg->stopConversation($conversation)->stopConversations();
 
-        return $this->chooseActionChatSender->sendActions($tg);
+        $tg->replyOk($tg->trans('reply.restart.ok'));
+
+        return $this->startHandler->handleStart($tg);
     }
 
     public static function getConfirmAsk(TelegramAwareHelper $tg): string
     {
-        return $tg->trans('ask.purge.confirm');
+        return $tg->trans('ask.restart.confirm');
     }
 
     public static function getConfirmButton(TelegramAwareHelper $tg): KeyboardButton

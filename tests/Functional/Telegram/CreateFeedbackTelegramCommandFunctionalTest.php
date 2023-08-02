@@ -75,7 +75,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         ];
 
         yield sprintf('start_step_as_%s', 'command') => [
-            'command' => FeedbackTelegramChannel::CREATE_FEEDBACK,
+            'command' => FeedbackTelegramChannel::CREATE,
         ];
     }
 

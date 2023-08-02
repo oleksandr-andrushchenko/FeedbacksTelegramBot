@@ -2,3 +2,4 @@ App\Entity\Telegram\TelegramUpdate:
   telegram_update_{1..2}:
     __construct:
       id: <intval(<current()>)>
+      data: <([])>

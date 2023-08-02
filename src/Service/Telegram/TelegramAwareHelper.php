@@ -88,6 +88,11 @@ class TelegramAwareHelper
         return $this;
     }
 
+    public function view(string|TelegramView $template, array $context = []): string
+    {
+        return $this->templateRenderer->renderTelegramTemplate($template, $context, $this->getLanguageCode());
+    }
+
     public function replyView(
         string|TelegramView $template,
         array $context = [],
@@ -97,13 +102,15 @@ class TelegramAwareHelper
         bool $disableWebPagePreview = null
     ): static
     {
-        $this->chatActionSender->sendChatAction($this->getTelegram(), $this->getChatId(), ChatAction::TYPING);
-        $content = $this->templateRenderer->renderTelegramTemplate($template, $context, $this->getLanguageCode());
-
+        $this->chatActionSender->sendChatAction(
+            $this->getTelegram(),
+            $this->getChatId(),
+            ChatAction::TYPING
+        );
         $this->messageSender->sendTelegramMessage(
             $this->getTelegram(),
             $this->getChatId(),
-            $content,
+            $this->view($template, $context),
             keyboard: $keyboard,
             parseMode: $parseMode,
             protectContent: $protectContent,
@@ -121,7 +128,11 @@ class TelegramAwareHelper
         bool $disableWebPagePreview = null
     ): static
     {
-        $this->chatActionSender->sendChatAction($this->getTelegram(), $this->getChatId(), ChatAction::TYPING);
+        $this->chatActionSender->sendChatAction(
+            $this->getTelegram(),
+            $this->getChatId(),
+            ChatAction::TYPING
+        );
         $this->messageSender->sendTelegramMessage(
             $this->getTelegram(),
             $this->getChatId(),
@@ -141,42 +152,57 @@ class TelegramAwareHelper
     }
 
     public function replyOk(
-        string $transId = 'reply.ok',
-        array $transParameters = [],
-        ?string $domain = 'tg',
+        string $text,
+        Keyboard $keyboard = null,
         string $parseMode = null,
+        bool $protectContent = null,
+        bool $disableWebPagePreview = null
     ): static
     {
-//        $this->reply($this->trans('reply.icon.ok') . ' ' . $this->trans($transId, $transParameters, $domain));
-        $this->reply($this->trans($transId, $transParameters, $domain), parseMode: $parseMode);
+        $this->reply($text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
         $this->reply($this->trans('reply.icon.ok'));
 
         return $this;
     }
 
-    public function replyFail(string $transId = 'reply.fail', array $transParameters = [], ?string $domain = 'tg'): static
+    public function replyFail(
+        string $text,
+        Keyboard $keyboard = null,
+        string $parseMode = null,
+        bool $protectContent = null,
+        bool $disableWebPagePreview = null
+    ): static
     {
         // todo: find command by key
-//        $this->reply($this->trans('reply.icon.fail') . ' ' . $this->trans($transId, array_merge(['restart_command' => '/restart'], $transParameters), $domain));
-        $this->reply($this->trans($transId, $transParameters, $domain));
+        $this->reply($text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
         $this->reply($this->trans('reply.icon.fail'));
 
         return $this;
     }
 
-    public function replyWrong(string $transId = 'reply.wrong', array $transParameters = [], ?string $domain = 'tg'): static
+    public function replyWrong(
+        string $text,
+        Keyboard $keyboard = null,
+        string $parseMode = null,
+        bool $protectContent = null,
+        bool $disableWebPagePreview = null
+    ): static
     {
-//        $this->reply($this->trans('reply.icon.wrong') . ' ' . $this->trans($transId, $transParameters, $domain));
-        $this->reply($this->trans($transId, $transParameters, $domain));
+        $this->reply($text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
         $this->reply($this->trans('reply.icon.wrong'));
 
         return $this;
     }
 
-    public function replyUpset(string $transId = 'reply.upset', array $transParameters = [], ?string $domain = 'tg'): static
+    public function replyUpset(
+        string $text,
+        Keyboard $keyboard = null,
+        string $parseMode = null,
+        bool $protectContent = null,
+        bool $disableWebPagePreview = null
+    ): static
     {
-//        $this->reply($this->trans('reply.icon.upset') . ' ' . $this->trans($transId, $transParameters, $domain));
-        $this->reply($this->trans($transId, $transParameters, $domain));
+        $this->reply($text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
         $this->reply($this->trans('reply.icon.upset'));
 
         return $this;

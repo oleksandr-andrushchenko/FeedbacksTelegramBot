@@ -24,7 +24,7 @@ class PremiumDescribeTelegramChatSender
         return $tg->replyView(TelegramView::PREMIUM, [
             'commands' => [
                 'create' => [
-                    'command' => FeedbackTelegramChannel::CREATE_FEEDBACK,
+                    'command' => FeedbackTelegramChannel::CREATE,
                     'limits' => [
                         'day' => $this->creatorOptions->userPerDayLimit(),
                         'month' => $this->creatorOptions->userPerMonthLimit(),
@@ -32,7 +32,7 @@ class PremiumDescribeTelegramChatSender
                     ],
                 ],
                 'search' => [
-                    'command' => FeedbackTelegramChannel::SEARCH_FEEDBACK,
+                    'command' => FeedbackTelegramChannel::SEARCH,
                     'limits' => [
                         'day' => $this->searchCreatorOptions->userPerDayLimit(),
                         'month' => $this->searchCreatorOptions->userPerMonthLimit(),

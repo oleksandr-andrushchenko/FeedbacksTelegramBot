@@ -15,7 +15,6 @@ use App\Object\Feedback\FeedbackTransfer;
 use App\Object\Feedback\SearchTermTransfer;
 use App\Service\Feedback\FeedbackCreator;
 use App\Service\Feedback\SearchTerm\SearchTermParserOnlyInterface;
-use App\Service\Telegram\Channel\FeedbackTelegramChannel;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Service\Util\Array\ArrayValueEraser;
@@ -56,7 +55,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         }
 
         if ($tg->matchText(null)) {
-            return $tg->replyWrong()->null();
+            return $tg->replyWrong($tg->trans('reply.wrong'))->null();
         }
 
         if ($tg->matchText($this->getBackButton($tg)->getText())) {
@@ -84,7 +83,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
             $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
-            $tg->stopConversation($conversation)->replyUpset('reply.create.canceled');
+            $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.create.canceled'));
 
             return $this->chooseActionChatSender->sendActions($tg);
         }
@@ -126,7 +125,6 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
                 'month' => $options->userPerMonthLimit(),
                 'year' => $options->userPerYearLimit(),
             ],
-            'premium_command' => FeedbackTelegramChannel::GET_PREMIUM,
         ]);
     }
 
@@ -193,7 +191,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
         if ($searchTerm->getType() === null) {
             if ($searchTerm->getPossibleTypes() === null) {
-                $tg->replyWrong();
+                $tg->replyWrong($tg->trans('reply.wrong'));
 
                 return $this->askSearchTerm($tg);
             }
@@ -237,7 +235,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         $type = $this->getSearchTermTypeByButton($tg->getText(), $tg);
 
         if ($type === null) {
-            $tg->replyWrong();
+            $tg->replyWrong($tg->trans('reply.wrong'));
 
             return $this->askSearchTermType($tg);
         }
@@ -285,7 +283,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         $rating = $this->getRatingByButton($tg->getText(), $tg);
 
         if ($rating === null) {
-            $tg->replyWrong();
+            $tg->replyWrong($tg->trans('reply.wrong'));
 
             return $this->askRating($tg);
         }
@@ -411,7 +409,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
                 // nothing, continue
                 break;
             default:
-                $tg->replyWrong();
+                $tg->replyWrong($tg->trans('reply.wrong'));
 
                 return $this->askConfirm($tg);
         }
@@ -430,7 +428,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
             );
 
             // todo: change text to something like: "want to add more?"
-            $tg->stopConversation($conversation)->replyOk('reply.create.ok');
+            $tg->stopConversation($conversation)->replyOk($tg->trans('reply.create.ok'));
 
             return $this->chooseActionChatSender->sendActions($tg);
         } catch (ValidatorException $exception) {
@@ -448,21 +446,25 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
                 return $this->askDescription($tg);
             }
 
-            $tg->replyFail();
+            $tg->replyFail($tg->trans('reply.fail'));
 
             return $this->askConfirm($tg);
         } catch (SameMessengerUserException) {
-            $tg->replyFail('reply.create.fail.same_messenger_user');
+            $tg->replyFail($tg->trans('reply.create.fail.same_messenger_user'));
 
             return $this->askConfirm($tg);
         } catch (CreateFeedbackLimitExceeded $exception) {
-            $tg->replyFail('reply.create.fail.limit_exceeded', [
+            $tg->replyFail($tg->trans('reply.create.fail.limit_exceeded', [
                 'period' => $tg->trans($exception->getPeriodKey()),
                 'limit' => $exception->getLimit(),
-                'premium_command' => FeedbackTelegramChannel::GET_PREMIUM,
-            ]);
+                'premium_command' => $tg->view(TelegramView::COMMAND, [
+                    'name' => 'premium',
+                ]),
+            ]), parseMode: 'HTML');
 
-            return $tg->stopConversation($conversation)->startConversation(ChooseFeedbackCountryTelegramConversation::class)->null();
+            $tg->stopConversation($conversation);
+
+            return $this->chooseActionChatSender->sendActions($tg);
         }
     }
 
