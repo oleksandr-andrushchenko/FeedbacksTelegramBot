@@ -27,6 +27,9 @@
         <parameter key="app.telegram_activities_token">%env(TELEGRAM_ACTIVITIES_TOKEN)%</parameter>
         <parameter key="app.telegram_activities_channel">%env(TELEGRAM_ACTIVITIES_CHANNEL)%</parameter>
 
+        <parameter key="app.telegram_errors_token">%env(TELEGRAM_ERRORS_TOKEN)%</parameter>
+        <parameter key="app.telegram_errors_channel">%env(TELEGRAM_ERRORS_CHANNEL)%</parameter>
+
         <parameter key="app.log_activities">%env(bool:LOG_ACTIVITIES)%</parameter>
 
         <parameter key="app.log_activities_feedback_create">%app.log_activities%</parameter>

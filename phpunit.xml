@@ -46,6 +46,8 @@
         <env name="TELEGRAM_ACTIVITIES_TOKEN" value="0:any"/>
         <env name="TELEGRAM_ACTIVITIES_CHANNEL" value="0"/>
         <env name="LOG_ACTIVITIES" value="false"/>
+        <env name="TELEGRAM_ERRORS_TOKEN" value="0:any"/>
+        <env name="TELEGRAM_ERRORS_CHANNEL" value="0"/>
         <env name="FEEDBACK_CREATOR_USER_TARGET_MESSENGER_REQUIRED" value="false"/>
         <env name="FEEDBACKS_LIQPAY_TOKEN" value=""/>
         <env name="FEEDBACKS_PORTMONE_TOKEN" value=""/>

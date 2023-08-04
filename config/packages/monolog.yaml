@@ -20,6 +20,11 @@ when@dev:
         channel: '%app.telegram_activities_channel%'
         level: debug
         channels: [ 'activities' ]
+      error:
+        type: telegram
+        token: '%app.telegram_errors_token%'
+        channel: '%app.telegram_errors_channel%'
+        level: warning
 
 when@test:
   monolog:
@@ -50,3 +55,8 @@ when@prod:
         type: console
         process_psr_3_messages: false
         channels: [ "!event", "!doctrine" ]
+      error:
+        type: telegram
+        token: '%app.telegram_errors_token%'
+        channel: '%app.telegram_errors_channel%'
+        level: warning

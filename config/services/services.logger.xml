@@ -9,5 +9,11 @@
             <argument type="service" id="monolog.logger.activities"/>
             <argument type="service" id="serializer"/>
         </service>
+        <service id="app.logger_processor_environment" class="App\Service\Logger\Processor\EnvironmentLoggerProcessor"
+                 lazy="true">
+            <argument>%app.stage%</argument>
+            <argument>%kernel.environment%</argument>
+            <tag name="monolog.processor"/>
+        </service>
     </services>
 </container>
