@@ -7,7 +7,7 @@
     <parameters>
         <parameter key="app.locales" type="collection">
             <parameter key="en" type="collection">
-                <parameter key="country">gb</parameter>
+                <parameter key="country">us</parameter>
             </parameter>
             <parameter key="uk" type="collection">
                 <parameter key="country">ua</parameter>
