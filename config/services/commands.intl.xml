@@ -6,11 +6,25 @@
 
     <services>
         <service id="app.command.intl_currencies_update" class="App\Command\Intl\CurrenciesUpdateCommand" lazy="true">
-            <argument type="service" id="app.intl_telegram_bot_currencies_fetcher"/>
+            <argument type="service" id="app.intl_telegram_bot_currencies_provider"/>
             <argument type="service" id="app.normalizer.intl_currency"/>
-            <argument>%app.currencies_path%</argument>
-
+            <argument>%app.currencies_file%</argument>
             <tag name="console.command" command="intl:currencies:update"/>
+        </service>
+        <service id="app.command.intl_countries_update" class="App\Command\Intl\CountriesUpdateCommand" lazy="true">
+            <argument type="service" id="app.intl_locale_tools_countries_provider"/>
+            <argument type="service" id="app.normalizer.intl_country"/>
+            <argument>%app.countries_file%</argument>
+            <argument type="service" id="app.intl_i18n_iso_country_translations_provider"/>
+            <argument>%app.country_translation_file%</argument>
+            <argument>%app.supported_locales%</argument>
+            <tag name="console.command" command="intl:countries:update"/>
+        </service>
+        <service id="app.command.intl_languages_update" class="App\Command\Intl\LanguagesUpdateCommand" lazy="true">
+            <argument type="service" id="app.intl_i18n_iso_language_translations_provider"/>
+            <argument>%app.language_translation_file%</argument>
+            <argument>%app.supported_locales%</argument>
+            <tag name="console.command" command="intl:languages:update"/>
         </service>
     </services>
 </container>

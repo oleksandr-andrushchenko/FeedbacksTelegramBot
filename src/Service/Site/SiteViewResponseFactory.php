@@ -44,7 +44,7 @@ class SiteViewResponseFactory
             'phone_number' => '+1 (561) 314-5672',
             'website' => 'https://feedbacks.com',
             'company' => 'Feedback Chatbot',
-            'locales' => array_map($localMap, $this->localeProvider->getLocales()),
+            'locales' => array_map($localMap, $this->localeProvider->getLocales(true)),
             'locale' => $localMap($this->localeProvider->getLocale($this->localeSwitcher->getLocale())),
         ]));
     }

@@ -14,6 +14,7 @@ class LocaleProvider
         private readonly TranslatorInterface $translator,
         private readonly array $data,
         private readonly CountryProvider $countryProvider,
+        private readonly array $supported,
         private ?array $locales = null,
     )
     {
@@ -44,13 +45,13 @@ class LocaleProvider
 
     public function getLocaleName(Locale $localeObj, string $locale = null): string
     {
-        return $this->translator->trans($localeObj->getCode(), domain: 'locales', locale: $locale);
+        return $this->translator->trans($localeObj->getCode(), domain: 'languages', locale: $locale);
     }
 
     /**
      * @return Locale[]
      */
-    public function getLocales(): array
+    public function getLocales(bool $supported = null): array
     {
         if ($this->locales === null) {
             $locales = [];
@@ -65,6 +66,12 @@ class LocaleProvider
             $this->locales = $locales;
         }
 
-        return $this->locales;
+        $locales = $this->locales;
+
+        if ($supported) {
+            $locales = array_filter($locales, fn (Locale $locale) => in_array($locale->getCode(), $this->supported, true));
+        }
+
+        return $locales;
     }
 }

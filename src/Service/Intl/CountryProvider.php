@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Service\Intl;
 
 use App\Entity\Intl\Country;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
 class CountryProvider
 {
     public function __construct(
         private readonly TranslatorInterface $translator,
-        private readonly array $data,
+        private readonly string $dataPath,
+        private DenormalizerInterface $denormalizer,
         private ?array $countries = null,
     )
     {
@@ -41,29 +44,23 @@ class CountryProvider
     }
 
     /**
-     * @param string|null $languageCode
+     * @param string|null $locale
      * @return Country[]
+     * @throws ExceptionInterface
      */
-    public function getCountries(string $languageCode = null): array
+    public function getCountries(string $locale = null): array
     {
         if ($this->countries === null) {
-            $countries = [];
+            $content = file_get_contents($this->dataPath);
+            $data = json_decode($content, true);
 
-            foreach ($this->data as $code => $country) {
-                $countries[] = new Country(
-                    $code,
-                    $country['currency'],
-                    $country['locales'] ?? []
-                );
-            }
-
-            $this->countries = $countries;
+            $this->countries = array_map(fn ($data) => $this->denormalizer->denormalize($data, Country::class), $data);
         }
 
         $countries = $this->countries;
 
-        if ($languageCode !== null) {
-            $countries = array_filter($countries, fn (Country $country) => in_array($languageCode, $country->getLocales(), true));
+        if ($locale !== null) {
+            $countries = array_filter($countries, fn (Country $country) => in_array($locale, $country->getLocales(), true));
         }
 
         return $countries;

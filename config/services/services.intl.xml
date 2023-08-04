@@ -5,21 +5,36 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.intl_telegram_bot_currencies_fetcher" class="App\Service\Intl\TelegramBotCurrenciesFetcher" lazy="true"/>
+        <service id="app.intl_telegram_bot_currencies_provider" class="App\Service\Intl\TelegramBotCurrenciesProvider"
+                 lazy="true"/>
+        <service id="app.intl_locale_tools_countries_provider" class="App\Service\Intl\LocaleToolsCountriesProvider"
+                 lazy="true">
+            <argument>%app.data_dir%</argument>
+        </service>
+        <service id="app.intl_i18n_iso_country_translations_provider"
+                 class="App\Service\Intl\I18nIsoCountryTranslationsProvider" lazy="true">
+            <argument>%app.data_dir%</argument>
+        </service>
+        <service id="app.intl_i18n_iso_language_translations_provider"
+                 class="App\Service\Intl\I18nIsoLanguageTranslationsProvider" lazy="true">
+            <argument>%app.data_dir%</argument>
+        </service>
         <service id="app.intl_currency_provider" class="App\Service\Intl\CurrencyProvider" lazy="true">
             <argument type="string">%app.default_currency%</argument>
-            <argument>%app.currencies_path%</argument>
+            <argument>%app.currencies_file%</argument>
             <argument type="service" id="app.normalizer.intl_currency"/>
         </service>
         <service id="app.intl_country_provider" class="App\Service\Intl\CountryProvider" lazy="true">
             <argument type="service" id="translator"/>
-            <argument>%app.countries%</argument>
+            <argument>%app.countries_file%</argument>
+            <argument type="service" id="app.normalizer.intl_country"/>
         </service>
         <service id="app.intl_locale_provider" class="App\Service\Intl\LocaleProvider" lazy="true">
             <argument type="string">%app.default_locale%</argument>
             <argument type="service" id="translator"/>
             <argument>%app.locales%</argument>
             <argument type="service" id="app.intl_country_provider"/>
+            <argument>%app.supported_locales%</argument>
         </service>
     </services>
 </container>

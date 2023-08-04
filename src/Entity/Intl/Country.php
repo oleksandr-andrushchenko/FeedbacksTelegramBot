@@ -9,7 +9,8 @@ readonly class Country
     public function __construct(
         private string $code,
         private string $currency,
-        private array $locales
+        private array $locales,
+        private string $phone
     )
     {
     }
@@ -27,6 +28,11 @@ readonly class Country
     public function getLocales(): array
     {
         return $this->locales;
+    }
+
+    public function getPhone(): string
+    {
+        return $this->phone;
     }
 
     public function __toString(): string

@@ -6,10 +6,10 @@ namespace App\Service\Intl;
 
 use App\Entity\Intl\Currency;
 
-interface CurrenciesFetcherInterface
+interface CurrenciesProviderInterface
 {
     /**
      * @return Currency[]|null
      */
-    public function fetchCurrencies(): ?array;
+    public function getCurrencies(): ?array;
 }

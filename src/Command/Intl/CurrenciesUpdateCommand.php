@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command\Intl;
 
-use App\Service\Intl\CurrenciesFetcherInterface;
+use App\Service\Intl\CurrenciesProviderInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,9 +16,9 @@ use RuntimeException;
 class CurrenciesUpdateCommand extends Command
 {
     public function __construct(
-        private readonly CurrenciesFetcherInterface $fetcher,
+        private readonly CurrenciesProviderInterface $provider,
         private readonly NormalizerInterface $normalizer,
-        private readonly string $destinationPath,
+        private readonly string $targetFile,
     )
     {
         parent::__construct();
@@ -30,7 +30,7 @@ class CurrenciesUpdateCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Update latest currencies data')
+            ->setDescription('Update latest currencies')
         ;
     }
 
@@ -42,7 +42,7 @@ class CurrenciesUpdateCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $currencies = $this->fetcher->fetchCurrencies();
+            $currencies = $this->provider->getCurrencies();
 
             if ($currencies === null) {
                 throw new RuntimeException('Unable to fetch currencies');
@@ -50,7 +50,7 @@ class CurrenciesUpdateCommand extends Command
 
             $json = json_encode(array_map(fn ($currency) => $this->normalizer->normalize($currency), $currencies));
 
-            $written = file_put_contents($this->destinationPath, $json);
+            $written = file_put_contents($this->targetFile, $json);
 
             if ($written === false) {
                 throw new RuntimeException('Unable to write currencies');

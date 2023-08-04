@@ -8,5 +8,8 @@
         <service id="app.normalizer.intl_currency" class="App\Serializer\Intl\CurrencyNormalizer">
             <tag name="serializer.normalizer" priority="-960"/>
         </service>
+        <service id="app.normalizer.intl_country" class="App\Serializer\Intl\CountryNormalizer">
+            <tag name="serializer.normalizer" priority="-959"/>
+        </service>
     </services>
 </container>

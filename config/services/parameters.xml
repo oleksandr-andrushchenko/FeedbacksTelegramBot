@@ -8,8 +8,21 @@
         <parameter key="app.stage">%env(APP_STAGE)%</parameter>
         <parameter key="app.site_base_url">%env(SITE_BASE_URL)%</parameter>
         <parameter key="app.telegram_webhook_base_url">%env(TELEGRAM_WEBHOOK_BASE_URL)%</parameter>
+
         <parameter key="app.default_locale">en</parameter>
+        <parameter key="app.supported_locales" type="collection">
+            <parameter>en</parameter>
+            <parameter>uk</parameter>
+            <parameter>ru</parameter>
+        </parameter>
         <parameter key="app.default_currency">USD</parameter>
+
+        <parameter key="app.data_dir">%kernel.project_dir%/data</parameter>
+        <parameter key="app.currencies_file">%app.data_dir%/currencies.json</parameter>
+        <parameter key="app.countries_file">%app.data_dir%/countries.json</parameter>
+        <parameter key="app.translations_dir">%kernel.project_dir%/translations</parameter>
+        <parameter key="app.country_translation_file">%app.translations_dir%/countries.{locale}.yaml</parameter>
+        <parameter key="app.language_translation_file">%app.translations_dir%/languages.{locale}.yaml</parameter>
 
         <parameter key="app.telegram_activities_token">%env(TELEGRAM_ACTIVITIES_TOKEN)%</parameter>
         <parameter key="app.telegram_activities_channel">%env(TELEGRAM_ACTIVITIES_CHANNEL)%</parameter>
@@ -131,7 +144,5 @@
                 <parameter key="currency">USD</parameter>
             </parameter>
         </parameter>
-
-        <parameter key="app.currencies_path">%kernel.project_dir%/data/currencies.json</parameter>
     </parameters>
 </container>

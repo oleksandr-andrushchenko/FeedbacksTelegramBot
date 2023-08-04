@@ -6,6 +6,7 @@ namespace App\Service\Intl;
 
 use App\Entity\Intl\Currency;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
 class CurrencyProvider
 {
@@ -36,12 +37,13 @@ class CurrencyProvider
 
     /**
      * @return Currency[]
+     * @throws ExceptionInterface
      */
     public function getCurrencies(): array
     {
         if ($this->currencies === null) {
-            $response = file_get_contents($this->dataPath);
-            $data = json_decode($response, true);
+            $content = file_get_contents($this->dataPath);
+            $data = json_decode($content, true);
 
             $this->currencies = array_map(fn ($data) => $this->denormalizer->denormalize($data, Currency::class), $data);
         }

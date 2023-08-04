@@ -90,7 +90,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         // todo: "subscribe on mine/somebodies feedbacks" command
         // todo: after country selection - link to che channel
         // todo: add site links (to bot)
-        // todo: add left a comment button
+        // todo: add country flag to feedback view
         // todo: add command: how many times user X were been searched for (top command, usually - it gonna be current account - search for itself, but how many times somebody were searching me)
 
         yield new FallbackTelegramCommand(fn () => $this->fallback($tg));

@@ -6,14 +6,14 @@ namespace App\Service\Intl;
 
 use App\Entity\Intl\Currency;
 
-class TelegramBotCurrenciesFetcher implements CurrenciesFetcherInterface
+class TelegramBotCurrenciesProvider implements CurrenciesProviderInterface
 {
-    public function fetchCurrencies(): ?array
+    public function getCurrencies(): ?array
     {
-        $response = file_get_contents('https://core.telegram.org/bots/payments/currencies.json');
-        $data = json_decode($response, true);
+        $content = file_get_contents('https://core.telegram.org/bots/payments/currencies.json');
+        $data = json_decode($content, true);
 
-        unset($response);
+        unset($content);
 
         if (!is_array($data)) {
             return null;
