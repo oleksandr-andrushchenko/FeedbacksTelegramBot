@@ -20,7 +20,7 @@ class TelegramConversationState
         return $this->type;
     }
 
-    public function setType(?string $type): self
+    public function setType(?string $type):static
     {
         $this->type = $type;
 
@@ -32,7 +32,7 @@ class TelegramConversationState
         return $this->text;
     }
 
-    public function setText(?string $text): self
+    public function setText(?string $text):static
     {
         $this->text = $text;
 
@@ -44,7 +44,7 @@ class TelegramConversationState
         return $this->step;
     }
 
-    public function setStep(?int $step): self
+    public function setStep(?int $step):static
     {
         $this->step = $step;
 
@@ -56,7 +56,7 @@ class TelegramConversationState
         return $this->messageId;
     }
 
-    public function setMessageId(?int $messageId): self
+    public function setMessageId(?int $messageId):static
     {
         $this->messageId = $messageId;
 
