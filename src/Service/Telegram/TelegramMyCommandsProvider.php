@@ -23,12 +23,12 @@ class TelegramMyCommandsProvider
     {
         $channel = $this->channelRegistry->getTelegramChannel($telegram->getName());
 
-        $nonFallbackCommands = array_values(
+        $realCommands = array_values(
             array_filter($channel->getTelegramCommands($telegram), fn ($command) => $command instanceof TelegramCommand)
         );
 
         $adminChatScopeCommands = array_values(
-            array_filter($nonFallbackCommands, fn (TelegramCommand $command) => $command->isMenu())
+            array_filter($realCommands, fn (TelegramCommand $command) => $command->isMenu())
         );
 
         $defaultScopeCommands = array_values(

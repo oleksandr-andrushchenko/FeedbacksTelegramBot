@@ -74,4 +74,19 @@ class TelegramCommandFinder
 
         return null;
     }
+
+    /**
+     * @param TelegramCommandInterface[] $commands
+     * @return ErrorTelegramCommand|null
+     */
+    public function findErrorCommand(array $commands): ?ErrorTelegramCommand
+    {
+        foreach ($commands as $command) {
+            if ($command instanceof ErrorTelegramCommand) {
+                return $command;
+            }
+        }
+
+        return null;
+    }
 }

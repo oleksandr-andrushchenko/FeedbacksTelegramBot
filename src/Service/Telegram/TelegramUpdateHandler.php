@@ -6,6 +6,7 @@ namespace App\Service\Telegram;
 
 use App\Exception\Telegram\InvalidTelegramUpdateException;
 use App\Exception\Telegram\PaymentNotFoundException;
+use App\Exception\Telegram\TelegramException;
 use App\Exception\Telegram\UnknownPaymentException;
 use App\Service\Telegram\Payment\TelegramPaymentManager;
 use Longman\TelegramBot\TelegramLog;
@@ -60,26 +61,38 @@ class TelegramUpdateHandler
 
         $channel = $this->channelRegistry->getTelegramChannel($telegram->getName());
 
-        $text = $telegram->getUpdate()?->getMessage()?->getText();
-        $commands = $channel->getTelegramCommands($telegram);
-
         if ($update->getPreCheckoutQuery() !== null) {
             if ($telegram->getOptions()->acceptPayments()) {
                 $this->paymentManager->acceptPreCheckoutQuery($telegram, $update->getPreCheckoutQuery());
             }
+            return;
         } elseif ($update->getMessage()?->getSuccessfulPayment() !== null) {
             if ($telegram->getOptions()->acceptPayments()) {
                 $payment = $this->paymentManager->acceptSuccessfulPayment($telegram, $update->getMessage()->getSuccessfulPayment());
                 $channel->acceptTelegramPayment($telegram, $payment);
             }
-        } elseif ($beforeConversationCommand = $this->commandFinder->findBeforeConversationCommand($text, $commands)) {
-            call_user_func($beforeConversationCommand->getCallback(), $telegram);
-        } elseif ($conversation = $this->conversationManager->getLastTelegramConversation($telegram)) {
-            $this->conversationManager->continueTelegramConversation($telegram, $conversation);
-        } elseif ($command = $this->commandFinder->findCommand($text, $commands)) {
-            call_user_func($command->getCallback(), $telegram);
-        } elseif ($fallbackCommand = $this->commandFinder->findFallbackCommand($commands)) {
-            call_user_func($fallbackCommand->getCallback(), $telegram);
+            return;
+        }
+
+        $text = $telegram->getUpdate()?->getMessage()?->getText();
+        $commands = $channel->getTelegramCommands($telegram);
+
+        try {
+            if ($beforeConversationCommand = $this->commandFinder->findBeforeConversationCommand($text, $commands)) {
+                call_user_func($beforeConversationCommand->getCallback());
+            } elseif ($conversation = $this->conversationManager->getLastTelegramConversation($telegram)) {
+                $this->conversationManager->continueTelegramConversation($telegram, $conversation);
+            } elseif ($command = $this->commandFinder->findCommand($text, $commands)) {
+                call_user_func($command->getCallback());
+            } elseif ($fallbackCommand = $this->commandFinder->findFallbackCommand($commands)) {
+                call_user_func($fallbackCommand->getCallback());
+            }
+        } catch (TelegramException $exception) {
+            $this->logger->error($exception);
+
+            if ($errorCommand = $this->commandFinder->findErrorCommand($commands)) {
+                call_user_func($errorCommand->getCallback(), $exception);
+            }
         }
     }
 }

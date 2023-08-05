@@ -6,6 +6,7 @@ namespace App\Service\Telegram\Channel;
 
 use App\Entity\Telegram\TelegramPayment;
 use App\Enum\Telegram\TelegramView;
+use App\Exception\Telegram\TelegramException;
 use App\Service\Feedback\FeedbackUserSubscriptionManager;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\Chat\PremiumDescribeTelegramChatSender;
@@ -19,6 +20,7 @@ use App\Service\Telegram\Conversation\LeaveFeedbackMessageTelegramConversation;
 use App\Service\Telegram\Conversation\PurgeAccountConversationTelegramConversation;
 use App\Service\Telegram\Conversation\RestartConversationTelegramConversation;
 use App\Service\Telegram\Conversation\SearchFeedbackTelegramConversation;
+use App\Service\Telegram\ErrorTelegramCommand;
 use App\Service\Telegram\FallbackTelegramCommand;
 use App\Service\Telegram\TelegramCommand;
 use App\Service\Telegram\TelegramAwareHelper;
@@ -94,6 +96,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         // todo: add command: how many times user X were been searched for (top command, usually - it gonna be current account - search for itself, but how many times somebody were searching me)
 
         yield new FallbackTelegramCommand(fn () => $this->fallback($tg));
+        yield new ErrorTelegramCommand(fn (TelegramException $exception) => $this->exception($tg));
     }
 
     public function fallback(TelegramAwareHelper $tg): null
@@ -141,6 +144,13 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         }
 
         $tg->replyWrong($tg->trans('reply.wrong'));
+
+        return $this->chooseActionChatSender->sendActions($tg);
+    }
+
+    public function exception(TelegramAwareHelper $tg): null
+    {
+        $tg->replyFail($tg->trans('reply.fail'));
 
         return $this->chooseActionChatSender->sendActions($tg);
     }
