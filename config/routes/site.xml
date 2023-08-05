@@ -4,7 +4,9 @@
         xsi:schemaLocation="http://symfony.com/schema/routing
         https://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="index" path="/" controller="app.controller.site::index" methods="GET"/>
+    <route id="index" path="/" controller="app.controller.site::index" methods="GET">
+        <default key="_locale">en</default>
+    </route>
     <route id="privacy_policy" path="/privacy-policy" controller="app.controller.site::privacyPolicy" methods="GET"/>
     <route id="terms_of_use" path="/terms-of-use" controller="app.controller.site::termsOfUse" methods="GET"/>
     <route id="contacts" path="/contacts" controller="app.controller.site::contacts" methods="GET"/>
