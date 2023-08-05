@@ -54,7 +54,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
             return $this->askSubscriptionPlan($tg);
         }
 
-        if ($tg->matchText(null) && $this->state->getStep() !== self::STEP_PAYMENT_ASKED) {
+        if ($tg->matchText(null)) {
             return $tg->replyWrong($tg->trans('reply.wrong'))->null();
         }
 
@@ -73,15 +73,11 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         }
 
         if ($this->state->getStep() === self::STEP_SUBSCRIPTION_PLAN_ASKED) {
-            return $this->onSubscriptionPlanAnswer($tg);
+            return $this->gotSubscriptionPlan($tg);
         }
 
         if ($this->state->getStep() === self::STEP_PAYMENT_METHOD_ASKED) {
-            return $this->onPaymentMethodAnswer($tg, $conversation);
-        }
-
-        if ($this->state->getStep() === self::STEP_PAYMENT_ASKED) {
-            return $this->onPaymentAnswer($tg, $conversation);
+            return $this->gotPaymentMethod($tg, $conversation);
         }
 
         return null;
@@ -109,7 +105,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         )->null();
     }
 
-    public function onSubscriptionPlanAnswer(TelegramAwareHelper $tg): null
+    public function gotSubscriptionPlan(TelegramAwareHelper $tg): null
     {
         $subscriptionPlan = $this->getSubscriptionPlanByButton($tg->getText(), $tg);
 
@@ -145,7 +141,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         )->null();
     }
 
-    public function onPaymentMethodAnswer(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotPaymentMethod(TelegramAwareHelper $tg, Conversation $conversation): null
     {
         $paymentMethod = $this->getPaymentMethodByButton($tg->getText(), $tg);
 
@@ -195,20 +191,6 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         $tg->stopConversation($conversation);
 
         return $this->chooseActionChatSender->sendActions($tg);
-    }
-
-    public function onPaymentAnswer(TelegramAwareHelper $tg, Conversation $conversation): null
-    {
-        $preCheckoutQuery = $tg->getTelegram()->getUpdate()->getPreCheckoutQuery();
-
-        if ($preCheckoutQuery === null) {
-            $tg->replyWrong($tg->trans('reply.wrong'));
-
-            return $this->askPayment($tg, $conversation);
-        }
-
-        // todo: compare currency & amount & payload & store order info
-        return null;
     }
 
     public static function getSubscriptionPlanAsk(TelegramAwareHelper $tg): string

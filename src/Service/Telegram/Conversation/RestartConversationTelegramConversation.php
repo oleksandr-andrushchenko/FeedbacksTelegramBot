@@ -48,7 +48,7 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
         }
 
         if ($this->state->getStep() === self::STEP_CONFIRM_ASKED) {
-            return $this->onConfirmAnswer($tg, $conversation);
+            return $this->gotConfirm($tg, $conversation);
         }
 
         return null;
@@ -75,7 +75,7 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
         return $tg->reply($this->getConfirmAsk($tg), $tg->keyboard(...$keyboards))->null();
     }
 
-    public function onConfirmAnswer(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotConfirm(TelegramAwareHelper $tg, Conversation $conversation): null
     {
         if (!$tg->matchText($this->getConfirmButton($tg)->getText())) {
             return $tg->replyWrong($tg->trans('reply.wrong'))->null();

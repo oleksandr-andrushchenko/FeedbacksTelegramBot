@@ -80,15 +80,15 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
         }
 
         if ($this->state->getStep() === self::STEP_SEARCH_TERM_ASKED) {
-            return $this->onSearchTermAnswer($tg);
+            return $this->gotSearchTerm($tg);
         }
 
         if ($this->state->getStep() === self::STEP_SEARCH_TERM_TYPE_ASKED) {
-            return $this->onSearchTermTypeAnswer($tg);
+            return $this->gotSearchTermType($tg);
         }
 
         if ($this->state->getStep() === self::STEP_CONFIRM_ASKED) {
-            return $this->onConfirmAnswer($tg, $conversation);
+            return $this->gotConfirm($tg, $conversation);
         }
 
         return null;
@@ -134,7 +134,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
         return null;
     }
 
-    public function onSearchTermAnswer(TelegramAwareHelper $tg): null
+    public function gotSearchTerm(TelegramAwareHelper $tg): null
     {
         if ($this->state->isChange()) {
             if ($tg->matchText($this->getLeaveAsButton($this->state->getSearchTerm()->getText(), $tg)->getText())) {
@@ -208,7 +208,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
         return null;
     }
 
-    public function onSearchTermTypeAnswer(TelegramAwareHelper $tg): null
+    public function gotSearchTermType(TelegramAwareHelper $tg): null
     {
         $type = $this->getSearchTermTypeByButton($tg->getText(), $tg);
 
@@ -258,7 +258,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
         return null;
     }
 
-    public function onConfirmAnswer(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotConfirm(TelegramAwareHelper $tg, Conversation $conversation): null
     {
         switch ($tg->getText()) {
             case $this->getChangeSearchTermButton($tg)->getText():

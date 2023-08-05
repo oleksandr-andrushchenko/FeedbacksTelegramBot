@@ -49,7 +49,7 @@ class LeaveFeedbackMessageTelegramConversation extends TelegramConversation impl
         }
 
         if ($this->state->getStep() === self::STEP_MESSAGE_ASKED) {
-            return $this->onMessageAnswer($tg, $conversation);
+            return $this->gotMessage($tg, $conversation);
         }
 
         return null;
@@ -71,7 +71,7 @@ class LeaveFeedbackMessageTelegramConversation extends TelegramConversation impl
         return $tg->reply($tg->trans('ask.message.text'), $tg->keyboard($this->getCancelButton($tg)))->null();
     }
 
-    public function onMessageAnswer(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotMessage(TelegramAwareHelper $tg, Conversation $conversation): null
     {
         try {
             $this->messageCreator->createUserFeedbackMessage(

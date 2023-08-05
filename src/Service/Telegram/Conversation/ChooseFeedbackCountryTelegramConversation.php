@@ -55,11 +55,11 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
         }
 
         if ($this->state->getStep() === self::STEP_GUESS_COUNTRY_ASKED) {
-            return $this->onGuessCountryAnswer($tg, $conversation);
+            return $this->gotGuessCountry($tg, $conversation);
         }
 
         if ($this->state->getStep() === self::STEP_COUNTRY_ASKED) {
-            return $this->onCountryAnswer($tg, $conversation);
+            return $this->gotCountry($tg, $conversation);
         }
 
         return null;
@@ -92,7 +92,7 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
         return $tg->reply($this->getCountryAsk($tg), $tg->keyboard(...$keyboards))->null();
     }
 
-    public function onGuessCountryAnswer(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotGuessCountry(TelegramAwareHelper $tg, Conversation $conversation): null
     {
         if ($tg->matchText($this->getOtherCountryButton($tg)->getText())) {
             return $this->askCountry($tg);
@@ -131,7 +131,7 @@ class ChooseFeedbackCountryTelegramConversation extends TelegramConversation imp
         return $tg->reply($this->getCountryAsk($tg), $tg->keyboard(...$keyboards))->null();
     }
 
-    public function onCountryAnswer(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotCountry(TelegramAwareHelper $tg, Conversation $conversation): null
     {
         if ($tg->matchText($this->getAbsentCountryButton($tg)->getText())) {
             $tg->getTelegram()->getMessengerUser()->getUser()->setCountryCode(null);
