@@ -1,0 +1,22 @@
+command:
+  create: Добавить отзыв
+  search: Найти отзыв
+  premium: Купить Премиум
+  subscriptions: Мой Премиум
+  country: Моя Страна
+  restart: Перезапустить
+  purge: Удалить Данные
+  hints: Переключить Подсказки
+  message: Обратная Свзяь
+
+#  name: Feedbacks
+name:
+  local: wild_s_local_bot
+  dev: wild_s_dev_bot
+  prod: Відгуки
+#  short_description: Create and read feedbacks
+short_description: ""
+#  description: This bot allows you to create and read feedbacks on persons or companies
+description: ""
+
+bot: ОтзывыБот

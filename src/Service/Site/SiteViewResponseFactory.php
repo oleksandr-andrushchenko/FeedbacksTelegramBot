@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Site;
 
-use App\Entity\Telegram\TelegramOptions;
+use App\Entity\Site\SiteContactOptions;
 use App\Enum\Site\SitePage;
 use App\Service\Intl\LocaleProvider;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,9 +15,9 @@ class SiteViewResponseFactory
 {
     public function __construct(
         private readonly Environment $twig,
-        private readonly TelegramOptions $telegramOptions,
         private readonly LocaleSwitcher $localeSwitcher,
         private readonly LocaleProvider $localeProvider,
+        private readonly SiteContactOptions $contactOptions,
     )
     {
     }
@@ -39,11 +39,7 @@ class SiteViewResponseFactory
         return new Response($this->twig->render($page->view($locale), [
             'pages' => array_diff(array_map(fn ($page) => $page->value, SitePage::cases()), [SitePage::INDEX->value]),
             'page' => $page->value,
-            'bot_link' => sprintf('https://t.me/%s', $this->telegramOptions->getUsername()),
-            'email' => 'oleksandr.andrushchenko1988@gmail.com',
-            'phone_number' => '+1 (561) 314-5672',
-            'website' => 'https://feedbacks.com',
-            'company' => 'Feedback Chatbot',
+            'contacts' => $this->contactOptions,
             'locales' => array_map($localMap, $this->localeProvider->getLocales(true)),
             'locale' => $localMap($this->localeProvider->getLocale($this->localeSwitcher->getLocale())),
         ]));

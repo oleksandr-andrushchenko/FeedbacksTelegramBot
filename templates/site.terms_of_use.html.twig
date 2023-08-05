@@ -2,9 +2,9 @@
 
 {% extends 'site.layout.html.twig' %}
 
-{% block title %}{{ 'title'|trans }}{% endblock %}
+{% block title %}{{ 'title'|trans({'%bot%': contacts.botName}) }}{% endblock %}
 
-{% block h1 %}{{ 'h1'|trans }}{% endblock %}
+{% block h1 %}{{ 'h1'|trans({'%bot%': contacts.botName}) }}{% endblock %}
 
 {% block content %}
     <p class="fs-5">{{ 'headline'|trans }}</p>

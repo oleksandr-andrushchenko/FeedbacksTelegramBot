@@ -36,13 +36,13 @@
         and tailor made by our Company alongside the expectations of our Partners. Our chatbots simulate a conversation
         with the End User, provide information and services to them.</p>
     <h2>2. Our Company</h2>
-    <p>Name: {{ company }}.</p>
-    <p>Website: <u><a href="{{ website }}">{{ website }}</a> </u>
+    <p>Name: {{ contacts.botName }}.</p>
+    <p>Website: <u><a href="{{ contacts.website }}">{{ contacts.website }}</a> </u>
     </p>
-    <p>E-mail: <u><a href="mailto:{{ email }}">{{ email }}</a></u></p>
+    <p>E-mail: <u><a href="mailto:{{ contacts.email }}">{{ contacts.email }}</a></u></p>
     <p>Based on Article 37 of GDPR our company is not obliged to designate a data protection officer, however we do
         accept your data protection related questions at the following e-mail: <u><a
-                    href="mailto:{{ email }}">{{ email }}</a></u>
+                    href="mailto:{{ contacts.email }}">{{ contacts.email }}</a></u>
     </p>
     <h2>3. Data transmission</h2>
     <p>Our data processors are under obligation of secrecy and contractual guarantee for preserving the personal data
@@ -265,7 +265,7 @@
             </td>
             <td>
                 <p>In case of applying for a position at our Company, the application file submitted to <u><a
-                                href="mailto:{{ email }}">{{ email }}</a></u> by the applicant is controlled
+                                href="mailto:{{ contacts.email }}">{{ contacts.email }}</a></u> by the applicant is controlled
                     by our Company, as the data controller, during the implementation of the selection process and the
                     selection, understanding the professional and human values, level of education, previous work
                     experience of applicants in order to find the best candidate to fill the vacant position.</p>

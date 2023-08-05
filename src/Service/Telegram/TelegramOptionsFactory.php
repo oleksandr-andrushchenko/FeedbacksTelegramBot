@@ -8,9 +8,10 @@ use App\Entity\Telegram\TelegramOptions;
 
 class TelegramOptionsFactory
 {
-    public function createTelegramOptions(array $options): TelegramOptions
+    public function createTelegramOptions(array $options, string $key): TelegramOptions
     {
         return new TelegramOptions(
+            $key,
             $options['api_token'],
             $options['username'],
             $options['webhook_url'],

@@ -23,6 +23,7 @@
         <service id="app.feedback_telegram_options" class="App\Entity\Telegram\TelegramOptions">
             <factory service="app.telegram_options_factory" method="createTelegramOptions"/>
             <argument>%app.feedback_telegram_options%</argument>
+            <argument>feedbacks</argument>
         </service>
         <service id="app.telegram_factory" class="App\Service\Telegram\TelegramFactory" lazy="true">
             <argument>%app.telegram_options%</argument>
@@ -124,9 +125,11 @@
                  class="App\Service\Telegram\Payment\TelegramPaymentMethodProvider" lazy="true">
             <argument>%app.telegram_payment_methods%</argument>
         </service>
-        <service id="app.telegram_payment_manager_options_factory" class="App\Service\Telegram\TelegramPaymentManagerOptionsFactory"/>
+        <service id="app.telegram_payment_manager_options_factory"
+                 class="App\Service\Telegram\TelegramPaymentManagerOptionsFactory" lazy="true"/>
         <service id="app.telegram_payment_manager_options" class="App\Entity\Telegram\TelegramPaymentManagerOptions">
-            <factory service="app.telegram_payment_manager_options_factory" method="createTelegramPaymentManagerOptions"/>
+            <factory service="app.telegram_payment_manager_options_factory"
+                     method="createTelegramPaymentManagerOptions"/>
             <argument>%app.telegram_payment_manager_options%</argument>
         </service>
         <service id="app.telegram_payment_manager" class="App\Service\Telegram\Payment\TelegramPaymentManager"

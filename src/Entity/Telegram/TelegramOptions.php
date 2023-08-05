@@ -7,6 +7,7 @@ namespace App\Entity\Telegram;
 readonly class TelegramOptions
 {
     public function __construct(
+        private string $key,
         private string $apiToken,
         private string $username,
         private string $webhookUrl,
@@ -20,6 +21,11 @@ readonly class TelegramOptions
         private bool $acceptPayments,
     )
     {
+    }
+
+    public function getKey(): string
+    {
+        return $this->key;
     }
 
     public function getApiToken(): string

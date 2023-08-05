@@ -33,7 +33,7 @@ class TelegramFactory
 
         return new Telegram(
             $telegramName,
-            $this->optionsFactory->createTelegramOptions($this->options[$telegramName->name]),
+            $this->optionsFactory->createTelegramOptions($this->options[$telegramName->name], $telegramName->name),
             $this->clientRegistry,
             $this->requestChecker,
             $this->logger,

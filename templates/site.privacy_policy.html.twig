@@ -1,6 +1,6 @@
 {% extends 'site.layout.html.twig' %}
 {% trans_default_domain 'site.privacy_policy' %}
 
-{% block title %}{{ 'title'|trans }}{% endblock %}
+{% block title %}{{ 'title'|trans({'%bot%': contacts.botName}) }}{% endblock %}
 
-{% block h1 %}{{ 'h1'|trans }}{% endblock %}
+{% block h1 %}{{ 'h1'|trans({'%bot%': contacts.botName}) }}{% endblock %}

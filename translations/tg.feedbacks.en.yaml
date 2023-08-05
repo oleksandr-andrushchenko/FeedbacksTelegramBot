@@ -29,3 +29,5 @@ name:
 short_description: ""
 #  description: This bot allows you to create and read feedbacks on persons or companies
 description: ""
+
+bot: FeedbacksBot

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="robots" content="noindex"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}{{ 'title'|trans }}{% endblock %}</title>
+    <title>{{ page == 'index' ? '' : (page|trans ~ ' - ') }}{{ contacts.botName }}</title>
     <link rel="icon"
           href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>{{ 'icon.search'|trans({}, 'tg.feedbacks') }}</text></svg>">
 
@@ -15,6 +15,7 @@
         #breadcrumbs {
             --bs-breadcrumb-divider: '>';
         }
+
         #locale-switcher {
             text-transform: capitalize;
         }
@@ -26,7 +27,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand"
-               href="{{ path('app.site_index') }}">{{ 'logo'|trans({'%create_icon%': 'icon.create'|trans({}, 'tg.feedbacks'), '%search_icon%': 'icon.search'|trans({}, 'tg.feedbacks')}) }}</a>
+               href="{{ path('app.site_index') }}">{{ 'icon.search'|trans({}, 'tg.feedbacks') }} {{ contacts.botName }}</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -81,11 +82,11 @@
             </ol>
         </nav>
 
-        <h1>{% block h1 %}{{ 'h1'|trans }}{% endblock %}</h1>
+        <h1>{{ page == 'index' ? contacts.botName : page|trans }}</h1>
 
         {% block content %}{% endblock %}
 
-        <a href="{{ bot_link }}" class="btn btn-primary btn-lg">{{ 'open_bot_button'|trans }}</a>
+        <a href="{{ contacts.botLink }}" class="btn btn-primary btn-lg">{{ 'open_bot_button'|trans }}</a>
 
         {% if page != 'contacts' %}
             <a href="{{ path('app.site_contacts') }}"

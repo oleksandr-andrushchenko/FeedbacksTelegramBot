@@ -5,12 +5,19 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="app.feedback_site_contact_options" class="App\Entity\Site\SiteContactOptions">
+            <factory service="app.site_contact_options_factory"
+                     method="createSiteContactOptions"/>
+            <argument>%app.feedback_site_contact_options%</argument>
+            <argument type="service" id="app.feedback_telegram_options"/>
+        </service>
         <service id="app.feedback_creator_options_factory" class="App\Service\Feedback\FeedbackCreatorOptionsFactory"/>
         <service id="app.feedback_creator_options" class="App\Entity\Feedback\FeedbackCreatorOptions">
             <factory service="app.feedback_creator_options_factory" method="createFeedbackCreatorOptions"/>
             <argument>%app.feedback_creator_options%</argument>
         </service>
-        <service id="app.feedback_search_creator_options_factory" class="App\Service\Feedback\FeedbackSearchCreatorOptionsFactory"/>
+        <service id="app.feedback_search_creator_options_factory"
+                 class="App\Service\Feedback\FeedbackSearchCreatorOptionsFactory" lazy="true"/>
         <service id="app.feedback_search_creator_options" class="App\Entity\Feedback\FeedbackSearchCreatorOptions">
             <factory service="app.feedback_search_creator_options_factory" method="createFeedbackSearchCreatorOptions"/>
             <argument>%app.feedback_search_creator_options%</argument>

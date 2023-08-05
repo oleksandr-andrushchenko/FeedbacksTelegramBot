@@ -36,6 +36,16 @@
         <parameter key="app.log_activities_feedback_search">%app.log_activities%</parameter>
         <parameter key="app.log_activities_telegram_payment_manager">%app.log_activities%</parameter>
 
+        <parameter key="app.feedback_site_contact_options" type="collection">
+            <parameter key="website">%app.site_base_url%</parameter>
+            <parameter key="phone">+1 (561) 314-5672</parameter>
+            <parameter key="email">oleksandr.andrushchenko1988@gmail.com</parameter>
+            <parameter key="telegram">https://t.me/wild_snowgirl</parameter>
+            <parameter key="instagram">https://www.instagram.com/wild.snowgirl/</parameter>
+            <parameter key="github">https://github.com/oleksandr-andrushchenko</parameter>
+            <parameter key="linkedin">https://www.linkedin.com/in/oleksandr-andrushchenko-26ab3078/</parameter>
+        </parameter>
+
         <parameter key="app.telegram_payment_manager_options" type="collection">
             <parameter key="log_activities">%app.log_activities_telegram_payment_manager%</parameter>
         </parameter>

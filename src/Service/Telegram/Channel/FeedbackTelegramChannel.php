@@ -97,6 +97,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         // todo: manual payments
         // todo: ban users
         // todo: add check payment possibility (does at least payment method exists), + implement manual payments
+        // todo: add locale to feedback / feedback-search tables
 
         yield new FallbackTelegramCommand(fn () => $this->fallback($tg));
         yield new ErrorTelegramCommand(fn (TelegramException $exception) => $this->exception($tg));

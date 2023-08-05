@@ -2,12 +2,12 @@
 
 {% extends 'site.layout.html.twig' %}
 
-{% block title %}{{ 'title'|trans }}{% endblock %}
+{% block title %}{{ contacts.botName }}{% endblock %}
 
-{% block h1 %}{{ 'h1'|trans }}{% endblock %}
+{% block h1 %}{{ contacts.botName }}{% endblock %}
 
 {% block content %}
-    <p class="fs-5">{{ 'headline'|trans({'%create_icon%': 'icon.create'|trans({}, 'tg.feedbacks')})|raw }}</p>
-    <p>{{ 'list_headline'|trans({'%search_icon%': 'icon.search'|trans({}, 'tg.feedbacks')})|raw }}</p>
+    <p class="fs-5">{{ 'headline'|trans({'%create_command%': '<a href="' ~ contacts.botLink ~ '" target="_blank">' ~ 'icon.create'|trans({}, 'tg.feedbacks') ~ ' <u><b>' ~ 'command.create'|trans({}, 'tg.feedbacks') ~ '</b></u></a>'})|raw }}</p>
+    <p>{{ 'list_headline'|trans({'%search_command%': '<a href="' ~ contacts.botLink ~ '" target="_blank">' ~ 'icon.search'|trans({}, 'tg.feedbacks') ~ ' <u><b>' ~ 'command.search'|trans({}, 'tg.feedbacks') ~ '</b></u></a>'})|raw }}</p>
     <br>
 {% endblock %}
