@@ -28,8 +28,8 @@
             <argument type="service" id="app.normalizer.feedback_search_term_transfer"/>
             <tag name="serializer.normalizer" priority="-968"/>
         </service>
-        <service id="app.normalizer.telegram_conversation_state_get_feedback_premium"
-                 class="App\Serializer\Telegram\GetFeedbackPremiumTelegramConversationStateNormalizer">
+        <service id="app.normalizer.telegram_conversation_state_get_premium"
+                 class="App\Serializer\Telegram\GetPremiumTelegramConversationStateNormalizer">
             <argument type="service" id="app.normalizer.telegram_conversation_state"/>
             <argument type="service" id="app.normalizer.telegram_conversation_state"/>
             <argument type="service" id="app.normalizer.feedback_subscription_plan"/>

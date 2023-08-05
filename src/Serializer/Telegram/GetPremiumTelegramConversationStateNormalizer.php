@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Serializer\Telegram;
 
 use App\Entity\Feedback\FeedbackSubscriptionPlan;
-use App\Entity\Telegram\GetFeedbackPremiumTelegramConversationState;
+use App\Entity\Telegram\GetPremiumTelegramConversationState;
 use App\Entity\Telegram\TelegramPaymentMethod;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class GetFeedbackPremiumTelegramConversationStateNormalizer implements NormalizerInterface, DenormalizerInterface
+class GetPremiumTelegramConversationStateNormalizer implements NormalizerInterface, DenormalizerInterface
 {
     public function __construct(
         private readonly NormalizerInterface $baseConversationStateNormalizer,
@@ -25,7 +25,7 @@ class GetFeedbackPremiumTelegramConversationStateNormalizer implements Normalize
     }
 
     /**
-     * @param GetFeedbackPremiumTelegramConversationState $object
+     * @param GetPremiumTelegramConversationState $object
      * @param string|null $format
      * @param array $context
      * @return array
@@ -42,12 +42,12 @@ class GetFeedbackPremiumTelegramConversationStateNormalizer implements Normalize
 
     public function supportsNormalization(mixed $data, string $format = null): bool
     {
-        return $data instanceof GetFeedbackPremiumTelegramConversationState;
+        return $data instanceof GetPremiumTelegramConversationState;
     }
 
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): GetFeedbackPremiumTelegramConversationState
+    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): GetPremiumTelegramConversationState
     {
-        /** @var GetFeedbackPremiumTelegramConversationState $object */
+        /** @var GetPremiumTelegramConversationState $object */
         $object = $this->baseConversationStateDenormalizer->denormalize($data, $type, $format, $context);
 
         $object
@@ -61,6 +61,6 @@ class GetFeedbackPremiumTelegramConversationStateNormalizer implements Normalize
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
     {
-        return is_array($data) && $type === GetFeedbackPremiumTelegramConversationState::class;
+        return is_array($data) && $type === GetPremiumTelegramConversationState::class;
     }
 }

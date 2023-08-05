@@ -60,13 +60,17 @@ class TelegramRequestChecker
     /**
      * @param Telegram $telegram
      * @param string $method
-     * @param array $data
+     * @param mixed $data
      * @return TelegramRequest|null
      * @throws TelegramException
      */
-    public function checkTelegramRequest(Telegram $telegram, string $method, array $data): ?TelegramRequest
+    public function checkTelegramRequest(Telegram $telegram, string $method, mixed $data): ?TelegramRequest
     {
         if (!$telegram->getOptions()->checkRequests()) {
+            return null;
+        }
+
+        if (!is_array($data)) {
             return null;
         }
 

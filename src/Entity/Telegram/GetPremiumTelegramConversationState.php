@@ -6,7 +6,7 @@ namespace App\Entity\Telegram;
 
 use App\Entity\Feedback\FeedbackSubscriptionPlan;
 
-class GetFeedbackPremiumTelegramConversationState extends TelegramConversationState
+class GetPremiumTelegramConversationState extends TelegramConversationState
 {
     public function __construct(
         ?int $step = null,

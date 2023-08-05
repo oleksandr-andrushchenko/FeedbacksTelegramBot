@@ -13,7 +13,7 @@ use App\Service\Telegram\TelegramAwareHelper;
 use App\Entity\Telegram\TelegramConversation as Conversation;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
-class ChooseFeedbackCountryTelegramConversation extends TelegramConversation implements TelegramConversationInterface
+class ChooseCountryTelegramConversation extends TelegramConversation implements TelegramConversationInterface
 {
     public const STEP_GUESS_COUNTRY_ASKED = 10;
     public const STEP_COUNTRY_ASKED = 20;

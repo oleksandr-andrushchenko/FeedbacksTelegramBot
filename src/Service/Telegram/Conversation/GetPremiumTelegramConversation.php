@@ -6,7 +6,7 @@ namespace App\Service\Telegram\Conversation;
 
 use App\Entity\Feedback\FeedbackSubscriptionPlan;
 use App\Entity\Money;
-use App\Entity\Telegram\GetFeedbackPremiumTelegramConversationState;
+use App\Entity\Telegram\GetPremiumTelegramConversationState;
 use App\Entity\Telegram\TelegramConversation as Conversation;
 use App\Entity\Telegram\TelegramPaymentMethod;
 use App\Exception\ValidatorException;
@@ -22,9 +22,9 @@ use App\Service\Validator;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
 /**
- * @property GetFeedbackPremiumTelegramConversationState $state
+ * @property GetPremiumTelegramConversationState $state
  */
-class GetFeedbackPremiumTelegramConversation extends TelegramConversation implements TelegramConversationInterface
+class GetPremiumTelegramConversation extends TelegramConversation implements TelegramConversationInterface
 {
     public const STEP_SUBSCRIPTION_PLAN_ASKED = 10;
     public const STEP_PAYMENT_METHOD_ASKED = 20;
@@ -43,7 +43,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         private readonly PremiumDescribeTelegramChatSender $premiumDescribeChatSender,
     )
     {
-        parent::__construct($awareHelper, new GetFeedbackPremiumTelegramConversationState());
+        parent::__construct($awareHelper, new GetPremiumTelegramConversationState());
     }
 
     public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null

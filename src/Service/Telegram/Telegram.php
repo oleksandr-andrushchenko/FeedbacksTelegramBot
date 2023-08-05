@@ -98,7 +98,7 @@ class Telegram
      */
     public function __call(string $name, array $arguments): mixed
     {
-        $request = $this->requestChecker->checkTelegramRequest($this, $name, $arguments[0] ?? []);
+        $request = $this->requestChecker->checkTelegramRequest($this, $name, $arguments[0] ?? null);
         $response = $this->request($name, $arguments);
 
         if ($response instanceof ServerResponse) {

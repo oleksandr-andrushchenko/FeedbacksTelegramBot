@@ -201,7 +201,7 @@
             <argument type="service" id="app.telegram_aware_helper"/>
         </service>
         <service id="app.telegram_conversation_choose_country" parent="app.telegram_conversation"
-                 class="App\Service\Telegram\Conversation\ChooseFeedbackCountryTelegramConversation" lazy="true">
+                 class="App\Service\Telegram\Conversation\ChooseCountryTelegramConversation" lazy="true">
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
             <tag name="app.telegram_conversation_feedbacks"/>
@@ -226,7 +226,7 @@
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.telegram_conversation_get_premium" parent="app.telegram_conversation"
-                 class="App\Service\Telegram\Conversation\GetFeedbackPremiumTelegramConversation" lazy="true">
+                 class="App\Service\Telegram\Conversation\GetPremiumTelegramConversation" lazy="true">
             <argument type="service" id="app.validator"/>
             <argument type="service" id="app.feedback_subscription_plan_provider"/>
             <argument type="service" id="app.telegram_payment_method_provider"/>

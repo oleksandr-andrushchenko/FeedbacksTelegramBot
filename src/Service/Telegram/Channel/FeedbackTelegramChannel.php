@@ -13,8 +13,8 @@ use App\Service\Telegram\Chat\PremiumDescribeTelegramChatSender;
 use App\Service\Telegram\Chat\StartTelegramCommandHandler;
 use App\Service\Telegram\Chat\SubscriptionsTelegramChatSender;
 use App\Service\Telegram\Chat\HintsTelegramChatSwitcher;
-use App\Service\Telegram\Conversation\ChooseFeedbackCountryTelegramConversation;
-use App\Service\Telegram\Conversation\GetFeedbackPremiumTelegramConversation;
+use App\Service\Telegram\Conversation\ChooseCountryTelegramConversation;
+use App\Service\Telegram\Conversation\GetPremiumTelegramConversation;
 use App\Service\Telegram\Conversation\CreateFeedbackTelegramConversation;
 use App\Service\Telegram\Conversation\LeaveFeedbackMessageTelegramConversation;
 use App\Service\Telegram\Conversation\PurgeAccountConversationTelegramConversation;
@@ -183,7 +183,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         $activeSubscription = $this->userSubscriptionManager->getActiveSubscription($tg->getTelegram()->getMessengerUser());
 
         if ($activeSubscription === null) {
-            return $tg->startConversation(GetFeedbackPremiumTelegramConversation::class)->null();
+            return $tg->startConversation(GetPremiumTelegramConversation::class)->null();
         }
 
         $this->describePremium($tg);
@@ -235,7 +235,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
 
     public function country(TelegramAwareHelper $tg): null
     {
-        return $tg->stopConversations()->startConversation(ChooseFeedbackCountryTelegramConversation::class)->null();
+        return $tg->stopConversations()->startConversation(ChooseCountryTelegramConversation::class)->null();
     }
 
     public function hints(TelegramAwareHelper $tg): null

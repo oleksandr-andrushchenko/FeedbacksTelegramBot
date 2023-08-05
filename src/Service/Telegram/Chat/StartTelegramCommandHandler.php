@@ -8,7 +8,7 @@ use App\Enum\Telegram\TelegramView;
 use App\Service\Intl\CountryProvider;
 use App\Service\Site\SiteUrlGenerator;
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
-use App\Service\Telegram\Conversation\ChooseFeedbackCountryTelegramConversation;
+use App\Service\Telegram\Conversation\ChooseCountryTelegramConversation;
 use App\Service\Telegram\TelegramAwareHelper;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -36,7 +36,7 @@ class StartTelegramCommandHandler
             return $this->chooseActionChatSender->sendActions($tg);
         }
 
-        return $tg->startConversation(ChooseFeedbackCountryTelegramConversation::class)->null();
+        return $tg->startConversation(ChooseCountryTelegramConversation::class)->null();
     }
 
     public function describe(TelegramAwareHelper $tg): void
