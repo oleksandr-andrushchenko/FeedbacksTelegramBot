@@ -10,9 +10,9 @@ class GetFeedbackPremiumTelegramConversationState extends TelegramConversationSt
 {
     public function __construct(
         ?int $step = null,
+        private ?bool $paymentMethodStep = null,
         private ?FeedbackSubscriptionPlan $subscriptionPlan = null,
         private ?TelegramPaymentMethod $paymentMethod = null,
-        private ?bool $change = null,
     )
     {
         parent::__construct($step);
@@ -42,14 +42,14 @@ class GetFeedbackPremiumTelegramConversationState extends TelegramConversationSt
         return $this;
     }
 
-    public function isChange(): ?bool
+    public function isPaymentMethodStep(): ?bool
     {
-        return $this->change;
+        return $this->paymentMethodStep;
     }
 
-    public function setChange(?bool $change): static
+    public function setIsPaymentMethodStep(?bool $paymentMethodStep): static
     {
-        $this->change = $change;
+        $this->paymentMethodStep = $paymentMethodStep;
 
         return $this;
     }

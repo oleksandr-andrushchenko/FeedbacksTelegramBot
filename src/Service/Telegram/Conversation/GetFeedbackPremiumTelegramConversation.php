@@ -73,7 +73,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         }
 
         if ($this->state->getStep() === self::STEP_SUBSCRIPTION_PLAN_ASKED) {
-            return $this->gotSubscriptionPlan($tg);
+            return $this->gotSubscriptionPlan($tg, $conversation);
         }
 
         if ($this->state->getStep() === self::STEP_PAYMENT_METHOD_ASKED) {
@@ -95,6 +95,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
     public function askSubscriptionPlan(TelegramAwareHelper $tg): null
     {
         $this->state->setStep(self::STEP_SUBSCRIPTION_PLAN_ASKED);
+        $this->state->setIsPaymentMethodStep(count($this->getPaymentMethods($tg)) !== 1);
 
         return $tg->reply(
             $this->getStep(1) . $this->getSubscriptionPlanAsk($tg),
@@ -105,7 +106,7 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         )->null();
     }
 
-    public function gotSubscriptionPlan(TelegramAwareHelper $tg): null
+    public function gotSubscriptionPlan(TelegramAwareHelper $tg, Conversation $conversation): null
     {
         $subscriptionPlan = $this->getSubscriptionPlanByButton($tg->getText(), $tg);
 
@@ -124,7 +125,13 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
             return $this->askSubscriptionPlan($tg);
         }
 
-        return $this->askPaymentMethod($tg);
+        if ($this->state->isPaymentMethodStep()) {
+            return $this->askPaymentMethod($tg);
+        }
+
+        $this->state->setPaymentMethod($this->getPaymentMethods($tg)[0]);
+
+        return $this->askPayment($tg, $conversation);
     }
 
     public function askPaymentMethod(TelegramAwareHelper $tg): null
@@ -297,8 +304,22 @@ class GetFeedbackPremiumTelegramConversation extends TelegramConversation implem
         return $tg->button($tg->trans('keyboard.cancel'));
     }
 
+    public function getPaymentMethods(TelegramAwareHelper $tg): array
+    {
+        return $this->paymentMethodProvider->getPaymentMethods(countryCode: $tg->getCountryCode());
+    }
+
     private function getStep(int|string $num): string
     {
-        return "[{$num}/3] ";
+        if ($this->state->isPaymentMethodStep()) {
+            $total = 3;
+        } else {
+            if ($num > 1) {
+                $num--;
+            }
+            $total = 2;
+        }
+
+        return sprintf('[%d/%d] ', $num, $total);
     }
 }

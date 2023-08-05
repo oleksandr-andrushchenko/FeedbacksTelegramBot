@@ -36,7 +36,7 @@ class GetFeedbackPremiumTelegramConversationStateNormalizer implements Normalize
         return array_merge($this->baseConversationStateNormalizer->normalize($object, $format, $context), [
             'subscription_plan' => $object->getSubscriptionPlan() === null ? null : $this->subscriptionPlanNormalizer->normalize($object->getSubscriptionPlan(), $format, $context),
             'payment_method' => $object->getPaymentMethod() === null ? null : $this->paymentMethodNormalizer->normalize($object->getPaymentMethod(), $format, $context),
-            'change' => $object->isChange(),
+            'payment_method_step' => $object->isPaymentMethodStep(),
         ]);
     }
 
@@ -53,7 +53,7 @@ class GetFeedbackPremiumTelegramConversationStateNormalizer implements Normalize
         $object
             ->setSubscriptionPlan(isset($data['subscription_plan']) ? $this->subscriptionPlanDenormalizer->denormalize($data['subscription_plan'], FeedbackSubscriptionPlan::class, $format, $context) : null)
             ->setPaymentMethod(isset($data['payment_method']) ? $this->paymentMethodDenormalizer->denormalize($data['payment_method'], TelegramPaymentMethod::class, $format, $context) : null)
-            ->setChange($data['change'] ?? null)
+            ->setIsPaymentMethodStep($data['payment_method_step'] ?? null)
         ;
 
         return $object;
