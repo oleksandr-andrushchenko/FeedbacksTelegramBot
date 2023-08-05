@@ -94,6 +94,9 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         // todo: add site links (to bot)
         // todo: add country flag to feedback view
         // todo: add command: how many times user X were been searched for (top command, usually - it gonna be current account - search for itself, but how many times somebody were searching me)
+        // todo: manual payments
+        // todo: ban users
+        // todo: add check payment possibility (does at least payment method exists), + implement manual payments
 
         yield new FallbackTelegramCommand(fn () => $this->fallback($tg));
         yield new ErrorTelegramCommand(fn (TelegramException $exception) => $this->exception($tg));
