@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Service\Intl;
 
-class I18nIsoLanguageTranslationsProvider implements LanguageTranslationsProviderInterface
+use App\Service\Util\String\MbUcFirster;
+
+class I18NIsoLocaleTranslationsProvider implements LocaleTranslationsProviderInterface
 {
     public function __construct(
         private readonly string $dataDir,
+        private readonly MbUcFirster $mbUcFirster,
     )
     {
     }
 
-    public function getLanguageTranslations(): ?array
+    public function getLocaleTranslations(): ?array
     {
         $content = file_get_contents(sprintf('%s/i18n_iso_language_translations.json', $this->dataDir));
         $data = json_decode($content, true);
@@ -38,7 +41,7 @@ class I18nIsoLanguageTranslationsProvider implements LanguageTranslationsProvide
 
             $translations[$locale] = [];
             foreach ($languages as $language => $translation) {
-                $translations[$locale][$language] = strtolower(is_array($translation) ? $translation[0] : $translation);
+                $translations[$locale][$language] = $this->mbUcFirster->mbUcFirst(is_array($translation) ? $translation[0] : $translation);
             }
         }
 

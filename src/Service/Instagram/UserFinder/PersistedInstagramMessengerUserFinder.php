@@ -29,7 +29,7 @@ class PersistedInstagramMessengerUserFinder implements InstagramMessengerUserFin
             $user->getIdentifier(),
             $user->getUsername(),
             $user->getName(),
-            $user->getLanguageCode()
+            $user->getLocaleCode()
         );
     }
 }

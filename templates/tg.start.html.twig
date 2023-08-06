@@ -1,7 +1,7 @@
 {% trans_default_domain 'tg.start' %}
-{{ 'icon.info'|trans({}, 'tg') }} {{ 'title'|trans }}
+ℹ️ {{ 'title'|trans }}
 
-{{ 'icon.attention'|trans({}, 'tg') }} {{ 'agreements'|trans({'%privacy_policy_link%': privacy_policy_link, '%terms_of_use_link%': terms_of_use_link})|raw }}
+‼️ {{ 'agreements'|trans({'%privacy_policy_link%': privacy_policy_link, '%terms_of_use_link%': terms_of_use_link})|raw }}
 
 {{ 'commands_title'|trans }}
 
@@ -10,6 +10,6 @@
 {{ name|trans }}
 
 {% endfor %}
-{{ 'icon.info'|trans({}, 'tg') }} {{ 'summary'|trans }}
+ℹ️ {{ 'summary'|trans }}
 
 {% include 'tg.hints.html.twig' %}

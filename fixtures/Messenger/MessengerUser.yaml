@@ -5,7 +5,7 @@ App\Entity\Messenger\MessengerUser:
       identifier: <((string) \App\Tests\Fixtures::TELEGRAM_USER_ID_1)>
       username: <(\App\Tests\Fixtures::TELEGRAM_USERNAME_1)>
       name: 'Tg 1 First Last'
-      languageCode: 'uk'
+      localeCode: 'uk'
       user: '@user_1'
   messenger_user_1_instagram:
     __construct:
@@ -13,7 +13,7 @@ App\Entity\Messenger\MessengerUser:
       identifier: <((string) \App\Tests\Fixtures::INSTAGRAM_USER_ID_1)>
       username: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_1)>
       name: 'Inst 1 First Last'
-      languageCode: 'uk'
+      localeCode: 'uk'
       user: '@user_1'
   messenger_user_2_telegram:
     __construct:
@@ -21,7 +21,7 @@ App\Entity\Messenger\MessengerUser:
       identifier: <((string) \App\Tests\Fixtures::TELEGRAM_USER_ID_2)>
       username: <(\App\Tests\Fixtures::TELEGRAM_USERNAME_2)>
       name: 'Tg 2 First Last'
-      languageCode: 'uk'
+      localeCode: 'uk'
       user: '@user_2'
   messenger_user_2_instagram:
     __construct:
@@ -29,7 +29,7 @@ App\Entity\Messenger\MessengerUser:
       identifier: <((string) \App\Tests\Fixtures::INSTAGRAM_USER_ID_2)>
       username: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_2)>
       name: 'Inst 2 First Last'
-      languageCode: 'uk'
+      localeCode: 'uk'
       user: '@user_2'
   messenger_user_3_telegram:
     __construct:
@@ -37,7 +37,7 @@ App\Entity\Messenger\MessengerUser:
       identifier: <((string) \App\Tests\Fixtures::TELEGRAM_USER_ID_3)>
       username: <(\App\Tests\Fixtures::TELEGRAM_USERNAME_3)>
       name: 'Tg 3 First Last'
-      languageCode: 'uk'
+      localeCode: 'uk'
       user: '@user_3'
   messenger_user_3_instagram:
     __construct:
@@ -45,5 +45,5 @@ App\Entity\Messenger\MessengerUser:
       identifier: <((string) \App\Tests\Fixtures::INSTAGRAM_USER_ID_3)>
       username: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
       name: 'Inst 3 First Last'
-      languageCode: 'uk'
+      localeCode: 'uk'
       user: '@user_3'

@@ -1,0 +1,13 @@
+{% trans_default_domain 'tg.locale' %}
+ℹ️ {{ 'title'|trans }}
+
+{% apply spaceless %}
+{% if locale %}
+    {{ 'known'|trans({'%icon%': icon, '%name%': name}) }}
+{% else %}
+    {{ 'unknown'|trans({'%icon%': '🌎'}) }}
+{% endif %}
+{% endapply %}
+
+
+{% include 'tg.hints.html.twig' %}

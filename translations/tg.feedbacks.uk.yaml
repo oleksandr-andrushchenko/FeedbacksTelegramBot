@@ -4,6 +4,7 @@ command:
   premium: Купити Преміум
   subscriptions: Мій Преміум
   country: Моя Країна
+  locale: Моя Мова
   restart: Перезапустити
   purge: Видалити Дані
   hints: Перемикнути Підсказки

@@ -213,7 +213,7 @@ class GetPremiumTelegramConversation extends TelegramConversation implements Tel
     {
         return array_map(
             fn (FeedbackSubscriptionPlan $subscriptionPlan) => $this->getSubscriptionPlanButton($subscriptionPlan, $tg),
-            $this->subscriptionPlansProvider->getSubscriptionPlans(countryCode: $tg->getCountryCode())
+            $this->getSubscriptionPlans($tg)
         );
     }
 
@@ -233,11 +233,13 @@ class GetPremiumTelegramConversation extends TelegramConversation implements Tel
     {
         $price = $this->getPrice($subscriptionPlan, $tg);
 
-        return $tg->button($tg->trans('keyboard.premium.subscription_plan', [
-            'plan' => $this->getSubscriptionPlanText($subscriptionPlan, $tg),
-            'price' => sprintf('%d,00', $price->getAmount()),
-            'currency' => $price->getCurrency(),
-        ]));
+        return $tg->button(
+            sprintf('%s [%s %s]',
+                $this->getSubscriptionPlanText($subscriptionPlan, $tg),
+                $price->getCurrency(),
+                sprintf('%d,00', $price->getAmount()),
+            )
+        );
     }
 
     public function getSubscriptionPlanText(FeedbackSubscriptionPlan $subscriptionPlan, TelegramAwareHelper $tg): string
@@ -247,7 +249,7 @@ class GetPremiumTelegramConversation extends TelegramConversation implements Tel
 
     public function getSubscriptionPlanByButton(string $button, TelegramAwareHelper $tg): ?FeedbackSubscriptionPlan
     {
-        foreach ($this->subscriptionPlansProvider->getSubscriptionPlans(countryCode: $tg->getCountryCode()) as $subscriptionPlan) {
+        foreach ($this->getSubscriptionPlans($tg) as $subscriptionPlan) {
             if (static::getSubscriptionPlanButton($subscriptionPlan, $tg)->getText() === $button) {
                 return $subscriptionPlan;
             }
@@ -268,20 +270,26 @@ class GetPremiumTelegramConversation extends TelegramConversation implements Tel
     public function getPaymentMethodButtons(TelegramAwareHelper $tg): array
     {
         return array_map(
-            fn (TelegramPaymentMethod $paymentMethod) => static::getPaymentMethodButton($paymentMethod, $tg),
-            $this->paymentMethodProvider->getPaymentMethods(countryCode: $tg->getCountryCode())
+            fn (TelegramPaymentMethod $paymentMethod) => $this->getPaymentMethodButton($paymentMethod, $tg),
+            $this->getPaymentMethods($tg)
         );
     }
 
-    public static function getPaymentMethodButton(TelegramPaymentMethod $paymentMethod, TelegramAwareHelper $tg): KeyboardButton
+    public function getPaymentMethodButton(TelegramPaymentMethod $paymentMethod, TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->trans(sprintf('payment_method.%s', $paymentMethod->getName()->name)));
+        $country = $this->countryProvider->getCountry($paymentMethod->getFlag());
+
+        return $tg->button(join('', [
+            $this->countryProvider->getCountryIcon($country),
+            $paymentMethod->isGlobal() ? '🌎' : '',
+            $tg->trans(sprintf('payment_method.%s', $paymentMethod->getName()->name)),
+        ]));
     }
 
     public function getPaymentMethodByButton(string $button, TelegramAwareHelper $tg): ?TelegramPaymentMethod
     {
-        foreach ($this->paymentMethodProvider->getPaymentMethods(countryCode: $tg->getCountryCode()) as $paymentMethod) {
-            if (static::getPaymentMethodButton($paymentMethod, $tg)->getText() === $button) {
+        foreach ($this->getPaymentMethods($tg) as $paymentMethod) {
+            if ($this->getPaymentMethodButton($paymentMethod, $tg)->getText() === $button) {
                 return $paymentMethod;
             }
         }
@@ -306,7 +314,12 @@ class GetPremiumTelegramConversation extends TelegramConversation implements Tel
 
     public function getPaymentMethods(TelegramAwareHelper $tg): array
     {
-        return $this->paymentMethodProvider->getPaymentMethods(countryCode: $tg->getCountryCode());
+        return $this->paymentMethodProvider->getPaymentMethods(country: $tg->getCountryCode());
+    }
+
+    public function getSubscriptionPlans(TelegramAwareHelper $tg): array
+    {
+        return $this->subscriptionPlansProvider->getSubscriptionPlans(country: $tg->getCountryCode());
     }
 
     private function getStep(int|string $num): string

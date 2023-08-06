@@ -17,10 +17,10 @@ class FeedbackSubscriptionPlanProvider
     }
 
     /**
-     * @param string|null $countryCode
+     * @param string|null $country
      * @return FeedbackSubscriptionPlan[]
      */
-    public function getSubscriptionPlans(string $countryCode = null): array
+    public function getSubscriptionPlans(string $country = null): array
     {
         if ($this->subscriptionPlans === null) {
             $subscriptionPlans = [];
@@ -40,10 +40,10 @@ class FeedbackSubscriptionPlanProvider
 
         $subscriptionPlans = $this->subscriptionPlans;
 
-        if ($countryCode !== null) {
+        if ($country !== null) {
             $subscriptionPlans = array_filter(
                 $subscriptionPlans,
-                fn (FeedbackSubscriptionPlan $subscriptionPlan) => count($subscriptionPlan->getCountries()) === 0 || in_array($countryCode, $subscriptionPlan->getCountries(), true)
+                fn (FeedbackSubscriptionPlan $subscriptionPlan) => $subscriptionPlan->isGlobal() || in_array($country, $subscriptionPlan->getCountries(), true)
             );
         }
 

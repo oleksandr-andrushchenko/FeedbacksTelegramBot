@@ -31,24 +31,24 @@ class TelegramDescriptionsUpdater
 
         $domain = sprintf('tg.%s', $telegram->getName()->name);
 
-        foreach ($telegram->getOptions()->getLanguageCodes() as $languageCode) {
-            $name = $this->translator->trans(sprintf('name.%s', $this->stage), domain: $domain, locale: $languageCode);
+        foreach ($telegram->getOptions()->getLocaleCodes() as $localeCode) {
+            $name = $this->translator->trans(sprintf('name.%s', $this->stage), domain: $domain, locale: $localeCode);
             $this->myNames[] = $name;
             $telegram->setMyName([
                 'name' => $name,
-                'language_code' => $languageCode,
+                'language_code' => $localeCode,
             ]);
-            $description = $this->translator->trans('description', domain: $domain, locale: $languageCode);
+            $description = $this->translator->trans('description', domain: $domain, locale: $localeCode);
             $this->myDescriptions[] = $description;
             $telegram->setMyDescription([
                 'description' => $description,
-                'language_code' => $languageCode,
+                'language_code' => $localeCode,
             ]);
-            $shortDescription = $this->translator->trans('short_description', domain: $domain, locale: $languageCode);
+            $shortDescription = $this->translator->trans('short_description', domain: $domain, locale: $localeCode);
             $this->myShortDescriptions[] = $shortDescription;
             $telegram->setMyShortDescription([
                 'short_description' => $shortDescription,
-                'language_code' => $languageCode,
+                'language_code' => $localeCode,
             ]);
         }
     }

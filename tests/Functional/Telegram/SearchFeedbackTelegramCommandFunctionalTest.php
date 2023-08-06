@@ -850,7 +850,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                         $feedback->getSearchTermMessengerUser()->getIdentifier(),
                         $feedback->getSearchTermMessengerUser()->getUsername(),
                         $feedback->getSearchTermMessengerUser()->getName(),
-                        $feedback->getSearchTermMessengerUser()->getLanguageCode()
+                        $feedback->getSearchTermMessengerUser()->getLocaleCode()
                     )
                 ),
             'rating' => $feedback->getRating(),

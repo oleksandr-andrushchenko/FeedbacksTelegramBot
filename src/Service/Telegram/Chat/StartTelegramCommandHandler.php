@@ -26,7 +26,7 @@ class StartTelegramCommandHandler
     {
         $this->describe($tg);
 
-        $countries = $this->countryProvider->getCountries($tg->getLanguageCode());
+        $countries = $this->countryProvider->getCountries($tg->getLocaleCode());
 
         if (count($countries) === 1) {
             $country = array_values($countries)[0];

@@ -12,7 +12,7 @@ readonly class TelegramOptions
         private string $username,
         private string $webhookUrl,
         private string $webhookCertificatePath,
-        private array $languageCodes,
+        private array $localeCodes,
         private array $adminIds,
         private array $adminChatIds,
         private bool $checkUpdates,
@@ -48,9 +48,9 @@ readonly class TelegramOptions
         return $this->webhookCertificatePath;
     }
 
-    public function getLanguageCodes(): array
+    public function getLocaleCodes(): array
     {
-        return $this->languageCodes;
+        return $this->localeCodes;
     }
 
     public function getAdminIds(): array

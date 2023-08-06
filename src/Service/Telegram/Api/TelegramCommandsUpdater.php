@@ -30,13 +30,13 @@ class TelegramCommandsUpdater
         $this->myCommands = [];
 
         foreach ($this->telegramMyCommandsProvider->getTelegramMyCommands($telegram) as $myCommands) {
-            if (!in_array($myCommands->getLanguageCode(), $telegram->getOptions()->getLanguageCodes(), true)) {
+            if (!in_array($myCommands->getLocaleCode(), $telegram->getOptions()->getLocaleCodes(), true)) {
                 continue;
             }
 
             $data = [];
 
-            $data['language_code'] = $myCommands->getLanguageCode();
+            $data['language_code'] = $myCommands->getLocaleCode();
             $data['scope'] = $myCommands->getScope()->jsonSerialize();
             $data['commands'] = array_map(
                 fn (TelegramCommandInterface $command) => [
@@ -67,7 +67,7 @@ class TelegramCommandsUpdater
     ): string
     {
         $domain = sprintf('tg.%s', $telegram->getName()->name);
-        $locale = $myCommands->getLanguageCode();
+        $locale = $myCommands->getLocaleCode();
 
         $icon = $this->translator->trans(sprintf('icon.%s', $command->getKey()), domain: $domain, locale: $locale);
         $name = $this->translator->trans(sprintf('command.%s', $command->getKey()), domain: $domain, locale: $locale);

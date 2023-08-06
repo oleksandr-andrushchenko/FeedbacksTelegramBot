@@ -12,7 +12,7 @@ class TelegramMyCommands
     public function __construct(
         private readonly array $commands,
         private readonly BotCommandScope $scope,
-        private readonly string $languageCode,
+        private readonly string $localeCode,
     )
     {
     }
@@ -33,8 +33,8 @@ class TelegramMyCommands
         return $this->scope;
     }
 
-    public function getLanguageCode(): string
+    public function getLocaleCode(): string
     {
-        return $this->languageCode;
+        return $this->localeCode;
     }
 }

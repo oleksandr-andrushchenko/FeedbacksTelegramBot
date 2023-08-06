@@ -33,7 +33,7 @@ class ChooseCountryTelegramConversation extends TelegramConversation implements 
         if ($this->state->getStep() === null) {
             $this->describe($tg);
 
-            $countries = $this->provider->getCountries($tg->getLanguageCode());
+            $countries = $this->getGuessCountries($tg);
 
             if (count($countries) === 0) {
                 return $this->askCountry($tg);
@@ -65,13 +65,23 @@ class ChooseCountryTelegramConversation extends TelegramConversation implements 
         return null;
     }
 
+    public function getGuessCountries(TelegramAwareHelper $tg): array
+    {
+        return $this->provider->getCountries($tg->getLocaleCode());
+    }
+
+    public function getCountries(): array
+    {
+        return $this->provider->getCountries();
+    }
+
     public function describe(TelegramAwareHelper $tg): void
     {
         if (!$tg->getTelegram()->getMessengerUser()->isShowHints()) {
             return;
         }
 
-        $countryCode = $tg->getTelegram()?->getMessengerUser()->getUser()->getCountryCode();
+        $countryCode = $tg->getCountryCode();
         $country = $countryCode === null ? null : $this->provider->getCountry($countryCode);
 
         $tg->replyView(TelegramView::COUNTRY, [
@@ -98,7 +108,7 @@ class ChooseCountryTelegramConversation extends TelegramConversation implements 
             return $this->askCountry($tg);
         }
 
-        $countries = $this->provider->getCountries($tg->getLanguageCode());
+        $countries = $this->getGuessCountries($tg);
 
         $country = $this->getCountryByButton($tg->getText(), $countries, $tg);
 
@@ -141,7 +151,7 @@ class ChooseCountryTelegramConversation extends TelegramConversation implements 
             return $this->chooseActionChatSender->sendActions($tg);
         }
 
-        $countries = $this->provider->getCountries();
+        $countries = $this->getCountries();
 
         $country = $this->getCountryByButton($tg->getText(), $countries, $tg);
 
@@ -177,7 +187,7 @@ class ChooseCountryTelegramConversation extends TelegramConversation implements 
     {
         return $tg->button(join(' ', [
             $this->provider->getCountryIcon($country),
-            $this->provider->getCountryName($country, $tg->getLanguageCode()),
+            $this->provider->getCountryName($country, $tg->getLocaleCode()),
         ]));
     }
 
@@ -199,20 +209,12 @@ class ChooseCountryTelegramConversation extends TelegramConversation implements 
 
     public static function getOtherCountryButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button(
-            $tg->trans('keyboard.country.other', [
-                'icon' => $tg->trans('icon.globe'),
-            ])
-        );
+        return $tg->button(sprintf('%s %s', '🌎', $tg->trans('keyboard.other')));
     }
 
     public static function getAbsentCountryButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button(
-            $tg->trans('keyboard.country.absent', [
-                'icon' => $tg->trans('icon.globe'),
-            ])
-        );
+        return $tg->button(sprintf('%s %s', '🌎', $tg->trans('keyboard.absent')));
     }
 
     public static function getCancelButton(TelegramAwareHelper $tg): KeyboardButton

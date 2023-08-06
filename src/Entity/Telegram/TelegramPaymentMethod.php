@@ -13,6 +13,7 @@ readonly class TelegramPaymentMethod
         private string $token,
         private string $currency,
         private array $countries,
+        private ?string $flag,
     )
     {
     }
@@ -35,5 +36,15 @@ readonly class TelegramPaymentMethod
     public function getCountries(): array
     {
         return $this->countries;
+    }
+
+    public function getFlag(): ?string
+    {
+        return $this->flag;
+    }
+
+    public function isGlobal(): bool
+    {
+        return count($this->countries) === 0;
     }
 }

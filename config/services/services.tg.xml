@@ -80,6 +80,9 @@
         <service id="app.telegram_update_factory" class="App\Service\Telegram\TelegramUpdateFactory" lazy="true">
             <argument type="service" id="logger"/>
         </service>
+        <service id="app.telegram_locale_switcher" class="App\Service\Telegram\TelegramLocaleSwitcher" lazy="true">
+            <argument type="service" id="translation.locale_switcher"/>
+        </service>
         <service id="app.telegram_update_handler" class="App\Service\Telegram\TelegramUpdateHandler" lazy="true">
             <argument type="service" id="app.telegram_update_factory"/>
             <argument type="service" id="app.telegram_update_checker"/>
@@ -89,7 +92,7 @@
             <argument type="service" id="app.telegram_channel_registry"/>
             <argument type="service" id="app.telegram_command_finder"/>
             <argument type="service" id="app.telegram_payment_manager"/>
-            <argument type="service" id="translation.locale_switcher"/>
+            <argument type="service" id="app.telegram_locale_switcher"/>
             <argument type="service" id="logger"/>
         </service>
         <service id="app.telegram_template_renderer" class="App\Service\Telegram\TelegramTemplateRenderer" lazy="true">
@@ -184,6 +187,7 @@
                  class="App\Service\Telegram\Chat\ChooseActionTelegramChatSender" lazy="true">
             <argument type="service" id="app.feedback_user_subscription_manager"/>
             <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="app.intl_locale_provider"/>
         </service>
         <service id="app.premium_describe_telegram_chat_sender"
                  class="App\Service\Telegram\Chat\PremiumDescribeTelegramChatSender" lazy="true">
@@ -204,6 +208,13 @@
                  class="App\Service\Telegram\Conversation\ChooseCountryTelegramConversation" lazy="true">
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
+            <tag name="app.telegram_conversation_feedbacks"/>
+        </service>
+        <service id="app.telegram_conversation_choose_locale" parent="app.telegram_conversation"
+                 class="App\Service\Telegram\Conversation\ChooseLocaleTelegramConversation" lazy="true">
+            <argument type="service" id="app.intl_locale_provider"/>
+            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
+            <argument type="service" id="app.telegram_locale_switcher"/>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.telegram_conversation_create_feedback" parent="app.telegram_conversation"

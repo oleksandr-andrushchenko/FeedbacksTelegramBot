@@ -19,7 +19,7 @@ class MessengerUserTransferNormalizer implements NormalizerInterface, Denormaliz
             'identifier' => $object->getId(),
             'username' => $object->getUsername(),
             'name' => $object->getName(),
-            'language_code' => $object->getLanguageCode(),
+            'locale' => $object->getLocaleCode(),
         ];
     }
 
@@ -35,7 +35,7 @@ class MessengerUserTransferNormalizer implements NormalizerInterface, Denormaliz
             $data['identifier'],
             $data['username'] ?? null,
             $data['name'] ?? null,
-            $data['language_code'] ?? null
+            $data['locale'] ?? null
         );
     }
 

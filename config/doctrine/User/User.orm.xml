@@ -14,7 +14,7 @@
         </id>
         <field name="name" column="name" nullable="true"/>
         <field name="username" column="username" nullable="true"/>
-        <field name="languageCode" column="language_code" length="2" nullable="true"/>
+        <field name="localeCode" column="locale_code" length="2" nullable="true"/>
         <field name="rating" column="rating" type="smallint" enum-type="App\Enum\Feedback\Rating" nullable="true"/>
         <field name="countryCode" column="country_code" length="2" nullable="true"/>
         <field name="phoneNumber" column="phone_number" type="bigint" nullable="true">

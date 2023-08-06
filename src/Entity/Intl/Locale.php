@@ -8,7 +8,7 @@ readonly class Locale
 {
     public function __construct(
         private string $code,
-        private string $country,
+        private string $flag,
     )
     {
     }
@@ -18,9 +18,9 @@ readonly class Locale
         return $this->code;
     }
 
-    public function getCountry(): string
+    public function getFlag(): string
     {
-        return $this->country;
+        return $this->flag;
     }
 
     public function __toString(): string

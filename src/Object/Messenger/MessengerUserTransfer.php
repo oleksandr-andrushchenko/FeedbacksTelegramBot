@@ -13,7 +13,7 @@ class MessengerUserTransfer
         private readonly string $id,
         private readonly ?string $username,
         private readonly ?string $name,
-        private readonly ?string $languageCode,
+        private readonly ?string $localeCode,
     )
     {
     }
@@ -38,8 +38,8 @@ class MessengerUserTransfer
         return $this->name;
     }
 
-    public function getLanguageCode(): ?string
+    public function getLocaleCode(): ?string
     {
-        return $this->languageCode;
+        return $this->localeCode;
     }
 }

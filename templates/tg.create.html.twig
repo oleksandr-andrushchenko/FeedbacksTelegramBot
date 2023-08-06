@@ -1,11 +1,11 @@
 {% trans_default_domain 'tg.create' %}
-{{ 'icon.info'|trans({}, 'tg') }} {{ 'title'|trans }}
+ℹ️ {{ 'title'|trans }}
 
-{{ 'icon.info'|trans({}, 'tg') }} {{ 'limits'|trans }}
+ℹ️ {{ 'limits'|trans }}
 {% for period,limit in limits %}
-    - {{ 'limit_item'|trans({'%period%': period|trans({}, 'tg'), '%limit%': limit})|raw }}
+    - <b>{{ limit }}</b> {{ 'tries_for'|trans({}, 'tg') }} <b>1 {{ period|trans({}, 'tg') }}</b>
 {% endfor %}
 
-{{ 'icon.info'|trans({}, 'tg') }} {{ 'premium'|trans({'%command%': include('tg.command.html.twig', {name: 'premium'})})|raw }}
+ℹ️ {{ 'premium'|trans({'%command%': include('tg.command.html.twig', {name: 'premium'})})|raw }}
 
 {% include 'tg.hints.html.twig' %}

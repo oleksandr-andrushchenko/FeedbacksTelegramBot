@@ -4,6 +4,7 @@ icon:
   premium: ⭐️
   subscriptions: 🌟
   country: 🌎
+  locale: 🌎
   restart: 🔄
   purge: ✂️
   hints: ℹ️
@@ -15,6 +16,7 @@ command:
   premium: Get Premium
   subscriptions: My Premium
   country: My Country
+  locale: My Language
   restart: Restart
   purge: Purge Account
   hints: Toggle Hints

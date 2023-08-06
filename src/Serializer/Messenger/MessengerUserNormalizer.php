@@ -20,7 +20,7 @@ class MessengerUserNormalizer implements NormalizerInterface, DenormalizerInterf
             'identifier' => $object->getIdentifier(),
             'username' => $object->getUsername(),
             'name' => $object->getName(),
-            'language_code' => $object->getLanguageCode(),
+            'locale' => $object->getLocaleCode(),
             'created_at' => $object->getCreatedAt()?->getTimestamp(),
             'updated_at' => $object->getUpdatedAt()?->getTimestamp(),
             'id' => $object->getId(),
@@ -40,7 +40,7 @@ class MessengerUserNormalizer implements NormalizerInterface, DenormalizerInterf
         $object
             ->setUsername($data['username'] ?? null)
             ->setName($data['name'] ?? null)
-            ->setLanguageCode($data['language_code'] ?? null)
+            ->setLocaleCode($data['locale'] ?? null)
             ->setId($data['id'] ?? null)
             ->setCreatedAt(isset($data['created_at']) ? (new DateTimeImmutable())->setTimestamp($data['created_at']) : null)
             ->setCreatedAt(isset($data['updated_at']) ? (new DateTimeImmutable())->setTimestamp($data['updated_at']) : null)

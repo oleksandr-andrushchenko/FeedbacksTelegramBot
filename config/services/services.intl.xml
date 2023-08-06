@@ -15,9 +15,10 @@
                  class="App\Service\Intl\I18nIsoCountryTranslationsProvider" lazy="true">
             <argument>%app.data_dir%</argument>
         </service>
-        <service id="app.intl_i18n_iso_language_translations_provider"
-                 class="App\Service\Intl\I18nIsoLanguageTranslationsProvider" lazy="true">
+        <service id="app.intl_i18n_iso_locale_translations_provider"
+                 class="App\Service\Intl\I18nIsoLocaleTranslationsProvider" lazy="true">
             <argument>%app.data_dir%</argument>
+            <argument type="service" id="app.string_mb_uc_firster"/>
         </service>
         <service id="app.intl_currency_provider" class="App\Service\Intl\CurrencyProvider" lazy="true">
             <argument type="string">%app.default_currency%</argument>

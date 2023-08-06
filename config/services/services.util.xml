@@ -14,5 +14,6 @@
         <service id="app.array_value_eraser" class="App\Service\Util\Array\ArrayValueEraser" lazy="true">
             <argument type="service" id="app.array_pos_eraser"/>
         </service>
+        <service id="app.string_mb_uc_firster" class="App\Service\Util\String\MbUcFirster" lazy="true"/>
     </services>
 </container>

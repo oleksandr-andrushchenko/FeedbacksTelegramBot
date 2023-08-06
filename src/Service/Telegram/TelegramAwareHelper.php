@@ -57,9 +57,9 @@ class TelegramAwareHelper
         return $this->chatProvider->getTelegramChatByUpdate($this->getTelegram()->getUpdate())?->getId();
     }
 
-    public function getLanguageCode(): ?string
+    public function getLocaleCode(): ?string
     {
-        return $this->getTelegram()->getMessengerUser()?->getLanguageCode();
+        return $this->getTelegram()->getMessengerUser()?->getUser()->getLocaleCode();
     }
 
     public function getCountryCode(): ?string
@@ -90,7 +90,7 @@ class TelegramAwareHelper
 
     public function view(string|TelegramView $template, array $context = []): string
     {
-        return $this->templateRenderer->renderTelegramTemplate($template, $context, $this->getLanguageCode());
+        return $this->templateRenderer->renderTelegramTemplate($template, $context, $this->getLocaleCode());
     }
 
     public function replyView(
@@ -148,7 +148,7 @@ class TelegramAwareHelper
 
     public function trans(string $id, array $parameters = [], ?string $domain = 'tg'): string
     {
-        return $this->translator->trans($id, $parameters, $domain, $this->getLanguageCode());
+        return $this->translator->trans($id, $parameters, $domain, $this->getLocaleCode());
     }
 
     public function replyOk(
@@ -160,7 +160,7 @@ class TelegramAwareHelper
     ): static
     {
         $this->reply($text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
-        $this->reply($this->trans('reply.icon.ok'));
+        $this->reply('🫡');
 
         return $this;
     }
@@ -175,7 +175,7 @@ class TelegramAwareHelper
     {
         // todo: find command by key
         $this->reply($text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
-        $this->reply($this->trans('reply.icon.fail'));
+        $this->reply('🤕');
 
         return $this;
     }
@@ -189,7 +189,7 @@ class TelegramAwareHelper
     ): static
     {
         $this->reply($text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
-        $this->reply($this->trans('reply.icon.wrong'));
+        $this->reply('🤔');
 
         return $this;
     }
@@ -203,7 +203,7 @@ class TelegramAwareHelper
     ): static
     {
         $this->reply($text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
-        $this->reply($this->trans('reply.icon.upset'));
+        $this->reply('😐');
 
         return $this;
     }

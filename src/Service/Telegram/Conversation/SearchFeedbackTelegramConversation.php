@@ -321,7 +321,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
                                     $feedback->getSearchTermMessengerUser()->getIdentifier(),
                                     $feedback->getSearchTermMessengerUser()->getUsername(),
                                     $feedback->getSearchTermMessengerUser()->getName(),
-                                    $feedback->getSearchTermMessengerUser()->getLanguageCode()
+                                    $feedback->getSearchTermMessengerUser()->getLocaleCode()
                                 )
                             ),
                         'rating' => $feedback->getRating(),
@@ -391,7 +391,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
 
     public static function getChangeSearchTermButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->trans('keyboard.search.change_search_term'));
+        return $tg->button(sprintf('%s %s', '📝', $tg->trans('keyboard.search.change_search_term')));
     }
 
     public static function getConfirmButton(TelegramAwareHelper $tg): KeyboardButton

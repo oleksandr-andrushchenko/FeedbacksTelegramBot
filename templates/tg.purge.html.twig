@@ -1,11 +1,11 @@
 {% trans_default_domain 'tg.purge' %}
-{{ 'icon.info'|trans({}, 'tg') }} {{ 'title'|trans }}
+ℹ️ {{ 'title'|trans }}
 
-{{ 'icon.info'|trans({}, 'tg') }} {{ 'items'|trans }}
+ℹ️ {{ 'items'|trans }}
 {% for item in items %}
  - {{ item|trans({}, 'tg') }}
 {% endfor %}
 
-{{ 'icon.info'|trans({}, 'tg') }} {{ 'summary'|trans }}
+ℹ️ {{ 'summary'|trans }}
 
 {% include 'tg.hints.html.twig' %}

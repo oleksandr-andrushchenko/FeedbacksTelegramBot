@@ -13,7 +13,7 @@ class User
     public function __construct(
         private ?string $username = null,
         private ?string $name = null,
-        private ?string $languageCode = null,
+        private ?string $localeCode = null,
         private ?Rating $rating = null,
         private ?string $countryCode = null,
         private ?int $phoneNumber = null,
@@ -59,14 +59,14 @@ class User
         return $this;
     }
 
-    public function getLanguageCode(): ?string
+    public function getLocaleCode(): ?string
     {
-        return $this->languageCode;
+        return $this->localeCode;
     }
 
-    public function setLanguageCode(?string $languageCode): self
+    public function setLocaleCode(?string $localeCode): self
     {
-        $this->languageCode = $languageCode;
+        $this->localeCode = $localeCode;
 
         return $this;
     }

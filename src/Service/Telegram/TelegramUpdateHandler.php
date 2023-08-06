@@ -12,7 +12,7 @@ use App\Service\Telegram\Payment\TelegramPaymentManager;
 use Longman\TelegramBot\TelegramLog;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Translation\LocaleSwitcher;
+use Twig\Error\Error as TwigError;
 
 class TelegramUpdateHandler
 {
@@ -25,7 +25,7 @@ class TelegramUpdateHandler
         private readonly TelegramChannelRegistry $channelRegistry,
         private readonly TelegramCommandFinder $commandFinder,
         private readonly TelegramPaymentManager $paymentManager,
-        private readonly LocaleSwitcher $localeSwitcher,
+        private readonly TelegramLocaleSwitcher $localeSwitcher,
         private readonly LoggerInterface $logger,
     )
     {
@@ -55,7 +55,7 @@ class TelegramUpdateHandler
 
         $messengerUser = $this->messengerUserUpserter->upsertTelegramMessengerUser($telegram);
         $telegram->setMessengerUser($messengerUser);
-        $this->localeSwitcher->setLocale($telegram->getMessengerUser()?->getUser()?->getLanguageCode() ?? $this->localeSwitcher->getLocale());
+        $this->localeSwitcher->syncLocale($telegram, $request);
 
         TelegramLog::initialize($this->logger, $this->logger);
 
@@ -87,7 +87,7 @@ class TelegramUpdateHandler
             } elseif ($fallbackCommand = $this->commandFinder->findFallbackCommand($commands)) {
                 call_user_func($fallbackCommand->getCallback());
             }
-        } catch (TelegramException $exception) {
+        } catch (TelegramException|TwigError $exception) {
             $this->logger->error($exception);
 
             if ($errorCommand = $this->commandFinder->findErrorCommand($commands)) {

@@ -58,4 +58,9 @@ readonly class FeedbackSubscriptionPlan
 
         return $this->getDefaultPrice();
     }
+
+    public function isGlobal(): bool
+    {
+        return count($this->countries) === 0;
+    }
 }

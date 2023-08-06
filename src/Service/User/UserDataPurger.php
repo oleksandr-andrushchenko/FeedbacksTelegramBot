@@ -21,7 +21,7 @@ class UserDataPurger
         $user
             ->setUsername(null)
             ->setName(null)
-            ->setLanguageCode(null)
+            ->setLocaleCode(null)
             ->setCountryCode(null)
             ->setPhoneNumber(null)
             ->setEmail(null)
@@ -34,7 +34,7 @@ class UserDataPurger
             $messengerUser
                 ->setUsername(null)
                 ->setName(null)
-                ->setLanguageCode(null)
+                ->setLocaleCode(null)
                 ->setIsShowHints(true)
             ;
         }

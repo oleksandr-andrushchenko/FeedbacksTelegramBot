@@ -4,6 +4,7 @@ command:
   premium: Купить Премиум
   subscriptions: Мой Премиум
   country: Моя Страна
+  locale: Мой язык
   restart: Перезапустить
   purge: Удалить Данные
   hints: Переключить Подсказки

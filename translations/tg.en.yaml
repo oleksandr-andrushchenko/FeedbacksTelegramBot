@@ -1,13 +1,18 @@
-yes: Yes
-no: No
+icon:
+  number: '#'
 
-press_yes_or_no: Press Yes or No please
+payment_method:
+  liqpay: LiqPay
+  portmone: Portmone
+  sberbank: Sberbank
+  stripe: Stripe
+
 datetime_format: m/d H:i
 date_format: m/d
 active: Active
 inactive: Inactive
-bought: Bought
-till: Till
+enabled: Enabled
+disabled: Disabled
 day: Day
 month: Month
 year: Year
@@ -20,38 +25,29 @@ phone_number: Phone number
 email: Email
 
 toggle_hint: Use %command% command to disable help hints like this.
-
-icon:
-  number: '#'
-  info: ℹ️
-  attention: ‼️
-  globe: 🌎
-
-payment_method:
-  liqpay: 🇺🇦 LiqPay
-  portmone: 🇺🇦 Portmone
-  sberbank: 🇷🇺 Sberbank
-  stripe: 🇺🇸🌎 Stripe
+tries_for: tries for a
 
 ask:
   country:
     country: Select your country please.
+  locale:
+    locale: Select your language please.
   action:
     action: Select an action please.
   create:
     search_term: Enter search term please, it could be messenger profile url, nickname, email, phone number, website, person or company name, etc.
-    search_term_type: Enter search term type please, or use keyboard above.
-    rating: Enter your score number please, or use keyboard above.
+    search_term_type: Enter search term type please, or use keyboard below.
+    rating: Enter your score number please, or use keyboard below.
     description: Enter your feedback please, it could be any details about your experience.
     confirm: Confirm feedback creation?
   search:
     search_term: Enter search term please, it could be messenger profile url, nickname, email, phone number, website, person or company name, etc.
-    search_term_type: Enter search term type please, or use keyboard above.
+    search_term_type: Enter search term type please, or use keyboard below.
     confirm: Confirm feedback search?
   premium:
-    subscription_plan: Select a subscription plan from the menu above please.
-    payment_method: Select a payment method from the menu above please.
-    payment: Proceed with the payment instructions above please.
+    subscription_plan: Select a subscription plan from the menu below please.
+    payment_method: Select a payment method from the menu below please.
+    payment: Proceed with the payment instructions below please.
     payment_invoice_title: '"%plan%" subscription'
     payment_invoice_description: "No limits on feedbacks creation and searching for the next period: %plan%"
   purge:
@@ -63,26 +59,20 @@ ask:
 
 keyboard:
   confirm: 👌 Confirm
-  yes: ✅ Yes
-  no: ❌ No
   back: ⬅️ Get back
   cancel: ❌ Cancel
-  skip: ⏩ Skip
   leave_as: Leave as "%text%"
   make_empty: Make empty
   leave_empty: Leave empty
-  country:
-    other: "%icon% Other"
-    absent: "%icon% Not in the list"
+  other: Other
+  absent: Not in the list
   create:
-    change_search_term: 📝 Change search term
-    change_rating: 📝 Change rate
-    add_description: 📝 Add details
-    change_description: 📝 Change details
+    change_search_term: Change search term
+    change_rating: Change rate
+    add_description: Add details
+    change_description: Change details
   search:
-    change_search_term: 📝 Change search term
-  premium:
-    subscription_plan: "%plan% [%currency% %price%]"
+    change_search_term: Change search term
   hints:
     turn_on: Enable Hints
     turn_off: Disable Hints
@@ -93,11 +83,6 @@ reply:
   ok: Completed successfully.
   fail: "Unknown error has occurred,\r\n1) Make sure everything was properly organized and repeat; or\r\n2) Use 'Contact Us' command; or\r\n3) Try again later please."
   wrong: I don't understand you.
-  icon:
-    ok: 🫡
-    fail: 🤕
-    wrong: 🤔
-    upset: 😐
   purge:
     ok: Purge has been successfully made, now you can leave the bot.
     canceled: Purge dialog has been canceled.
@@ -107,6 +92,9 @@ reply:
   country:
     canceled: Country selection dialog has been canceled.
     ok: "Your country has been successfully updated on %icon% %name%"
+  locale:
+    canceled: Language selection dialog has been canceled.
+    ok: "Your language has been successfully updated on %icon% %name%"
   create:
     canceled: Feedback adding dialog has been canceled.
     ok: Feedback has been successfully added.
@@ -154,10 +142,6 @@ search_term_type:
   phone_number: 📞 Phone number
   unknown: Anybody or Anything
   url: 🌎 Webpage
-
-search_term_type_icon:
-  phone: 📞
-  email: 📫
 
 rating:
   extremely_unsatisfied: 👎👎👎 [%rating%] extremely unsatisfied

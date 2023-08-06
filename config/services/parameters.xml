@@ -22,7 +22,7 @@
         <parameter key="app.countries_file">%app.data_dir%/countries.json</parameter>
         <parameter key="app.translations_dir">%kernel.project_dir%/translations</parameter>
         <parameter key="app.country_translation_file">%app.translations_dir%/countries.{locale}.yaml</parameter>
-        <parameter key="app.language_translation_file">%app.translations_dir%/languages.{locale}.yaml</parameter>
+        <parameter key="app.locale_translation_file">%app.translations_dir%/locales.{locale}.yaml</parameter>
 
         <parameter key="app.telegram_activities_token">%env(TELEGRAM_ACTIVITIES_TOKEN)%</parameter>
         <parameter key="app.telegram_activities_channel">%env(TELEGRAM_ACTIVITIES_CHANNEL)%</parameter>
@@ -140,6 +140,7 @@
             <parameter key="portmone" type="collection">
                 <parameter key="token">%env(FEEDBACKS_PORTMONE_TOKEN)%</parameter>
                 <parameter key="currency">UAH</parameter>
+                <parameter key="flag">ua</parameter>
                 <parameter key="countries" type="collection">
                     <parameter>ua</parameter>
                     <parameter>ru</parameter>
@@ -148,6 +149,7 @@
             <parameter key="sberbank" type="collection">
                 <parameter key="token">%env(FEEDBACKS_SBERBANK_TOKEN)%</parameter>
                 <parameter key="currency">RUB</parameter>
+                <parameter key="flag">ru</parameter>
                 <parameter key="countries" type="collection">
                     <parameter>ru</parameter>
                 </parameter>
@@ -155,6 +157,7 @@
             <parameter key="stripe" type="collection">
                 <parameter key="token">%env(FEEDBACKS_STRIPE_TOKEN)%</parameter>
                 <parameter key="currency">USD</parameter>
+                <parameter key="flag">us</parameter>
             </parameter>
         </parameter>
     </parameters>

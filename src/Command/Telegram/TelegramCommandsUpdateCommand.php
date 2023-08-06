@@ -55,7 +55,7 @@ class TelegramCommandsUpdateCommand extends Command
         $myCommands = $this->telegramCommandsUpdater->getMyCommands();
 
         foreach ($myCommands as $myCommandsItem) {
-            $value = sprintf('%s + %s', $myCommandsItem->getLanguageCode(), $myCommandsItem->getScope()->toJson());
+            $value = sprintf('%s + %s', $myCommandsItem->getLocaleCode(), $myCommandsItem->getScope()->toJson());
             foreach ($myCommandsItem->getCommands() as $command) {
                 if (!isset($table[$command->getName()])) {
                     $table[$command->getName()] = [];

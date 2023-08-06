@@ -536,22 +536,22 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
     public static function getChangeSearchTermButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->trans('keyboard.create.change_search_term'));
+        return $tg->button(sprintf('%s %s', '📝', $tg->trans('keyboard.create.change_search_term')));
     }
 
     public static function getChangeRatingButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->trans('keyboard.create.change_rating'));
+        return $tg->button(sprintf('%s %s', '📝', $tg->trans('keyboard.create.change_rating')));
     }
 
     public static function getAddDescriptionButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->trans('keyboard.create.add_description'));
+        return $tg->button(sprintf('%s %s', '📝', $tg->trans('keyboard.create.add_description')));
     }
 
     public static function getChangeDescriptionButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->trans('keyboard.create.change_description'));
+        return $tg->button(sprintf('%s %s', '📝', $tg->trans('keyboard.create.change_description')));
     }
 
     public static function getConfirmButton(TelegramAwareHelper $tg): KeyboardButton

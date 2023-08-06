@@ -31,7 +31,7 @@ class MessengerUserUpserter
                 $messengerUserTransfer->getId(),
                 $messengerUserTransfer->getUsername(),
                 $messengerUserTransfer->getName(),
-                $messengerUserTransfer->getLanguageCode()
+                $messengerUserTransfer->getLocaleCode()
             );
             $this->entityManager->persist($messengerUser);
 
@@ -44,10 +44,6 @@ class MessengerUserUpserter
 
         if ($messengerUserTransfer->getName() !== null) {
             $messengerUser->setName($messengerUserTransfer->getName());
-        }
-
-        if ($messengerUserTransfer->getLanguageCode() !== null) {
-            $messengerUser->setLanguageCode($messengerUserTransfer->getLanguageCode());
         }
 
         $messengerUser->setUpdatedAt(new DateTimeImmutable());

@@ -14,6 +14,7 @@ use App\Service\Telegram\Chat\StartTelegramCommandHandler;
 use App\Service\Telegram\Chat\SubscriptionsTelegramChatSender;
 use App\Service\Telegram\Chat\HintsTelegramChatSwitcher;
 use App\Service\Telegram\Conversation\ChooseCountryTelegramConversation;
+use App\Service\Telegram\Conversation\ChooseLocaleTelegramConversation;
 use App\Service\Telegram\Conversation\GetPremiumTelegramConversation;
 use App\Service\Telegram\Conversation\CreateFeedbackTelegramConversation;
 use App\Service\Telegram\Conversation\LeaveFeedbackMessageTelegramConversation;
@@ -34,6 +35,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     public const PREMIUM = '/premium';
     public const SUBSCRIPTIONS = '/subscriptions';
     public const COUNTRY = '/country';
+    public const LOCALE = '/language';
     public const HINTS = '/hints';
     public const PURGE = '/purge';
     public const MESSAGE = '/message';
@@ -45,6 +47,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         'premium' => self::PREMIUM,
         'subscriptions' => self::SUBSCRIPTIONS,
         'country' => self::COUNTRY,
+        'locale' => self::LOCALE,
         'hints' => self::HINTS,
         'purge' => self::PURGE,
         'message' => self::MESSAGE,
@@ -81,6 +84,11 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
 
         yield new TelegramCommand(self::SUBSCRIPTIONS, fn () => $this->subscriptions($tg), menu: true, key: 'subscriptions', beforeConversations: true);
         yield new TelegramCommand(self::COUNTRY, fn () => $this->country($tg), menu: true, key: 'country', beforeConversations: true);
+
+        if ($tg->getCountryCode() !== null) {
+            yield new TelegramCommand(self::LOCALE, fn () => $this->locale($tg), menu: true, key: 'locale', beforeConversations: true);
+        }
+
         yield new TelegramCommand(self::HINTS, fn () => $this->hints($tg), menu: true, key: 'hints', beforeConversations: true);
         yield new TelegramCommand(self::PURGE, fn () => $this->purge($tg), menu: true, key: 'purge', beforeConversations: true);
         yield new TelegramCommand(self::MESSAGE, fn () => $this->message($tg), menu: true, key: 'message', beforeConversations: true);
@@ -121,6 +129,9 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         if ($tg->getTelegram()->getMessengerUser()->isShowExtendedKeyboard()) {
             if ($tg->matchText($this->chooseActionChatSender->getCountryButton($tg)->getText())) {
                 return $this->country($tg);
+            }
+            if ($tg->getCountryCode() !== null && $tg->matchText($this->chooseActionChatSender->getLocaleButton($tg)->getText())) {
+                return $this->locale($tg);
             }
             if ($tg->matchText($this->chooseActionChatSender->getHintsButton($tg)->getText())) {
                 return $this->hints($tg);
@@ -236,6 +247,11 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     public function country(TelegramAwareHelper $tg): null
     {
         return $tg->stopConversations()->startConversation(ChooseCountryTelegramConversation::class)->null();
+    }
+
+    public function locale(TelegramAwareHelper $tg): null
+    {
+        return $tg->stopConversations()->startConversation(ChooseLocaleTelegramConversation::class)->null();
     }
 
     public function hints(TelegramAwareHelper $tg): null

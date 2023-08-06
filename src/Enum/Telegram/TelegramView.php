@@ -14,6 +14,7 @@ enum TelegramView: string
     case CREATE = 'create';
     case SEARCH = 'search';
     case COUNTRY = 'country';
+    case LOCALE = 'locale';
     case PURGE = 'purge';
     case MESSAGE = 'message';
     case RESTART = 'restart';

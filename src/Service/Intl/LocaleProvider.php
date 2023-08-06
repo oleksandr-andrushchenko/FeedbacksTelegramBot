@@ -38,20 +38,22 @@ class LocaleProvider
 
     public function getLocaleIcon(Locale $locale): string
     {
-        $country = $this->countryProvider->getCountry($locale->getCountry());
+        $country = $this->countryProvider->getCountry($locale->getFlag());
 
         return $this->countryProvider->getCountryIcon($country);
     }
 
     public function getLocaleName(Locale $localeObj, string $locale = null): string
     {
-        return $this->translator->trans($localeObj->getCode(), domain: 'languages', locale: $locale);
+        return $this->translator->trans($localeObj->getCode(), domain: 'locales', locale: $locale);
     }
 
     /**
+     * @param bool|null $supported
+     * @param string|null $country
      * @return Locale[]
      */
-    public function getLocales(bool $supported = null): array
+    public function getLocales(bool $supported = null, string $country = null): array
     {
         if ($this->locales === null) {
             $locales = [];
@@ -59,7 +61,7 @@ class LocaleProvider
             foreach ($this->data as $code => $locale) {
                 $locales[] = new Locale(
                     $code,
-                    $locale['country'] ?? $code
+                    $locale['flag'] ?? $code
                 );
             }
 
@@ -70,6 +72,11 @@ class LocaleProvider
 
         if ($supported) {
             $locales = array_filter($locales, fn (Locale $locale) => in_array($locale->getCode(), $this->supported, true));
+        }
+
+        if ($country !== null) {
+            $filter = $this->countryProvider->getCountry($country)->getLocales() ?? [];
+            $locales = array_intersect($locales, $filter);
         }
 
         return $locales;

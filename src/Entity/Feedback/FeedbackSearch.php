@@ -24,6 +24,7 @@ class FeedbackSearch
         private readonly ?string $searchTermMessengerUsername,
         private readonly bool $isPremium,
         private readonly ?string $countryCode = null,
+        private readonly ?string $localeCode = null,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
         private ?int $id = null,
@@ -84,6 +85,11 @@ class FeedbackSearch
     public function getCountryCode(): ?string
     {
         return $this->countryCode;
+    }
+
+    public function getLocaleCode(): ?string
+    {
+        return $this->localeCode;
     }
 
     public function getCreatedAt(): ?DateTimeInterface

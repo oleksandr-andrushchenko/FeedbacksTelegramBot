@@ -27,13 +27,13 @@ class TelegramCommandsRemover
         $this->myCommands = [];
 
         foreach ($this->telegramMyCommandsProvider->getTelegramMyCommands($telegram) as $myCommands) {
-            if (!in_array($myCommands->getLanguageCode(), $telegram->getOptions()->getLanguageCodes(), true)) {
+            if (!in_array($myCommands->getLocaleCode(), $telegram->getOptions()->getLocaleCodes(), true)) {
                 continue;
             }
 
             $data = [];
 
-            $data['language_code'] = $myCommands->getLanguageCode();
+            $data['language_code'] = $myCommands->getLocaleCode();
             $data['scope'] = $myCommands->getScope()->jsonSerialize();
 
             $this->myCommands[] = $myCommands;

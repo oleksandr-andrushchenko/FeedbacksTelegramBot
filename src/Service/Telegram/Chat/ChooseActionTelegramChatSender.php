@@ -6,6 +6,7 @@ namespace App\Service\Telegram\Chat;
 
 use App\Service\Feedback\FeedbackUserSubscriptionManager;
 use App\Service\Intl\CountryProvider;
+use App\Service\Intl\LocaleProvider;
 use App\Service\Telegram\TelegramAwareHelper;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
@@ -14,6 +15,7 @@ class ChooseActionTelegramChatSender
     public function __construct(
         private readonly FeedbackUserSubscriptionManager $userSubscriptionManager,
         private readonly CountryProvider $countryProvider,
+        private readonly LocaleProvider $localeProvider,
     )
     {
     }
@@ -31,10 +33,13 @@ class ChooseActionTelegramChatSender
         }
 
         if ($tg->getTelegram()->getMessengerUser()?->isShowExtendedKeyboard()) {
+            $keyboards[] = $this->getMessageButton($tg);
             $keyboards[] = $this->getCountryButton($tg);
+            if ($tg->getCountryCode() !== null) {
+                $keyboards[] = $this->getLocaleButton($tg);
+            }
             $keyboards[] = $this->getHintsButton($tg);
             $keyboards[] = $this->getPurgeButton($tg);
-            $keyboards[] = $this->getMessageButton($tg);
             $keyboards[] = $this->getRestartButton($tg);
             $keyboards[] = $this->getShowLessButton($tg);
         } else {
@@ -86,6 +91,25 @@ class ChooseActionTelegramChatSender
             join(' ', [
                 $this->countryProvider->getCountryIcon($country),
                 $tg->trans('command.country', domain: $domain),
+            ])
+        );
+    }
+
+    public function getLocaleButton(TelegramAwareHelper $tg): KeyboardButton
+    {
+        $localeCode = $tg->getLocaleCode();
+        $locale = $localeCode === null ? null : $this->localeProvider->getLocale($localeCode);
+
+        if ($locale === null) {
+            return $tg->button(self::command($tg, 'locale'));
+        }
+
+        $domain = sprintf('tg.%s', $tg->getTelegram()->getName()->name);
+
+        return $tg->button(
+            join(' ', [
+                $this->localeProvider->getLocaleIcon($locale),
+                $tg->trans('command.locale', domain: $domain),
             ])
         );
     }

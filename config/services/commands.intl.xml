@@ -20,11 +20,11 @@
             <argument>%app.supported_locales%</argument>
             <tag name="console.command" command="intl:countries:update"/>
         </service>
-        <service id="app.command.intl_languages_update" class="App\Command\Intl\LanguagesUpdateCommand" lazy="true">
-            <argument type="service" id="app.intl_i18n_iso_language_translations_provider"/>
-            <argument>%app.language_translation_file%</argument>
+        <service id="app.command.intl_locales_update" class="App\Command\Intl\LocalesUpdateCommand" lazy="true">
+            <argument type="service" id="app.intl_i18n_iso_locale_translations_provider"/>
+            <argument>%app.locale_translation_file%</argument>
             <argument>%app.supported_locales%</argument>
-            <tag name="console.command" command="intl:languages:update"/>
+            <tag name="console.command" command="intl:locales:update"/>
         </service>
     </services>
 </container>

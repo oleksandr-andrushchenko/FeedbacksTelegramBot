@@ -16,7 +16,7 @@ class MessengerUser
         private readonly string $identifier,
         private ?string $username = null,
         private ?string $name = null,
-        private ?string $languageCode = null,
+        private ?string $localeCode = null,
         private ?User $user = null,
         private bool $isShowHints = true,
         private bool $isShowExtendedKeyboard = false,
@@ -85,14 +85,14 @@ class MessengerUser
         return $this;
     }
 
-    public function getLanguageCode(): ?string
+    public function getLocaleCode(): ?string
     {
-        return $this->languageCode;
+        return $this->localeCode;
     }
 
-    public function setLanguageCode(?string $languageCode): self
+    public function setLocaleCode(?string $localeCode): self
     {
-        $this->languageCode = $languageCode;
+        $this->localeCode = $localeCode;
 
         return $this;
     }

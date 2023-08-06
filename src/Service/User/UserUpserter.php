@@ -27,7 +27,7 @@ class UserUpserter
             $user = new User(
                 $messengerUser->getUsername(),
                 $messengerUser->getName(),
-                $messengerUser->getLanguageCode()
+                $messengerUser->getLocaleCode()
             );
 
             $this->entityManager->persist($user);
@@ -43,10 +43,6 @@ class UserUpserter
 
         if (empty($user->getName()) && !empty($messengerUser->getName())) {
             $user->setName($messengerUser->getName());
-        }
-
-        if (empty($user->getLanguageCode()) && !empty($messengerUser->getLanguageCode())) {
-            $user->setLanguageCode($messengerUser->getLanguageCode());
         }
 
         $user->setUpdatedAt(new DateTimeImmutable());

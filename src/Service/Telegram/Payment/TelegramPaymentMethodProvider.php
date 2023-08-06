@@ -17,10 +17,10 @@ class TelegramPaymentMethodProvider
     }
 
     /**
-     * @param string|null $countryCode
+     * @param string|null $country
      * @return TelegramPaymentMethod[]
      */
-    public function getPaymentMethods(string $countryCode = null): array
+    public function getPaymentMethods(string $country = null): array
     {
         if ($this->paymentMethods === null) {
             $paymentMethods = [];
@@ -31,6 +31,7 @@ class TelegramPaymentMethodProvider
                     $paymentMethod['token'],
                     $paymentMethod['currency'],
                     $paymentMethod['countries'] ?? [],
+                    $paymentMethod['flag'] ?? null,
                 );
             }
 
@@ -39,11 +40,11 @@ class TelegramPaymentMethodProvider
 
         $paymentMethods = $this->paymentMethods;
 
-        if ($countryCode !== null) {
-            $paymentMethods = array_filter(
+        if ($country !== null) {
+            $paymentMethods = array_values(array_filter(
                 $paymentMethods,
-                fn (TelegramPaymentMethod $paymentMethod) => count($paymentMethod->getCountries()) === 0 || in_array($countryCode, $paymentMethod->getCountries(), true)
-            );
+                fn (TelegramPaymentMethod $paymentMethod) => $paymentMethod->isGlobal() || in_array($country, $paymentMethod->getCountries(), true)
+            ));
         }
 
         return $paymentMethods;
