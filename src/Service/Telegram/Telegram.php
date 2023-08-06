@@ -6,7 +6,7 @@ namespace App\Service\Telegram;
 
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramOptions;
-use App\Enum\Telegram\TelegramName;
+use App\Enum\Telegram\TelegramGroup;
 use App\Exception\Telegram\TelegramException;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Entities\Update;
@@ -45,7 +45,7 @@ class Telegram
     private ?MessengerUser $messengerUser;
 
     public function __construct(
-        private readonly TelegramName $name,
+        private readonly TelegramGroup $group,
         private readonly TelegramOptions $options,
         private readonly TelegramClientRegistry $clientRegistry,
         private readonly TelegramRequestChecker $requestChecker,
@@ -56,9 +56,9 @@ class Telegram
         $this->messengerUser = null;
     }
 
-    public function getName(): TelegramName
+    public function getGroup(): TelegramGroup
     {
-        return $this->name;
+        return $this->group;
     }
 
     public function getOptions(): TelegramOptions
@@ -161,7 +161,7 @@ class Telegram
             $message = sprintf(
                 'Failed to %s for "%s" telegram',
                 strtolower(implode(' ', preg_split('/(?=[A-Z])/', $name))),
-                $this->getName()->name,
+                $this->getGroup()->name,
             );
 
             throw new TelegramException($message, 0, $exception);
@@ -170,6 +170,6 @@ class Telegram
 
     private function getClient(): TelegramClient
     {
-        return $this->clientRegistry->getTelegramClient($this->getName(), $this->getOptions());
+        return $this->clientRegistry->getTelegramClient($this->getOptions());
     }
 }

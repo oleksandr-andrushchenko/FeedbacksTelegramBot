@@ -20,8 +20,7 @@ provider:
 #    todo: change WEB_BASE_URL -> SITE_BASE_URL
     SITE_BASE_URL: ${ssm:/feedbacks/${sls:stage}/WEB_BASE_URL}
     TELEGRAM_WEBHOOK_BASE_URL: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_WEBHOOK_BASE_URL}
-    TELEGRAM_FEEDBACKS_USERNAME: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_FEEDBACKS_USERNAME}
-    TELEGRAM_FEEDBACKS_API_TOKEN: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_FEEDBACKS_API_TOKEN}
+    TELEGRAM_FEEDBACKS_BOTS: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_FEEDBACKS_BOTS}
     TELEGRAM_FEEDBACKS_ADMIN_IDS: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_FEEDBACKS_ADMIN_IDS}
     TELEGRAM_FEEDBACKS_LANGUAGE_CODES: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_FEEDBACKS_LANGUAGE_CODES}
     TELEGRAM_FEEDBACKS_ADMIN_CHAT_IDS: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_FEEDBACKS_ADMIN_CHAT_IDS}

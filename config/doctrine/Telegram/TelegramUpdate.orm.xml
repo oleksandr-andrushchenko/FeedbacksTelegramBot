@@ -14,6 +14,7 @@
             </options>
         </id>
         <field name="data" column="data" type="json"/>
+        <field name="bot" column="bot" length="32"/>
         <field name="createdAt" column="created_at" type="datetime_immutable"/>
     </entity>
 </doctrine-mapping>

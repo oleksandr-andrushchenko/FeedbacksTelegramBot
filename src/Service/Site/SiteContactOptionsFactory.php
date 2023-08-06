@@ -19,7 +19,7 @@ class SiteContactOptionsFactory
     public function createSiteContactOptions(array $options, TelegramOptions $telegramOptions): SiteContactOptions
     {
         return new SiteContactOptions(
-            $this->translator->trans('bot', [], sprintf('tg.%s', $telegramOptions->getKey())),
+            $this->translator->trans('bot', [], sprintf('tg.%s', $telegramOptions->getGroupKey())),
             sprintf('https://t.me/%s', $telegramOptions->getUsername()),
             $options['website'],
             $options['phone'],

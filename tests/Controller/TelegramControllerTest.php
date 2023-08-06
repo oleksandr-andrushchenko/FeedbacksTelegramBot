@@ -22,7 +22,7 @@ class TelegramControllerTest extends KernelTestCase
         
         $this->getTelegramUpdateHandlerMock();
 
-        $client->jsonRequest('POST', '/telegram/webhook', $this->getTelegramUpdateFixture()->jsonSerialize());
+        $client->jsonRequest('POST', '/telegram/webhook/any_bot', $this->getTelegramUpdateFixture()->jsonSerialize());
 
         $response = $client->getResponse();
 
@@ -39,7 +39,7 @@ class TelegramControllerTest extends KernelTestCase
             ->willThrowException(new Exception())
         ;
 
-        $client->jsonRequest('POST', '/telegram/webhook', $this->getTelegramUpdateFixture()->jsonSerialize());
+        $client->jsonRequest('POST', '/telegram/webhook/any_bot', $this->getTelegramUpdateFixture()->jsonSerialize());
 
         $response = $client->getResponse();
 

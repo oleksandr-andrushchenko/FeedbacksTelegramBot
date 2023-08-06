@@ -66,7 +66,8 @@ class TelegramPaymentManager
             $paymentMethodName,
             $purpose,
             $price,
-            $payload
+            $payload,
+            $telegram->getOptions()->getUsername()
         );
         $this->entityManager->persist($payment);
 

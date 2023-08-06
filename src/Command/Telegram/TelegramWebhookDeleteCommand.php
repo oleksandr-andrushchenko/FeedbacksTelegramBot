@@ -18,9 +18,9 @@ use Throwable;
 class TelegramWebhookDeleteCommand extends Command
 {
     public function __construct(
-        private readonly TelegramRegistry $telegramRegistry,
-        private readonly TelegramWebhookInfoProvider $telegramWebhookInfoProvider,
-        private readonly TelegramWebhookRemover $telegramWebhookRemover,
+        private readonly TelegramRegistry $registry,
+        private readonly TelegramWebhookInfoProvider $infoProvider,
+        private readonly TelegramWebhookRemover $remover,
     )
     {
         parent::__construct();
@@ -32,7 +32,7 @@ class TelegramWebhookDeleteCommand extends Command
     protected function configure()
     {
         $this
-            ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot name')
+            ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot username')
             ->setDescription('Delete telegram bot webhook')
         ;
     }
@@ -45,9 +45,9 @@ class TelegramWebhookDeleteCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $telegram = $this->telegramRegistry->getTelegram($input->getArgument('name'));
+            $telegram = $this->registry->getTelegram($input->getArgument('name'));
 
-            $url = $this->telegramWebhookInfoProvider->getTelegramWebhookInfo($telegram)->getUrl();
+            $url = $this->infoProvider->getTelegramWebhookInfo($telegram)->getUrl();
 
             if ($url === '') {
                 $io->info('No webhook found for delete');
@@ -67,7 +67,7 @@ class TelegramWebhookDeleteCommand extends Command
                 return Command::SUCCESS;
             }
 
-            $this->telegramWebhookRemover->removeTelegramWebhook($telegram);
+            $this->remover->removeTelegramWebhook($telegram);
         } catch (Throwable $exception) {
             $io->error($exception->getMessage());
 

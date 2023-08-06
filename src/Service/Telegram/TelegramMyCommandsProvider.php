@@ -21,7 +21,7 @@ class TelegramMyCommandsProvider
      */
     public function getTelegramMyCommands(Telegram $telegram): iterable
     {
-        $channel = $this->channelRegistry->getTelegramChannel($telegram->getName());
+        $channel = $this->channelRegistry->getTelegramChannel($telegram->getGroup());
 
         $realCommands = array_values(
             array_filter($channel->getTelegramCommands($telegram), fn ($command) => $command instanceof TelegramCommand)

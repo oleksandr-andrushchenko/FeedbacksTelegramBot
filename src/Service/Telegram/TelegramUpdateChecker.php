@@ -35,7 +35,7 @@ class TelegramUpdateChecker
 
             if ($telegramUpdate !== null) {
                 $this->logger->debug('Duplicate telegram update received, processing aborted', [
-                    'name' => $telegram->getName()->name,
+                    'name' => $telegram->getGroup()->name,
                     'update_id' => $telegramUpdate->getId(),
                 ]);
 
@@ -45,7 +45,8 @@ class TelegramUpdateChecker
 
         $telegramUpdate = new TelegramUpdate(
             $telegram->getUpdate()->getUpdateId(),
-            $telegram->getUpdate()->getRawData()
+            $telegram->getUpdate()->getRawData(),
+            $telegram->getOptions()->getUsername(),
         );
         $this->entityManager->persist($telegramUpdate);
 

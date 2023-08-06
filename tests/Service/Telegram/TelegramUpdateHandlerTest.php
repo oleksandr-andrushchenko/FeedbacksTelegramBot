@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Tests\Service\Telegram;
 
 use App\Entity\Telegram\TelegramUpdate;
-use App\Enum\Telegram\TelegramName;
+use App\Enum\Telegram\TelegramGroup;
 use App\Tests\DatabaseTestCase;
 use App\Tests\Traits\AssertLoggedTrait;
 use App\Tests\Traits\Telegram\TelegramUpdateHandlerTrait;
@@ -23,7 +23,7 @@ class TelegramUpdateHandlerTest extends DatabaseTestCase
     {
         $updateId = 10;
 
-        $this->handleTelegramUpdate(TelegramName::default, $this->getTelegramMessageUpdateFixture('any', updateId: $updateId));
+        $this->handleTelegramUpdate(null, $this->getTelegramMessageUpdateFixture('any', updateId: $updateId));
 
         $this->assertLogged(Level::Info, 'Telegram update received');
 
@@ -40,7 +40,7 @@ class TelegramUpdateHandlerTest extends DatabaseTestCase
         $updateRepository = $this->getTelegramUpdateRepository();
         $previousUpdateCount = $updateRepository->count([]);
 
-        $this->handleTelegramUpdate(TelegramName::default, $this->getTelegramMessageUpdateFixture('any', updateId: 1));
+        $this->handleTelegramUpdate(null, $this->getTelegramMessageUpdateFixture('any', updateId: 1));
 
         $this->assertLogged(Level::Info, 'Telegram update received');
         $this->assertLogged(Level::Debug, 'Duplicate telegram update received, processing aborted');

@@ -14,15 +14,14 @@ class TelegramConversation
         private readonly MessengerUser $messengerUser,
         private readonly int $chatId,
         private string $class,
+        private readonly string $bot,
         private bool $isActive = true,
         private ?array $state = null,
-        private ?DateTimeInterface $createdAt = null,
+        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
         private ?int $id = null,
     )
     {
-        $this->createdAt = $this->createdAt ?? new DateTimeImmutable();
-        $this->updatedAt = $this->updatedAt ?? null;
     }
 
     public function getId(): ?int
@@ -64,6 +63,11 @@ class TelegramConversation
         return $this;
     }
 
+    public function getBot(): string
+    {
+        return $this->bot;
+    }
+
     public function getState(): ?array
     {
         return $this->state;
@@ -79,13 +83,6 @@ class TelegramConversation
     public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(?DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     public function getUpdatedAt(): ?DateTimeInterface

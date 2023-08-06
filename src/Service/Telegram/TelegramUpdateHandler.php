@@ -59,7 +59,7 @@ class TelegramUpdateHandler
 
         TelegramLog::initialize($this->logger, $this->logger);
 
-        $channel = $this->channelRegistry->getTelegramChannel($telegram->getName());
+        $channel = $this->channelRegistry->getTelegramChannel($telegram->getGroup());
 
         if ($update->getPreCheckoutQuery() !== null) {
             if ($telegram->getOptions()->acceptPayments()) {

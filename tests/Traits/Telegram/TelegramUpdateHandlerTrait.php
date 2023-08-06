@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Traits\Telegram;
 
-use App\Enum\Telegram\TelegramName;
+use App\Enum\Telegram\TelegramGroup;
 use App\Service\Telegram\Telegram;
 use App\Tests\Traits\EntityManagerProviderTrait;
 use Longman\TelegramBot\Entities\Update;
@@ -16,10 +16,10 @@ trait TelegramUpdateHandlerTrait
     use EntityManagerProviderTrait;
     use TelegramRegistryProviderTrait;
 
-    private function handleTelegramUpdate(TelegramName|Telegram $telegram, Update $update): void
+    private function handleTelegramUpdate(?Telegram $telegram, Update $update): void
     {
         $this->getTelegramUpdateHandler()->handleTelegramUpdate(
-            $telegram instanceof TelegramName ? $this->getTelegramRegistry()->getTelegram($telegram) : $telegram,
+            $telegram === null ? $this->getTelegramRegistry()->getTelegram('any_bot') : $telegram,
             new Request(content: $update->toJson())
         );
         $this->getEntityManager()->flush();

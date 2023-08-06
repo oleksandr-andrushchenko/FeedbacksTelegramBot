@@ -3,3 +3,4 @@ App\Entity\Telegram\TelegramUpdate:
     __construct:
       id: <intval(<current()>)>
       data: <([])>
+      bot: any_bot

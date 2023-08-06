@@ -11,7 +11,7 @@ use App\Entity\Telegram\TelegramConversationState;
 use App\Entity\User\User;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
-use App\Enum\Telegram\TelegramName;
+use App\Enum\Telegram\TelegramGroup;
 use App\Enum\Telegram\TelegramView;
 use App\Object\Feedback\SearchTermTransfer;
 use App\Object\Messenger\MessengerUserTransfer;
@@ -70,7 +70,7 @@ trait TelegramCommandFunctionalTrait
 
     protected function telegramCommandUp(): void
     {
-        $this->telegram = $this->getTelegramRegistry()->getTelegram(TelegramName::feedbacks);
+        $this->telegram = $this->getTelegramRegistry()->getTelegram('any_bot');
         $this->tg = $this->getTelegramAwareHelper()->withTelegram($this->telegram);
         $this->update = $this->getTelegramMessageUpdateFixture('any');
         $this->conversation = null;
@@ -326,7 +326,8 @@ trait TelegramCommandFunctionalTrait
     {
         return $this->getTelegramConversationRepository()->findOneByMessengerUserAndChatId(
             $this->getUpdateMessengerUser(),
-            $this->getUpdateChatId()
+            $this->getUpdateChatId(),
+            $this->telegram->getOptions()->getUsername()
         );
     }
 

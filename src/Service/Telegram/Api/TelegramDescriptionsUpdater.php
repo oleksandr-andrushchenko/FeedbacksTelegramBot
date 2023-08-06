@@ -29,7 +29,7 @@ class TelegramDescriptionsUpdater
         $this->myDescriptions = [];
         $this->myShortDescriptions = [];
 
-        $domain = sprintf('tg.%s', $telegram->getName()->name);
+        $domain = sprintf('tg.%s', $telegram->getGroup()->name);
 
         foreach ($telegram->getOptions()->getLocaleCodes() as $localeCode) {
             $name = $this->translator->trans(sprintf('name.%s', $this->stage), domain: $domain, locale: $localeCode);

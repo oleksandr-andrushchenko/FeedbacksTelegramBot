@@ -24,18 +24,17 @@ class TelegramPayment
         private readonly string $purpose,
         Money $price,
         private readonly array $payload,
+        private readonly string $bot,
         private ?array $preCheckoutQuery = null,
         private ?array $successfulPayment = null,
         private ?TelegramPaymentStatus $status = TelegramPaymentStatus::REQUEST_SENT,
-        private ?DateTimeInterface $createdAt = null,
+        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
         private ?int $id = null,
     )
     {
         $this->priceAmount = $price->getAmount();
         $this->priceCurrency = $price->getCurrency();
-        $this->createdAt = $this->createdAt ?? new DateTimeImmutable();
-        $this->updatedAt = $this->updatedAt ?? null;
     }
 
     public function getId(): ?int
@@ -78,6 +77,11 @@ class TelegramPayment
         return $this->payload;
     }
 
+    public function getBot(): string
+    {
+        return $this->bot;
+    }
+
     public function getPreCheckoutQuery(): ?array
     {
         return $this->preCheckoutQuery;
@@ -117,13 +121,6 @@ class TelegramPayment
     public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(?DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     public function getUpdatedAt(): ?DateTimeInterface

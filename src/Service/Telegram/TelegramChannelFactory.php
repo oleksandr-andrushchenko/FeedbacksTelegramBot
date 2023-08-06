@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram;
 
-use App\Enum\Telegram\TelegramName;
+use App\Enum\Telegram\TelegramGroup;
 use App\Service\Telegram\Channel\TelegramChannelInterface;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
@@ -16,7 +16,7 @@ class TelegramChannelFactory
     {
     }
 
-    public function createTelegramChannel(TelegramName $name): TelegramChannelInterface
+    public function createTelegramChannel(TelegramGroup $name): TelegramChannelInterface
     {
         return $this->channelServiceLocator->get($name->name);
     }

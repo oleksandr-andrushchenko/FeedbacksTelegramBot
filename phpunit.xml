@@ -35,8 +35,7 @@
         <env name="APP_SECRET" value="$ecretf0rt3st"/>
         <env name="SITE_BASE_URL" value="http://localhost"/>
         <env name="TELEGRAM_WEBHOOK_BASE_URL" value="http://localhost"/>
-        <env name="TELEGRAM_FEEDBACKS_USERNAME" value="any"/>
-        <env name="TELEGRAM_FEEDBACKS_API_TOKEN" value="0:any"/>
+        <env name="TELEGRAM_FEEDBACKS_BOTS" value='{"any_bot":"0:any"}'/>
         <env name="TELEGRAM_FEEDBACKS_ADMIN_IDS" value='["409525390"]'/>
         <env name="TELEGRAM_FEEDBACKS_LANGUAGE_CODES" value='["en","uk","ru"]'/>
         <env name="TELEGRAM_FEEDBACKS_ADMIN_CHAT_IDS" value='["409525390"]'/>

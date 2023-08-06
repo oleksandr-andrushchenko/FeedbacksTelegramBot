@@ -16,8 +16,8 @@ use Throwable;
 class TelegramDescriptionsUpdateCommand extends Command
 {
     public function __construct(
-        private readonly TelegramRegistry $telegramRegistry,
-        private readonly TelegramDescriptionsUpdater $telegramDescriptionUpdater,
+        private readonly TelegramRegistry $registry,
+        private readonly TelegramDescriptionsUpdater $updater,
     )
     {
         parent::__construct();
@@ -29,7 +29,7 @@ class TelegramDescriptionsUpdateCommand extends Command
     protected function configure()
     {
         $this
-            ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot name')
+            ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot username')
             ->setDescription('Update telegram bot name, short and long descriptions')
         ;
     }
@@ -42,9 +42,9 @@ class TelegramDescriptionsUpdateCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $telegram = $this->telegramRegistry->getTelegram($input->getArgument('name'));
+            $telegram = $this->registry->getTelegram($input->getArgument('name'));
 
-            $this->telegramDescriptionUpdater->updateTelegramDescriptions($telegram);
+            $this->updater->updateTelegramDescriptions($telegram);
         } catch (Throwable $exception) {
             $io->error($exception->getMessage());
 
@@ -52,9 +52,9 @@ class TelegramDescriptionsUpdateCommand extends Command
         }
 
         $table = [
-            'name' => implode("; ", $this->telegramDescriptionUpdater->getMyNames()),
-            'description' => implode("; ", $this->telegramDescriptionUpdater->getMyDescriptions()),
-            'short_description' => implode("; ", $this->telegramDescriptionUpdater->getMyShortDescriptions()),
+            'name' => implode("; ", $this->updater->getMyNames()),
+            'description' => implode("; ", $this->updater->getMyDescriptions()),
+            'short_description' => implode("; ", $this->updater->getMyShortDescriptions()),
         ];
 
         $io->createTable()

@@ -16,8 +16,8 @@ use Throwable;
 class TelegramWebhookInfoCommand extends Command
 {
     public function __construct(
-        private readonly TelegramRegistry $telegramRegistry,
-        private readonly TelegramWebhookInfoProvider $telegramWebhookInfoProvider,
+        private readonly TelegramRegistry $registry,
+        private readonly TelegramWebhookInfoProvider $provider,
     )
     {
         parent::__construct();
@@ -29,7 +29,7 @@ class TelegramWebhookInfoCommand extends Command
     protected function configure()
     {
         $this
-            ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot name')
+            ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot username')
             ->setDescription('Get telegram bot webhook Info')
         ;
     }
@@ -42,9 +42,9 @@ class TelegramWebhookInfoCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $telegram = $this->telegramRegistry->getTelegram($input->getArgument('name'));
+            $telegram = $this->registry->getTelegram($input->getArgument('name'));
 
-            $webhookInfo = $this->telegramWebhookInfoProvider->getTelegramWebhookInfo($telegram);
+            $webhookInfo = $this->provider->getTelegramWebhookInfo($telegram);
         } catch (Throwable $exception) {
             $io->error($exception->getMessage());
 

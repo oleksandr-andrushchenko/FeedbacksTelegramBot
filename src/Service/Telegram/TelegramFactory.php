@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram;
 
-use App\Enum\Telegram\TelegramName;
-use App\Exception\Telegram\TelegramException;
+use App\Enum\Telegram\TelegramGroup;
+use App\Exception\Telegram\TelegramNotFoundException;
+use App\Exception\Telegram\TelegramOptionsNotFoundException;
 use Psr\Log\LoggerInterface;
 
 class TelegramFactory
 {
     public function __construct(
         private readonly array $options,
+        private readonly TelegramGroupOptionsFactory $groupOptionsFactory,
         private readonly TelegramOptionsFactory $optionsFactory,
         private readonly TelegramClientRegistry $clientRegistry,
         private readonly TelegramRequestChecker $requestChecker,
@@ -21,22 +23,39 @@ class TelegramFactory
     }
 
     /**
-     * @param TelegramName $telegramName
+     * @param string $username
      * @return Telegram
-     * @throws TelegramException
+     * @throws TelegramNotFoundException
+     * @throws TelegramOptionsNotFoundException
      */
-    public function createTelegram(TelegramName $telegramName): Telegram
+    public function createTelegram(string $username): Telegram
     {
-        if (!isset($this->options[$telegramName->name])) {
-            throw new TelegramException('Invalid telegram name provided');
+        foreach (TelegramGroup::cases() as $group) {
+            $options = null;
+            foreach ($this->options as $opts) {
+                if ($opts['key'] === $group->name) {
+                    $options = $opts;
+                    break;
+                }
+            }
+
+            if ($options === null) {
+                continue;
+            }
+
+            $groupOptions = $this->groupOptionsFactory->createTelegramGroupOptions($options);
+
+            if ($groupOptions->hasBot($username)) {
+                return new Telegram(
+                    $group,
+                    $this->optionsFactory->createTelegramOptions($username, $options),
+                    $this->clientRegistry,
+                    $this->requestChecker,
+                    $this->logger,
+                );
+            }
         }
 
-        return new Telegram(
-            $telegramName,
-            $this->optionsFactory->createTelegramOptions($this->options[$telegramName->name], $telegramName->name),
-            $this->clientRegistry,
-            $this->requestChecker,
-            $this->logger,
-        );
+        throw new TelegramNotFoundException();
     }
 }

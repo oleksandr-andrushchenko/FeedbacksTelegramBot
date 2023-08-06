@@ -4,21 +4,26 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram\Api;
 
-use App\Exception\Telegram\TelegramException;
 use App\Service\Telegram\Telegram;
+use App\Service\Telegram\TelegramWebhookUrlGenerator;
 use InvalidArgumentException;
 
 class TelegramWebhookUpdater
 {
+    public function __construct(
+        private readonly TelegramWebhookUrlGenerator $webhookUrlGenerator,
+    )
+    {
+    }
+
     /**
      * @param Telegram $telegram
      * @return void
-     * @throws TelegramException
      */
     public function updateTelegramWebhook(Telegram $telegram): void
     {
-        $url = $telegram->getOptions()->getWebhookUrl();
-        $cert = $telegram->getOptions()->getWebhookCertificatePath();
+        $url = $this->webhookUrlGenerator->generate($telegram->getOptions()->getUsername());
+        $cert = true ? '' : 'any';
 
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
             throw new InvalidArgumentException(

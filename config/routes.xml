@@ -8,9 +8,7 @@
         <requirement key="_locale">en|uk|ru</requirement>
     </import>
 
-    <route id="app.telegram_webhook" path="/telegram/webhook/{bot}" controller="app.controller.telegram::webhook"
-           methods="POST">
-        <default key="bot">default</default>
-    </route>
+    <route id="app.telegram_webhook" path="/telegram/webhook/{username}" controller="app.controller.telegram::webhook"
+           methods="POST"/>
 
 </routes>

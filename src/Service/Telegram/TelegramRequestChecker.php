@@ -123,7 +123,8 @@ class TelegramRequestChecker
             $method,
             $chatId,
             $inlineMessageId,
-            $data
+            $data,
+            $telegram->getOptions()->getUsername()
         );
         $this->entityManager->persist($request);
 

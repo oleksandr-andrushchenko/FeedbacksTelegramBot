@@ -5,26 +5,26 @@ declare(strict_types=1);
 namespace App\Service\Telegram;
 
 use App\Entity\Telegram\TelegramOptions;
-use App\Enum\Telegram\TelegramName;
 use Longman\TelegramBot\Telegram as TelegramClient;
-use WeakMap;
 
 class TelegramClientRegistry
 {
     public function __construct(
-        private readonly TelegramClientFactory $telegramClientFactory,
-        private ?WeakMap $cache = null,
+        private readonly TelegramClientFactory $clientFactory,
+        private ?array $cache = null,
     )
     {
-        $this->cache = $this->cache ?? new WeakMap();
+        $this->cache = [];
     }
 
-    public function getTelegramClient(TelegramName $telegramName, TelegramOptions $telegramOptions): TelegramClient
+    public function getTelegramClient(TelegramOptions $options): TelegramClient
     {
-        if (isset($this->cache[$telegramName])) {
-            return $this->cache[$telegramName];
+        $key = $options->getUsername();
+
+        if (isset($this->cache[$key])) {
+            return $this->cache[$key];
         }
 
-        return $this->cache[$telegramName] = $this->telegramClientFactory->createTelegramClient($telegramOptions);
+        return $this->cache[$key] = $this->clientFactory->createTelegramClient($options);
     }
 }

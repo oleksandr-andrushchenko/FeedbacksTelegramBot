@@ -16,8 +16,8 @@ use Throwable;
 class TelegramCommandsUpdateCommand extends Command
 {
     public function __construct(
-        private readonly TelegramRegistry $telegramRegistry,
-        private readonly TelegramCommandsUpdater $telegramCommandsUpdater,
+        private readonly TelegramRegistry $registry,
+        private readonly TelegramCommandsUpdater $updater,
     )
     {
         parent::__construct();
@@ -29,7 +29,7 @@ class TelegramCommandsUpdateCommand extends Command
     protected function configure()
     {
         $this
-            ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot name')
+            ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot username')
             ->setDescription('Update telegram bot commands')
         ;
     }
@@ -42,9 +42,9 @@ class TelegramCommandsUpdateCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $telegram = $this->telegramRegistry->getTelegram($input->getArgument('name'));
+            $telegram = $this->registry->getTelegram($input->getArgument('name'));
 
-            $this->telegramCommandsUpdater->updateTelegramCommands($telegram);
+            $this->updater->updateTelegramCommands($telegram);
         } catch (Throwable $exception) {
             $io->error($exception->getMessage());
 
@@ -52,7 +52,7 @@ class TelegramCommandsUpdateCommand extends Command
         }
 
         $table = [];
-        $myCommands = $this->telegramCommandsUpdater->getMyCommands();
+        $myCommands = $this->updater->getMyCommands();
 
         foreach ($myCommands as $myCommandsItem) {
             $value = sprintf('%s + %s', $myCommandsItem->getLocaleCode(), $myCommandsItem->getScope()->toJson());

@@ -8,6 +8,7 @@
         <service id="app.command.telegram_webhook_update" class="App\Command\Telegram\TelegramWebhookUpdateCommand" lazy="true">
             <argument type="service" id="app.telegram_registry"/>
             <argument type="service" id="app.telegram_webhook_updater"/>
+            <argument type="service" id="app.telegram_webhook_url_generator"/>
 
             <tag name="console.command" command="telegram:webhook:update"/>
         </service>

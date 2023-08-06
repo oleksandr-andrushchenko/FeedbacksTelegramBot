@@ -9,11 +9,11 @@ use Longman\TelegramBot\Telegram as TelegramClient;
 
 class TelegramClientFactory
 {
-    public function createTelegramClient(TelegramOptions $telegramOptions): TelegramClient
+    public function createTelegramClient(TelegramOptions $options): TelegramClient
     {
         return new TelegramClient(
-            $telegramOptions->getApiToken(),
-            $telegramOptions->getUsername(),
+            $options->getApiToken(),
+            $options->getUsername(),
         );
     }
 }

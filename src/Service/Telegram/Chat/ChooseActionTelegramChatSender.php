@@ -85,7 +85,7 @@ class ChooseActionTelegramChatSender
             return $tg->button(self::command($tg, 'country'));
         }
 
-        $domain = sprintf('tg.%s', $tg->getTelegram()->getName()->name);
+        $domain = sprintf('tg.%s', $tg->getTelegram()->getGroup()->name);
 
         return $tg->button(
             join(' ', [
@@ -104,7 +104,7 @@ class ChooseActionTelegramChatSender
             return $tg->button(self::command($tg, 'locale'));
         }
 
-        $domain = sprintf('tg.%s', $tg->getTelegram()->getName()->name);
+        $domain = sprintf('tg.%s', $tg->getTelegram()->getGroup()->name);
 
         return $tg->button(
             join(' ', [
@@ -117,7 +117,7 @@ class ChooseActionTelegramChatSender
     public static function getHintsButton(TelegramAwareHelper $tg): KeyboardButton
     {
         $isShowHints = $tg->getTelegram()->getMessengerUser()->isShowHints();
-        $domain = sprintf('tg.%s', $tg->getTelegram()->getName()->name);
+        $domain = sprintf('tg.%s', $tg->getTelegram()->getGroup()->name);
 
         return $tg->button(
             join(' ', [
@@ -154,7 +154,7 @@ class ChooseActionTelegramChatSender
 
     private static function command($tg, string $key): string
     {
-        $domain = sprintf('tg.%s', $tg->getTelegram()->getName()->name);
+        $domain = sprintf('tg.%s', $tg->getTelegram()->getGroup()->name);
 
         return join(' ', [
             $tg->trans(sprintf('icon.%s', $key), domain: $domain),

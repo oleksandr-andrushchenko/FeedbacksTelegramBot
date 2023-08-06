@@ -51,10 +51,8 @@
         </parameter>
 
         <parameter key="app.feedback_telegram_options" type="collection">
-            <parameter key="api_token">%env(TELEGRAM_FEEDBACKS_API_TOKEN)%</parameter>
-            <parameter key="username">%env(TELEGRAM_FEEDBACKS_USERNAME)%</parameter>
-            <parameter key="webhook_url">%app.telegram_webhook_base_url%/telegram/webhook/feedbacks</parameter>
-            <parameter key="webhook_certificate_path"/>
+            <parameter key="key">feedbacks</parameter>
+            <parameter key="bots">%env(json:TELEGRAM_FEEDBACKS_BOTS)%</parameter>
             <parameter key="admin_ids">%env(json:TELEGRAM_FEEDBACKS_ADMIN_IDS)%</parameter>
             <parameter key="locales">%env(json:TELEGRAM_FEEDBACKS_LANGUAGE_CODES)%</parameter>
             <parameter key="admin_chat_ids">%env(json:TELEGRAM_FEEDBACKS_ADMIN_CHAT_IDS)%</parameter>
@@ -65,22 +63,7 @@
         </parameter>
 
         <parameter key="app.telegram_options" type="collection">
-            <parameter key="default" type="collection">
-                <parameter key="api_token">0:any</parameter>
-                <parameter key="username">any</parameter>
-                <parameter key="webhook_url">%app.telegram_webhook_base_url%/telegram/webhook/default</parameter>
-                <parameter key="webhook_certificate_path"/>
-                <parameter key="admin_ids" type="collection"/>
-                <parameter key="locales" type="collection">
-                    <parameter>en</parameter>
-                </parameter>
-                <parameter key="admin_chat_ids" type="collection"/>
-                <parameter key="check_updates">true</parameter>
-                <parameter key="check_requests">true</parameter>
-                <parameter key="process_admin_only">false</parameter>
-                <parameter key="accept_payments">false</parameter>
-            </parameter>
-            <parameter key="feedbacks">%app.feedback_telegram_options%</parameter>
+            <parameter>%app.feedback_telegram_options%</parameter>
         </parameter>
 
         <parameter key="app.feedback_creator_options" type="collection">

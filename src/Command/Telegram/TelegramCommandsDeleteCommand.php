@@ -16,8 +16,8 @@ use Throwable;
 class TelegramCommandsDeleteCommand extends Command
 {
     public function __construct(
-        private readonly TelegramRegistry $telegramRegistry,
-        private readonly TelegramCommandsRemover $telegramCommandsRemover,
+        private readonly TelegramRegistry $registry,
+        private readonly TelegramCommandsRemover $remover,
     )
     {
         parent::__construct();
@@ -29,7 +29,7 @@ class TelegramCommandsDeleteCommand extends Command
     protected function configure()
     {
         $this
-            ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot name')
+            ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot username')
             ->setDescription('Delete telegram bot commands')
         ;
     }
@@ -42,9 +42,9 @@ class TelegramCommandsDeleteCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $telegram = $this->telegramRegistry->getTelegram($input->getArgument('name'));
+            $telegram = $this->registry->getTelegram($input->getArgument('name'));
 
-            $this->telegramCommandsRemover->removeTelegramCommands($telegram);
+            $this->remover->removeTelegramCommands($telegram);
         } catch (Throwable $exception) {
             $io->error($exception->getMessage());
 
@@ -52,7 +52,7 @@ class TelegramCommandsDeleteCommand extends Command
         }
 
         $table = [];
-        $myCommands = $this->telegramCommandsRemover->getMyCommands();
+        $myCommands = $this->remover->getMyCommands();
 
         foreach ($myCommands as $myCommandsItem) {
             $value = sprintf('%s + %s', $myCommandsItem->getLocaleCode(), $myCommandsItem->getScope()->toJson());

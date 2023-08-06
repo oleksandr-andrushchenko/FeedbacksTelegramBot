@@ -5,6 +5,11 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="app.telegram_webhook_url_generator" class="App\Service\Telegram\TelegramWebhookUrlGenerator" lazy="true">
+            <argument>%app.telegram_webhook_base_url%</argument>
+            <argument>app.telegram_webhook</argument>
+            <argument type="service" id="Symfony\Component\Routing\Generator\UrlGeneratorInterface"/>
+        </service>
         <service id="app.telegram_feedback_search_post_factory"
                  class="App\Service\Telegram\TelegramFeedbackSearchPostFactory" lazy="true"/>
         <service id="app.telegram_client_factory" class="App\Service\Telegram\TelegramClientFactory" lazy="true"/>
@@ -19,14 +24,15 @@
                  class="App\Service\Telegram\TelegramConversationFactory" lazy="true">
             <argument type="tagged_locator" tag="app.telegram_conversation_feedbacks"/>
         </service>
+        <service id="app.telegram_group_options_factory" class="App\Service\Telegram\TelegramGroupOptionsFactory" lazy="true"/>
         <service id="app.telegram_options_factory" class="App\Service\Telegram\TelegramOptionsFactory" lazy="true"/>
         <service id="app.feedback_telegram_options" class="App\Entity\Telegram\TelegramOptions">
-            <factory service="app.telegram_options_factory" method="createTelegramOptions"/>
+            <factory service="app.telegram_options_factory" method="createDefaultTelegramOptions"/>
             <argument>%app.feedback_telegram_options%</argument>
-            <argument>feedbacks</argument>
         </service>
         <service id="app.telegram_factory" class="App\Service\Telegram\TelegramFactory" lazy="true">
             <argument>%app.telegram_options%</argument>
+            <argument type="service" id="app.telegram_group_options_factory"/>
             <argument type="service" id="app.telegram_options_factory"/>
             <argument type="service" id="app.telegram_client_registry"/>
             <argument type="service" id="app.telegram_request_checker"/>
@@ -50,7 +56,9 @@
                  lazy="true">
             <argument type="service" id="app.telegram_channel_registry"/>
         </service>
-        <service id="app.telegram_webhook_updater" class="App\Service\Telegram\Api\TelegramWebhookUpdater" lazy="true"/>
+        <service id="app.telegram_webhook_updater" class="App\Service\Telegram\Api\TelegramWebhookUpdater" lazy="true">
+            <argument type="service" id="app.telegram_webhook_url_generator"/>
+        </service>
         <service id="app.telegram_webhook_remover" class="App\Service\Telegram\Api\TelegramWebhookRemover" lazy="true"/>
         <service id="app.telegram_webhook_info_provider" class="App\Service\Telegram\Api\TelegramWebhookInfoProvider"
                  lazy="true"/>

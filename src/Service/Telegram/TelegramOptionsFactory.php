@@ -5,17 +5,40 @@ declare(strict_types=1);
 namespace App\Service\Telegram;
 
 use App\Entity\Telegram\TelegramOptions;
+use App\Exception\Telegram\TelegramOptionsNotFoundException;
 
 class TelegramOptionsFactory
 {
-    public function createTelegramOptions(array $options, string $key): TelegramOptions
+    /**
+     * @param array $options
+     * @return TelegramOptions
+     * @throws TelegramOptionsNotFoundException
+     */
+    public function createDefaultTelegramOptions(array $options): TelegramOptions
     {
+        foreach ($options['bots'] as $username => $token) {
+            return $this->createTelegramOptions($username, $options);
+        }
+
+        throw new TelegramOptionsNotFoundException();
+    }
+
+    /**
+     * @param string $username
+     * @param array $options
+     * @return TelegramOptions
+     * @throws TelegramOptionsNotFoundException
+     */
+    public function createTelegramOptions(string $username, array $options): TelegramOptions
+    {
+        if (!isset($options['bots'][$username])) {
+            throw new TelegramOptionsNotFoundException($username);
+        }
+
         return new TelegramOptions(
-            $key,
-            $options['api_token'],
-            $options['username'],
-            $options['webhook_url'],
-            $options['webhook_certificate_path'],
+            $options['key'],
+            $options['bots'][$username],
+            $username,
             $options['locales'],
             array_map(fn ($id) => (int) $id, $options['admin_ids']),
             array_map(fn ($id) => (int) $id, $options['admin_chat_ids']),

@@ -6,6 +6,7 @@ namespace App\Command\Telegram;
 
 use App\Service\Telegram\Api\TelegramWebhookUpdater;
 use App\Service\Telegram\TelegramRegistry;
+use App\Service\Telegram\TelegramWebhookUrlGenerator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,8 +17,9 @@ use Throwable;
 class TelegramWebhookUpdateCommand extends Command
 {
     public function __construct(
-        private readonly TelegramRegistry $telegramRegistry,
-        private readonly TelegramWebhookUpdater $telegramWebhookUpdater,
+        private readonly TelegramRegistry $registry,
+        private readonly TelegramWebhookUpdater $updater,
+        private readonly TelegramWebhookUrlGenerator $webhookUrlGenerator,
     )
     {
         parent::__construct();
@@ -29,7 +31,7 @@ class TelegramWebhookUpdateCommand extends Command
     protected function configure()
     {
         $this
-            ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot name')
+            ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot username')
             ->setDescription('Update telegram bot webhook')
         ;
     }
@@ -42,17 +44,17 @@ class TelegramWebhookUpdateCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $telegram = $this->telegramRegistry->getTelegram($input->getArgument('name'));
+            $telegram = $this->registry->getTelegram($input->getArgument('name'));
 
-            $this->telegramWebhookUpdater->updateTelegramWebhook($telegram);
+            $this->updater->updateTelegramWebhook($telegram);
         } catch (Throwable $exception) {
             $io->error($exception->getMessage());
 
             return Command::FAILURE;
         }
 
-        $url = $telegram->getOptions()->getWebhookUrl();
-        $cert = $telegram->getOptions()->getWebhookCertificatePath();
+        $url = $this->webhookUrlGenerator->generate($telegram->getOptions()->getUsername());
+        $cert = true ? '' : 'any';
 
         $io->success(
             sprintf(

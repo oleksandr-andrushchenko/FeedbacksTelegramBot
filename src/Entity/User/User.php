@@ -18,16 +18,12 @@ class User
         private ?string $countryCode = null,
         private ?int $phoneNumber = null,
         private ?string $email = null,
-        private ?DateTimeInterface $createdAt = null,
+        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
         private ?DateTimeInterface $purgedAt = null,
         private ?int $id = null,
     )
     {
-        $this->id = null;
-        $this->createdAt = $this->createdAt ?? new DateTimeImmutable();
-        $this->updatedAt = $this->updatedAt ?? null;
-        $this->purgedAt = $this->purgedAt ?? null;
     }
 
     public function getId(): ?int
@@ -122,13 +118,6 @@ class User
     public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(?DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     public function getUpdatedAt(): ?DateTimeInterface

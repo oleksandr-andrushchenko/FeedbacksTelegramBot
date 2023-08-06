@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram;
 
-use App\Enum\Telegram\TelegramName;
+use App\Enum\Telegram\TelegramGroup;
 use App\Service\Telegram\Channel\TelegramChannelInterface;
 use WeakMap;
 
@@ -18,7 +18,7 @@ class TelegramChannelRegistry
         $this->cache = $this->cache ?? new WeakMap();
     }
 
-    public function getTelegramChannel(TelegramName $telegramName): TelegramChannelInterface
+    public function getTelegramChannel(TelegramGroup $telegramName): TelegramChannelInterface
     {
         if (isset($this->cache[$telegramName])) {
             return $this->cache[$telegramName];

@@ -66,7 +66,7 @@ class TelegramCommandsUpdater
         TelegramMyCommands $myCommands
     ): string
     {
-        $domain = sprintf('tg.%s', $telegram->getName()->name);
+        $domain = sprintf('tg.%s', $telegram->getGroup()->name);
         $locale = $myCommands->getLocaleCode();
 
         $icon = $this->translator->trans(sprintf('icon.%s', $command->getKey()), domain: $domain, locale: $locale);

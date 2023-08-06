@@ -17,13 +17,11 @@ class FeedbackUserSubscription
         private readonly FeedbackSubscriptionPlanName $subscriptionPlan,
         private readonly DateTimeInterface $expireAt,
         private readonly ?TelegramPayment $payment = null,
-        private ?DateTimeInterface $createdAt = null,
+        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
         private ?int $id = null,
     )
     {
-        $this->createdAt = $this->createdAt ?? new DateTimeImmutable();
-        $this->updatedAt = $this->updatedAt ?? null;
     }
 
     public function getId(): ?int
@@ -54,13 +52,6 @@ class FeedbackUserSubscription
     public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(?DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     public function getUpdatedAt(): ?DateTimeInterface

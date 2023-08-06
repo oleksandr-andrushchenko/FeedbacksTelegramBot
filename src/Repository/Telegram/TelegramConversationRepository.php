@@ -42,12 +42,17 @@ class TelegramConversationRepository extends ServiceEntityRepository
         }
     }
 
-    public function findOneByMessengerUserAndChatId(MessengerUser $messengerUser, int $chatId): ?TelegramConversation
+    public function findOneByMessengerUserAndChatId(
+        MessengerUser $messengerUser,
+        int $chatId,
+        string $bot
+    ): ?TelegramConversation
     {
         return $this->findOneBy(
             [
                 'messengerUser' => $messengerUser,
                 'chatId' => $chatId,
+                'bot' => $bot,
             ],
             [
                 'id' => 'DESC',
@@ -57,13 +62,15 @@ class TelegramConversationRepository extends ServiceEntityRepository
 
     /**
      * @param MessengerUser $messengerUser
+     * @param string $bot
      * @return TelegramConversation[]
      */
-    public function getActiveByMessengerUser(MessengerUser $messengerUser): array
+    public function getActiveByMessengerUser(MessengerUser $messengerUser, string $bot): array
     {
         return $this->findBy([
             'messengerUser' => $messengerUser,
             'isActive' => true,
+            'bot' => $bot,
         ]);
     }
 }

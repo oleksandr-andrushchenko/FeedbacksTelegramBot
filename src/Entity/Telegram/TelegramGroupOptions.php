@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Entity\Telegram;
 
-readonly class TelegramOptions
+readonly class TelegramGroupOptions
 {
     public function __construct(
-        private string $groupKey,
-        private string $apiToken,
-        private string $username,
+        private string $key,
+        private array $bots,
         private array $localeCodes,
         private array $adminIds,
         private array $adminChatIds,
@@ -21,19 +20,14 @@ readonly class TelegramOptions
     {
     }
 
-    public function getGroupKey(): string
+    public function getKey(): string
     {
-        return $this->groupKey;
+        return $this->key;
     }
 
-    public function getApiToken(): string
+    public function getBots(): array
     {
-        return $this->apiToken;
-    }
-
-    public function getUsername(): string
-    {
-        return $this->username;
+        return $this->bots;
     }
 
     public function getLocaleCodes(): array
@@ -69,5 +63,10 @@ readonly class TelegramOptions
     public function acceptPayments(): bool
     {
         return $this->acceptPayments;
+    }
+
+    public function hasBot(string $username): bool
+    {
+        return array_key_exists($username, $this->bots);
     }
 }

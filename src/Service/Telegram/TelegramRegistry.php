@@ -4,33 +4,33 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram;
 
-use App\Enum\Telegram\TelegramName;
-use App\Exception\Telegram\TelegramException;
-use WeakMap;
+use App\Exception\Telegram\TelegramNotFoundException;
+use App\Exception\Telegram\TelegramOptionsNotFoundException;
 
 class TelegramRegistry
 {
     public function __construct(
         private readonly TelegramFactory $telegramFactory,
-        private ?WeakMap $cache = null,
+        private ?array $cache = null,
     )
     {
-        $this->cache = $this->cache ?? new WeakMap();
+        $this->cache = [];
     }
 
     /**
-     * @param string|TelegramName $telegramName
+     * @param string $username
      * @return Telegram
-     * @throws TelegramException
+     * @throws TelegramNotFoundException
+     * @throws TelegramOptionsNotFoundException
      */
-    public function getTelegram(string|TelegramName $telegramName): Telegram
+    public function getTelegram(string $username): Telegram
     {
-        $telegramName = is_string($telegramName) ? TelegramName::fromName($telegramName) : $telegramName;
-
-        if (isset($this->cache[$telegramName])) {
-            return $this->cache[$telegramName];
+        if (array_key_exists($username, $this->cache)) {
+            return $this->cache[$username];
         }
 
-        return $this->cache[$telegramName] = $this->telegramFactory->createTelegram($telegramName);
+        $this->cache[$username] = $this->telegramFactory->createTelegram($username);
+
+        return $this->cache[$username];
     }
 }
