@@ -18,6 +18,7 @@ class User
         private ?string $countryCode = null,
         private ?int $phoneNumber = null,
         private ?string $email = null,
+        private ?DateTimeInterface $subscriptionExpireAt = null,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
         private ?DateTimeInterface $purgedAt = null,
@@ -111,6 +112,18 @@ class User
     public function setEmail(?string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getSubscriptionExpireAt(): ?DateTimeInterface
+    {
+        return $this->subscriptionExpireAt;
+    }
+
+    public function setSubscriptionExpireAt(?DateTimeInterface $subscriptionExpireAt): self
+    {
+        $this->subscriptionExpireAt = $subscriptionExpireAt;
 
         return $this;
     }

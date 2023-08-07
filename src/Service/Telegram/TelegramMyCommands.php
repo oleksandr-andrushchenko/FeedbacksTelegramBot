@@ -18,7 +18,7 @@ class TelegramMyCommands
     }
 
     /**
-     * @return string[]|TelegramCommandInterface[]
+     * @return string[]|TelegramCommand[]
      */
     public function getCommands(): array
     {

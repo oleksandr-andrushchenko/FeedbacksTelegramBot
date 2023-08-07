@@ -22,14 +22,12 @@ command:
   hints: Toggle Hints
   message: Contact Us
 
-#  name: Feedbacks
 name:
   local: wild_s_local_bot
   dev: wild_s_dev_bot
-  prod: wild_s_prod_bot
-#  short_description: Create and read feedbacks
-short_description: ""
-#  description: This bot allows you to create and read feedbacks on persons or companies
-description: ""
+  prod: Anonymous Feedbacks Bot
 
-bot: FeedbacksBot
+short_description: Create and find feedbacks on persons, organization or places.
+description: This bot allows you to create and find feedbacks on persons, organization or places.
+
+bot: AnonymousFeedbacksBot

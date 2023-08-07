@@ -54,12 +54,16 @@
             <parameter key="key">feedbacks</parameter>
             <parameter key="bots">%env(json:TELEGRAM_FEEDBACKS_BOTS)%</parameter>
             <parameter key="admin_ids">%env(json:TELEGRAM_FEEDBACKS_ADMIN_IDS)%</parameter>
-            <parameter key="locales">%env(json:TELEGRAM_FEEDBACKS_LANGUAGE_CODES)%</parameter>
+            <parameter key="locales" type="collection">
+                <parameter>en</parameter>
+                <parameter>uk</parameter>
+                <parameter>ru</parameter>
+            </parameter>
             <parameter key="admin_chat_ids">%env(json:TELEGRAM_FEEDBACKS_ADMIN_CHAT_IDS)%</parameter>
             <parameter key="check_updates">%env(bool:TELEGRAM_FEEDBACKS_CHECK_UPDATES)%</parameter>
             <parameter key="check_requests">%env(bool:TELEGRAM_FEEDBACKS_CHECK_REQUESTS)%</parameter>
             <parameter key="process_admin_only">%env(bool:TELEGRAM_FEEDBACKS_PROCESS_ADMIN_ONLY)%</parameter>
-            <parameter key="accept_payments">true</parameter>
+            <parameter key="accept_payments">%env(bool:TELEGRAM_FEEDBACKS_ACCEPT_PAYMENTS)%</parameter>
         </parameter>
 
         <parameter key="app.telegram_options" type="collection">

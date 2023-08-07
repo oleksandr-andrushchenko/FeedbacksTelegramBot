@@ -23,6 +23,7 @@
             </options>
         </field>
         <field name="email" column="email" length="128" nullable="true"/>
+        <field name="subscriptionExpireAt" column="subscription_expire_at" type="datetime_immutable" nullable="true"/>
         <field name="createdAt" column="created_at" type="datetime_immutable"/>
         <field name="updatedAt" column="updated_at" type="datetime_immutable" nullable="true"/>
         <field name="purgedAt" column="purged_at" type="datetime_immutable" nullable="true"/>

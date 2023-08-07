@@ -13,7 +13,7 @@ use Longman\TelegramBot\Entities\KeyboardButton;
 class ChooseActionTelegramChatSender
 {
     public function __construct(
-        private readonly FeedbackUserSubscriptionManager $userSubscriptionManager,
+        private readonly FeedbackUserSubscriptionManager $subscriptionManager,
         private readonly CountryProvider $countryProvider,
         private readonly LocaleProvider $localeProvider,
     )
@@ -26,10 +26,17 @@ class ChooseActionTelegramChatSender
         $keyboards[] = $this->getCreateButton($tg);
         $keyboards[] = $this->getSearchButton($tg);
 
-        if ($this->userSubscriptionManager->hasActiveSubscription($tg->getTelegram()->getMessengerUser())) {
-            $keyboards[] = $this->getSubscriptionsButton($tg);
-        } elseif ($tg->getTelegram()->getOptions()->acceptPayments()) {
+        $messengerUser = $tg->getTelegram()->getMessengerUser();
+        $hasActivePremium = $this->subscriptionManager->hasActiveSubscription($messengerUser);
+        $showPremium = false;
+
+        if ($tg->getTelegram()->getOptions()->acceptPayments() && !$hasActivePremium) {
             $keyboards[] = $this->getPremiumButton($tg);
+            $showPremium = true;
+        }
+
+        if (!$showPremium && ($hasActivePremium || $this->subscriptionManager->hasSubscription($messengerUser))) {
+            $keyboards[] = $this->getSubscriptionsButton($tg);
         }
 
         if ($tg->getTelegram()->getMessengerUser()?->isShowExtendedKeyboard()) {
@@ -71,9 +78,18 @@ class ChooseActionTelegramChatSender
         return $tg->button(self::command($tg, 'premium'));
     }
 
-    public static function getSubscriptionsButton(TelegramAwareHelper $tg): KeyboardButton
+    public function getSubscriptionsButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button(self::command($tg, 'subscriptions'));
+        $hasActivePremium = $this->subscriptionManager->hasActiveSubscription($tg->getTelegram()->getMessengerUser());
+        $key = 'subscriptions';
+        $domain = sprintf('tg.%s', $tg->getTelegram()->getGroup()->name);
+
+        return $tg->button(
+            join(' ', [
+                $tg->trans(sprintf('icon.%s', $hasActivePremium ? $key : 'premium'), domain: $domain),
+                $tg->trans(sprintf('command.%s', $key), domain: $domain),
+            ])
+        );
     }
 
     public function getCountryButton(TelegramAwareHelper $tg): KeyboardButton

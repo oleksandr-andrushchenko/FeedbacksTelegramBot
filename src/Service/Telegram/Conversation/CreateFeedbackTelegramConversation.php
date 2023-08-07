@@ -120,6 +120,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         $options = $this->feedbackCreator->getOptions();
 
         $tg->replyView(TelegramView::CREATE, [
+            'accept_payments' => $tg->getTelegram()->getOptions()->acceptPayments(),
             'limits' => [
                 'day' => $options->userPerDayLimit(),
                 'month' => $options->userPerMonthLimit(),

@@ -57,7 +57,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     public function __construct(
         TelegramAwareHelper $awareHelper,
         TelegramConversationFactory $conversationFactory,
-        private readonly FeedbackUserSubscriptionManager $userSubscriptionManager,
+        private readonly FeedbackUserSubscriptionManager $subscriptionManager,
         private readonly SubscriptionsTelegramChatSender $subscriptionsChatSender,
         private readonly HintsTelegramChatSwitcher $hintsChatSwitcher,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
@@ -80,9 +80,9 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
 
         if ($tg->getTelegram()->getOptions()->acceptPayments()) {
             yield new TelegramCommand(self::PREMIUM, fn () => $this->premium($tg), menu: true, key: 'premium', beforeConversations: true);
+            yield new TelegramCommand(self::SUBSCRIPTIONS, fn () => $this->subscriptions($tg), menu: true, key: 'subscriptions', beforeConversations: true);
         }
 
-        yield new TelegramCommand(self::SUBSCRIPTIONS, fn () => $this->subscriptions($tg), menu: true, key: 'subscriptions', beforeConversations: true);
         yield new TelegramCommand(self::COUNTRY, fn () => $this->country($tg), menu: true, key: 'country', beforeConversations: true);
 
         if ($tg->getCountryCode() !== null) {
@@ -105,6 +105,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         // todo: manual payments
         // todo: ban users
         // todo: add check payment possibility (does at least payment method exists), + implement manual payments
+        // todo: select currency as separate step on premium
 
         yield new FallbackTelegramCommand(fn () => $this->fallback($tg));
         yield new ErrorTelegramCommand(fn (TelegramException $exception) => $this->exception($tg));
@@ -118,11 +119,22 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         if ($tg->matchText($this->chooseActionChatSender->getSearchButton($tg)->getText())) {
             return $this->search($tg);
         }
+
+        $messengerUser = $tg->getTelegram()->getMessengerUser();
+        $hasActivePremium = $this->subscriptionManager->hasActiveSubscription($messengerUser);
+
         if ($tg->matchText($this->chooseActionChatSender->getPremiumButton($tg)->getText())) {
-            return $this->premium($tg);
+            $messengerUser = $tg->getTelegram()->getMessengerUser();
+            $hasActivePremium = $this->subscriptionManager->hasActiveSubscription($messengerUser);
+
+            if ($tg->getTelegram()->getOptions()->acceptPayments() && !$hasActivePremium) {
+                return $this->premium($tg);
+            }
         }
         if ($tg->matchText($this->chooseActionChatSender->getSubscriptionsButton($tg)->getText())) {
-            return $this->subscriptions($tg);
+            if ($hasActivePremium || $this->subscriptionManager->hasSubscription($messengerUser)) {
+                return $this->subscriptions($tg);
+            }
         }
 
         if ($tg->getTelegram()->getMessengerUser()->isShowExtendedKeyboard()) {
@@ -190,7 +202,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     {
         $tg->stopConversations();
 
-        $activeSubscription = $this->userSubscriptionManager->getActiveSubscription($tg->getTelegram()->getMessengerUser());
+        $activeSubscription = $this->subscriptionManager->getActiveSubscription($tg->getTelegram()->getMessengerUser());
 
         if ($activeSubscription === null) {
             return $tg->startConversation(GetPremiumTelegramConversation::class)->null();
@@ -229,7 +241,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
 
     public function acceptPayment(TelegramPayment $payment, TelegramAwareHelper $tg): void
     {
-        $userSubscription = $this->userSubscriptionManager->createByTelegramPayment($payment);
+        $userSubscription = $this->subscriptionManager->createByTelegramPayment($payment);
 
         $tg->replyOk($tg->trans('reply.payment.ok', [
             'plan' => $tg->trans(sprintf('subscription_plan.%s', $userSubscription->getSubscriptionPlan()->name)),

@@ -6,6 +6,8 @@
     - <b>{{ limit }}</b> {{ 'tries_for'|trans({}, 'tg') }} <b>1 {{ period|trans({}, 'tg') }}</b>
 {% endfor %}
 
+{% if accept_payments %}
 ℹ️ {{ 'premium'|trans({'%command%': include('tg.command.html.twig', {name: 'premium'})})|raw }}
 
+{% endif %}
 {% include 'tg.hints.html.twig' %}

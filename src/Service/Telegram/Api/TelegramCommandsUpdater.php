@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Telegram\Api;
 
 use App\Service\Telegram\Telegram;
-use App\Service\Telegram\TelegramCommandInterface;
+use App\Service\Telegram\TelegramCommand;
 use App\Service\Telegram\TelegramMyCommands;
 use App\Service\Telegram\TelegramMyCommandsProvider;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -39,7 +39,7 @@ class TelegramCommandsUpdater
             $data['language_code'] = $myCommands->getLocaleCode();
             $data['scope'] = $myCommands->getScope()->jsonSerialize();
             $data['commands'] = array_map(
-                fn (TelegramCommandInterface $command) => [
+                fn (TelegramCommand $command) => [
                     'command' => $command->getName(),
                     'description' => $this->getDescription($telegram, $command, $myCommands),
                 ],
@@ -62,7 +62,7 @@ class TelegramCommandsUpdater
 
     private function getDescription(
         Telegram $telegram,
-        TelegramCommandInterface $command,
+        TelegramCommand $command,
         TelegramMyCommands $myCommands
     ): string
     {

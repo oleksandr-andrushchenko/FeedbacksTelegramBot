@@ -103,6 +103,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
         $options = $this->feedbackSearchCreator->getOptions();
 
         $tg->replyView(TelegramView::SEARCH, [
+            'accept_payments' => $tg->getTelegram()->getOptions()->acceptPayments(),
             'limits' => [
                 'day' => $options->userPerDayLimit(),
                 'month' => $options->userPerMonthLimit(),

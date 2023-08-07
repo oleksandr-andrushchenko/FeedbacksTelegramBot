@@ -10,14 +10,12 @@ command:
   hints: Переключить Подсказки
   message: Обратная Свзяь
 
-#  name: Feedbacks
 name:
   local: wild_s_local_bot
   dev: wild_s_dev_bot
-  prod: Відгуки
-#  short_description: Create and read feedbacks
-short_description: ""
-#  description: This bot allows you to create and read feedbacks on persons or companies
-description: ""
+  prod: Анонимные Отзывы Бот
 
-bot: ОтзывыБот
+short_description: Создать или найти отзыв на человека, организацию или место.
+description: Этот бот предоставляет вам возможность оставлять и находить отзывы на людей, компании или организации.
+
+bot: АнонимныеОтзывыБот

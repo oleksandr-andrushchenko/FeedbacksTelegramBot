@@ -16,7 +16,7 @@ class FeedbackUserSubscriptionManager
 {
     public function __construct(
         private readonly FeedbackSubscriptionPlanProvider $subscriptionPlanProvider,
-        private readonly FeedbackUserSubscriptionRepository $userSubscriptionRepository,
+        private readonly FeedbackUserSubscriptionRepository $subscriptionRepository,
         private readonly EntityManagerInterface $entityManager,
     )
     {
@@ -27,15 +27,17 @@ class FeedbackUserSubscriptionManager
         $subscriptionPlanName = FeedbackSubscriptionPlanName::fromName($telegramPayment->getPurpose());
         $subscriptionPlan = $this->subscriptionPlanProvider->getSubscriptionPlan($subscriptionPlanName);
 
-        $userSubscription = new FeedbackUserSubscription(
+        $subscription = new FeedbackUserSubscription(
             $telegramPayment->getMessengerUser(),
             $subscriptionPlan->getName(),
             (new DateTime())->modify($subscriptionPlan->getDatetimeModifier()),
             $telegramPayment
         );
-        $this->entityManager->persist($userSubscription);
+        $this->entityManager->persist($subscription);
 
-        return $userSubscription;
+        $telegramPayment->getMessengerUser()->getUser()?->setSubscriptionExpireAt($subscription->getExpireAt());
+
+        return $subscription;
     }
 
     /**
@@ -44,36 +46,44 @@ class FeedbackUserSubscriptionManager
      */
     public function getSubscriptions(MessengerUser $messengerUser): array
     {
-        return $this->userSubscriptionRepository->findBy([
+        return $this->subscriptionRepository->findBy([
             'messengerUser' => $messengerUser,
         ]);
     }
 
     public function getActiveSubscription(MessengerUser $messengerUser): ?FeedbackUserSubscription
     {
-        $userSubscriptions = $this->getSubscriptions($messengerUser);
+        $subscriptions = $this->getSubscriptions($messengerUser);
 
-        if (count($userSubscriptions) === 0) {
+        if (count($subscriptions) === 0) {
             return null;
         }
 
-        foreach ($userSubscriptions as $userSubscription) {
-            if ($this->isSubscriptionActive($userSubscription)) {
-                return $userSubscription;
+        foreach ($subscriptions as $subscription) {
+            if ($this->isSubscriptionActive($subscription)) {
+                return $subscription;
             }
         }
 
         return null;
     }
 
-    public function isSubscriptionActive(FeedbackUserSubscription $userSubscription): bool
+    public function isSubscriptionActive(FeedbackUserSubscription $subscription): bool
     {
-        return new DateTime() < $userSubscription->getExpireAt();
+        return new DateTime() < $subscription->getExpireAt();
     }
 
     public function hasActiveSubscription(MessengerUser $messengerUser): bool
     {
-        // todo: optimize (create separate user.premium_expire_at column)
-        return $this->getActiveSubscription($messengerUser) !== null;
+        if ($messengerUser->getUser()?->getSubscriptionExpireAt() === null) {
+            return false;
+        }
+
+        return new DateTime() < $messengerUser->getUser()->getSubscriptionExpireAt();
+    }
+
+    public function hasSubscription(MessengerUser $messengerUser): bool
+    {
+        return $messengerUser->getUser()?->getSubscriptionExpireAt() !== null;
     }
 }

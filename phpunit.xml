@@ -37,11 +37,11 @@
         <env name="TELEGRAM_WEBHOOK_BASE_URL" value="http://localhost"/>
         <env name="TELEGRAM_FEEDBACKS_BOTS" value='{"any_bot":"0:any"}'/>
         <env name="TELEGRAM_FEEDBACKS_ADMIN_IDS" value='["409525390"]'/>
-        <env name="TELEGRAM_FEEDBACKS_LANGUAGE_CODES" value='["en","uk","ru"]'/>
         <env name="TELEGRAM_FEEDBACKS_ADMIN_CHAT_IDS" value='["409525390"]'/>
         <env name="TELEGRAM_FEEDBACKS_CHECK_UPDATES" value="true"/>
         <env name="TELEGRAM_FEEDBACKS_CHECK_REQUESTS" value="true"/>
         <env name="TELEGRAM_FEEDBACKS_PROCESS_ADMIN_ONLY" value="false"/>
+        <env name="TELEGRAM_FEEDBACKS_ACCEPT_PAYMENTS" value="false"/>
         <env name="TELEGRAM_ACTIVITIES_TOKEN" value="0:any"/>
         <env name="TELEGRAM_ACTIVITIES_CHANNEL" value="0"/>
         <env name="LOG_ACTIVITIES" value="false"/>

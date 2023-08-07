@@ -37,16 +37,16 @@ class TelegramMyCommandsProvider
 
         $defaultScope = new BotCommandScopeDefault();
 
-        yield new TelegramMyCommands($defaultScopeCommands, $defaultScope, 'uk');
-        yield new TelegramMyCommands($defaultScopeCommands, $defaultScope, 'en');
-        yield new TelegramMyCommands($defaultScopeCommands, $defaultScope, 'ru');
+        foreach ($telegram->getOptions()->getLocaleCodes() as $localeCode) {
+            yield new TelegramMyCommands($defaultScopeCommands, $defaultScope, $localeCode);
+        }
 
         foreach ($telegram->getOptions()->getAdminChatIds() as $adminChatId) {
             $adminChatScope = new BotCommandScopeChat(['chat_id' => $adminChatId]);
 
-            yield new TelegramMyCommands($adminChatScopeCommands, $adminChatScope, 'uk');
-            yield new TelegramMyCommands($adminChatScopeCommands, $adminChatScope, 'en');
-            yield new TelegramMyCommands($adminChatScopeCommands, $adminChatScope, 'ru');
+            foreach ($telegram->getOptions()->getLocaleCodes() as $localeCode) {
+                yield new TelegramMyCommands($adminChatScopeCommands, $adminChatScope, $localeCode);
+            }
         }
     }
 }
