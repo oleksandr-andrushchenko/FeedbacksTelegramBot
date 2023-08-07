@@ -14,5 +14,8 @@
         </service>
         <service id="app.http_client_factory" class="App\Service\HttpClientFactory" lazy="true"/>
         <service id="app.uuid_generator" class="App\Service\UuidGenerator" lazy="true"/>
+        <service id="app.trim_quotes_env_var_processor" class="App\Service\TrimQuotesEnvVarProcessor" lazy="true">
+            <tag name="container.env_var_processor"/>
+        </service>
     </services>
 </container>

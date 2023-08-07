@@ -52,7 +52,7 @@
 
         <parameter key="app.feedback_telegram_options" type="collection">
             <parameter key="key">feedbacks</parameter>
-            <parameter key="bots">%env(json:TELEGRAM_FEEDBACKS_BOTS)%</parameter>
+            <parameter key="bots">%env(json:trimQuotes:TELEGRAM_FEEDBACKS_BOTS)%</parameter>
             <parameter key="admin_ids">%env(json:TELEGRAM_FEEDBACKS_ADMIN_IDS)%</parameter>
             <parameter key="locales" type="collection">
                 <parameter>en</parameter>

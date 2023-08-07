@@ -15,6 +15,7 @@ docker compose run php php bin/console cache:warmup
 #serverless bref:cli --args="doctrine:migrations:migrate --no-interaction"
 #serverless bref:cli --args="telegram:webhook:update feedbacks"
 #serverless bref:cli --args="telegram:commands:update feedbacks"
+#serverless bref:cli --args="telegram:commands:remove feedbacks"
 #serverless bref:cli --args="telegram:description:update feedbacks"
 
 
