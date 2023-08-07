@@ -14,10 +14,9 @@ provider:
     #1) .env
     #2) .env.dist
     #3) phpunit.xml
-    APP_STAGE: dev
-    APP_ENV: prod
+    APP_STAGE: ${ssm:/feedbacks/${sls:stage}/APP_STAGE}
+    APP_ENV: ${ssm:/feedbacks/${sls:stage}/APP_ENV}
     APP_SECRET: ${ssm:/feedbacks/${sls:stage}/APP_SECRET}
-#    todo: change WEB_BASE_URL -> SITE_BASE_URL
     SITE_BASE_URL: ${ssm:/feedbacks/${sls:stage}/SITE_BASE_URL}
     TELEGRAM_WEBHOOK_BASE_URL: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_WEBHOOK_BASE_URL}
     TELEGRAM_FEEDBACKS_BOTS: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_FEEDBACKS_BOTS}
