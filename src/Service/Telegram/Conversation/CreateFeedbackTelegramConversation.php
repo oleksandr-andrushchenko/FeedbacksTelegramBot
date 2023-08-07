@@ -220,7 +220,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         }
 
         $tg->reply(
-            $tg->trans('ask.create.search_term_type'),
+            $tg->trans('ask.create.search_term_type', ['search_term' => $this->state->getSearchTerm()->getText()]),
             $tg->keyboard(...[
                 ...$this->getSearchTermTypeButtons($sortedPossibleTypes, $tg),
                 $this->getBackButton($tg),

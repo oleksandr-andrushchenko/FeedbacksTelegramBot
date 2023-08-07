@@ -72,16 +72,16 @@
 
         <parameter key="app.feedback_creator_options" type="collection">
             <parameter key="user_target_messenger_required">%env(bool:FEEDBACK_CREATOR_USER_TARGET_MESSENGER_REQUIRED)%</parameter>
-            <parameter key="user_per_day_limit">10</parameter>
-            <parameter key="user_per_month_limit">100</parameter>
-            <parameter key="user_per_year_limit">300</parameter>
+            <parameter key="user_per_day_limit">100</parameter>
+            <parameter key="user_per_month_limit">1000</parameter>
+            <parameter key="user_per_year_limit">10000</parameter>
             <parameter key="log_activities">%app.log_activities_feedback_create%</parameter>
         </parameter>
 
         <parameter key="app.feedback_search_creator_options" type="collection">
-            <parameter key="user_per_day_limit">2</parameter>
-            <parameter key="user_per_month_limit">10</parameter>
-            <parameter key="user_per_year_limit">50</parameter>
+            <parameter key="user_per_day_limit">100</parameter>
+            <parameter key="user_per_month_limit">1000</parameter>
+            <parameter key="user_per_year_limit">10000</parameter>
             <parameter key="log_activities">%app.log_activities_feedback_search%</parameter>
         </parameter>
 

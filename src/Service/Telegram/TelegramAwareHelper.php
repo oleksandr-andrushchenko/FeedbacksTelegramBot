@@ -44,7 +44,7 @@ class TelegramAwareHelper
 
     public function getText(): ?string
     {
-        return $this->getTelegram()?->getUpdate()?->getMessage()->getText();
+        return $this->getTelegram()?->getUpdate()?->getMessage()?->getText();
     }
 
     public function matchText(?string $text): bool

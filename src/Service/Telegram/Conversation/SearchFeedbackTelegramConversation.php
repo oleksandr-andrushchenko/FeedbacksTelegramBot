@@ -198,7 +198,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
         $sortedPossibleTypes = SearchTermType::sort($possibleTypes);
 
         $tg->reply(
-            $tg->trans('ask.search.search_term_type'),
+            $tg->trans('ask.search.search_term_type', ['search_term' => $this->state->getSearchTerm()->getText()]),
             $tg->keyboard(...[
                 ...$this->getSearchTermTypeButtons($sortedPossibleTypes, $tg),
                 $this->getBackButton($tg),
