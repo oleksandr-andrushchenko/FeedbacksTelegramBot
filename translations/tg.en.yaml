@@ -35,15 +35,15 @@ ask:
   action:
     action: Select an action please.
   create:
-    search_term: Specify who or what you want to leave feedback on, this can be a social network or messenger profile URL, nickname, email address, phone number, website, person's name or organization name, etc.
-    search_term_type: Specify who or what "%search_term%" is, use the keyboard below please.
-    rating: Enter your score number please, or use keyboard below.
-    description: Enter your feedback please, it could be any details about your experience.
+    search_term: Who or what you would you like to leave feedback on? It can be a social network or messenger profile URL, nickname, email address, phone number, website, person's name or organization name, etc.
+    search_term_type: Who or what "%search_term%" is?
+    rating: Rate your experience with "%search_term%".
+    description: Add any information about "%search_term%" and describe your experience with "%search_term%".
     confirm: Confirm feedback creation?
   search:
-    search_term: Specify who or what you are interested in, it can be the URL of a social network or messenger profile, nickname, email address, phone number, website, person's name or organization name, etc.
-    search_term_type: Specify who or what "%search_term%" is, use the keyboard below please.
-    confirm: Confirm feedback search?
+    search_term: Who or what you are interested in? It can be a social network or messenger profile URL, nickname, email address, phone number, website, person's name or organization name, etc.
+    search_term_type: Who or what "%search_term%" is?
+    confirm: Confirm feedbacks search?
   premium:
     subscription_plan: Select a subscription plan from the menu below please.
     payment_method: Select a payment method from the menu below please.

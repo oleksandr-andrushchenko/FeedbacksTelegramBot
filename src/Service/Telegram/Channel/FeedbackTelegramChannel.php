@@ -106,6 +106,8 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         // todo: ban users
         // todo: add check payment possibility (does at least payment method exists), + implement manual payments
         // todo: select currency as separate step on premium
+        // todo: create & implement limits display checker (if limits = 0 - do not display)
+        // todo: create & implement buy subscription display checker (not accept payments - do not display, has subscriptions - display list button)
 
         yield new FallbackTelegramCommand(fn () => $this->fallback($tg));
         yield new ErrorTelegramCommand(fn (TelegramException $exception) => $this->exception($tg));

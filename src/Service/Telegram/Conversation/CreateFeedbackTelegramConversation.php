@@ -268,7 +268,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         $this->state->setStep(self::STEP_RATING_ASKED);
 
         $tg->reply(
-            ($change ? '' : $this->getStep(2)) . $tg->trans('ask.create.rating'),
+            ($change ? '' : $this->getStep(2)) . $tg->trans('ask.create.rating', ['search_term' => $this->state->getSearchTerm()->getText()]),
             $tg->keyboard(...[
                 ...$this->getRatingButtons($tg),
                 $this->getBackButton($tg),
@@ -324,7 +324,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         $buttons[] = $this->getCancelButton($tg);
 
         $tg->reply(
-            ($change ? '' : $this->getStep(3)) . $tg->trans('ask.create.description'),
+            ($change ? '' : $this->getStep(3)) . $tg->trans('ask.create.description', ['search_term' => $this->state->getSearchTerm()->getText()]),
             $tg->keyboard(...$buttons)
         );
 
