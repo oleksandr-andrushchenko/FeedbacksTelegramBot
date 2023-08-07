@@ -55,6 +55,12 @@ when@prod:
         type: console
         process_psr_3_messages: false
         channels: [ "!event", "!doctrine" ]
+      activity:
+        type: telegram
+        token: '%app.telegram_activities_token%'
+        channel: '%app.telegram_activities_channel%'
+        level: debug
+        channels: [ 'activities' ]
       error:
         type: telegram
         token: '%app.telegram_errors_token%'
