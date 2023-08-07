@@ -100,13 +100,17 @@ reply:
     ok: Feedback has been successfully added.
     fail:
       same_messenger_user: Feedbacks on yourself is not allowed.
-      limit_exceeded: "You have reached feedback creation limit (%limit%) for the next period: %period%. Try again later or buy premium subscription %premium_command% please."
+      limit_exceeded:
+        main: "You have reached feedback creation limit (%limit%) for the next period: %period%. Try again later%or_buy_premium% please."
+        or_buy_premium: or buy premium subscription %premium_command%
   search:
     canceled: Feedback search dialog has been canceled.
     empty_list: No feedbacks were found by "%search_term%".
     title: "There are %count% feedback(-s) have been successfully found by \"%search_term%\" (%search_term_type%):"
     fail:
-      limit_exceeded: "You have reached feedback searching limit (%limit%) for the next period: %period%. Try again later or buy premium subscription %premium_command% please."
+      limit_exceeded:
+        main: "You have reached feedback searching limit (%limit%) for the next period: %period%. Try again later%or_buy_premium% please."
+        or_buy_premium: or buy premium subscription %premium_command%
   premium:
     already_have: "You have active premium subscription already:"
     canceled: Getting premium dialog has been canceled.

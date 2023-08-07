@@ -345,13 +345,20 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
 
             return $tg->replyFail($tg->trans('reply.fail'))->null();
         } catch (CreateFeedbackSearchLimitExceeded $exception) {
-            $tg->replyFail($tg->trans('reply.search.fail.limit_exceeded', [
-                'period' => $tg->trans($exception->getPeriodKey()),
-                'limit' => $exception->getLimit(),
-                'premium_command' => $tg->view(TelegramView::COMMAND, [
-                    'name' => 'premium',
+            $tg->replyFail(
+                $tg->trans('reply.search.fail.limit_exceeded.main', [
+                    'period' => $tg->trans($exception->getPeriodKey()),
+                    'limit' => $exception->getLimit(),
+                    'or_buy_premium' => $tg->getTelegram()->getOptions()->acceptPayments()
+                        ? ' ' . $tg->trans('reply.search.fail.limit_exceeded.or_buy_premium', [
+                            'premium_command' => $tg->view(TelegramView::COMMAND, [
+                                'name' => 'premium',
+                            ]),
+                        ])
+                        : '',
                 ]),
-            ]), parseMode: 'HTML');
+                parseMode: 'HTML'
+            );
 
             $tg->stopConversation($conversation);
 

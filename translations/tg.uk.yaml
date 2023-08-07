@@ -100,13 +100,17 @@ reply:
     ok: Відгук успішно додано.
     fail:
       same_messenger_user: Відгуки на себе заборонені.
-      limit_exceeded: "Ви досягли обмеження на створення відгуків (%limit%) на наступний період: %period%. Спробуйте пізніше або придбайте преміум-підписку %premium_command%, будь ласка."
+      limit_exceeded:
+        main: "Ви досягли обмеження на створення відгуків (%limit%) на наступний період: %period%. Будь ласка, спробуйте пізніше%or_buy_premium%."
+        or_buy_premium: або придбайте преміум-підписку %premium_command%
   search:
     canceled: Діалог пошуку відгуків скасовано.
     empty_list: Не знайдено відгуків за "%search_term%".
     title: "%count% відгук(ів) успішно знайдено \"%search_term%\" (%search_term_type%):"
     fail:
-      limit_exceeded: "Ви досягли ліміту пошуку відгуків (%limit%) на наступний період: %period%. Спробуйте пізніше або придбайте преміум-підписку %premium_command%, будь ласка."
+      limit_exceeded:
+        main: "Ви досягли ліміту пошуку відгуків (%limit%) на наступний період: %period%. Будь ласка, спробуйте пізніше%or_buy_premium%."
+        or_buy_premium: або придбайте преміум-підписку %premium_command%
   premium:
     already_have: "У вас вже є активна преміум-підписка:"
     canceled: Діалог отримання преміум-підписки скасовано.
