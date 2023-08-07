@@ -24,9 +24,7 @@ class TelegramNonAdminUpdateChecker
 
         $currentUser = $this->userProvider->getTelegramUserByUpdate($telegram->getUpdate());
 
-        $isAdmin = in_array($currentUser->getId(), $telegram->getOptions()->getAdminIds(), true);
-
-        if ($isAdmin) {
+        if ($currentUser->getId() === $telegram->getOptions()->getAdminId()) {
             return false;
         }
 

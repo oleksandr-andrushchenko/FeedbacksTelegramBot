@@ -13,7 +13,6 @@ class TelegramFactory
 {
     public function __construct(
         private readonly array $options,
-        private readonly TelegramGroupOptionsFactory $groupOptionsFactory,
         private readonly TelegramOptionsFactory $optionsFactory,
         private readonly TelegramClientRegistry $clientRegistry,
         private readonly TelegramRequestChecker $requestChecker,
@@ -43,9 +42,7 @@ class TelegramFactory
                 continue;
             }
 
-            $groupOptions = $this->groupOptionsFactory->createTelegramGroupOptions($options);
-
-            if ($groupOptions->hasBot($username)) {
+            if (array_key_exists($username, $options['bots'])) {
                 return new Telegram(
                     $group,
                     $this->optionsFactory->createTelegramOptions($username, $options),

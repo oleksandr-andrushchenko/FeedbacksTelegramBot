@@ -11,8 +11,7 @@ readonly class TelegramOptions
         private string $apiToken,
         private string $username,
         private array $localeCodes,
-        private array $adminIds,
-        private array $adminChatIds,
+        private int $adminId,
         private bool $checkUpdates,
         private bool $checkRequests,
         private bool $processAdminOnly,
@@ -41,14 +40,9 @@ readonly class TelegramOptions
         return $this->localeCodes;
     }
 
-    public function getAdminIds(): array
+    public function getAdminId(): int
     {
-        return $this->adminIds;
-    }
-
-    public function getAdminChatIds(): array
-    {
-        return $this->adminChatIds;
+        return $this->adminId;
     }
 
     public function checkUpdates(): bool

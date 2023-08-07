@@ -24,7 +24,6 @@
                  class="App\Service\Telegram\TelegramConversationFactory" lazy="true">
             <argument type="tagged_locator" tag="app.telegram_conversation_feedbacks"/>
         </service>
-        <service id="app.telegram_group_options_factory" class="App\Service\Telegram\TelegramGroupOptionsFactory" lazy="true"/>
         <service id="app.telegram_options_factory" class="App\Service\Telegram\TelegramOptionsFactory" lazy="true"/>
         <service id="app.feedback_telegram_options" class="App\Entity\Telegram\TelegramOptions">
             <factory service="app.telegram_options_factory" method="createDefaultTelegramOptions"/>
@@ -32,7 +31,6 @@
         </service>
         <service id="app.telegram_factory" class="App\Service\Telegram\TelegramFactory" lazy="true">
             <argument>%app.telegram_options%</argument>
-            <argument type="service" id="app.telegram_group_options_factory"/>
             <argument type="service" id="app.telegram_options_factory"/>
             <argument type="service" id="app.telegram_client_registry"/>
             <argument type="service" id="app.telegram_request_checker"/>

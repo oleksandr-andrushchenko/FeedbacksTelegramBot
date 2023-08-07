@@ -8,6 +8,7 @@
         <parameter key="app.stage">%env(APP_STAGE)%</parameter>
         <parameter key="app.site_base_url">%env(SITE_BASE_URL)%</parameter>
         <parameter key="app.telegram_webhook_base_url">%env(TELEGRAM_WEBHOOK_BASE_URL)%</parameter>
+        <parameter key="app.telegram_admin_id">%env(int:TELEGRAM_ADMIN_ID)%</parameter>
 
         <parameter key="app.default_locale">en</parameter>
         <parameter key="app.supported_locales" type="collection">
@@ -25,10 +26,10 @@
         <parameter key="app.locale_translation_file">%app.translations_dir%/locales.{locale}.yaml</parameter>
 
         <parameter key="app.telegram_activities_token">%env(TELEGRAM_ACTIVITIES_TOKEN)%</parameter>
-        <parameter key="app.telegram_activities_channel">%env(TELEGRAM_ACTIVITIES_CHANNEL)%</parameter>
+        <parameter key="app.telegram_activities_channel">%app.telegram_admin_id%</parameter>
 
         <parameter key="app.telegram_errors_token">%env(TELEGRAM_ERRORS_TOKEN)%</parameter>
-        <parameter key="app.telegram_errors_channel">%env(TELEGRAM_ERRORS_CHANNEL)%</parameter>
+        <parameter key="app.telegram_errors_channel">%app.telegram_admin_id%</parameter>
 
         <parameter key="app.log_activities">%env(bool:LOG_ACTIVITIES)%</parameter>
 
@@ -53,13 +54,12 @@
         <parameter key="app.feedback_telegram_options" type="collection">
             <parameter key="key">feedbacks</parameter>
             <parameter key="bots">%env(json:trimQuotes:TELEGRAM_FEEDBACKS_BOTS)%</parameter>
-            <parameter key="admin_ids">%env(json:TELEGRAM_FEEDBACKS_ADMIN_IDS)%</parameter>
+            <parameter key="admin_id">%app.telegram_admin_id%</parameter>
             <parameter key="locales" type="collection">
                 <parameter>en</parameter>
                 <parameter>uk</parameter>
                 <parameter>ru</parameter>
             </parameter>
-            <parameter key="admin_chat_ids">%env(json:TELEGRAM_FEEDBACKS_ADMIN_CHAT_IDS)%</parameter>
             <parameter key="check_updates">%env(bool:TELEGRAM_FEEDBACKS_CHECK_UPDATES)%</parameter>
             <parameter key="check_requests">%env(bool:TELEGRAM_FEEDBACKS_CHECK_REQUESTS)%</parameter>
             <parameter key="process_admin_only">%env(bool:TELEGRAM_FEEDBACKS_PROCESS_ADMIN_ONLY)%</parameter>

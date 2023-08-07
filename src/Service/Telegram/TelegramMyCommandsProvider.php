@@ -41,12 +41,10 @@ class TelegramMyCommandsProvider
             yield new TelegramMyCommands($defaultScopeCommands, $defaultScope, $localeCode);
         }
 
-        foreach ($telegram->getOptions()->getAdminChatIds() as $adminChatId) {
-            $adminChatScope = new BotCommandScopeChat(['chat_id' => $adminChatId]);
+        $adminChatScope = new BotCommandScopeChat(['chat_id' => $telegram->getOptions()->getAdminId()]);
 
-            foreach ($telegram->getOptions()->getLocaleCodes() as $localeCode) {
-                yield new TelegramMyCommands($adminChatScopeCommands, $adminChatScope, $localeCode);
-            }
+        foreach ($telegram->getOptions()->getLocaleCodes() as $localeCode) {
+            yield new TelegramMyCommands($adminChatScopeCommands, $adminChatScope, $localeCode);
         }
     }
 }
