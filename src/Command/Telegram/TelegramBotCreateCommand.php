@@ -71,7 +71,7 @@ class TelegramBotCreateCommand extends Command
             'token' => '***',
             'country' => $bot->getCountryCode(),
             'locale' => $bot->getLocaleCode(),
-            'group' => $bot->getBot()->getGroup()->name,
+            'group' => $bot->getGroup()->name,
             'is_primary' => $bot->getPrimaryBot() === null ? 'Y' : sprintf('N (%s)', $bot->getPrimaryBot()->getUsername()),
         ];
 
