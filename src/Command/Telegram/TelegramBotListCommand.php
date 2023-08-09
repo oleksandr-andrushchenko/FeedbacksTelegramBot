@@ -50,7 +50,7 @@ class TelegramBotListCommand extends Command
             $table = [];
             foreach ($bots as $index => $bot) {
                 $telegram = $this->registry->getTelegram($bot->getUsername());
-                $webhookInfo = $this->provider->getTelegramWebhookInfo($telegram);
+                $webhookInfo = $this->provider->getTelegramWebhookInfo($telegram)->getUrl();
 
                 $table[] = [
                     '#' => $index + 1,
