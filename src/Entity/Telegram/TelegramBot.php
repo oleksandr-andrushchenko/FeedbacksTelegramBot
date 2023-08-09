@@ -20,7 +20,7 @@ class TelegramBot
         private readonly bool $isCheckUpdates = true,
         private readonly bool $isCheckRequests = true,
         private readonly bool $isAcceptPayments = false,
-        private readonly bool $isAdminOnly = true,
+        private bool $isAdminOnly = true,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?int $id = null,
     )
@@ -80,6 +80,13 @@ class TelegramBot
     public function adminOnly(): bool
     {
         return $this->isAdminOnly;
+    }
+
+    public function setIsAdminOnly(bool $isAdminOnly): self
+    {
+        $this->isAdminOnly = $isAdminOnly;
+
+        return $this;
     }
 
     public function getCreatedAt(): DateTimeInterface
