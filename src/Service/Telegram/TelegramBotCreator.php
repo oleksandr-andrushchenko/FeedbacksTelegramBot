@@ -40,7 +40,7 @@ class TelegramBotCreator
             $botTransfer->getToken(),
             $botTransfer->getCountryCode(),
             $botTransfer->getLocaleCode(),
-            $botTransfer->getBot()->getGroup(),
+            $botTransfer->getGroup(),
             $primaryBot
         );
         $this->entityManager->persist($bot);
