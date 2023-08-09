@@ -55,5 +55,12 @@
 
             <tag name="console.command" command="telegram:bot:create"/>
         </service>
+        <service id="app.command.telegram_bot_list" class="App\Command\Telegram\TelegramBotListCommand" lazy="true">
+            <argument type="service" id="app.repository.telegram_bot"/>
+            <argument type="service" id="app.telegram_registry"/>
+            <argument type="service" id="app.telegram_webhook_info_provider"/>
+
+            <tag name="console.command" command="telegram:bot:list"/>
+        </service>
     </services>
 </container>
