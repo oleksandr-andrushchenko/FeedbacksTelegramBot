@@ -14,7 +14,7 @@ class TelegramConversation
         private readonly MessengerUser $messengerUser,
         private readonly int $chatId,
         private string $class,
-        private readonly string $bot,
+        private readonly TelegramBot $bot,
         private bool $isActive = true,
         private ?array $state = null,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
@@ -63,7 +63,7 @@ class TelegramConversation
         return $this;
     }
 
-    public function getBot(): string
+    public function getBot(): TelegramBot
     {
         return $this->bot;
     }
@@ -80,7 +80,7 @@ class TelegramConversation
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTimeInterface
+    public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }

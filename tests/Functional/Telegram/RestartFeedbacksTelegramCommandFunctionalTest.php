@@ -6,12 +6,9 @@ namespace App\Tests\Functional\Telegram;
 
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
 use App\Service\Telegram\Conversation\RestartConversationTelegramConversation;
-use App\Tests\Traits\Telegram\TelegramCommandFunctionalTrait;
 
 class RestartFeedbacksTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestCase
 {
-    use TelegramCommandFunctionalTrait;
-
     public function testRestartFeedbacksSuccess(): void
     {
         $this->type(FeedbackTelegramChannel::RESTART)

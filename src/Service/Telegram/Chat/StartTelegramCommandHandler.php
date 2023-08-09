@@ -48,7 +48,7 @@ class StartTelegramCommandHandler
         }
 
         $commands = FeedbackTelegramChannel::COMMANDS;
-        if (!$tg->getTelegram()->getOptions()->acceptPayments()) {
+        if (!$tg->getTelegram()->getBot()->acceptPayments()) {
             $commands = array_diff($commands, [
                 FeedbackTelegramChannel::PREMIUM,
             ]);

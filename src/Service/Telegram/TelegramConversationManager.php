@@ -42,11 +42,7 @@ class TelegramConversationManager
             return null;
         }
 
-        $conversation = $this->conversationRepository->findOneByMessengerUserAndChatId(
-            $messengerUser,
-            $chatId,
-            $telegram->getOptions()->getUsername()
-        );
+        $conversation = $this->conversationRepository->findOneByMessengerUserAndChatId($messengerUser, $chatId, $telegram->getBot());
 
         if ($conversation === null) {
             return null;
@@ -75,7 +71,7 @@ class TelegramConversationManager
             $telegram->getUpdate()->getMessage()->getChat()->getId(),
             // conversations from container have container class
             get_parent_class($conversation),
-            $telegram->getOptions()->getUsername(),
+            $telegram->getBot(),
             true
         );
         $this->entityManager->persist($dbConversation);
@@ -119,10 +115,7 @@ class TelegramConversationManager
 
     public function stopTelegramConversations(Telegram $telegram): void
     {
-        $conversations = $this->conversationRepository->getActiveByMessengerUser(
-            $telegram->getMessengerUser(),
-            $telegram->getOptions()->getUsername()
-        );
+        $conversations = $this->conversationRepository->getActiveByMessengerUser($telegram->getMessengerUser(), $telegram->getBot());
 
         foreach ($conversations as $conversation) {
             $this->stopTelegramConversation($conversation);
@@ -141,7 +134,7 @@ class TelegramConversationManager
 
     public function createTelegramConversation(Telegram $telegram, string $conversationClass): TelegramConversationInterface
     {
-        $channel = $this->channelRegistry->getTelegramChannel($telegram->getGroup());
+        $channel = $this->channelRegistry->getTelegramChannel($telegram->getBot()->getGroup());
         // todo: throw not found exception
         return $channel->getTelegramConversationFactory()->createTelegramConversation($conversationClass);
     }

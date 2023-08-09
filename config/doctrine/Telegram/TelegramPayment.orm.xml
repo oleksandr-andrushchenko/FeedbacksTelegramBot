@@ -26,7 +26,7 @@
         <field name="priceAmount" column="price_amount" type="decimal" precision="7" scale="2"/>
         <field name="priceCurrency" column="price_currency"/>
         <field name="payload" column="payload" type="json"/>
-        <field name="bot" column="bot" length="32"/>
+        <many-to-one field="bot" target-entity="App\Entity\Telegram\TelegramBot"/>
         <field name="preCheckoutQuery" column="pre_checkout_query" type="json" nullable="true"/>
         <field name="successfulPayment" column="successful_payment" type="json" nullable="true"/>
         <field name="status" column="status" type="smallint" enum-type="App\Enum\Telegram\TelegramPaymentStatus">

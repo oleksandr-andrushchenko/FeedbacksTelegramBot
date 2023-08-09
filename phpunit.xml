@@ -35,15 +35,10 @@
         <env name="APP_SECRET" value="$ecretf0rt3st"/>
         <env name="SITE_BASE_URL" value="http://localhost"/>
         <env name="TELEGRAM_WEBHOOK_BASE_URL" value="http://localhost"/>
-        <env name="TELEGRAM_FEEDBACKS_BOTS" value='{"any_bot":"0:any"}'/>
         <env name="TELEGRAM_ADMIN_ID" value="409525390"/>
-        <env name="TELEGRAM_FEEDBACKS_CHECK_UPDATES" value="true"/>
-        <env name="TELEGRAM_FEEDBACKS_CHECK_REQUESTS" value="true"/>
-        <env name="TELEGRAM_FEEDBACKS_PROCESS_ADMIN_ONLY" value="false"/>
-        <env name="TELEGRAM_FEEDBACKS_ACCEPT_PAYMENTS" value="false"/>
         <env name="TELEGRAM_ACTIVITIES_TOKEN" value="0:any"/>
-        <env name="LOG_ACTIVITIES" value="false"/>
         <env name="TELEGRAM_ERRORS_TOKEN" value="0:any"/>
+        <env name="LOG_ACTIVITIES" value="false"/>
         <env name="FEEDBACK_CREATOR_USER_TARGET_MESSENGER_REQUIRED" value="false"/>
         <env name="FEEDBACKS_LIQPAY_TOKEN" value=""/>
         <env name="FEEDBACKS_PORTMONE_TOKEN" value=""/>

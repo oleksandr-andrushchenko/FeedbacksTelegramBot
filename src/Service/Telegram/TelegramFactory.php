@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram;
 
-use App\Enum\Telegram\TelegramGroup;
 use App\Exception\Telegram\TelegramNotFoundException;
 use App\Exception\Telegram\TelegramOptionsNotFoundException;
+use App\Repository\Telegram\TelegramBotRepository;
 use Psr\Log\LoggerInterface;
 
 class TelegramFactory
@@ -16,6 +16,7 @@ class TelegramFactory
         private readonly TelegramOptionsFactory $optionsFactory,
         private readonly TelegramClientRegistry $clientRegistry,
         private readonly TelegramRequestChecker $requestChecker,
+        private readonly TelegramBotRepository $botRepository,
         private readonly LoggerInterface $logger,
     )
     {
@@ -29,30 +30,24 @@ class TelegramFactory
      */
     public function createTelegram(string $username): Telegram
     {
-        foreach (TelegramGroup::cases() as $group) {
-            $options = null;
-            foreach ($this->options as $opts) {
-                if ($opts['key'] === $group->name) {
-                    $options = $opts;
-                    break;
-                }
-            }
+        $bot = $this->botRepository->findOneByUsername($username);
 
-            if ($options === null) {
-                continue;
-            }
-
-            if (array_key_exists($username, $options['bots'])) {
-                return new Telegram(
-                    $group,
-                    $this->optionsFactory->createTelegramOptions($username, $options),
-                    $this->clientRegistry,
-                    $this->requestChecker,
-                    $this->logger,
-                );
-            }
+        if ($bot === null) {
+            throw new TelegramNotFoundException($username);
         }
 
-        throw new TelegramNotFoundException();
+        if (!array_key_exists($bot->getGroup()->name, $this->options)) {
+            throw new TelegramOptionsNotFoundException($username);
+        }
+
+        $groupOptions = $this->options[$bot->getGroup()->name];
+
+        return new Telegram(
+            $bot,
+            $this->optionsFactory->createTelegramOptions($groupOptions),
+            $this->clientRegistry,
+            $this->requestChecker,
+            $this->logger,
+        );
     }
 }

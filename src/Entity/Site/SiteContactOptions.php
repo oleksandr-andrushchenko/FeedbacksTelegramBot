@@ -8,7 +8,7 @@ readonly class SiteContactOptions
 {
     public function __construct(
         private string $botName,
-        private string $botLink,
+        private ?string $botLink,
         private string $website,
         private string $phone,
         private string $email,
@@ -25,7 +25,7 @@ readonly class SiteContactOptions
         return $this->botName;
     }
 
-    public function getBotLink(): string
+    public function getBotLink(): ?string
     {
         return $this->botLink;
     }

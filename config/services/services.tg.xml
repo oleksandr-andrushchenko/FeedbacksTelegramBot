@@ -5,6 +5,10 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="app.telegram_bot_creator" class="App\Service\Telegram\TelegramBotCreator" lazy="true">
+            <argument type="service" id="app.repository.telegram_bot"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
         <service id="app.telegram_webhook_url_generator" class="App\Service\Telegram\TelegramWebhookUrlGenerator" lazy="true">
             <argument>%app.telegram_webhook_base_url%</argument>
             <argument>app.telegram_webhook</argument>
@@ -25,15 +29,12 @@
             <argument type="tagged_locator" tag="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.telegram_options_factory" class="App\Service\Telegram\TelegramOptionsFactory" lazy="true"/>
-        <service id="app.feedback_telegram_options" class="App\Entity\Telegram\TelegramOptions">
-            <factory service="app.telegram_options_factory" method="createDefaultTelegramOptions"/>
-            <argument>%app.feedback_telegram_options%</argument>
-        </service>
         <service id="app.telegram_factory" class="App\Service\Telegram\TelegramFactory" lazy="true">
             <argument>%app.telegram_options%</argument>
             <argument type="service" id="app.telegram_options_factory"/>
             <argument type="service" id="app.telegram_client_registry"/>
             <argument type="service" id="app.telegram_request_checker"/>
+            <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="logger"/>
         </service>
         <service id="app.telegram_active_conversation_invoker"

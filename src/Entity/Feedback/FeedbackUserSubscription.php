@@ -49,7 +49,7 @@ class FeedbackUserSubscription
         return $this->expireAt;
     }
 
-    public function getCreatedAt(): ?DateTimeInterface
+    public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }

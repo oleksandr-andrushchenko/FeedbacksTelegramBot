@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram;
 
-use App\Entity\Telegram\TelegramOptions;
+use App\Entity\Telegram\TelegramBot;
 use Longman\TelegramBot\Telegram as TelegramClient;
 
 class TelegramClientRegistry
@@ -17,14 +17,14 @@ class TelegramClientRegistry
         $this->cache = [];
     }
 
-    public function getTelegramClient(TelegramOptions $options): TelegramClient
+    public function getTelegramClient(TelegramBot $bot): TelegramClient
     {
-        $key = $options->getUsername();
+        $key = $bot->getUsername();
 
         if (isset($this->cache[$key])) {
             return $this->cache[$key];
         }
 
-        return $this->cache[$key] = $this->clientFactory->createTelegramClient($options);
+        return $this->cache[$key] = $this->clientFactory->createTelegramClient($bot);
     }
 }

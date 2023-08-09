@@ -27,7 +27,7 @@ class CurrenciesUpdateCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Update latest currencies')

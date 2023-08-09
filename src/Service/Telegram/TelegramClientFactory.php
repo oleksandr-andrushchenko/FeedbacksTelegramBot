@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram;
 
-use App\Entity\Telegram\TelegramOptions;
+use App\Entity\Telegram\TelegramBot;
 use Longman\TelegramBot\Telegram as TelegramClient;
 
 class TelegramClientFactory
 {
-    public function createTelegramClient(TelegramOptions $options): TelegramClient
+    public function createTelegramClient(TelegramBot $bot): TelegramClient
     {
         return new TelegramClient(
-            $options->getApiToken(),
-            $options->getUsername(),
+            $bot->getToken(),
+            $bot->getUsername(),
         );
     }
 }

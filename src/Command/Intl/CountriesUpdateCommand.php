@@ -31,7 +31,7 @@ class CountriesUpdateCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Update countries and country translations')

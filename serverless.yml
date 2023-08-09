@@ -19,15 +19,10 @@ provider:
     APP_SECRET: ${ssm:/feedbacks/${sls:stage}/APP_SECRET}
     SITE_BASE_URL: ${ssm:/feedbacks/${sls:stage}/SITE_BASE_URL}
     TELEGRAM_WEBHOOK_BASE_URL: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_WEBHOOK_BASE_URL}
-    TELEGRAM_FEEDBACKS_BOTS: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_FEEDBACKS_BOTS}
     TELEGRAM_ADMIN_ID: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_ADMIN_ID}
-    TELEGRAM_FEEDBACKS_CHECK_UPDATES: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_FEEDBACKS_CHECK_UPDATES}
-    TELEGRAM_FEEDBACKS_CHECK_REQUESTS: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_FEEDBACKS_CHECK_REQUESTS}
-    TELEGRAM_FEEDBACKS_PROCESS_ADMIN_ONLY: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_FEEDBACKS_PROCESS_ADMIN_ONLY}
-    TELEGRAM_FEEDBACKS_ACCEPT_PAYMENTS: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_FEEDBACKS_ACCEPT_PAYMENTS}
     TELEGRAM_ACTIVITIES_TOKEN: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_ACTIVITIES_TOKEN}
-    LOG_ACTIVITIES: ${ssm:/feedbacks/${sls:stage}/LOG_ACTIVITIES}
     TELEGRAM_ERRORS_TOKEN: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_ERRORS_TOKEN}
+    LOG_ACTIVITIES: ${ssm:/feedbacks/${sls:stage}/LOG_ACTIVITIES}
     FEEDBACK_CREATOR_USER_TARGET_MESSENGER_REQUIRED: ${ssm:/feedbacks/${sls:stage}/FEEDBACK_CREATOR_USER_TARGET_MESSENGER_REQUIRED}
     DATABASE_URL: ${ssm:/feedbacks/${sls:stage}/DATABASE_URL}
     # todo: add vpc with private (for RDS) and public (lambda outbound internet requests) subnets

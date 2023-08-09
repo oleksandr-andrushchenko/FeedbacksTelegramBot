@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository\Telegram;
 
 use App\Entity\Messenger\MessengerUser;
+use App\Entity\Telegram\TelegramBot;
 use App\Entity\Telegram\TelegramConversation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -42,11 +43,7 @@ class TelegramConversationRepository extends ServiceEntityRepository
         }
     }
 
-    public function findOneByMessengerUserAndChatId(
-        MessengerUser $messengerUser,
-        int $chatId,
-        string $bot
-    ): ?TelegramConversation
+    public function findOneByMessengerUserAndChatId(MessengerUser $messengerUser, int $chatId, TelegramBot $bot): ?TelegramConversation
     {
         return $this->findOneBy(
             [
@@ -62,10 +59,10 @@ class TelegramConversationRepository extends ServiceEntityRepository
 
     /**
      * @param MessengerUser $messengerUser
-     * @param string $bot
+     * @param TelegramBot $bot
      * @return TelegramConversation[]
      */
-    public function getActiveByMessengerUser(MessengerUser $messengerUser, string $bot): array
+    public function getActiveByMessengerUser(MessengerUser $messengerUser, TelegramBot $bot): array
     {
         return $this->findBy([
             'messengerUser' => $messengerUser,

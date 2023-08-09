@@ -59,15 +59,15 @@ class TelegramUpdateHandler
 
         TelegramLog::initialize($this->logger, $this->logger);
 
-        $channel = $this->channelRegistry->getTelegramChannel($telegram->getGroup());
+        $channel = $this->channelRegistry->getTelegramChannel($telegram->getBot()->getGroup());
 
         if ($update->getPreCheckoutQuery() !== null) {
-            if ($telegram->getOptions()->acceptPayments()) {
+            if ($telegram->getBot()->acceptPayments()) {
                 $this->paymentManager->acceptPreCheckoutQuery($telegram, $update->getPreCheckoutQuery());
             }
             return;
         } elseif ($update->getMessage()?->getSuccessfulPayment() !== null) {
-            if ($telegram->getOptions()->acceptPayments()) {
+            if ($telegram->getBot()->acceptPayments()) {
                 $payment = $this->paymentManager->acceptSuccessfulPayment($telegram, $update->getMessage()->getSuccessfulPayment());
                 $channel->acceptTelegramPayment($telegram, $payment);
             }

@@ -30,7 +30,7 @@ class ChooseActionTelegramChatSender
         $hasActivePremium = $this->subscriptionManager->hasActiveSubscription($messengerUser);
         $showPremium = false;
 
-        if ($tg->getTelegram()->getOptions()->acceptPayments() && !$hasActivePremium) {
+        if ($tg->getTelegram()->getBot()->acceptPayments() && !$hasActivePremium) {
             $keyboards[] = $this->getPremiumButton($tg);
             $showPremium = true;
         }
@@ -82,7 +82,7 @@ class ChooseActionTelegramChatSender
     {
         $hasActivePremium = $this->subscriptionManager->hasActiveSubscription($tg->getTelegram()->getMessengerUser());
         $key = 'subscriptions';
-        $domain = sprintf('tg.%s', $tg->getTelegram()->getGroup()->name);
+        $domain = sprintf('tg.%s', $tg->getTelegram()->getBot()->getGroup()->name);
 
         return $tg->button(
             join(' ', [
@@ -101,7 +101,7 @@ class ChooseActionTelegramChatSender
             return $tg->button(self::command($tg, 'country'));
         }
 
-        $domain = sprintf('tg.%s', $tg->getTelegram()->getGroup()->name);
+        $domain = sprintf('tg.%s', $tg->getTelegram()->getBot()->getGroup()->name);
 
         return $tg->button(
             join(' ', [
@@ -120,7 +120,7 @@ class ChooseActionTelegramChatSender
             return $tg->button(self::command($tg, 'locale'));
         }
 
-        $domain = sprintf('tg.%s', $tg->getTelegram()->getGroup()->name);
+        $domain = sprintf('tg.%s', $tg->getTelegram()->getBot()->getGroup()->name);
 
         return $tg->button(
             join(' ', [
@@ -133,7 +133,7 @@ class ChooseActionTelegramChatSender
     public static function getHintsButton(TelegramAwareHelper $tg): KeyboardButton
     {
         $isShowHints = $tg->getTelegram()->getMessengerUser()->isShowHints();
-        $domain = sprintf('tg.%s', $tg->getTelegram()->getGroup()->name);
+        $domain = sprintf('tg.%s', $tg->getTelegram()->getBot()->getGroup()->name);
 
         return $tg->button(
             join(' ', [
@@ -170,7 +170,7 @@ class ChooseActionTelegramChatSender
 
     private static function command($tg, string $key): string
     {
-        $domain = sprintf('tg.%s', $tg->getTelegram()->getGroup()->name);
+        $domain = sprintf('tg.%s', $tg->getTelegram()->getBot()->getGroup()->name);
 
         return join(' ', [
             $tg->trans(sprintf('icon.%s', $key), domain: $domain),

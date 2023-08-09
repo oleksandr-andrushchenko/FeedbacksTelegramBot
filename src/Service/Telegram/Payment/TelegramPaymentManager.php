@@ -67,7 +67,7 @@ class TelegramPaymentManager
             $purpose,
             $price,
             $payload,
-            $telegram->getOptions()->getUsername()
+            $telegram->getBot()
         );
         $this->entityManager->persist($payment);
 
@@ -110,7 +110,7 @@ class TelegramPaymentManager
 
         $telegram->answerPreCheckoutQuery([
             'pre_checkout_query_id' => $preCheckoutQuery->getId(),
-            'ok' => $telegram->getOptions()->acceptPayments(),
+            'ok' => $telegram->getBot()->acceptPayments(),
         ]);
 
         $payment->setStatus(TelegramPaymentStatus::PRE_CHECKOUT_RECEIVED);

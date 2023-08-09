@@ -22,7 +22,7 @@ class TelegramWebhookUpdater
      */
     public function updateTelegramWebhook(Telegram $telegram): void
     {
-        $url = $this->webhookUrlGenerator->generate($telegram->getOptions()->getUsername());
+        $url = $this->webhookUrlGenerator->generate($telegram->getBot()->getUsername());
         $cert = true ? '' : 'any';
 
         if (!filter_var($url, FILTER_VALIDATE_URL)) {

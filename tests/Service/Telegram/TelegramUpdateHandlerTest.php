@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Service\Telegram;
 
+use App\Entity\Telegram\TelegramBot;
 use App\Entity\Telegram\TelegramUpdate;
 use App\Enum\Telegram\TelegramGroup;
 use App\Tests\DatabaseTestCase;
@@ -21,6 +22,9 @@ class TelegramUpdateHandlerTest extends DatabaseTestCase
 
     public function testHandleTelegramUpdateStoreSuccess(): void
     {
+        $this->bootFixtures([
+            TelegramBot::class,
+        ]);
         $updateId = 10;
 
         $this->handleTelegramUpdate(null, $this->getTelegramMessageUpdateFixture('any', updateId: $updateId));
@@ -35,7 +39,10 @@ class TelegramUpdateHandlerTest extends DatabaseTestCase
 
     public function testHandleTelegramUpdateDuplicateSuccess(): void
     {
-        $this->bootFixtures([TelegramUpdate::class]);
+        $this->bootFixtures([
+            TelegramBot::class,
+            TelegramUpdate::class,
+        ]);
 
         $updateRepository = $this->getTelegramUpdateRepository();
         $previousUpdateCount = $updateRepository->count([]);

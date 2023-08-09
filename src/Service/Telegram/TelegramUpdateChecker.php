@@ -26,7 +26,7 @@ class TelegramUpdateChecker
      */
     public function checkTelegramUpdate(Telegram $telegram): bool
     {
-        if (!$telegram->getOptions()->checkUpdates()) {
+        if (!$telegram->getBot()->checkUpdates()) {
             return false;
         }
 
@@ -35,7 +35,7 @@ class TelegramUpdateChecker
 
             if ($telegramUpdate !== null) {
                 $this->logger->debug('Duplicate telegram update received, processing aborted', [
-                    'name' => $telegram->getGroup()->name,
+                    'name' => $telegram->getBot()->getGroup()->name,
                     'update_id' => $telegramUpdate->getId(),
                 ]);
 
@@ -46,7 +46,7 @@ class TelegramUpdateChecker
         $telegramUpdate = new TelegramUpdate(
             $telegram->getUpdate()->getUpdateId(),
             $telegram->getUpdate()->getRawData(),
-            $telegram->getOptions()->getUsername(),
+            $telegram->getBot()
         );
         $this->entityManager->persist($telegramUpdate);
 

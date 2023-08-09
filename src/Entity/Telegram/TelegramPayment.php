@@ -24,7 +24,7 @@ class TelegramPayment
         private readonly string $purpose,
         Money $price,
         private readonly array $payload,
-        private readonly string $bot,
+        private readonly TelegramBot $bot,
         private ?array $preCheckoutQuery = null,
         private ?array $successfulPayment = null,
         private ?TelegramPaymentStatus $status = TelegramPaymentStatus::REQUEST_SENT,
@@ -77,7 +77,7 @@ class TelegramPayment
         return $this->payload;
     }
 
-    public function getBot(): string
+    public function getBot(): TelegramBot
     {
         return $this->bot;
     }
@@ -118,7 +118,7 @@ class TelegramPayment
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTimeInterface
+    public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }

@@ -17,7 +17,7 @@
         <many-to-one field="messengerUser" target-entity="App\Entity\Messenger\MessengerUser"/>
         <field name="chatId" column="chat_id" type="bigint"/>
         <field name="class" column="class" length="255"/>
-        <field name="bot" column="bot" length="32"/>
+        <many-to-one field="bot" target-entity="App\Entity\Telegram\TelegramBot"/>
         <field name="isActive" column="is_active" type="boolean"/>
         <field name="state" column="state" type="json" nullable="true"/>
         <field name="createdAt" column="created_at" type="datetime_immutable"/>

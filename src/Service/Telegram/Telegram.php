@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Service\Telegram;
 
 use App\Entity\Messenger\MessengerUser;
+use App\Entity\Telegram\TelegramBot;
 use App\Entity\Telegram\TelegramOptions;
-use App\Enum\Telegram\TelegramGroup;
 use App\Exception\Telegram\TelegramException;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Entities\Update;
@@ -45,7 +45,7 @@ class Telegram
     private ?MessengerUser $messengerUser;
 
     public function __construct(
-        private readonly TelegramGroup $group,
+        private readonly TelegramBot $bot,
         private readonly TelegramOptions $options,
         private readonly TelegramClientRegistry $clientRegistry,
         private readonly TelegramRequestChecker $requestChecker,
@@ -55,10 +55,9 @@ class Telegram
         $this->update = null;
         $this->messengerUser = null;
     }
-
-    public function getGroup(): TelegramGroup
+    public function getBot(): TelegramBot
     {
-        return $this->group;
+        return $this->bot;
     }
 
     public function getOptions(): TelegramOptions
@@ -142,7 +141,7 @@ class Telegram
                         throw new InnerTelegramException('Telegram returned an invalid response!');
                     }
 
-                    $response = new ServerResponse($response, $this->getOptions()->getUsername());
+                    $response = new ServerResponse($response, $this->getBot()->getUsername());
 
                     if (!$response->isOk() && $response->getErrorCode() === 401 && $response->getDescription() === 'Unauthorized') {
                         throw new InvalidBotTokenException();
@@ -161,7 +160,7 @@ class Telegram
             $message = sprintf(
                 'Failed to %s for "%s" telegram',
                 strtolower(implode(' ', preg_split('/(?=[A-Z])/', $name))),
-                $this->getGroup()->name,
+                $this->getBot()->getGroup()->name,
             );
 
             throw new TelegramException($message, 0, $exception);
@@ -170,6 +169,6 @@ class Telegram
 
     private function getClient(): TelegramClient
     {
-        return $this->clientRegistry->getTelegramClient($this->getOptions());
+        return $this->clientRegistry->getTelegramClient($this->getBot());
     }
 }

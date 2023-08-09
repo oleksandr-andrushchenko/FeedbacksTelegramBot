@@ -103,7 +103,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
         $options = $this->feedbackSearchCreator->getOptions();
 
         $tg->replyView(TelegramView::SEARCH, [
-            'accept_payments' => $tg->getTelegram()->getOptions()->acceptPayments(),
+            'accept_payments' => $tg->getTelegram()->getBot()->acceptPayments(),
             'limits' => [
                 'day' => $options->userPerDayLimit(),
                 'month' => $options->userPerMonthLimit(),
@@ -349,7 +349,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
                 $tg->trans('reply.search.fail.limit_exceeded.main', [
                     'period' => $tg->trans($exception->getPeriodKey()),
                     'limit' => $exception->getLimit(),
-                    'or_buy_premium' => $tg->getTelegram()->getOptions()->acceptPayments()
+                    'or_buy_premium' => $tg->getTelegram()->getBot()->acceptPayments()
                         ? ' ' . $tg->trans('reply.search.fail.limit_exceeded.or_buy_premium', [
                             'premium_command' => $tg->view(TelegramView::COMMAND, [
                                 'name' => 'premium',

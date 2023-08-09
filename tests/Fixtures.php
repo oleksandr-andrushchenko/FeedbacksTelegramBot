@@ -13,6 +13,7 @@ use Closure;
 
 class Fixtures
 {
+    public const BOT_USERNAME_1 = 'any_bot';
     public const INSTAGRAM_USER_ID_1 = 1;
     public const INSTAGRAM_USERNAME_1 = '1dmy.tro2811';
     public const INSTAGRAM_USER_ID_2 = 2;

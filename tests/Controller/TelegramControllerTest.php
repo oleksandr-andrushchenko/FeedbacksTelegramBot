@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
+use App\Entity\Telegram\TelegramBot;
+use App\Tests\DatabaseTestCase;
+use App\Tests\Fixtures;
 use App\Tests\Traits\Telegram\TelegramUpdateHandlerMockProviderTrait;
 use App\Tests\Traits\Telegram\TelegramUpdateFixtureProviderTrait;
 use App\Tests\Traits\WebClientProviderTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Exception;
 
-class TelegramControllerTest extends KernelTestCase
+class TelegramControllerTest extends DatabaseTestCase
 {
     use WebClientProviderTrait;
     use TelegramUpdateHandlerMockProviderTrait;
@@ -18,11 +20,14 @@ class TelegramControllerTest extends KernelTestCase
 
     public function testWebhookSuccess(): void
     {
+        $this->bootFixtures([
+            TelegramBot::class,
+        ]);
         $client = $this->getWebClient();
-        
+
         $this->getTelegramUpdateHandlerMock();
 
-        $client->jsonRequest('POST', '/telegram/webhook/any_bot', $this->getTelegramUpdateFixture()->jsonSerialize());
+        $client->jsonRequest('POST', sprintf('/telegram/webhook/%s', Fixtures::BOT_USERNAME_1), $this->getTelegramUpdateFixture()->jsonSerialize());
 
         $response = $client->getResponse();
 
@@ -32,6 +37,9 @@ class TelegramControllerTest extends KernelTestCase
 
     public function testWebhookFailure(): void
     {
+        $this->bootFixtures([
+            TelegramBot::class,
+        ]);
         $client = $this->getWebClient();
 
         $this->getTelegramUpdateHandlerMock()
@@ -39,7 +47,7 @@ class TelegramControllerTest extends KernelTestCase
             ->willThrowException(new Exception())
         ;
 
-        $client->jsonRequest('POST', '/telegram/webhook/any_bot', $this->getTelegramUpdateFixture()->jsonSerialize());
+        $client->jsonRequest('POST', sprintf('/telegram/webhook/%s', Fixtures::BOT_USERNAME_1), $this->getTelegramUpdateFixture()->jsonSerialize());
 
         $response = $client->getResponse();
 

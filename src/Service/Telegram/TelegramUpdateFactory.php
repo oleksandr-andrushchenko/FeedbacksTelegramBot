@@ -31,7 +31,7 @@ class TelegramUpdateFactory
 
         if (!is_array($data)) {
             $this->logger->debug('Invalid telegram update received, processing aborted', [
-                'name' => $telegram->getGroup()->name,
+                'name' => $telegram->getBot()->getGroup()->name,
                 'input' => $input,
             ]);
 
@@ -39,10 +39,10 @@ class TelegramUpdateFactory
         }
 
         $this->logger->info('Telegram update received', [
-            'name' => $telegram->getGroup()->name,
+            'name' => $telegram->getBot()->getGroup()->name,
             'json' => $input,
         ]);
 
-        return new Update($data, $telegram->getOptions()->getUsername());
+        return new Update($data, $telegram->getBot()->getUsername());
     }
 }

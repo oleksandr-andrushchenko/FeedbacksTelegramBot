@@ -78,7 +78,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         yield new TelegramCommand(self::CREATE, fn () => $this->create($tg), menu: true, key: 'create', beforeConversations: true);
         yield new TelegramCommand(self::SEARCH, fn () => $this->search($tg), menu: true, key: 'search', beforeConversations: true);
 
-        if ($tg->getTelegram()->getOptions()->acceptPayments()) {
+        if ($tg->getTelegram()->getBot()->acceptPayments()) {
             yield new TelegramCommand(self::PREMIUM, fn () => $this->premium($tg), menu: true, key: 'premium', beforeConversations: true);
             yield new TelegramCommand(self::SUBSCRIPTIONS, fn () => $this->subscriptions($tg), menu: true, key: 'subscriptions', beforeConversations: true);
         }
@@ -108,6 +108,9 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         // todo: select currency as separate step on premium
         // todo: create & implement limits display checker (if limits = 0 - do not display)
         // todo: create & implement buy subscription display checker (not accept payments - do not display, has subscriptions - display list button)
+        // todo: there are 2 types of bot should exists: primary and mirrors
+        // todo: mirrors should redirect users to primary bot
+        // todo: each primary bot should have country(and/or locale) and if user is out of this country/locale - propose to go to native bot
 
         yield new FallbackTelegramCommand(fn () => $this->fallback($tg));
         yield new ErrorTelegramCommand(fn (TelegramException $exception) => $this->exception($tg));
@@ -129,7 +132,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
             $messengerUser = $tg->getTelegram()->getMessengerUser();
             $hasActivePremium = $this->subscriptionManager->hasActiveSubscription($messengerUser);
 
-            if ($tg->getTelegram()->getOptions()->acceptPayments() && !$hasActivePremium) {
+            if ($tg->getTelegram()->getBot()->acceptPayments() && !$hasActivePremium) {
                 return $this->premium($tg);
             }
         }

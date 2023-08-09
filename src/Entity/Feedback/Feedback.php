@@ -105,7 +105,7 @@ class Feedback
         return $this->localeCode;
     }
 
-    public function getCreatedAt(): ?DateTimeInterface
+    public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }

@@ -51,37 +51,29 @@
             <parameter key="log_activities">%app.log_activities_telegram_payment_manager%</parameter>
         </parameter>
 
-        <parameter key="app.feedback_telegram_options" type="collection">
-            <parameter key="key">feedbacks</parameter>
-            <parameter key="bots">%env(json:trimQuotes:TELEGRAM_FEEDBACKS_BOTS)%</parameter>
-            <parameter key="admin_id">%app.telegram_admin_id%</parameter>
-            <parameter key="locales" type="collection">
-                <parameter>en</parameter>
-                <parameter>uk</parameter>
-                <parameter>ru</parameter>
-            </parameter>
-            <parameter key="check_updates">%env(bool:TELEGRAM_FEEDBACKS_CHECK_UPDATES)%</parameter>
-            <parameter key="check_requests">%env(bool:TELEGRAM_FEEDBACKS_CHECK_REQUESTS)%</parameter>
-            <parameter key="process_admin_only">%env(bool:TELEGRAM_FEEDBACKS_PROCESS_ADMIN_ONLY)%</parameter>
-            <parameter key="accept_payments">%env(bool:TELEGRAM_FEEDBACKS_ACCEPT_PAYMENTS)%</parameter>
-        </parameter>
-
         <parameter key="app.telegram_options" type="collection">
-            <parameter>%app.feedback_telegram_options%</parameter>
+            <parameter key="feedbacks" type="collection">
+                <parameter key="admin_id">%app.telegram_admin_id%</parameter>
+                <parameter key="locales" type="collection">
+                    <parameter>en</parameter>
+                    <parameter>uk</parameter>
+                    <parameter>ru</parameter>
+                </parameter>
+            </parameter>
         </parameter>
 
         <parameter key="app.feedback_creator_options" type="collection">
             <parameter key="user_target_messenger_required">%env(bool:FEEDBACK_CREATOR_USER_TARGET_MESSENGER_REQUIRED)%</parameter>
-            <parameter key="user_per_day_limit">100</parameter>
-            <parameter key="user_per_month_limit">1000</parameter>
-            <parameter key="user_per_year_limit">10000</parameter>
+            <parameter key="user_per_day_limit">10</parameter>
+            <parameter key="user_per_month_limit">200</parameter>
+            <parameter key="user_per_year_limit">500</parameter>
             <parameter key="log_activities">%app.log_activities_feedback_create%</parameter>
         </parameter>
 
         <parameter key="app.feedback_search_creator_options" type="collection">
-            <parameter key="user_per_day_limit">100</parameter>
-            <parameter key="user_per_month_limit">1000</parameter>
-            <parameter key="user_per_year_limit">10000</parameter>
+            <parameter key="user_per_day_limit">5</parameter>
+            <parameter key="user_per_month_limit">100</parameter>
+            <parameter key="user_per_year_limit">300</parameter>
             <parameter key="log_activities">%app.log_activities_feedback_search%</parameter>
         </parameter>
 

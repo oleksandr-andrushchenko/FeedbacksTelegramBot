@@ -29,7 +29,7 @@ class TelegramWebhookDeleteCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot username')

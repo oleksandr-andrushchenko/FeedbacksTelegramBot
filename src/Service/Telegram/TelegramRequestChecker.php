@@ -66,7 +66,7 @@ class TelegramRequestChecker
      */
     public function checkTelegramRequest(Telegram $telegram, string $method, mixed $data): ?TelegramRequest
     {
-        if (!$telegram->getOptions()->checkRequests()) {
+        if (!$telegram->getBot()->checkRequests()) {
             return null;
         }
 
@@ -124,7 +124,7 @@ class TelegramRequestChecker
             $chatId,
             $inlineMessageId,
             $data,
-            $telegram->getOptions()->getUsername()
+            $telegram->getBot()
         );
         $this->entityManager->persist($request);
 

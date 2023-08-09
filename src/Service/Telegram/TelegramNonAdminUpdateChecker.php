@@ -18,7 +18,7 @@ class TelegramNonAdminUpdateChecker
      */
     public function checkNonAdminUpdate(Telegram $telegram): bool
     {
-        if (!$telegram->getOptions()->processAdminOnly()) {
+        if (!$telegram->getBot()->adminOnly()) {
             return false;
         }
 

@@ -28,7 +28,7 @@ class TelegramWebhookUpdateCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot username')
@@ -53,7 +53,7 @@ class TelegramWebhookUpdateCommand extends Command
             return Command::FAILURE;
         }
 
-        $url = $this->webhookUrlGenerator->generate($telegram->getOptions()->getUsername());
+        $url = $this->webhookUrlGenerator->generate($telegram->getBot()->getUsername());
         $cert = true ? '' : 'any';
 
         $io->success(

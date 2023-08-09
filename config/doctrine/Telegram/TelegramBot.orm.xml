@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Entity\Telegram\TelegramBot"
+            repository-class="App\Repository\Telegram\TelegramBotRepository"
+            table="telegram_bots">
+
+        <id name="id" column="id" type="smallint">
+            <generator/>
+            <options>
+                <option name="unsigned">true</option>
+            </options>
+        </id>
+        <field name="username" column="username" length="32" unique="true"/>
+        <field name="token" column="token" length="46"/>
+        <field name="countryCode" column="country_code" length="2"/>
+        <field name="localeCode" column="locale_code" length="2"/>
+        <field name="group" column="group_name" type="smallint" enum-type="App\Enum\Telegram\TelegramGroup">
+            <options>
+                <option name="unsigned">true</option>
+            </options>
+        </field>
+        <many-to-one field="primaryBot" target-entity="App\Entity\Telegram\TelegramBot"/>
+        <field name="isCheckUpdates" column="is_check_updates" type="boolean">
+            <options>
+                <option name="default">true</option>
+            </options>
+        </field>
+        <field name="isCheckRequests" column="is_check_requests" type="boolean">
+            <options>
+                <option name="default">true</option>
+            </options>
+        </field>
+        <field name="isAcceptPayments" column="is_accept_payments" type="boolean">
+            <options>
+                <option name="default">false</option>
+            </options>
+        </field>
+        <field name="isAdminOnly" column="is_admin_only" type="boolean">
+            <options>
+                <option name="default">true</option>
+            </options>
+        </field>
+        <field name="createdAt" column="created_at" type="datetime_immutable"/>
+    </entity>
+</doctrine-mapping>

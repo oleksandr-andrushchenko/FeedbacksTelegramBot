@@ -14,7 +14,7 @@
             </options>
         </id>
         <field name="data" column="data" type="json"/>
-        <field name="bot" column="bot" length="32"/>
+        <many-to-one field="bot" target-entity="App\Entity\Telegram\TelegramBot"/>
         <field name="createdAt" column="created_at" type="datetime_immutable"/>
     </entity>
 </doctrine-mapping>

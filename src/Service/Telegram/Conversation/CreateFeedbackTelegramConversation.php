@@ -120,7 +120,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         $options = $this->feedbackCreator->getOptions();
 
         $tg->replyView(TelegramView::CREATE, [
-            'accept_payments' => $tg->getTelegram()->getOptions()->acceptPayments(),
+            'accept_payments' => $tg->getTelegram()->getBot()->acceptPayments(),
             'limits' => [
                 'day' => $options->userPerDayLimit(),
                 'month' => $options->userPerMonthLimit(),
@@ -459,7 +459,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
                 $tg->trans('reply.create.fail.limit_exceeded.main', [
                     'period' => $tg->trans($exception->getPeriodKey()),
                     'limit' => $exception->getLimit(),
-                    'or_buy_premium' => $tg->getTelegram()->getOptions()->acceptPayments()
+                    'or_buy_premium' => $tg->getTelegram()->getBot()->acceptPayments()
                         ? ' ' . $tg->trans('reply.create.fail.limit_exceeded.or_buy_premium', [
                             'premium_command' => $tg->view(TelegramView::COMMAND, [
                                 'name' => 'premium',

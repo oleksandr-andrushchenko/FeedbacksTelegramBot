@@ -9,7 +9,7 @@
             <factory service="app.site_contact_options_factory"
                      method="createSiteContactOptions"/>
             <argument>%app.feedback_site_contact_options%</argument>
-            <argument type="service" id="app.feedback_telegram_options"/>
+            <argument>feedbacks</argument>
         </service>
         <service id="app.feedback_creator_options_factory" class="App\Service\Feedback\FeedbackCreatorOptionsFactory"/>
         <service id="app.feedback_creator_options" class="App\Entity\Feedback\FeedbackCreatorOptions">

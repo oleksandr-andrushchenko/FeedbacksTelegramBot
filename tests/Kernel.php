@@ -34,5 +34,6 @@ class Kernel extends BaseKernel implements CompilerPassInterface
         $container->getDefinition('app.telegram_user_provider')->setPublic(true);
         $container->getDefinition('app.telegram_chat_provider')->setPublic(true);
         $container->getDefinition('app.repository.user')->setPublic(true);
+        $container->getDefinition('app.repository.telegram_bot')->setPublic(true);
     }
 }

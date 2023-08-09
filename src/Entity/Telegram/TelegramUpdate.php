@@ -12,7 +12,7 @@ class TelegramUpdate
     public function __construct(
         private readonly int $id,
         private readonly array $data,
-        private readonly string $bot,
+        private readonly TelegramBot $bot,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
     )
     {
@@ -28,12 +28,12 @@ class TelegramUpdate
         return $this->data;
     }
 
-    public function getBot(): string
+    public function getBot(): TelegramBot
     {
         return $this->bot;
     }
 
-    public function getCreatedAt(): ?DateTimeInterface
+    public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
