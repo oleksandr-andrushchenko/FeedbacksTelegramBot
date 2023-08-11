@@ -63,6 +63,6 @@ class CountryProvider
             $countries = array_filter($countries, fn (Country $country) => in_array($locale, $country->getLocales(), true));
         }
 
-        return $countries;
+        return $locale === null ? $countries : array_values($countries);
     }
 }

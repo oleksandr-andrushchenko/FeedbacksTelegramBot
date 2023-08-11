@@ -13,9 +13,9 @@ class User
     public function __construct(
         private ?string $username = null,
         private ?string $name = null,
+        private ?string $countryCode = null,
         private ?string $localeCode = null,
         private ?Rating $rating = null,
-        private ?string $countryCode = null,
         private ?int $phoneNumber = null,
         private ?string $email = null,
         private ?DateTimeInterface $subscriptionExpireAt = null,

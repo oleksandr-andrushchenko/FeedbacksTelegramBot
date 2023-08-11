@@ -42,9 +42,7 @@ class ChooseActionTelegramChatSender
         if ($tg->getTelegram()->getMessengerUser()?->isShowExtendedKeyboard()) {
             $keyboards[] = $this->getMessageButton($tg);
             $keyboards[] = $this->getCountryButton($tg);
-            if ($tg->getCountryCode() !== null) {
-                $keyboards[] = $this->getLocaleButton($tg);
-            }
+            $keyboards[] = $this->getLocaleButton($tg);
             $keyboards[] = $this->getHintsButton($tg);
             $keyboards[] = $this->getPurgeButton($tg);
             $keyboards[] = $this->getRestartButton($tg);

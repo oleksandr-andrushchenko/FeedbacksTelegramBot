@@ -6,7 +6,6 @@ namespace App\Service\Telegram\Chat;
 
 use App\Enum\Telegram\TelegramView;
 use App\Service\Feedback\FeedbackUserSubscriptionManager;
-use App\Service\Intl\CountryProvider;
 use App\Service\Site\SiteUrlGenerator;
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
 use App\Service\Telegram\Conversation\ChooseCountryTelegramConversation;
@@ -16,7 +15,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class StartTelegramCommandHandler
 {
     public function __construct(
-        private readonly CountryProvider $countryProvider,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly SiteUrlGenerator $siteUrlGenerator,
         private readonly FeedbackUserSubscriptionManager $subscriptionManager,
@@ -28,17 +26,11 @@ class StartTelegramCommandHandler
     {
         $this->describe($tg);
 
-        $countries = $this->countryProvider->getCountries($tg->getLocaleCode());
-
-        if (count($countries) === 1) {
-            $country = array_values($countries)[0];
-
-            $tg->getTelegram()->getMessengerUser()?->getUser()->setCountryCode($country->getCode());
-
-            return $this->chooseActionChatSender->sendActions($tg);
+        if ($tg->getCountryCode() === null) {
+            return $tg->startConversation(ChooseCountryTelegramConversation::class)->null();
         }
 
-        return $tg->startConversation(ChooseCountryTelegramConversation::class)->null();
+        return $this->chooseActionChatSender->sendActions($tg);
     }
 
     public function describe(TelegramAwareHelper $tg): void

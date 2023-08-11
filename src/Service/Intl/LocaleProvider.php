@@ -79,6 +79,6 @@ class LocaleProvider
             $locales = array_intersect($locales, $filter);
         }
 
-        return $locales;
+        return $supported === null && $country === null ? $locales : array_values($locales);
     }
 }

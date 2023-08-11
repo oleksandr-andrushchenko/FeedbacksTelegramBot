@@ -16,10 +16,11 @@ class MessengerUser
         private readonly string $identifier,
         private ?string $username = null,
         private ?string $name = null,
+        private ?string $countryCode = null,
         private ?string $localeCode = null,
         private ?User $user = null,
         private bool $isShowHints = true,
-        private bool $isShowExtendedKeyboard = false,
+        private bool $isShowExtendedKeyboard = true,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
         private ?int $id = null,
@@ -81,6 +82,18 @@ class MessengerUser
     public function setUsername(?string $username): self
     {
         $this->username = $username;
+
+        return $this;
+    }
+
+    public function getCountryCode(): ?string
+    {
+        return $this->countryCode;
+    }
+
+    public function setCountryCode(?string $countryCode): self
+    {
+        $this->countryCode = $countryCode;
 
         return $this;
     }

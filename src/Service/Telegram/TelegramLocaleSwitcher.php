@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Telegram;
 
 use App\Entity\Intl\Locale;
+use App\Entity\Messenger\MessengerUser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\LocaleSwitcher;
 
@@ -18,28 +19,33 @@ class TelegramLocaleSwitcher
 
     public function syncLocale(Telegram $telegram, Request $request): void
     {
-        $localeCode = $telegram->getMessengerUser()?->getUser()?->getLocaleCode();
+        $messengerUser = $telegram->getMessengerUser();
 
-        if ($localeCode === null) {
-            $localeCode = $telegram->getMessengerUser()?->getLocaleCode();
+        $localeCode = null;
+
+        if ($messengerUser?->getId() === null) {
+            $localeCode = $telegram->getBot()->getLocaleCode();
         }
 
+        $localeCode ??= $messengerUser?->getLocaleCode();
+        $localeCode ??= $messengerUser?->getUser()?->getLocaleCode();
         $localeCode ??= $this->localeSwitcher->getLocale();
 
+        $messengerUser?->getUser()?->setLocaleCode($localeCode);
         $this->localeSwitcher->setLocale($localeCode);
         $request->setLocale($this->localeSwitcher->getLocale());
     }
 
-    public function switchLocale(TelegramAwareHelper $tg, null|string|Locale $locale): void
+    public function switchLocale(?MessengerUser $messengerUser, null|string|Locale $locale): void
     {
         $localeCode = $locale === null ? null : (is_string($locale) ? $locale : $locale->getCode());
 
-        $tg->getTelegram()->getMessengerUser()->getUser()->setLocaleCode($localeCode);
+        $messengerUser?->getUser()?->setLocaleCode($localeCode);
 
-        if ($tg->getLocaleCode() === null) {
+        if ($localeCode === null) {
             $this->localeSwitcher->reset();;
         } else {
-            $this->localeSwitcher->setLocale($tg->getLocaleCode());
+            $this->localeSwitcher->setLocale($localeCode);
         }
     }
 }

@@ -97,6 +97,7 @@ class Fixtures
             (string) constant(sprintf('App\Tests\Fixtures::INSTAGRAM_USER_ID_%d', $number)),
             constant(sprintf('App\Tests\Fixtures::INSTAGRAM_USERNAME_%d', $number)),
             'Instagram Name',
+            'us',
             'en'
         );
     }
@@ -108,6 +109,7 @@ class Fixtures
             (string) $number,
             sprintf('fb_user_%d', $number),
             sprintf('Facebook %d Name', $number),
+            'us',
             'en'
         );
     }
@@ -119,6 +121,7 @@ class Fixtures
             (string) $number,
             sprintf('reddit_user_%d', $number),
             sprintf('Reddit %d Name', $number),
+            'us',
             'en'
         );
     }
@@ -130,6 +133,7 @@ class Fixtures
             (string) $number,
             sprintf('onlyfans_user_%d', $number),
             sprintf('Onlyfans %d Name', $number),
+            'us',
             'en'
         );
     }
@@ -141,6 +145,7 @@ class Fixtures
             (string) constant(sprintf('App\Tests\Fixtures::TELEGRAM_USER_ID_%d', $number)),
             constant(sprintf('App\Tests\Fixtures::TELEGRAM_USERNAME_%d', $number)),
             'Telegram Name',
+            'us',
             'en'
         );
     }
@@ -152,6 +157,7 @@ class Fixtures
             (string) Fixtures::TIKTOK_USER_ID_1,
             Fixtures::TIKTOK_USERNAME_1,
             'Tiktok Name',
+            'us',
             'en'
         );
     }
@@ -163,6 +169,7 @@ class Fixtures
             (string) Fixtures::TWITTER_USER_ID_1,
             Fixtures::TWITTER_USERNAME_1,
             'Twitter Name',
+            'us',
             'en'
         );
     }
@@ -174,6 +181,7 @@ class Fixtures
             (string) Fixtures::YOUTUBE_USER_ID_1,
             Fixtures::TWITTER_USERNAME_1,
             'Youtube Name',
+            'us',
             'en'
         );
     }
@@ -185,6 +193,7 @@ class Fixtures
             (string) Fixtures::UNKNOWN_USER_ID_1,
             Fixtures::UNKNOWN_USERNAME_1,
             'Unknown Name',
+            'us',
             'en'
         );
     }

@@ -7,6 +7,7 @@ namespace App\Service\Telegram;
 use App\Entity\Messenger\MessengerUser;
 use App\Enum\Messenger\Messenger;
 use App\Object\Messenger\MessengerUserTransfer;
+use App\Service\Intl\CountryProvider;
 use App\Service\Messenger\MessengerUserUpserter;
 use App\Service\User\UserUpserter;
 
@@ -16,6 +17,7 @@ class TelegramMessengerUserUpserter
         private readonly TelegramUserProvider $userProvider,
         private readonly MessengerUserUpserter $messengerUserUpserter,
         private readonly UserUpserter $userUpserter,
+        private readonly CountryProvider $countryProvider,
     )
     {
     }
@@ -27,12 +29,27 @@ class TelegramMessengerUserUpserter
         if ($user === null) {
             $messengerUser = null;
         } else {
+            $countryCode = null;
+            $countries = $this->countryProvider->getCountries($user->getLanguageCode());
+
+            if (count($countries) === 1) {
+                $countryCode = $countries[0]->getCode();
+            } else {
+                foreach ($countries as $country) {
+                    if ($country->getCode() === $telegram->getBot()->getCountryCode()) {
+                        $countryCode = $country->getCode();
+                        break;
+                    }
+                }
+            }
+
             $messengerUserTransfer = new MessengerUserTransfer(
                 Messenger::telegram,
                 (string) $user->getId(),
                 $user->getUsername(),
                 trim($user->getFirstName() . ' ' . $user->getLastName()),
-                $user->getLanguageCode()
+                $countryCode,
+                $telegram->getBot()->getLocaleCode(),
             );
             $messengerUser = $this->messengerUserUpserter->upsertMessengerUser($messengerUserTransfer);
             $this->userUpserter->upsertUserByMessengerUser($messengerUser);

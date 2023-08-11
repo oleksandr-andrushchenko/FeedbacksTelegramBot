@@ -22,16 +22,17 @@
         <field name="identifier" column="identifier"/>
         <field name="username" column="username" nullable="true"/>
 
+        <field name="countryCode" column="country_code" length="5" nullable="true"/>
         <field name="localeCode" column="locale_code" length="5" nullable="true"/>
         <many-to-one field="user" target-entity="App\Entity\User\User"/>
-        <field name="isShowHints" column="is_show_hints">
+        <field name="isShowHints" column="is_show_hints" type="boolean">
             <options>
-                <option name="default">true</option>
+                <option name="default">1</option>
             </options>
         </field>
-        <field name="isShowExtendedKeyboard" column="is_show_extended_keyboard">
+        <field name="isShowExtendedKeyboard" column="is_show_extended_keyboard" type="boolean">
             <options>
-                <option name="default">false</option>
+                <option name="default">1</option>
             </options>
         </field>
         <field name="createdAt" column="created_at" type="datetime_immutable"/>

@@ -322,6 +322,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
                                     $feedback->getSearchTermMessengerUser()->getIdentifier(),
                                     $feedback->getSearchTermMessengerUser()->getUsername(),
                                     $feedback->getSearchTermMessengerUser()->getName(),
+                                    $feedback->getSearchTermMessengerUser()->getCountryCode(),
                                     $feedback->getSearchTermMessengerUser()->getLocaleCode()
                                 )
                             ),

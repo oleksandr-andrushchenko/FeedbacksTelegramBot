@@ -111,6 +111,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         // todo: there are 2 types of bot should exists: primary and mirrors
         // todo: mirrors should redirect users to primary bot
         // todo: each primary bot should have country(and/or locale) and if user is out of this country/locale - propose to go to native bot
+        // todo: log new user activity
 
         yield new FallbackTelegramCommand(fn () => $this->fallback($tg));
         yield new ErrorTelegramCommand(fn (TelegramException $exception) => $this->exception($tg));

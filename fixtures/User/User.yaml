@@ -1,28 +1,28 @@
 App\Entity\User\User:
   user_1:
     __construct:
-      username: 'user_1'
-      name: 'User 1 First Last'
-      localeCode: 'uk'
-      rating: null
+      username: user_1
+      name: User 1 First Last
       countryCode: ua
+      localeCode: uk
+      rating: null
       phoneNumber: null
       email: null
   user_2:
     __construct:
-      username: 'user_2'
-      name: 'User 2 First Last'
-      localeCode: 'uk'
-      rating: null
+      username: user_2
+      name: User 2 First Last
       countryCode: ua
+      localeCode: uk
+      rating: null
       phoneNumber: null
       email: null
   user_3:
     __construct:
-      username: 'user_3'
-      name: 'User 3 First Last'
-      localeCode: 'uk'
-      rating: null
+      username: user_3
+      name: User 3 First Last
       countryCode: ua
+      localeCode: uk
+      rating: null
       phoneNumber: null
       email: null

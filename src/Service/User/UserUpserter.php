@@ -6,14 +6,12 @@ namespace App\Service\User;
 
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\User\User;
-use App\Repository\User\UserRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 
 class UserUpserter
 {
     public function __construct(
-        private readonly UserRepository $userRepository,
         private readonly EntityManagerInterface $entityManager,
     )
     {
@@ -27,6 +25,7 @@ class UserUpserter
             $user = new User(
                 $messengerUser->getUsername(),
                 $messengerUser->getName(),
+                $messengerUser->getCountryCode(),
                 $messengerUser->getLocaleCode()
             );
 
@@ -45,22 +44,12 @@ class UserUpserter
             $user->setName($messengerUser->getName());
         }
 
-        $user->setUpdatedAt(new DateTimeImmutable());
+        if ($user->getCountryCode() === null && $messengerUser->getCountryCode() !== null) {
+            $user->setCountryCode($messengerUser->getCountryCode());
+        }
 
-        return $user;
-    }
-
-    public function upsertUserByName(string $name): User
-    {
-        $user = $this->userRepository->findOneByName($name);
-
-        if ($user === null) {
-            $user = (new User())
-                ->setName($name)
-            ;
-            $this->entityManager->persist($user);
-
-            return $user;
+        if ($user->getLocaleCode() === null && $messengerUser->getLocaleCode() !== null) {
+            $user->setLocaleCode($messengerUser->getLocaleCode());
         }
 
         $user->setUpdatedAt(new DateTimeImmutable());

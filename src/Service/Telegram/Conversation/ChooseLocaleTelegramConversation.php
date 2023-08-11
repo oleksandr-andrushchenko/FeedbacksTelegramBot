@@ -127,7 +127,7 @@ class ChooseLocaleTelegramConversation extends TelegramConversation implements T
             return $this->askGuessLocale($locales, $tg);
         }
 
-        $this->localeSwitcher->switchLocale($tg, $locale);
+        $this->localeSwitcher->switchLocale($tg->getTelegram()->getMessengerUser(), $locale);
 
         $tg->replyOk($tg->trans('reply.locale.ok', [
             'icon' => $this->provider->getLocaleIcon($locale),
@@ -153,7 +153,7 @@ class ChooseLocaleTelegramConversation extends TelegramConversation implements T
     public function gotLocale(TelegramAwareHelper $tg, Conversation $conversation): null
     {
         if ($tg->matchText($this->getAbsentLocaleButton($tg)->getText())) {
-            $this->localeSwitcher->switchLocale($tg, null);
+            $this->localeSwitcher->switchLocale($tg->getTelegram()->getMessengerUser(), null);
 
             $tg->stopConversation($conversation);
 
@@ -170,7 +170,7 @@ class ChooseLocaleTelegramConversation extends TelegramConversation implements T
             return $this->askLocale($tg);
         }
 
-        $this->localeSwitcher->switchLocale($tg, $locale);
+        $this->localeSwitcher->switchLocale($tg->getTelegram()->getMessengerUser(), $locale);
 
         $tg->replyOk($tg->trans('reply.locale.ok', [
             'icon' => $this->provider->getLocaleIcon($locale),

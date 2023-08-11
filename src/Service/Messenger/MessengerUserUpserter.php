@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class MessengerUserUpserter
 {
     public function __construct(
-        private readonly MessengerUserRepository $messengerUserRepository,
+        private readonly MessengerUserRepository $repository,
         private readonly EntityManagerInterface $entityManager,
     )
     {
@@ -21,7 +21,7 @@ class MessengerUserUpserter
 
     public function upsertMessengerUser(MessengerUserTransfer $messengerUserTransfer): MessengerUser
     {
-        $messengerUser = $this->messengerUserRepository->findOneByMessengerAndIdentifier(
+        $messengerUser = $this->repository->findOneByMessengerAndIdentifier(
             $messengerUserTransfer->getMessenger(), $messengerUserTransfer->getId()
         );
 
@@ -31,6 +31,7 @@ class MessengerUserUpserter
                 $messengerUserTransfer->getId(),
                 $messengerUserTransfer->getUsername(),
                 $messengerUserTransfer->getName(),
+                $messengerUserTransfer->getCountryCode(),
                 $messengerUserTransfer->getLocaleCode()
             );
             $this->entityManager->persist($messengerUser);
