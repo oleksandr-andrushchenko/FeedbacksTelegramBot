@@ -13,10 +13,11 @@ docker compose run php php bin/console cache:warmup
 
 #serverless bref:cli --args="doctrine:database:create" --stage=prod
 #serverless bref:cli --args="doctrine:migrations:migrate --no-interaction"
-#serverless bref:cli --args="telegram:webhook:update AnonymousFeedbacksBot"
-#serverless bref:cli --args="telegram:commands:update AnonymousFeedbacksBot"
-#serverless bref:cli --args="telegram:commands:remove AnonymousFeedbacksBot"
-#serverless bref:cli --args="telegram:description:update AnonymousFeedbacksBot"
+#serverless bref:cli --args="telegram:bot:show-all --no-interaction"
+#serverless bref:cli --args="telegram:bot:webhook:update AnonymousFeedbacksBot"
+#serverless bref:cli --args="telegram:bot:commands:update AnonymousFeedbacksBot"
+#serverless bref:cli --args="telegram:bot:commands:remove AnonymousFeedbacksBot"
+#serverless bref:cli --args="telegram:bot:texts:update AnonymousFeedbacksBot"
 
 
 #serverless logs -f web --tail

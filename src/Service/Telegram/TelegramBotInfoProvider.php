@@ -8,16 +8,8 @@ use App\Entity\Telegram\TelegramBot;
 
 class TelegramBotInfoProvider
 {
-    public function __construct(
-        private readonly TelegramRegistry $registry,
-    )
-    {
-    }
-
     public function getTelegramBotInfo(TelegramBot $bot): array
     {
-        $telegram = $this->registry->getTelegram($bot->getUsername());
-
         return [
             'group' => $bot->getGroup()->name,
             'username' => $bot->getUsername(),
@@ -32,8 +24,6 @@ class TelegramBotInfoProvider
             'check_requests' => $bot->checkRequests() ? 'Yes' : 'No',
             'accept_payments' => $bot->acceptPayments() ? 'Yes' : 'No',
             'admin_only' => $bot->adminOnly() ? 'Yes' : 'No',
-            'group_locales' => join(', ', $telegram->getOptions()->getLocaleCodes()),
-            'group_admin_id' => $telegram->getOptions()->getAdminId(),
         ];
     }
 }

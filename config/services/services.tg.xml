@@ -8,9 +8,7 @@
         <service id="app.telegram_bot_remover" class="App\Service\Telegram\TelegramBotRemover" lazy="true">
             <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
-        <service id="app.telegram_bot_info_provider" class="App\Service\Telegram\TelegramBotInfoProvider" lazy="true">
-            <argument type="service" id="app.telegram_registry"/>
-        </service>
+        <service id="app.telegram_bot_info_provider" class="App\Service\Telegram\TelegramBotInfoProvider" lazy="true"/>
         <service id="app.telegram_bot_texts_info_provider" class="App\Service\Telegram\TelegramBotTextsInfoProvider"
                  lazy="true">
             <argument type="service" id="app.telegram_registry"/>
