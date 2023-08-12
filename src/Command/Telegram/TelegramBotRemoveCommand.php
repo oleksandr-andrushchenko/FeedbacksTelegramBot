@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Command\Telegram;
 
-use App\Service\Telegram\Api\TelegramWebhookUpdater;
-use App\Service\Telegram\TelegramRegistry;
-use App\Service\Telegram\TelegramWebhookUrlGenerator;
+use App\Exception\Telegram\TelegramNotFoundException;
+use App\Repository\Telegram\TelegramBotRepository;
+use App\Service\Telegram\TelegramBotRemover;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,12 +15,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 
-class TelegramBotUpdateWebhookCommand extends Command
+class TelegramBotRemoveCommand extends Command
 {
     public function __construct(
-        private readonly TelegramRegistry $registry,
-        private readonly TelegramWebhookUpdater $updater,
-        private readonly TelegramWebhookUrlGenerator $webhookUrlGenerator,
+        private readonly TelegramBotRepository $repository,
+        private readonly TelegramBotRemover $remover,
+        private readonly EntityManagerInterface $entityManager,
     )
     {
         parent::__construct();
@@ -32,7 +33,7 @@ class TelegramBotUpdateWebhookCommand extends Command
     {
         $this
             ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot username')
-            ->setDescription('Update telegram bot webhook')
+            ->setDescription('Remove telegram bot')
         ;
     }
 
@@ -44,25 +45,23 @@ class TelegramBotUpdateWebhookCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $telegram = $this->registry->getTelegram($input->getArgument('name'));
+            $username = $input->getArgument('name');
+            $bot = $this->repository->findOneByUsername($username);
 
-            $this->updater->updateTelegramWebhook($telegram);
+            if ($bot === null) {
+                throw new TelegramNotFoundException($username);
+            }
+
+            $this->remover->removeTelegramBot($bot);
+            $this->entityManager->flush();
         } catch (Throwable $exception) {
             $io->error($exception->getMessage());
 
             return Command::FAILURE;
         }
 
-        $url = $this->webhookUrlGenerator->generate($telegram->getBot()->getUsername());
-        $cert = true ? '' : 'any';
-
-        $io->success(
-            sprintf(
-                'Webhook url "%s" has been installed%s',
-                $url,
-                empty($cert) ? '' : sprintf(' with "%s" certificate', $cert)
-            )
-        );
+        $io->newLine();
+        $io->success('Telegram bot has been removed');
 
         return Command::SUCCESS;
     }

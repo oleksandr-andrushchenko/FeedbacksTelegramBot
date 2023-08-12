@@ -44,6 +44,21 @@
                 <option name="default">1</option>
             </options>
         </field>
+        <field name="isTextsSet" column="is_texts_set" type="boolean">
+            <options>
+                <option name="default">0</option>
+            </options>
+        </field>
+        <field name="isWebhookSet" column="is_webhook_set" type="boolean">
+            <options>
+                <option name="default">0</option>
+            </options>
+        </field>
+        <field name="isCommandsSet" column="is_commands_set" type="boolean">
+            <options>
+                <option name="default">0</option>
+            </options>
+        </field>
         <field name="createdAt" column="created_at" type="datetime_immutable"/>
     </entity>
 </doctrine-mapping>

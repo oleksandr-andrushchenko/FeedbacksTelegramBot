@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Command\Telegram;
 
-use App\Service\Telegram\Api\TelegramCommandsRemover;
+use App\Exception\Telegram\TelegramNotFoundException;
+use App\Repository\Telegram\TelegramBotRepository;
+use App\Service\Telegram\Api\TelegramCommandsUpdater;
 use App\Service\Telegram\TelegramRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,11 +16,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 
-class TelegramBotRemoveCommandsCommand extends Command
+class TelegramBotCommandsUpdateCommand extends Command
 {
     public function __construct(
+        private readonly TelegramBotRepository $repository,
         private readonly TelegramRegistry $registry,
-        private readonly TelegramCommandsRemover $remover,
+        private readonly TelegramCommandsUpdater $updater,
+        private readonly EntityManagerInterface $entityManager,
     )
     {
         parent::__construct();
@@ -30,7 +35,7 @@ class TelegramBotRemoveCommandsCommand extends Command
     {
         $this
             ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot username')
-            ->setDescription('Remove telegram bot commands')
+            ->setDescription('Update telegram bot commands')
         ;
     }
 
@@ -42,9 +47,18 @@ class TelegramBotRemoveCommandsCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $telegram = $this->registry->getTelegram($input->getArgument('name'));
+            $username = $input->getArgument('name');
+            $bot = $this->repository->findOneByUsername($username);
 
-            $this->remover->removeTelegramCommands($telegram);
+            if ($bot === null) {
+                throw new TelegramNotFoundException($username);
+            }
+            $telegram = $this->registry->getTelegram($bot->getUsername());
+
+            $this->updater->updateTelegramCommands($telegram);
+            $bot->setIsCommandsSet(true);
+
+            $this->entityManager->flush();
         } catch (Throwable $exception) {
             $io->error($exception->getMessage());
 
@@ -52,7 +66,7 @@ class TelegramBotRemoveCommandsCommand extends Command
         }
 
         $row = [];
-        $myCommands = $this->remover->getMyCommands();
+        $myCommands = $this->updater->getMyCommands();
 
         foreach ($myCommands as $myCommandsItem) {
             $value = sprintf('%s + %s', $myCommandsItem->getLocaleCode(), $myCommandsItem->getScope()->toJson());
@@ -77,7 +91,7 @@ class TelegramBotRemoveCommandsCommand extends Command
         ;
 
         $io->newLine();
-        $io->success('Commands have been deleted');
+        $io->success('Commands have been updated');
 
         return Command::SUCCESS;
     }

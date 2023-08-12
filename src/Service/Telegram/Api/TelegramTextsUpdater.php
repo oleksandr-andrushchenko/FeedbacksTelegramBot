@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram\Api;
 
+use App\Entity\Telegram\TelegramBot;
 use App\Service\Site\SiteUrlGenerator;
-use App\Service\Telegram\Telegram;
+use App\Service\Telegram\TelegramRegistry;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -13,6 +14,7 @@ class TelegramTextsUpdater
 {
     public function __construct(
         private string $stage,
+        private readonly TelegramRegistry $registry,
         private readonly TranslatorInterface $translator,
         private readonly SiteUrlGenerator $siteUrlGenerator,
         private ?array $myNames = null,
@@ -22,12 +24,9 @@ class TelegramTextsUpdater
     {
     }
 
-    /**
-     * @param Telegram $telegram
-     * @return void
-     */
-    public function updateTelegramDescriptions(Telegram $telegram): void
+    public function updateTelegramDescriptions(TelegramBot $bot): void
     {
+        $telegram = $this->registry->getTelegram($bot->getUsername());
         $this->myNames = [];
         $this->myDescriptions = [];
         $this->myShortDescriptions = [];

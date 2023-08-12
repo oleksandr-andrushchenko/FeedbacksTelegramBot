@@ -21,6 +21,9 @@ class TelegramBot
         private bool $isCheckRequests = true,
         private bool $isAcceptPayments = false,
         private bool $isAdminOnly = true,
+        private bool $isTextsSet = false,
+        private bool $isWebhookSet = false,
+        private bool $isCommandsSet = false,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?int $id = null,
     )
@@ -106,6 +109,42 @@ class TelegramBot
     public function setIsAdminOnly(bool $isAdminOnly): self
     {
         $this->isAdminOnly = $isAdminOnly;
+
+        return $this;
+    }
+
+    public function textsSet(): bool
+    {
+        return $this->isTextsSet;
+    }
+
+    public function setIsTextsSet(bool $isTextsSet): self
+    {
+        $this->isTextsSet = $isTextsSet;
+
+        return $this;
+    }
+
+    public function webhookSet(): bool
+    {
+        return $this->isWebhookSet;
+    }
+
+    public function setIsWebhookSet(bool $isWebhookSet): self
+    {
+        $this->isWebhookSet = $isWebhookSet;
+
+        return $this;
+    }
+
+    public function commandsSet(): bool
+    {
+        return $this->isCommandsSet;
+    }
+
+    public function setIsCommandsSet(bool $isCommandsSet): self
+    {
+        $this->isCommandsSet = $isCommandsSet;
 
         return $this;
     }

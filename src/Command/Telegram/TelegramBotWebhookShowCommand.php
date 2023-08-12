@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Command\Telegram;
 
-use App\Service\Telegram\Api\TelegramWebhookInfoProvider;
-use App\Service\Telegram\TelegramRegistry;
+use App\Exception\Telegram\TelegramNotFoundException;
+use App\Repository\Telegram\TelegramBotRepository;
+use App\Service\Telegram\TelegramWebhookInfoProvider;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,11 +14,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 
-class TelegramBotShowWebhookCommand extends Command
+class TelegramBotWebhookShowCommand extends Command
 {
     public function __construct(
-        private readonly TelegramRegistry $registry,
-        private readonly TelegramWebhookInfoProvider $provider,
+        private readonly TelegramBotRepository $repository,
+        private readonly TelegramWebhookInfoProvider $infoProvider,
     )
     {
         parent::__construct();
@@ -42,26 +43,19 @@ class TelegramBotShowWebhookCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $telegram = $this->registry->getTelegram($input->getArgument('name'));
+            $username = $input->getArgument('name');
+            $bot = $this->repository->findOneByUsername($username);
 
-            $webhookInfo = $this->provider->getTelegramWebhookInfo($telegram);
+            if ($bot === null) {
+                throw new TelegramNotFoundException($username);
+            }
+
+            $row = $this->infoProvider->getTelegramWebhookInfo($bot);
         } catch (Throwable $exception) {
             $io->error($exception->getMessage());
 
             return Command::FAILURE;
         }
-
-        $row = [
-            'url' => $webhookInfo->getUrl(),
-            'custom_certificate' => $webhookInfo->getHasCustomCertificate(),
-            'pending_update_count' => $webhookInfo->getPendingUpdateCount(),
-            'ip_address' => $webhookInfo->getIpAddress(),
-            'max_connections' => $webhookInfo->getMaxConnections(),
-            'allowed_updates' => $webhookInfo->getAllowedUpdates(),
-            'last_error_date' => $webhookInfo->getLastErrorDate(),
-            'last_error_message' => $webhookInfo->getLastErrorMessage(),
-            'last_synchronization_error_date' => $webhookInfo->getLastSynchronizationErrorDate(),
-        ];
 
         $io->createTable()
             ->setHeaders(array_keys($row))
@@ -71,7 +65,7 @@ class TelegramBotShowWebhookCommand extends Command
         ;
 
         $io->newLine();
-        $io->success('Webhook info has been retrieved');
+        $io->success('Telegram bot webhook info has been shown');
 
         return Command::SUCCESS;
     }

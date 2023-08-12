@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Command\Telegram;
 
+use App\Exception\Telegram\TelegramNotFoundException;
+use App\Repository\Telegram\TelegramBotRepository;
 use App\Service\Telegram\Api\TelegramTextsUpdater;
-use App\Service\Telegram\TelegramRegistry;
+use App\Service\Telegram\TelegramBotTextsInfoProvider;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,11 +16,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 
-class TelegramBotUpdateTextsCommand extends Command
+class TelegramBotTextsUpdateCommand extends Command
 {
     public function __construct(
-        private readonly TelegramRegistry $registry,
+        private readonly TelegramBotRepository $repository,
         private readonly TelegramTextsUpdater $updater,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly TelegramBotTextsInfoProvider $infoProvider,
     )
     {
         parent::__construct();
@@ -42,33 +47,34 @@ class TelegramBotUpdateTextsCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $telegram = $this->registry->getTelegram($input->getArgument('name'));
+            $username = $input->getArgument('name');
+            $bot = $this->repository->findOneByUsername($username);
 
-            $this->updater->updateTelegramDescriptions($telegram);
+            if ($bot === null) {
+                throw new TelegramNotFoundException($username);
+            }
+
+            $this->updater->updateTelegramDescriptions($bot);
+            $bot->setIsTextsSet(true);
+
+            $this->entityManager->flush();
         } catch (Throwable $exception) {
             $io->error($exception->getMessage());
 
             return Command::FAILURE;
         }
 
-        $table = [];
-        $row = [];
-        foreach ($this->updater->getMyNames() as $localeCode => $name) {
-            $row['name_' . $localeCode] = $name;
-            $row['short_description_' . $localeCode] = $this->updater->getMyShortDescriptions()[$localeCode];
-            $row['description_' . $localeCode] = $this->updater->getMyDescriptions()[$localeCode];
-        }
-        $table[] = $row;
+        $row = $this->infoProvider->getTelegramBotTextsInfo($bot);
 
         $io->createTable()
-            ->setHeaders(array_keys($table[0]))
-            ->setRows($table)
+            ->setHeaders(array_keys($row))
+            ->setRows([$row])
             ->setVertical()
             ->render()
         ;
 
         $io->newLine();
-        $io->success('Descriptions have been updated');
+        $io->success('Telegram bot texts have been updated');
 
         return Command::SUCCESS;
     }

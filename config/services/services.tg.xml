@@ -5,9 +5,15 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="app.telegram_bot_remover" class="App\Service\Telegram\TelegramBotRemover" lazy="true">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
         <service id="app.telegram_bot_info_provider" class="App\Service\Telegram\TelegramBotInfoProvider" lazy="true">
             <argument type="service" id="app.telegram_registry"/>
-            <argument type="service" id="app.telegram_webhook_info_provider"/>
+        </service>
+        <service id="app.telegram_bot_texts_info_provider" class="App\Service\Telegram\TelegramBotTextsInfoProvider"
+                 lazy="true">
+            <argument type="service" id="app.telegram_registry"/>
         </service>
         <service id="app.telegram_bot_creator" class="App\Service\Telegram\TelegramBotCreator" lazy="true">
             <argument type="service" id="app.repository.telegram_bot"/>
@@ -64,8 +70,10 @@
             <argument type="service" id="app.telegram_webhook_url_generator"/>
         </service>
         <service id="app.telegram_webhook_remover" class="App\Service\Telegram\Api\TelegramWebhookRemover" lazy="true"/>
-        <service id="app.telegram_webhook_info_provider" class="App\Service\Telegram\Api\TelegramWebhookInfoProvider"
-                 lazy="true"/>
+        <service id="app.telegram_webhook_info_provider" class="App\Service\Telegram\TelegramWebhookInfoProvider"
+                 lazy="true">
+            <argument type="service" id="app.telegram_registry"/>
+        </service>
         <service id="app.telegram_user_provider" class="App\Service\Telegram\TelegramUserProvider" lazy="true"/>
         <service id="app.telegram_chat_provider" class="App\Service\Telegram\TelegramChatProvider" lazy="true"/>
         <service id="app.telegram_new_messenger_user_country_provider"
@@ -127,6 +135,7 @@
         <service id="app.telegram_texts_updater" class="App\Service\Telegram\Api\TelegramTextsUpdater"
                  lazy="true">
             <argument>%app.stage%</argument>
+            <argument type="service" id="app.telegram_registry"/>
             <argument type="service" id="app.translator"/>
             <argument type="service" id="app.site_url_generator"/>
         </service>

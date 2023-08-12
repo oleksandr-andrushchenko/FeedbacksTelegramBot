@@ -7,13 +7,12 @@ namespace App\Command\Telegram;
 use App\Repository\Telegram\TelegramBotRepository;
 use App\Service\Telegram\TelegramBotInfoProvider;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 
-class TelegramBotInfoCommand extends Command
+class TelegramBotShowAllCommand extends Command
 {
     public function __construct(
         private readonly TelegramBotRepository $repository,
@@ -29,8 +28,7 @@ class TelegramBotInfoCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot username')
-            ->setDescription('Show telegram bot info')
+            ->setDescription('Show all telegram bots info')
         ;
     }
 
@@ -42,24 +40,35 @@ class TelegramBotInfoCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $bot = $this->repository->findOneByUsername($input->getArgument('name'));
+            $bots = $this->repository->findAll();
 
-            $row = $this->infoProvider->getTelegramBotInfo($bot);
+            $table = [];
+            foreach ($bots as $index => $bot) {
+                $table[] = array_merge(
+                    [
+                        'index' => $index + 1,
+                    ],
+                    $this->infoProvider->getTelegramBotInfo($bot)
+                );
+            }
         } catch (Throwable $exception) {
             $io->error($exception->getMessage());
 
             return Command::FAILURE;
         }
 
-        $io->createTable()
-            ->setHeaders(array_keys($row))
-            ->setRows([$row])
-            ->setVertical()
-            ->render()
-        ;
+        if (count($table) === 0) {
+            $io->success('No telegram bots have been found');
+        } else {
+            $io->createTable()
+                ->setHeaders(array_keys($table[0]))
+                ->setRows($table)
+                ->render()
+            ;
 
-        $io->newLine();
-        $io->success('Telegram bot info has been retrieved');
+            $io->newLine();
+            $io->success('Telegram bots info have been shown');
+        }
 
         return Command::SUCCESS;
     }

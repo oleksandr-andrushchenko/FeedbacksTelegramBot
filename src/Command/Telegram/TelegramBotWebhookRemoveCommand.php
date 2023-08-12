@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Command\Telegram;
 
-use App\Service\Telegram\Api\TelegramWebhookInfoProvider;
+use App\Exception\Telegram\TelegramNotFoundException;
+use App\Repository\Telegram\TelegramBotRepository;
 use App\Service\Telegram\Api\TelegramWebhookRemover;
 use App\Service\Telegram\TelegramRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,12 +17,13 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 
-class TelegramBotRemoveWebhookCommand extends Command
+class TelegramBotWebhookRemoveCommand extends Command
 {
     public function __construct(
+        private readonly TelegramBotRepository $repository,
         private readonly TelegramRegistry $registry,
-        private readonly TelegramWebhookInfoProvider $infoProvider,
         private readonly TelegramWebhookRemover $remover,
+        private readonly EntityManagerInterface $entityManager,
     )
     {
         parent::__construct();
@@ -45,36 +48,52 @@ class TelegramBotRemoveWebhookCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $telegram = $this->registry->getTelegram($input->getArgument('name'));
+            $username = $input->getArgument('name');
+            $bot = $this->repository->findOneByUsername($username);
 
-            $url = $this->infoProvider->getTelegramWebhookInfo($telegram)->getUrl();
-
-            if ($url === '') {
-                $io->info('No webhook found for delete');
-
-                return Command::SUCCESS;
+            if ($bot === null) {
+                throw new TelegramNotFoundException($username);
             }
 
-            $confirmed = $io->askQuestion(
-                new ConfirmationQuestion(sprintf('Are you sure you want to delete "%s" webhook?', $url), false)
+            if (!$bot->webhookSet()) {
+                $io->warning('No webhook found for remove');
+
+                $confirmed = $io->askQuestion(
+                    new ConfirmationQuestion(
+                        sprintf('Continue removing "%s" telegram bot webhook anyway?', $bot->getUsername()),
+                        true
+                    )
+                );
+            }
+
+            $confirmed = $confirmed ?? $io->askQuestion(
+                new ConfirmationQuestion(
+                    sprintf('Are you sure you want to remove "%s" telegram bot webhook?', $bot->getUsername()),
+                    true
+                )
             );
 
             if (!$confirmed) {
                 $io->info(
-                    sprintf('"%s" webhook deletion has been cancelled', $url)
+                    sprintf('"%s" telegram bot webhook removing has been cancelled', $bot->getUsername())
                 );
 
                 return Command::SUCCESS;
             }
 
+            $telegram = $this->registry->getTelegram($bot->getUsername());
+
             $this->remover->removeTelegramWebhook($telegram);
+            $bot->setIsWebhookSet(false);
+
+            $this->entityManager->flush();
         } catch (Throwable $exception) {
             $io->error($exception->getMessage());
 
             return Command::FAILURE;
         }
 
-        $io->success('Webhook has been deleted');
+        $io->success('Telegram bot webhook has been removed');
 
         return Command::SUCCESS;
     }

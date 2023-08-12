@@ -5,49 +5,64 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.command.telegram_update_webhook" class="App\Command\Telegram\TelegramBotUpdateWebhookCommand"
+        <service id="app.command.telegram_webhook_update" class="App\Command\Telegram\TelegramBotWebhookUpdateCommand"
                  lazy="true">
-            <argument type="service" id="app.telegram_registry"/>
+            <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_webhook_updater"/>
-            <argument type="service" id="app.telegram_webhook_url_generator"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.telegram_webhook_info_provider"/>
 
             <tag name="console.command" command="telegram:bot:webhook:update"/>
         </service>
-        <service id="app.command.telegram_bot_remove_webhook"
-                 class="App\Command\Telegram\TelegramBotRemoveWebhookCommand" lazy="true">
+        <service id="app.command.telegram_bot_webhook_remove"
+                 class="App\Command\Telegram\TelegramBotWebhookRemoveCommand" lazy="true">
+            <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_registry"/>
-            <argument type="service" id="app.telegram_webhook_info_provider"/>
             <argument type="service" id="app.telegram_webhook_remover"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
 
             <tag name="console.command" command="telegram:bot:webhook:remove"/>
         </service>
-        <service id="app.command.telegram_show_webhook" class="App\Command\Telegram\TelegramBotShowWebhookCommand"
+        <service id="app.command.telegram_webhook_show" class="App\Command\Telegram\TelegramBotWebhookShowCommand"
                  lazy="true">
-            <argument type="service" id="app.telegram_registry"/>
+            <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_webhook_info_provider"/>
 
             <tag name="console.command" command="telegram:bot:webhook:show"/>
         </service>
-        <service id="app.command.telegram_bot_update_commands"
-                 class="App\Command\Telegram\TelegramBotUpdateCommandsCommand" lazy="true">
+        <service id="app.command.telegram_bot_commands_update"
+                 class="App\Command\Telegram\TelegramBotCommandsUpdateCommand" lazy="true">
+            <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_registry"/>
             <argument type="service" id="app.telegram_commands_updater"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
 
-            <tag name="console.command" command="telegram:bot:update-commands"/>
+            <tag name="console.command" command="telegram:bot:commands:update"/>
         </service>
-        <service id="app.command.telegram_bot_remove_commands"
-                 class="App\Command\Telegram\TelegramBotRemoveCommandsCommand" lazy="true">
+        <service id="app.command.telegram_bot_commands_remove"
+                 class="App\Command\Telegram\TelegramBotCommandsRemoveCommand" lazy="true">
+            <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_registry"/>
             <argument type="service" id="app.telegram_commands_remover"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
 
-            <tag name="console.command" command="telegram:bot:remove-commands"/>
+            <tag name="console.command" command="telegram:bot:commands:remove"/>
         </service>
-        <service id="app.command.telegram_descriptions_update"
-                 class="App\Command\Telegram\TelegramBotUpdateTextsCommand" lazy="true">
-            <argument type="service" id="app.telegram_registry"/>
+        <service id="app.command.telegram_bot_texts_update"
+                 class="App\Command\Telegram\TelegramBotTextsUpdateCommand" lazy="true">
+            <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_texts_updater"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.telegram_bot_texts_info_provider"/>
 
-            <tag name="console.command" command="telegram:bot:update-texts"/>
+            <tag name="console.command" command="telegram:bot:texts:update"/>
+        </service>
+        <service id="app.command.telegram_bot_texts_show"
+                 class="App\Command\Telegram\TelegramBotTextsShowCommand" lazy="true">
+            <argument type="service" id="app.repository.telegram_bot"/>
+            <argument type="service" id="app.telegram_bot_texts_info_provider"/>
+
+            <tag name="console.command" command="telegram:bot:texts:show"/>
         </service>
         <service id="app.command.telegram_bot_create" class="App\Command\Telegram\TelegramBotCreateCommand" lazy="true">
             <argument type="service" id="app.telegram_bot_creator"/>
@@ -56,12 +71,20 @@
 
             <tag name="console.command" command="telegram:bot:create"/>
         </service>
-        <service id="app.command.telegram_bot_list_info" class="App\Command\Telegram\TelegramBotListInfoCommand"
+        <service id="app.command.telegram_bot_show_all" class="App\Command\Telegram\TelegramBotShowAllCommand"
                  lazy="true">
             <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_bot_info_provider"/>
 
             <tag name="console.command" command="telegram:bot:show-all"/>
+        </service>
+        <service id="app.command.telegram_bot_remove" class="App\Command\Telegram\TelegramBotRemoveCommand"
+                 lazy="true">
+            <argument type="service" id="app.repository.telegram_bot"/>
+            <argument type="service" id="app.telegram_bot_remover"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+
+            <tag name="console.command" command="telegram:bot:remove"/>
         </service>
         <service id="app.command.telegram_bot_toggle_admin_only"
                  class="App\Command\Telegram\TelegramBotToggleAdminOnlyCommand" lazy="true">
@@ -91,7 +114,7 @@
 
             <tag name="console.command" command="telegram:bot:toggle-accept-payments"/>
         </service>
-        <service id="app.command.telegram_bot_info" class="App\Command\Telegram\TelegramBotInfoCommand" lazy="true">
+        <service id="app.command.telegram_bot_info" class="App\Command\Telegram\TelegramBotShowCommand" lazy="true">
             <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_bot_info_provider"/>
 

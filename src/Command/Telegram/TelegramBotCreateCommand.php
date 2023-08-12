@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Command\Telegram;
 
 use App\Enum\Telegram\TelegramGroup;
+use App\Exception\Telegram\TelegramGroupNotFoundException;
 use App\Object\Telegram\TelegramBotTransfer;
 use App\Service\Telegram\TelegramBotCreator;
 use App\Service\Telegram\TelegramBotInfoProvider;
@@ -51,12 +52,19 @@ class TelegramBotCreateCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
+            $groupName = $input->getArgument('group');
+            $group = TelegramGroup::fromName($groupName);
+
+            if ($group === null) {
+                throw new TelegramGroupNotFoundException($groupName);
+            }
+
             $botTransfer = new TelegramBotTransfer(
                 $input->getArgument('username'),
                 $input->getArgument('token'),
                 $input->getArgument('country'),
                 $input->getArgument('locale'),
-                TelegramGroup::fromName($input->getArgument('group')),
+                $group,
                 $input->getArgument('primary-bot-username'),
             );
 

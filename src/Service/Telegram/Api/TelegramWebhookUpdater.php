@@ -4,24 +4,23 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram\Api;
 
-use App\Service\Telegram\Telegram;
+use App\Entity\Telegram\TelegramBot;
+use App\Service\Telegram\TelegramRegistry;
 use App\Service\Telegram\TelegramWebhookUrlGenerator;
 use InvalidArgumentException;
 
 class TelegramWebhookUpdater
 {
     public function __construct(
+        private readonly TelegramRegistry $registry,
         private readonly TelegramWebhookUrlGenerator $webhookUrlGenerator,
     )
     {
     }
 
-    /**
-     * @param Telegram $telegram
-     * @return void
-     */
-    public function updateTelegramWebhook(Telegram $telegram): void
+    public function updateTelegramWebhook(TelegramBot $bot): void
     {
+        $telegram = $this->registry->getTelegram($bot->getUsername());
         $url = $this->webhookUrlGenerator->generate($telegram->getBot()->getUsername());
         $cert = true ? '' : 'any';
 
