@@ -65,6 +65,7 @@
             <argument type="service" id="app.telegram_channel_registry"/>
         </service>
         <service id="app.telegram_webhook_updater" class="App\Service\Telegram\Api\TelegramWebhookUpdater" lazy="true">
+            <argument type="service" id="app.telegram_registry"/>
             <argument type="service" id="app.telegram_webhook_url_generator"/>
         </service>
         <service id="app.telegram_webhook_remover" class="App\Service\Telegram\Api\TelegramWebhookRemover" lazy="true"/>
