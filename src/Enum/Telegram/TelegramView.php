@@ -9,22 +9,14 @@ enum TelegramView: string
     case COMMAND = 'command';
     case FEEDBACK = 'feedback';
     case SUBSCRIPTION = 'subscription';
-    case PREMIUM = 'premium';
-    case START = 'start';
-    case CREATE = 'create';
-    case SEARCH = 'search';
-    case COUNTRY = 'country';
-    case LOCALE = 'locale';
-    case PURGE = 'purge';
-    case MESSAGE = 'message';
-    case RESTART = 'restart';
-
-    public function view(string $locale = null): string
-    {
-        if ($locale === null) {
-            return 'tg.' . $this->value . '.html.twig';
-        }
-
-        return 'tg.' . $this->value . '.' . $locale . '.html.twig';
-    }
+    case DESCRIBE_SUBSCRIBE = 'describe_subscribe';
+    case DESCRIBE_START = 'describe_start';
+    case DESCRIBE_CREATE = 'describe_create';
+    case DESCRIBE_SEARCH = 'describe_search';
+    case DESCRIBE_COUNTRY = 'describe_country';
+    case DESCRIBE_LOCALE = 'describe_locale';
+    case DESCRIBE_PURGE = 'describe_purge';
+    case DESCRIBE_CONTACT = 'describe_contact';
+    case QUERY_CONTACT = 'query_contact';
+    case DESCRIBE_RESTART = 'describe_restart';
 }

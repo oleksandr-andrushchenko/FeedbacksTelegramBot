@@ -48,7 +48,7 @@ class TelegramConversationManager
             return null;
         }
 
-        if ($conversation->isActive()) {
+        if ($conversation->active()) {
             return $conversation;
         }
 

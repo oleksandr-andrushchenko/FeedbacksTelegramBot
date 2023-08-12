@@ -27,20 +27,15 @@ class ChooseActionTelegramChatSender
         $keyboards[] = $this->getSearchButton($tg);
 
         $messengerUser = $tg->getTelegram()->getMessengerUser();
-        $hasActivePremium = $this->subscriptionManager->hasActiveSubscription($messengerUser);
-        $showPremium = false;
+        $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($messengerUser);
 
-        if ($tg->getTelegram()->getBot()->acceptPayments() && !$hasActivePremium) {
-            $keyboards[] = $this->getPremiumButton($tg);
-            $showPremium = true;
-        }
-
-        if (!$showPremium && ($hasActivePremium || $this->subscriptionManager->hasSubscription($messengerUser))) {
+        if ($tg->getTelegram()->getBot()->acceptPayments() && !$hasActiveSubscription) {
+            $keyboards[] = $this->getSubscribeButton($tg);
+        } elseif ($this->subscriptionManager->hasSubscription($messengerUser)) {
             $keyboards[] = $this->getSubscriptionsButton($tg);
         }
 
-        if ($tg->getTelegram()->getMessengerUser()?->isShowExtendedKeyboard()) {
-            $keyboards[] = $this->getMessageButton($tg);
+        if ($messengerUser?->showExtendedKeyboard()) {
             $keyboards[] = $this->getCountryButton($tg);
             $keyboards[] = $this->getLocaleButton($tg);
             $keyboards[] = $this->getHintsButton($tg);
@@ -53,12 +48,12 @@ class ChooseActionTelegramChatSender
 
         $keyboards = array_chunk($keyboards, 2);
 
-        return $tg->reply($this->getActionAsk($tg), $tg->keyboard(...$keyboards))->null();
+        return $tg->reply($this->getActionQuery($tg), $tg->keyboard(...$keyboards))->null();
     }
 
-    public static function getActionAsk(TelegramAwareHelper $tg): string
+    public static function getActionQuery(TelegramAwareHelper $tg): string
     {
-        return $tg->trans('ask.action.action');
+        return $tg->trans('query.action');
     }
 
     public static function getCreateButton(TelegramAwareHelper $tg): KeyboardButton
@@ -71,20 +66,20 @@ class ChooseActionTelegramChatSender
         return $tg->button(self::command($tg, 'search'));
     }
 
-    public static function getPremiumButton(TelegramAwareHelper $tg): KeyboardButton
+    public static function getSubscribeButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button(self::command($tg, 'premium'));
+        return $tg->button(self::command($tg, 'subscribe'));
     }
 
     public function getSubscriptionsButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        $hasActivePremium = $this->subscriptionManager->hasActiveSubscription($tg->getTelegram()->getMessengerUser());
+        $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($tg->getTelegram()->getMessengerUser());
         $key = 'subscriptions';
         $domain = sprintf('tg.%s', $tg->getTelegram()->getBot()->getGroup()->name);
 
         return $tg->button(
             join(' ', [
-                $tg->trans(sprintf('icon.%s', $hasActivePremium ? $key : 'premium'), domain: $domain),
+                $tg->trans(sprintf('icon.%s', $hasActiveSubscription ? $key : 'subscribe'), domain: $domain),
                 $tg->trans(sprintf('command.%s', $key), domain: $domain),
             ])
         );
@@ -92,7 +87,7 @@ class ChooseActionTelegramChatSender
 
     public function getCountryButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        $countryCode = $tg->getTelegram()?->getMessengerUser()->getUser()->getCountryCode();
+        $countryCode = $tg->getTelegram()?->getMessengerUser()?->getCountryCode();
         $country = $countryCode === null ? null : $this->countryProvider->getCountry($countryCode);
 
         if ($country === null) {
@@ -130,7 +125,7 @@ class ChooseActionTelegramChatSender
 
     public static function getHintsButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        $isShowHints = $tg->getTelegram()->getMessengerUser()->isShowHints();
+        $isShowHints = $tg->getTelegram()->getMessengerUser()->showHints();
         $domain = sprintf('tg.%s', $tg->getTelegram()->getBot()->getGroup()->name);
 
         return $tg->button(
@@ -146,9 +141,9 @@ class ChooseActionTelegramChatSender
         return $tg->button(self::command($tg, 'purge'));
     }
 
-    public static function getMessageButton(TelegramAwareHelper $tg): KeyboardButton
+    public static function getContactButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button(self::command($tg, 'message'));
+        return $tg->button(self::command($tg, 'contact'));
     }
 
     public static function getRestartButton(TelegramAwareHelper $tg): KeyboardButton

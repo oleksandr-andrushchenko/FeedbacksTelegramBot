@@ -11,7 +11,7 @@ App\Entity\Feedback\Feedback:
       searchTermMessengerUsername: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
       rating: <(\App\Enum\Feedback\Rating::neutral)>
       description: 'neutral'
-      isPremium: false
+      hasActiveSubscription: false
   feedback_23_telegram_instagram_username:
     __construct:
       user: '@user_2'
@@ -24,4 +24,4 @@ App\Entity\Feedback\Feedback:
       searchTermMessengerUsername: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
       rating: <(\App\Enum\Feedback\Rating::extremely_satisfied)>
       description: 'awesome'
-      isPremium: false
+      hasActiveSubscription: false

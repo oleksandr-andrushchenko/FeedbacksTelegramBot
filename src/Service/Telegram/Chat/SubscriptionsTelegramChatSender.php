@@ -23,16 +23,16 @@ class SubscriptionsTelegramChatSender
         $count = count($subscriptions);
 
         if ($count === 0) {
-            return $tg->replyUpset($tg->trans('reply.subscriptions.empty_list'))->null();
+            return $tg->replyUpset($tg->trans('reply.empty_list', domain: 'tg.subscriptions'))->null();
         }
 
-        $tg->reply($tg->trans('reply.subscriptions.title', ['count' => $count]));
+        $tg->reply($tg->trans('reply.title', ['count' => $count], domain: 'tg.subscriptions'));
 
         foreach (array_reverse($subscriptions, true) as $index => $userSubscription) {
-            $tg->replyView(TelegramView::SUBSCRIPTION, [
+            $tg->reply($tg->view(TelegramView::SUBSCRIPTION, [
                 'number' => $index + 1,
                 'subscription' => $userSubscription,
-            ]);
+            ]), parseMode: 'HTML');
         }
 
         return null;

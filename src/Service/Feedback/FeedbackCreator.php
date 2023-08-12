@@ -46,9 +46,9 @@ class FeedbackCreator
         $this->checkSearchTermUser($feedbackTransfer);
 
         $messengerUser = $feedbackTransfer->getMessengerUser();
-        $isPremium = $this->userSubscriptionManager->hasActiveSubscription($messengerUser);
+        $hasActiveSubscription = $this->userSubscriptionManager->hasActiveSubscription($messengerUser);
 
-        if (!$isPremium) {
+        if (!$hasActiveSubscription) {
             $this->checkLimits($feedbackTransfer);
         }
 
@@ -65,9 +65,9 @@ class FeedbackCreator
             $searchTermTransfer->getMessengerUsername(),
             $feedbackTransfer->getRating(),
             $feedbackTransfer->getDescription(),
-            $isPremium,
-            $messengerUser->getUser()?->getCountryCode(),
-            $messengerUser->getUser()?->getLocaleCode()
+            $hasActiveSubscription,
+            $messengerUser?->getCountryCode(),
+            $messengerUser?->getLocaleCode()
         );
         $this->entityManager->persist($feedback);
 

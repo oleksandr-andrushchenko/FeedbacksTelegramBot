@@ -25,7 +25,7 @@ class Feedback
         private readonly ?string $searchTermMessengerUsername,
         private readonly Rating $rating,
         private readonly ?string $description,
-        private readonly bool $isPremium,
+        private readonly bool $hasActiveSubscription,
         private readonly ?string $countryCode = null,
         private readonly ?string $localeCode = null,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
@@ -90,9 +90,9 @@ class Feedback
         return $this->description;
     }
 
-    public function isPremium(): bool
+    public function hasActiveSubscription(): bool
     {
-        return $this->isPremium;
+        return $this->hasActiveSubscription;
     }
 
     public function getCountryCode(): ?string

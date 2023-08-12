@@ -42,9 +42,9 @@ class FeedbackSearchCreator
         $this->validator->validate($feedbackSearchTransfer);
 
         $messengerUser = $feedbackSearchTransfer->getMessengerUser();
-        $isPremium = $this->userSubscriptionManager->hasActiveSubscription($messengerUser);
+        $hasActiveSubscription = $this->userSubscriptionManager->hasActiveSubscription($messengerUser);
 
-        if (!$isPremium) {
+        if (!$hasActiveSubscription) {
             $this->checkLimits($feedbackSearchTransfer);
         }
 
@@ -60,9 +60,9 @@ class FeedbackSearchCreator
             $searchTermMessengerUser,
             $searchTermTransfer->getMessenger(),
             $searchTermTransfer->getMessengerUsername(),
-            $isPremium,
-            $messengerUser->getUser()?->getCountryCode(),
-            $messengerUser->getUser()?->getLocaleCode()
+            $hasActiveSubscription,
+            $messengerUser?->getCountryCode(),
+            $messengerUser?->getLocaleCode()
         );
         $this->entityManager->persist($feedbackSearch);
 

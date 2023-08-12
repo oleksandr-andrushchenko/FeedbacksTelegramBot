@@ -1,0 +1,14 @@
+describe:
+  title: Due to huge amount of user requests, our bot, by default, has next command limitations.
+  summary: Premium subscription plan allows you to use our bot without any limitations for specified period of time.
+query:
+  subscription_plan: Select a subscription plan from the menu below please.
+  payment_method: Select a payment method from the menu below please.
+  payment: Proceed with the payment instructions below please.
+  payment_invoice_title: '"%plan%" subscription'
+  payment_invoice_description: "No limits on feedbacks creation and searching for the next period: %plan%"
+reply:
+  payment:
+    ok: Your payment for "%plan%" premium subscription has been received. Premium subscription will expire on %expire_at% GMT.
+  already_have: "You have active premium subscription already:"
+  canceled: Getting premium dialog has been canceled.

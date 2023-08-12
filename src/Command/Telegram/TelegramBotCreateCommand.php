@@ -7,6 +7,7 @@ namespace App\Command\Telegram;
 use App\Enum\Telegram\TelegramGroup;
 use App\Object\Telegram\TelegramBotTransfer;
 use App\Service\Telegram\TelegramBotCreator;
+use App\Service\Telegram\TelegramBotInfoProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -20,6 +21,7 @@ class TelegramBotCreateCommand extends Command
     public function __construct(
         private readonly TelegramBotCreator $creator,
         private readonly EntityManagerInterface $entityManager,
+        private readonly TelegramBotInfoProvider $infoProvider,
     )
     {
         parent::__construct();
@@ -66,20 +68,11 @@ class TelegramBotCreateCommand extends Command
             return Command::FAILURE;
         }
 
-        $table = [
-            'username' => $bot->getUsername(),
-            'token' => '***',
-            'country' => $bot->getCountryCode(),
-            'locale' => $bot->getLocaleCode(),
-            'group' => $bot->getGroup()->name,
-            'is_primary' => $bot->getPrimaryBot() === null ? 'Y' : sprintf('N (%s)', $bot->getPrimaryBot()->getUsername()),
-        ];
+        $row = $this->infoProvider->getTelegramBotInfo($bot);
 
         $io->createTable()
-            ->setHeaders(array_keys($table))
-            ->setRows([
-                $table,
-            ])
+            ->setHeaders(array_keys($row))
+            ->setRows([$row])
             ->setVertical()
             ->render()
         ;

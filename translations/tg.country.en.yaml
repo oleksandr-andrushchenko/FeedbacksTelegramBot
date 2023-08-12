@@ -1,3 +1,9 @@
-title: Due to worldwide popularity of our bot, its important to know from where you are. Bot use your country to determinate search scope, available payment methods etc.
-known: "Your current country is %icon% %name%"
-unknown: "%icon% We do not know your country yet"
+describe:
+  title: Due to worldwide popularity of our bot, its important to know from where you are. Bot use your country to determinate search scope, available payment methods etc.
+  known: "Your current country is %icon% %name%"
+  unknown: "%icon% We do not know your country yet"
+query:
+  country: Select your country please.
+reply:
+  canceled: Country selection dialog has been canceled.
+  ok: "Your country has been successfully updated on %icon% %name%"

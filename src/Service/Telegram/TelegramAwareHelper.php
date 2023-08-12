@@ -12,6 +12,7 @@ use Longman\TelegramBot\ChatAction;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\KeyboardButton;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 
 class TelegramAwareHelper
 {
@@ -22,9 +23,9 @@ class TelegramAwareHelper
         private readonly TelegramMessageSenderInterface $messageSender,
         private readonly TranslatorInterface $translator,
         private readonly TelegramConversationManager $conversationManager,
-        private readonly TelegramTemplateRenderer $templateRenderer,
         private readonly TelegramChatActionSenderInterface $chatActionSender,
         private readonly TelegramChatProvider $chatProvider,
+        private readonly Environment $twig,
     )
     {
     }
@@ -88,36 +89,9 @@ class TelegramAwareHelper
         return $this;
     }
 
-    public function view(string|TelegramView $template, array $context = []): string
+    public function view(TelegramView $template, array $context = []): string
     {
-        return $this->templateRenderer->renderTelegramTemplate($template, $context, $this->getLocaleCode());
-    }
-
-    public function replyView(
-        string|TelegramView $template,
-        array $context = [],
-        Keyboard $keyboard = null,
-        string $parseMode = 'HTML',
-        bool $protectContent = null,
-        bool $disableWebPagePreview = null
-    ): static
-    {
-        $this->chatActionSender->sendChatAction(
-            $this->getTelegram(),
-            $this->getChatId(),
-            ChatAction::TYPING
-        );
-        $this->messageSender->sendTelegramMessage(
-            $this->getTelegram(),
-            $this->getChatId(),
-            $this->view($template, $context),
-            keyboard: $keyboard,
-            parseMode: $parseMode,
-            protectContent: $protectContent,
-            disableWebPagePreview: $disableWebPagePreview
-        );
-
-        return $this;
+        return $this->twig->render('tg.' . $template->value . '.html.twig', $context);
     }
 
     public function reply(

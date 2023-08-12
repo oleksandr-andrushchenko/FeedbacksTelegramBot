@@ -1,20 +1,16 @@
 command:
   create: Добавить отзыв
   search: Найти отзыв
-  premium: Купить Премиум
+  subscribe: Купить Премиум
   subscriptions: Мой Премиум
   country: Моя Страна
   locale: Мой язык
   restart: Перезапустить
   purge: Удалить Данные
   hints: Переключить Подсказки
-  message: Обратная Свзяь
+  contact: Обратная Свзяь
 
-name:
-  local: wild_s_local_bot
-  dev: wild_s_dev_bot
-  prod: Анонимные Отзывы Бот
-
+name: Анонимные Отзывы Бот
 short_description: Создать или найти отзыв на человека, организацию или место.
 description: Этот бот предоставляет вам возможность оставлять и находить отзывы на людей, компании или организации.
 

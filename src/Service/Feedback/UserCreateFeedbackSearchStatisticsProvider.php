@@ -33,8 +33,8 @@ class UserCreateFeedbackSearchStatisticsProvider
             ->setParameter('createdAtFrom', (new DateTime())->modify($dateTimeModifier))
             ->andWhere('fs.user = :user')
             ->setParameter('user', $user)
-            ->andWhere('fs.isPremium = :isPremium')
-            ->setParameter('isPremium', false)
+            ->andWhere('fs.hasActiveSubscription = :hasActiveSubscription')
+            ->setParameter('hasActiveSubscription', false)
             ->getQuery()
             ->getSingleScalarResult()
         ;

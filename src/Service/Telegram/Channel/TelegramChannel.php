@@ -7,6 +7,7 @@ namespace App\Service\Telegram\Channel;
 use App\Entity\Telegram\TelegramPayment;
 use App\Service\Telegram\Telegram;
 use App\Service\Telegram\TelegramAwareHelper;
+use App\Service\Telegram\TelegramCommandInterface;
 use App\Service\Telegram\TelegramConversationFactory;
 
 abstract class TelegramChannel implements TelegramChannelInterface
@@ -18,8 +19,16 @@ abstract class TelegramChannel implements TelegramChannelInterface
     {
     }
 
+    /**
+     * @param TelegramAwareHelper $tg
+     * @return TelegramCommandInterface[]
+     */
     abstract protected function getCommands(TelegramAwareHelper $tg): iterable;
 
+    /**
+     * @param Telegram $telegram
+     * @return array|TelegramCommandInterface[]
+     */
     public function getTelegramCommands(Telegram $telegram): array
     {
         $tg = $this->awareHelper->withTelegram($telegram);

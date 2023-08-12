@@ -1,3 +1,9 @@
-title: Due to worldwide popularity of our bot, its important to know which language you are speaking. Bot use your language to show content in your language, determinate search scope etc.
-known: "Your current language is %icon% %name%"
-unknown: "%icon% We do not know your language yet"
+describe:
+  title: Due to worldwide popularity of our bot, its important to know which language you are speaking. Bot use your language to show content in your language, determinate search scope etc.
+  known: "Your current language is %icon% %name%"
+  unknown: "%icon% We do not know your language yet"
+query:
+  locale: Select your language please.
+reply:
+  canceled: Language selection dialog has been canceled.
+  ok: "Your language has been successfully updated on %icon% %name%"

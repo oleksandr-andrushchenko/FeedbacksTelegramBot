@@ -22,5 +22,22 @@
 * soft deletes
 * subscribe on specific feedbacks
 * generate badge (picture) with username/rating to post in messengers
-* store DTs as UTC: https://www.doctrine-project.org/projects/doctrine-orm/en/2.15/cookbook/working-with-datetime.html#handling-different-timezones-with-the-datetime-type
-* 
+* store DTs as UTC: https://www.doctrine-project.org/projects/doctrine-orm/en/2.15/cookbook/working-with-datetime.html#handling-different-timezones-with-the-datetime-type      * "who've been looking for me" command
+* "list my feedbacks" command
+* "list feedbacks on me" command
+* "subscribe on mine/somebodies feedbacks" command
+* after country selection - link to che channel
+* add site links (to bot)
+* add country flag to feedback view
+* add command: how many times user X were been searched for (top command, usually - it gonna be current account - search for itself, but how many times somebody were searching me)
+* manual payments
+* ban users
+* add check payment possibility (does at least payment method exists), + implement manual payments
+* select currency as separate step on subscription
+* create & implement limits display checker (if limits = 0 - do not display)
+* create & implement buy subscription display checker (not accept payments - do not display, has subscriptions - display list button)
+* there are 2 types of bot should exists: primary and mirrors
+* mirrors should redirect users to primary bot
+* each primary bot should have country(and/or locale) and if user is out of this country/locale - propose to go to native bot
+* log new user activity
+* links to description trans

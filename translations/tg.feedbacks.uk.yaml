@@ -1,21 +1,17 @@
 command:
   create: Додати Відгук
   search: Знайти Відгук
-  premium: Купити Преміум
+  subscribe: Купити Преміум
   subscriptions: Мій Преміум
   country: Моя Країна
   locale: Моя Мова
   restart: Перезапустити
   purge: Видалити Дані
   hints: Перемикач Підсказок
-  message: Зворотній Звʼязок
+  contact: Зворотній Звʼязок
 
-name:
-  local: wild_s_local_bot
-  dev: wild_s_dev_bot
-  prod: Анонімні Відгуки Бот
-
-short_description: Create and find feedbacks on persons, organization or places
-description: This bot allows you to create and find feedbacks on persons, organization or places
+name: Анонімні Відгуки Бот
+short_description: Створюйте та знаходьте відгуки про людей, організації чи місця.
+description: Цей бот дозволяє створювати та знаходити відгуки про людей, організації чи місця.
 
 bot: АнонімніВідгукиБот

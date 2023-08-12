@@ -22,7 +22,7 @@ class FeedbackSearch
         private readonly ?MessengerUser $searchTermMessengerUser,
         private readonly ?Messenger $searchTermMessenger,
         private readonly ?string $searchTermMessengerUsername,
-        private readonly bool $isPremium,
+        private readonly bool $hasActiveSubscription,
         private readonly ?string $countryCode = null,
         private readonly ?string $localeCode = null,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
@@ -77,9 +77,9 @@ class FeedbackSearch
         return $this->searchTermMessengerUsername;
     }
 
-    public function isPremium(): bool
+    public function hasActiveSubscription(): bool
     {
-        return $this->isPremium;
+        return $this->hasActiveSubscription;
     }
 
     public function getCountryCode(): ?string

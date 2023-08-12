@@ -6,4 +6,4 @@ App\Entity\Telegram\TelegramConversation:
       class: <(\App\Service\Telegram\Conversation\CreateFeedbackTelegramConversation::class)>
       bot: '@telegram_bot_1'
       isActive: true
-      state: <(['step'=>\App\Service\Telegram\Conversation\CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_ASKED])>
+      state: <(['step'=>\App\Service\Telegram\Conversation\CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED])>

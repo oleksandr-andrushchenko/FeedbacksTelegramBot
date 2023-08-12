@@ -37,7 +37,6 @@ use App\Tests\Traits\Telegram\TelegramKeyboardFactoryProviderTrait;
 use App\Tests\Traits\Telegram\TelegramMessageSenderMockProviderTrait;
 use App\Tests\Traits\Telegram\TelegramMessageSenderProviderTrait;
 use App\Tests\Traits\Telegram\TelegramRegistryProviderTrait;
-use App\Tests\Traits\Telegram\TelegramTemplateRendererProviderTrait;
 use App\Tests\Traits\Telegram\TelegramUpdateFixtureProviderTrait;
 use App\Tests\Traits\Telegram\TelegramUpdateHandlerTrait;
 use App\Tests\Traits\Telegram\TelegramUserProviderTrait;
@@ -64,7 +63,6 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
     use InstagramMessengerUserFinderMockProviderTrait;
     use MessengerUserRepositoryProviderTrait;
     use TelegramConversationManagerProviderTrait;
-    use TelegramTemplateRendererProviderTrait;
     use MessengerUserProfileUrlProviderTrait;
     use ArraySubsetAsserts;
     use SearchTermParserProviderTrait;
@@ -244,7 +242,7 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
         ;
 
         $this->assertTelegramCommandState($expectedState);
-        $this->assertEquals(false, $this->getConversation()->isActive());
+        $this->assertEquals(false, $this->getConversation()->active());
     }
 
     protected function typeConfirm(
@@ -261,7 +259,7 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
             ->shouldSeeKeyboard(...$shouldSeeKeyboard)
         ;
 
-        $this->assertEquals(false, $this->getConversation()->isActive());
+        $this->assertEquals(false, $this->getConversation()->active());
     }
 
     protected function shouldSeeReply(...$expectedReplies): static

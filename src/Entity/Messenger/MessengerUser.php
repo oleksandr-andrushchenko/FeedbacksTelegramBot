@@ -110,7 +110,7 @@ class MessengerUser
         return $this;
     }
 
-    public function isShowHints(): bool
+    public function showHints(): bool
     {
         return $this->isShowHints;
     }
@@ -122,7 +122,7 @@ class MessengerUser
         return $this;
     }
 
-    public function isShowExtendedKeyboard(): bool
+    public function showExtendedKeyboard(): bool
     {
         return $this->isShowExtendedKeyboard;
     }

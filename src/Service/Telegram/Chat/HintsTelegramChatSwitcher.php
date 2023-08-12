@@ -12,7 +12,7 @@ class HintsTelegramChatSwitcher
     public function toggleHints(TelegramAwareHelper $tg): null
     {
         $messengerUser = $tg->getTelegram()->getMessengerUser();
-        $messengerUser->setIsShowHints(!$messengerUser->isShowHints());
+        $messengerUser->setIsShowHints(!$messengerUser->showHints());
 
         $transParameters = [
             'command' => $tg->view(TelegramView::COMMAND, [
@@ -20,7 +20,7 @@ class HintsTelegramChatSwitcher
             ]),
         ];
 
-        if ($messengerUser->isShowHints()) {
+        if ($messengerUser->showHints()) {
             $transParameters['now'] = sprintf('<u><b>%s</b></u>', $tg->trans('enabled'));
             $transParameters['will'] = $tg->trans('disable');
         } else {

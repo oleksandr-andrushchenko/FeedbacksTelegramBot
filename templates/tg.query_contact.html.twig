@@ -1,0 +1,12 @@
+{% trans_default_domain 'tg.contact' %}
+
+{{ 'query.title'|trans }}
+
+🔹{{ 'query.email'|trans }}: {{ contacts.email }}
+🔹<a href="{{ contacts.telegram }}">{{ 'query.telegram'|trans }}</a>
+🔹<a href="{{ contacts.instagram }}">{{ 'query.instagram'|trans }}</a>
+🔹<a href="{{ contacts.github }}">{{ 'query.github'|trans }}</a>
+🔹<a href="{{ contacts.linkedin }}">{{ 'query.linkedin'|trans }}</a>
+🔹{{ 'query.phone'|trans }}: {{ contacts.phone }}
+
+{{ 'query.message'|trans }}

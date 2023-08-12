@@ -10,7 +10,7 @@ use App\Entity\Telegram\TelegramPayment;
 use App\Enum\Feedback\FeedbackSubscriptionPlanName;
 use App\Repository\Feedback\FeedbackUserSubscriptionRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use DateTime;
+use DateTimeImmutable;
 
 class FeedbackUserSubscriptionManager
 {
@@ -22,20 +22,20 @@ class FeedbackUserSubscriptionManager
     {
     }
 
-    public function createByTelegramPayment(TelegramPayment $telegramPayment): FeedbackUserSubscription
+    public function createByTelegramPayment(TelegramPayment $payment): FeedbackUserSubscription
     {
-        $subscriptionPlanName = FeedbackSubscriptionPlanName::fromName($telegramPayment->getPurpose());
+        $subscriptionPlanName = FeedbackSubscriptionPlanName::fromName($payment->getPurpose());
         $subscriptionPlan = $this->subscriptionPlanProvider->getSubscriptionPlan($subscriptionPlanName);
 
         $subscription = new FeedbackUserSubscription(
-            $telegramPayment->getMessengerUser(),
+            $payment->getMessengerUser(),
             $subscriptionPlan->getName(),
-            (new DateTime())->modify($subscriptionPlan->getDatetimeModifier()),
-            $telegramPayment
+            (new DateTimeImmutable())->modify($subscriptionPlan->getDatetimeModifier()),
+            $payment
         );
         $this->entityManager->persist($subscription);
 
-        $telegramPayment->getMessengerUser()->getUser()?->setSubscriptionExpireAt($subscription->getExpireAt());
+        $payment->getMessengerUser()?->getUser()?->setSubscriptionExpireAt($subscription->getExpireAt());
 
         return $subscription;
     }
@@ -70,7 +70,7 @@ class FeedbackUserSubscriptionManager
 
     public function isSubscriptionActive(FeedbackUserSubscription $subscription): bool
     {
-        return new DateTime() < $subscription->getExpireAt();
+        return new DateTimeImmutable() < $subscription->getExpireAt();
     }
 
     public function hasActiveSubscription(MessengerUser $messengerUser): bool
@@ -79,7 +79,7 @@ class FeedbackUserSubscriptionManager
             return false;
         }
 
-        return new DateTime() < $messengerUser->getUser()->getSubscriptionExpireAt();
+        return new DateTimeImmutable() < $messengerUser->getUser()->getSubscriptionExpireAt();
     }
 
     public function hasSubscription(MessengerUser $messengerUser): bool

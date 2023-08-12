@@ -23,7 +23,6 @@ class Kernel extends BaseKernel implements CompilerPassInterface
         $container->getDefinition('app.telegram_keyboard_factory')->setPublic(true);
         $container->getDefinition('app.repository.messenger_user')->setPublic(true);
         $container->getDefinition('app.telegram_conversation_manager')->setPublic(true);
-        $container->getDefinition('app.telegram_template_renderer')->setPublic(true);
         $container->getDefinition('app.normalizer.telegram_conversation_state_create_feedback')->setPublic(true);
         $container->getDefinition('app.feedback_search_term_parser')->setPublic(true);
         $container->getDefinition('serializer')->setPublic(true);

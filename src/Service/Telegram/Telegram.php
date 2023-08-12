@@ -20,6 +20,7 @@ use Throwable;
 
 /**
  * @method ServerResponse setWebhook(string $url, array $data = [])
+ * @method ServerResponse getMyCommands(array $data)
  * @method ServerResponse setMyCommands(array $data)
  * @method ServerResponse deleteMyCommands(array $data)
  * @method ServerResponse getWebhookInfo()
@@ -29,8 +30,11 @@ use Throwable;
  * @method ServerResponse emptyResponse()
  * @method ServerResponse getMe()
  * @method ServerResponse getUserProfilePhotos(array $data)
+ * @method ServerResponse getMyName(array $data)
  * @method ServerResponse setMyName(array $data)
+ * @method ServerResponse getMyDescription(array $data)
  * @method ServerResponse setMyDescription(array $data)
+ * @method ServerResponse getMyShortDescription(array $data)
  * @method ServerResponse setMyShortDescription(array $data)
  * @method ServerResponse setChatMenuButton(array $data)
  * @method ServerResponse sendChatAction(array $data)

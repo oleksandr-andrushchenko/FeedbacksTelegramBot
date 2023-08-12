@@ -1,32 +1,28 @@
 icon:
   create: ✏️
   search: 🔍
-  premium: ⭐️
+  subscribe: ⭐️
   subscriptions: 🌟
   country: 🌎
   locale: 🌎
   restart: 🔄
-  purge: ✂️
+  purge: ⚠️
   hints: ℹ️
-  message: ✉️
+  contact: ✉️
 
 command:
   create: Add feedback
   search: Find feedback
-  premium: Get Premium
+  subscribe: Get Premium
   subscriptions: My Premium
   country: My Country
   locale: My Language
   restart: Restart
-  purge: Purge Account
+  purge: Purge Data
   hints: Toggle Hints
   message: Contact Us
 
-name:
-  local: wild_s_local_bot
-  dev: wild_s_dev_bot
-  prod: Anonymous Feedbacks Bot
-
+name: Anonymous Feedbacks Bot
 short_description: Create and find feedbacks on persons, organization or places.
 description: This bot allows you to create and find feedbacks on persons, organization or places.
 

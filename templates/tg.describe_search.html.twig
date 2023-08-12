@@ -1,0 +1,13 @@
+{% trans_default_domain 'tg.search' %}
+ℹ️ {{ 'describe.title'|trans }}
+
+ℹ️ {{ 'describe.limits'|trans }}
+{% for period,limit in limits %}
+ - <b>{{ limit }}</b> {{ 'tries_for'|trans({}, 'tg') }} <b>1 {{ period|trans({}, 'tg') }}</b>
+{% endfor %}
+
+{% if accept_payments %}
+ℹ️ {{ 'describe.subscribe'|trans({'%command%': include('tg.command.html.twig', {name: 'subscribe'})})|raw }}
+
+{% endif %}
+{% include 'tg.hints.html.twig' %}

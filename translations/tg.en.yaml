@@ -27,35 +27,8 @@ email: Email
 toggle_hint: Use %command% command to disable help hints like this.
 tries_for: tries for a
 
-ask:
-  country:
-    country: Select your country please.
-  locale:
-    locale: Select your language please.
-  action:
-    action: Select an action please.
-  create:
-    search_term: Who or what you would you like to leave feedback on? It can be a social network or messenger profile URL, nickname, email address, phone number, website, person's name or organization name, etc.
-    search_term_type: Who or what "%search_term%" is?
-    rating: Rate your experience with "%search_term%".
-    description: Add any information about "%search_term%" and describe your experience with "%search_term%".
-    confirm: Confirm feedback creation?
-  search:
-    search_term: Who or what you are interested in? It can be a social network or messenger profile URL, nickname, email address, phone number, website, person's name or organization name, etc.
-    search_term_type: Who or what "%search_term%" is?
-    confirm: Confirm feedbacks search?
-  premium:
-    subscription_plan: Select a subscription plan from the menu below please.
-    payment_method: Select a payment method from the menu below please.
-    payment: Proceed with the payment instructions below please.
-    payment_invoice_title: '"%plan%" subscription'
-    payment_invoice_description: "No limits on feedbacks creation and searching for the next period: %plan%"
-  purge:
-    confirm: Confirm data purge?
-  restart:
-    confirm: Confirm bot restart?
-  message:
-    text: Enter your message please.
+query:
+  action: Select an action please.
 
 keyboard:
   confirm: 👌 Confirm
@@ -66,13 +39,6 @@ keyboard:
   leave_empty: Leave empty
   other: Other
   absent: Not in the list
-  create:
-    change_search_term: Change search term
-    change_rating: Change rate
-    add_description: Add details
-    change_description: Change details
-  search:
-    change_search_term: Change search term
   hints:
     turn_on: Enable Hints
     turn_off: Disable Hints
@@ -80,53 +46,12 @@ keyboard:
   less: Show less
 
 reply:
-  ok: Completed successfully.
-  fail: "Unknown error has occurred,\r\n1) Make sure everything was properly organized and repeat; or\r\n2) Use 'Contact Us' command; or\r\n3) Try again later please."
+  fail:
+    unknown: "Unknown error has occurred,\r\n1) Make sure everything was properly organized and repeat; or\r\n2) Use 'Contact Us' command; or\r\n3) Try again later please."
+    not_accept_payments: We do not accept payments now. Try again later please.
   wrong: I don't understand you.
-  purge:
-    ok: Purge has been successfully made, now you can leave the bot.
-    canceled: Purge dialog has been canceled.
-  action:
-    fail:
-      not_accept_payments: We do not accept payments now. Try again later please.
-  country:
-    canceled: Country selection dialog has been canceled.
-    ok: "Your country has been successfully updated on %icon% %name%"
-  locale:
-    canceled: Language selection dialog has been canceled.
-    ok: "Your language has been successfully updated on %icon% %name%"
-  create:
-    canceled: Feedback adding dialog has been canceled.
-    ok: Feedback has been successfully added.
-    fail:
-      same_messenger_user: Feedbacks on yourself is not allowed.
-      limit_exceeded:
-        main: "You have reached feedback creation limit (%limit%) for the next period: %period%. Try again later%or_buy_premium% please."
-        or_buy_premium: or buy premium subscription %premium_command%
-  search:
-    canceled: Feedback search dialog has been canceled.
-    empty_list: No feedbacks were found by "%search_term%".
-    title: "There are %count% feedback(-s) have been successfully found by \"%search_term%\" (%search_term_type%):"
-    fail:
-      limit_exceeded:
-        main: "You have reached feedback searching limit (%limit%) for the next period: %period%. Try again later%or_buy_premium% please."
-        or_buy_premium: or buy premium subscription %premium_command%
-  premium:
-    already_have: "You have active premium subscription already:"
-    canceled: Getting premium dialog has been canceled.
-  payment:
-    ok: Your payment for "%plan%" premium subscription has been received. Premium subscription will expire on %expire_at% GMT.
-  subscriptions:
-    empty_list: You do not have subscriptions
-    title: "You have %count% premium subscription(-s):"
   hints:
     ok: Help hints were %now% for your account. Use %command% to %will% them.
-  message:
-    ok: Your message has been sent. Thank you!
-    canceled: Message adding dialog has been canceled.
-  restart:
-    ok: Restart has been successfully made.
-    canceled: Restart dialog has been canceled.
 
 search_term_type:
   messenger_profile_url: Social network or messenger profile link

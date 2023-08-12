@@ -1,0 +1,12 @@
+{% trans_default_domain 'tg.purge' %}
+ℹ️ {{ 'describe.title'|trans }}
+
+ℹ️ {{ 'describe.items'|trans }}
+
+{% for item in items %}
+ 🔹{{ item|trans({}, 'tg') }}
+{% endfor %}
+
+ℹ️ {{ 'describe.summary'|trans }}
+
+{% include 'tg.hints.html.twig' %}

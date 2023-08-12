@@ -44,7 +44,7 @@ class TelegramConversation
         return $this->class;
     }
 
-    public function isActive(): bool
+    public function active(): bool
     {
         return $this->isActive;
     }

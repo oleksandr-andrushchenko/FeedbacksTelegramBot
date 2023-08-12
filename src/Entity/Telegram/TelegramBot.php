@@ -17,9 +17,9 @@ class TelegramBot
         private readonly string $localeCode,
         private readonly TelegramGroup $group,
         private readonly ?TelegramBot $primaryBot = null,
-        private readonly bool $isCheckUpdates = true,
-        private readonly bool $isCheckRequests = true,
-        private readonly bool $isAcceptPayments = false,
+        private bool $isCheckUpdates = true,
+        private bool $isCheckRequests = true,
+        private bool $isAcceptPayments = false,
         private bool $isAdminOnly = true,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?int $id = null,
@@ -67,14 +67,35 @@ class TelegramBot
         return $this->isCheckUpdates;
     }
 
+    public function setIsCheckUpdates(bool $isCheckUpdates): self
+    {
+        $this->isCheckUpdates = $isCheckUpdates;
+
+        return $this;
+    }
+
     public function checkRequests(): bool
     {
         return $this->isCheckRequests;
     }
 
+    public function setIsCheckRequests(bool $isCheckRequests): self
+    {
+        $this->isCheckRequests = $isCheckRequests;
+
+        return $this;
+    }
+
     public function acceptPayments(): bool
     {
         return $this->isAcceptPayments;
+    }
+
+    public function setIsAcceptPayments(bool $isAcceptPayments): self
+    {
+        $this->isAcceptPayments = $isAcceptPayments;
+
+        return $this;
     }
 
     public function adminOnly(): bool
