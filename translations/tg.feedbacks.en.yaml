@@ -7,7 +7,7 @@ icon:
   locale: 🌎
   hints: ℹ️
   purge: ⚠️
-  contact: ✉️
+  contact: 💌
   commands: 📎
   restart: 🔄
 
@@ -20,6 +20,6 @@ command:
   locale: My Language
   hints: Toggle Hints
   purge: Purge Data
-  contact: Contact Us
+  contact: Contacts
   commands: Commands
   restart: Restart

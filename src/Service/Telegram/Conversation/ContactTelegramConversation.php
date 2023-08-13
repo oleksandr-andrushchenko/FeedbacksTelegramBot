@@ -18,7 +18,6 @@ use App\Entity\Telegram\TelegramConversation as Conversation;
 class ContactTelegramConversation extends TelegramConversation implements TelegramConversationInterface
 {
     public const STEP_MESSAGE_QUERIED = 10;
-    public const STEP_CANCEL_PRESSED = 20;
 
     public function __construct(
         readonly TelegramAwareHelper $awareHelper,
@@ -42,10 +41,8 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
             return $tg->replyWrong($tg->trans('reply.wrong'))->null();
         }
 
-        if ($tg->matchText($this->getCancelButton($tg)->getText())) {
-            $this->state->setStep(self::STEP_CANCEL_PRESSED);
-
-            $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.contact'));
+        if ($tg->matchText($this->getBackButton($tg)->getText())) {
+            $tg->stopConversation($conversation);
 
             return $this->chooseActionChatSender->sendActions($tg);
         }
@@ -77,7 +74,7 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
                     'contacts' => $this->contactOptions,
                 ]
             ),
-            $tg->keyboard($this->getCancelButton($tg)),
+            $tg->keyboard($this->getBackButton($tg)),
             parseMode: 'HTML',
             protectContent: true,
             disableWebPagePreview: true
@@ -105,8 +102,8 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
         }
     }
 
-    public static function getCancelButton(TelegramAwareHelper $tg): KeyboardButton
+    public static function getBackButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->trans('keyboard.cancel'));
+        return $tg->button($tg->trans('keyboard.back'));
     }
 }

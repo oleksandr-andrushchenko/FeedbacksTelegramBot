@@ -40,6 +40,7 @@ class ChooseActionTelegramChatSender
             $keyboards[] = $this->getLocaleButton($tg);
             $keyboards[] = $this->getHintsButton($tg);
             $keyboards[] = $this->getPurgeButton($tg);
+            $keyboards[] = $this->getContactButton($tg);
             $keyboards[] = $this->getCommandsButton($tg);
             $keyboards[] = $this->getRestartButton($tg);
             $keyboards[] = $this->getShowLessButton($tg);

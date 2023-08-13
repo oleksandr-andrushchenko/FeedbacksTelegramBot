@@ -6,6 +6,6 @@ country: Choose your country.
 locale: Choose your language.
 hints: Toggle help hints like this.
 purge: Remove stored user data.
-contact: Left feedback message about the bot.
+contact: Contact info, ask a question of left a feedback message.
 commands: Available command list.
 restart: Restore default settings and restart the bot.
