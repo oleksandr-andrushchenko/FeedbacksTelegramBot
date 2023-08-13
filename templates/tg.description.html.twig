@@ -1,10 +1,10 @@
 {% trans_default_domain 'tg.description' %}
 ℹ️ {{ title }}
 
-{{ 'agreement'|trans }}
+{{ 'agreement'|trans({}, 'tg.description', locale) }}
 
-🔹{{ 'primary_policy'|trans|capitalize }}:
+🔹{{ 'primary_policy'|trans({}, 'tg.description', locale)|capitalize }}:
 {{ privacy_policy_link }}
 
-🔹{{ 'terms_of_use'|trans|capitalize }}:
+🔹{{ 'terms_of_use'|trans({}, 'tg.description', locale)|capitalize }}:
 {{ terms_of_use_link }}

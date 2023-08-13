@@ -32,14 +32,20 @@ class TelegramTextsUpdater
         $group = $telegram->getBot()->getGroup()->name;
         $countryCode = $telegram->getBot()->getCountryCode();
 
-        foreach ([$bot->getLocaleCode()] as $localeCode) {
-            $name = $this->translator->trans(sprintf('%s.name', $group), domain: $domain, locale: $localeCode);
+//        $localeCodes = [$bot->getLocaleCode()];
+        $localeCodes = $telegram->getOptions()->getLocaleCodes();
+
+        foreach ($localeCodes as $localeCode) {
+//            $transLocaleCode = $localeCode;
+            $transLocaleCode = $bot->getLocaleCode();
+            $name = $this->translator->trans(sprintf('%s.name', $group), domain: $domain, locale: $transLocaleCode);
             $telegram->setMyName([
                 'name' => $this->stage === 'prod' ? $name : sprintf('(%s, %s) %s', ucfirst($this->stage), $bot->getPrimaryBot() === null ? 'Primary' : 'Mirror', $name),
                 'language_code' => $localeCode,
             ]);
             $description = $this->twig->render(sprintf('tg.%s.html.twig', TelegramView::DESCRIPTION->value), [
-                'title' => $this->translator->trans(sprintf('%s.description', $group), domain: $domain, locale: $localeCode),
+                'locale' => $transLocaleCode,
+                'title' => $this->translator->trans(sprintf('%s.description', $group), domain: $domain, locale: $transLocaleCode),
                 'privacy_policy_link' => $this->siteUrlGenerator->generate(
                     'app.site_privacy_policy',
                     [
@@ -59,7 +65,7 @@ class TelegramTextsUpdater
                 'description' => $description,
                 'language_code' => $localeCode,
             ]);
-            $shortDescription = $this->translator->trans(sprintf('%s.short_description', $group), domain: $domain, locale: $localeCode);
+            $shortDescription = $this->translator->trans(sprintf('%s.short_description', $group), domain: $domain, locale: $transLocaleCode);
             $telegram->setMyShortDescription([
                 'short_description' => $shortDescription,
                 'language_code' => $localeCode,
