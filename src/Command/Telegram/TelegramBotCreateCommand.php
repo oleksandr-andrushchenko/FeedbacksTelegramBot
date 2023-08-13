@@ -34,11 +34,11 @@ class TelegramBotCreateCommand extends Command
     protected function configure(): void
     {
         $this
+            ->addArgument('group', InputArgument::REQUIRED, 'Group name')
             ->addArgument('username', InputArgument::REQUIRED, 'Username')
             ->addArgument('token', InputArgument::REQUIRED, 'Token')
             ->addArgument('country', InputArgument::REQUIRED, 'Country code')
             ->addArgument('locale', InputArgument::REQUIRED, 'Locale code')
-            ->addArgument('group', InputArgument::REQUIRED, 'Group name')
             ->addArgument('primary-bot-username', InputArgument::OPTIONAL, 'Primary username')
             ->setDescription('Create telegram bot')
         ;

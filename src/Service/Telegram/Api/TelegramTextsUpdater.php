@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Service\Telegram\Api;
 
 use App\Entity\Telegram\TelegramBot;
+use App\Enum\Telegram\TelegramView;
 use App\Service\Site\SiteUrlGenerator;
 use App\Service\Telegram\TelegramRegistry;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 
 class TelegramTextsUpdater
 {
@@ -17,9 +19,7 @@ class TelegramTextsUpdater
         private readonly TelegramRegistry $registry,
         private readonly TranslatorInterface $translator,
         private readonly SiteUrlGenerator $siteUrlGenerator,
-        private ?array $myNames = null,
-        private ?array $myDescriptions = null,
-        private ?array $myShortDescriptions = null,
+        private readonly Environment $twig,
     )
     {
     }
@@ -27,75 +27,42 @@ class TelegramTextsUpdater
     public function updateTelegramDescriptions(TelegramBot $bot): void
     {
         $telegram = $this->registry->getTelegram($bot->getUsername());
-        $this->myNames = [];
-        $this->myDescriptions = [];
-        $this->myShortDescriptions = [];
 
-        $domain = sprintf('tg.%s', $telegram->getBot()->getGroup()->name);
+        $domain = 'tg.texts';
+        $group = $telegram->getBot()->getGroup()->name;
 
-        foreach ($telegram->getOptions()->getLocaleCodes() as $localeCode) {
-            $name = $this->translator->trans('name', domain: $domain, locale: $localeCode);
-            $this->myNames[$localeCode] = $name;
+        foreach ([$bot->getLocaleCode()] as $localeCode) {
+            $name = $this->translator->trans(sprintf('%s.name', $group), domain: $domain, locale: $localeCode);
             $telegram->setMyName([
                 'name' => $this->stage === 'prod' ? $name : sprintf('(%s) %s', ucfirst($this->stage), $name),
                 'language_code' => $localeCode,
             ]);
-            $description = $this->translator->trans(
-                'description',
-                [
-                    'privacy_policy_link' => $this->siteUrlGenerator->generate(
-                        'app.site_privacy_policy',
-                        [
-                            '_locale' => $localeCode,
-                        ],
-                        referenceType: UrlGeneratorInterface::ABSOLUTE_URL
-                    ),
-                    'terms_of_use_link' => $this->siteUrlGenerator->generate(
-                        'app.site_terms_of_use',
-                        [
-                            '_locale' => $localeCode,
-                        ],
-                        referenceType: UrlGeneratorInterface::ABSOLUTE_URL
-                    ),
-                ],
-                domain: $domain,
-                locale: $localeCode
-            );
-            $this->myDescriptions[$localeCode] = $description;
+            $description = $this->twig->render(sprintf('tg.%s.html.twig', TelegramView::DESCRIPTION->value), [
+                'title' => $this->translator->trans(sprintf('%s.description', $group), domain: $domain, locale: $localeCode),
+                'privacy_policy_link' => $this->siteUrlGenerator->generate(
+                    'app.site_privacy_policy',
+                    [
+                        '_locale' => $localeCode,
+                    ],
+                    referenceType: UrlGeneratorInterface::ABSOLUTE_URL
+                ),
+                'terms_of_use_link' => $this->siteUrlGenerator->generate(
+                    'app.site_terms_of_use',
+                    [
+                        '_locale' => $localeCode,
+                    ],
+                    referenceType: UrlGeneratorInterface::ABSOLUTE_URL
+                ),
+            ]);
             $telegram->setMyDescription([
                 'description' => $description,
                 'language_code' => $localeCode,
             ]);
-            $shortDescription = $this->translator->trans('short_description', domain: $domain, locale: $localeCode);
-            $this->myShortDescriptions[$localeCode] = $shortDescription;
+            $shortDescription = $this->translator->trans(sprintf('%s.short_description', $group), domain: $domain, locale: $localeCode);
             $telegram->setMyShortDescription([
                 'short_description' => $shortDescription,
                 'language_code' => $localeCode,
             ]);
         }
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getMyNames(): ?array
-    {
-        return $this->myNames;
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getMyDescriptions(): ?array
-    {
-        return $this->myDescriptions;
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getMyShortDescriptions(): ?array
-    {
-        return $this->myShortDescriptions;
     }
 }

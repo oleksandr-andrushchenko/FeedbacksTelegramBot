@@ -7,7 +7,6 @@
     <services>
         <service id="app.site_contact_options_factory"
                  class="App\Service\Site\SiteContactOptionsFactory" lazy="true">
-            <argument type="service" id="app.translator"/>
             <argument type="service" id="app.repository.telegram_bot"/>
         </service>
         <service id="app.site_url_generator" class="App\Service\Site\SiteUrlGenerator" lazy="true">

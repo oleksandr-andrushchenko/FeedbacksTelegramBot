@@ -6,6 +6,7 @@ namespace App\Enum\Telegram;
 
 enum TelegramView: string
 {
+    case DESCRIPTION = 'description';
     case COMMAND = 'command';
     case FEEDBACK = 'feedback';
     case SUBSCRIPTION = 'subscription';

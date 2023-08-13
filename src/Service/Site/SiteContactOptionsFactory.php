@@ -7,12 +7,10 @@ namespace App\Service\Site;
 use App\Entity\Site\SiteContactOptions;
 use App\Enum\Telegram\TelegramGroup;
 use App\Repository\Telegram\TelegramBotRepository;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SiteContactOptionsFactory
 {
     public function __construct(
-        private readonly TranslatorInterface $translator,
         private readonly TelegramBotRepository $telegramBotRepository,
     )
     {
@@ -21,11 +19,11 @@ class SiteContactOptionsFactory
     public function createSiteContactOptions(array $options, string $groupName): SiteContactOptions
     {
         $group = TelegramGroup::fromName($groupName);
-        $bots = $this->telegramBotRepository->findByGroup($group);
+        $primary = $this->telegramBotRepository->findPrimaryByGroup($group);
 
         return new SiteContactOptions(
-            $this->translator->trans('bot', [], sprintf('tg.%s', $group->name)),
-            isset($bots[0]) ? sprintf('https://t.me/%s', $bots[0]->getUsername()) : null,
+            sprintf('@%s', $primary->getUsername()),
+            sprintf('https://t.me/%s', $primary->getUsername()),
             $options['website'],
             $options['phone'],
             $options['email'],

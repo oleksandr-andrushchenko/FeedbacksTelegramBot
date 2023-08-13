@@ -40,4 +40,5 @@
 * mirrors should redirect users to primary bot
 * each primary bot should have country(and/or locale) and if user is out of this country/locale - propose to go to native bot
 * log new user activity
-* links to description trans
+* new commands command
+* remove tons of info on start button click

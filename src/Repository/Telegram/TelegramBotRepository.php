@@ -59,4 +59,12 @@ class TelegramBotRepository extends ServiceEntityRepository
             'group' => $group,
         ]);
     }
+
+    public function findPrimaryByGroup(TelegramGroup $group): ?TelegramBot
+    {
+        return $this->findOneBy([
+            'group' => $group,
+            'primaryBot' => null,
+        ]);
+    }
 }
