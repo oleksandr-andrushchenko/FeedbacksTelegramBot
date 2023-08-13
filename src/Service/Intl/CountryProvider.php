@@ -43,6 +43,11 @@ class CountryProvider
         return $this->translator->trans($country->getCode(), domain: 'countries', locale: $locale);
     }
 
+    public function getCountryDefaultLocale(Country $country): ?string
+    {
+        return $country->getLocales()[0] ?? null;
+    }
+
     /**
      * @param string|null $locale
      * @return Country[]

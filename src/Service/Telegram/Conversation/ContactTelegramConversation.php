@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram\Conversation;
 
-use App\Entity\Site\SiteContactOptions;
+use App\Entity\ContactOptions;
 use App\Entity\Telegram\CreateFeedbackTelegramConversationState;
+use App\Entity\Telegram\TelegramConversation as Conversation;
+use App\Enum\Telegram\TelegramGroup;
 use App\Enum\Telegram\TelegramView;
 use App\Exception\ValidatorException;
 use App\Object\User\UserFeedbackMessageTransfer;
+use App\Service\ContactOptionsFactory;
+use App\Service\Intl\CountryProvider;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Service\User\UserFeedbackMessageCreator;
 use Longman\TelegramBot\Entities\KeyboardButton;
-use App\Entity\Telegram\TelegramConversation as Conversation;
 
 class ContactTelegramConversation extends TelegramConversation implements TelegramConversationInterface
 {
@@ -23,7 +26,8 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
         readonly TelegramAwareHelper $awareHelper,
         private readonly UserFeedbackMessageCreator $messageCreator,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
-        private readonly SiteContactOptions $contactOptions,
+        private readonly ContactOptionsFactory $contactOptionsFactory,
+        private readonly CountryProvider $countryProvider,
     )
     {
         parent::__construct($awareHelper, new CreateFeedbackTelegramConversationState());
@@ -67,18 +71,22 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
     {
         $this->state->setStep(self::STEP_MESSAGE_QUERIED);
 
-        return $tg->reply(
+        $country = $this->countryProvider->getCountry($tg->getCountryCode());
+        $localeCode = $this->countryProvider->getCountryDefaultLocale($country);
+
+        $tg->reply(
             $tg->view(
                 TelegramView::QUERY_CONTACT,
                 [
-                    'contacts' => $this->contactOptions,
+                    'contacts' => $this->contactOptionsFactory->createContactOptions(TelegramGroup::feedbacks, $localeCode),
                 ]
             ),
-            $tg->keyboard($this->getBackButton($tg)),
             parseMode: 'HTML',
             protectContent: true,
             disableWebPagePreview: true
-        )->null();
+        );
+
+        return $tg->reply($tg->trans('query.message', domain: 'tg.contact'), $tg->keyboard($this->getBackButton($tg)))->null();
     }
 
     public function gotMessage(TelegramAwareHelper $tg, Conversation $conversation): null

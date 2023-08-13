@@ -5,12 +5,6 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.feedback_site_contact_options" class="App\Entity\Site\SiteContactOptions">
-            <factory service="app.site_contact_options_factory"
-                     method="createSiteContactOptions"/>
-            <argument>%app.feedback_site_contact_options%</argument>
-            <argument>feedbacks</argument>
-        </service>
         <service id="app.feedback_creator_options_factory" class="App\Service\Feedback\FeedbackCreatorOptionsFactory"/>
         <service id="app.feedback_creator_options" class="App\Entity\Feedback\FeedbackCreatorOptions">
             <factory service="app.feedback_creator_options_factory" method="createFeedbackCreatorOptions"/>

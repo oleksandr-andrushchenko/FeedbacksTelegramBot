@@ -11,11 +11,11 @@
     <p>{{ 'list_headline'|trans }}:</p>
 
     <ul>
-        <li><a href="{{ contacts.telegram }}" target="_blank">{{ 'telegram'|trans }}</a></li>
-        <li><a href="{{ contacts.instagram }}" target="_blank">{{ 'instagram'|trans }}</a></li>
-        <li><a href="{{ contacts.github }}" target="_blank">{{ 'github'|trans }}</a></li>
-        <li><a href="{{ contacts.linkedin }}" target="_blank">{{ 'linkedin'|trans }}</a></li>
-        <li><a href="mailto:{{ contacts.email }}">{{ 'email'|trans }}</a></li>
-        <li><a href="tel:{{ contacts.phone }}">{{ 'phone'|trans }}</a></li>
+        <li>{{ 'company'|trans }}: {{ contacts.company }}</li>
+        <li>{{ 'tax'|trans }}: {{ contacts.tax }}</li>
+        <li>{{ 'address'|trans }}: {{ contacts.address }}</li>
+        <li>{{ 'phone'|trans }}: <a href="tel:{{ contacts.phone }}">{{ contacts.phone }}</a></li>
+        <li>{{ 'email'|trans }}: <a href="mailto:{{ contacts.email }}">{{ contacts.email }}</a></li>
+        <li><a href="{{ contacts.telegram }}" target="_blank">{{ 'telegram'|trans }}</a>🔹<a href="{{ contacts.instagram }}" target="_blank">{{ 'instagram'|trans }}</a>🔹<a href="{{ contacts.github }}" target="_blank">{{ 'github'|trans }}</a>🔹<a href="{{ contacts.linkedin }}" target="_blank">{{ 'linkedin'|trans }}</a></li>
     </ul>
 {% endblock %}

@@ -5,6 +5,11 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="app.contact_options_factory" class="App\Service\ContactOptionsFactory" lazy="true">
+            <argument>%app.contact_options%</argument>
+            <argument type="service" id="app.repository.telegram_bot"/>
+            <argument type="service" id="app.translator"/>
+        </service>
         <service id="app.translator" class="App\Service\Translator" lazy="true">
             <argument type="service" id="translator"/>
             <argument type="service" id="app.array_key_quoter"/>

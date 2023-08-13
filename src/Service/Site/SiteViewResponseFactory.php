@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Service\Site;
 
 use App\Entity\Intl\Locale;
-use App\Entity\Site\SiteContactOptions;
 use App\Enum\Site\SitePage;
+use App\Enum\Telegram\TelegramGroup;
+use App\Service\ContactOptionsFactory;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\LocaleProvider;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +22,7 @@ class SiteViewResponseFactory
         private readonly LocaleSwitcher $localeSwitcher,
         private readonly CountryProvider $countryProvider,
         private readonly LocaleProvider $localeProvider,
-        private readonly SiteContactOptions $contactOptions,
+        private readonly ContactOptionsFactory $contactOptionsFactory,
     )
     {
     }
@@ -68,7 +69,7 @@ class SiteViewResponseFactory
         return new Response($this->twig->render($template, [
             'pages' => array_diff(array_map(fn ($page) => $page->value, SitePage::cases()), [SitePage::INDEX->value]),
             'page' => $page->value,
-            'contacts' => $this->contactOptions,
+            'contacts' => $this->contactOptionsFactory->createContactOptions(TelegramGroup::feedbacks, $locale->getCode()),
             'locales' => array_map($localMap, $supportedLocales),
             'locale' => $localMap($locale),
         ]));

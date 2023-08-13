@@ -5,10 +5,6 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.site_contact_options_factory"
-                 class="App\Service\Site\SiteContactOptionsFactory" lazy="true">
-            <argument type="service" id="app.repository.telegram_bot"/>
-        </service>
         <service id="app.site_url_generator" class="App\Service\Site\SiteUrlGenerator" lazy="true">
             <argument>%app.site_base_url%</argument>
             <argument type="service" id="Symfony\Component\Routing\Generator\UrlGeneratorInterface"/>
@@ -18,7 +14,7 @@
             <argument type="service" id="translation.locale_switcher"/>
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.intl_locale_provider"/>
-            <argument type="service" id="app.feedback_site_contact_options"/>
+            <argument type="service" id="app.contact_options_factory"/>
         </service>
     </services>
 </container>

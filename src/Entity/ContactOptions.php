@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Entity\Site;
+namespace App\Entity;
 
-readonly class SiteContactOptions
+readonly class ContactOptions
 {
     public function __construct(
+        private string $company,
+        private string $address,
+        private string $tax,
         private string $botName,
         private ?string $botLink,
         private string $website,
@@ -18,6 +21,21 @@ readonly class SiteContactOptions
         private string $linkedin,
     )
     {
+    }
+
+    public function getCompany(): string
+    {
+        return $this->company;
+    }
+
+    public function getAddress(): string
+    {
+        return $this->address;
+    }
+
+    public function getTax(): string
+    {
+        return $this->tax;
     }
 
     public function getBotName(): string

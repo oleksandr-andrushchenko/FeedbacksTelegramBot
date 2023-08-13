@@ -1,14 +1,16 @@
 describe:
   title: This command allows you to ask a question or left a feedback message about the bot, any comments, suggestions, thoughts are welcome.
 query:
-  title: "Available contact methods:"
+  company: Company
+  address: Address
+  tax: Tax number
   telegram: Telegram
   instagram: Instagram
   github: Github
   linkedin: Linkedin
   email: Email
   phone: Phone
-  message: Or type a message please.
+  message: Type a message please.
 reply:
   ok: Your message has been sent. Thank you!
   canceled: Message adding dialog has been canceled.
