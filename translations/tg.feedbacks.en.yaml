@@ -20,7 +20,7 @@ command:
   restart: Restart
   purge: Purge Data
   hints: Toggle Hints
-  message: Contact Us
+  contact: Contact Us
 
 name: Anonymous Feedbacks Bot
 short_description: Create and find feedbacks on persons, organization or places.
