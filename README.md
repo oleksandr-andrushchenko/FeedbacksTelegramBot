@@ -22,12 +22,10 @@
 * soft deletes
 * subscribe on specific feedbacks
 * generate badge (picture) with username/rating to post in messengers
-* store DTs as UTC: https://www.doctrine-project.org/projects/doctrine-orm/en/2.15/cookbook/working-with-datetime.html#handling-different-timezones-with-the-datetime-type      * "who've been looking for me" command
 * "list my feedbacks" command
 * "list feedbacks on me" command
 * "subscribe on mine/somebodies feedbacks" command
 * after country selection - link to che channel
-* add site links (to bot)
 * add country flag to feedback view
 * add command: how many times user X were been searched for (top command, usually - it gonna be current account - search for itself, but how many times somebody were searching me)
 * manual payments

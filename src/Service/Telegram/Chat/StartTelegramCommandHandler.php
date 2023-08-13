@@ -52,19 +52,21 @@ class StartTelegramCommandHandler
             }
         }
 
+        $countryCode = $tg->getTelegram()->getBot()->getCountryCode();
+
         $tg->reply($tg->view(TelegramView::DESCRIBE_START, [
             'commands' => $commands,
             'privacy_policy_link' => $this->siteUrlGenerator->generate(
                 'app.site_privacy_policy',
                 [
-                    '_locale' => $tg->getLocaleCode(),
+                    '_locale' => $countryCode,
                 ],
                 referenceType: UrlGeneratorInterface::ABSOLUTE_URL
             ),
             'terms_of_use_link' => $this->siteUrlGenerator->generate(
                 'app.site_terms_of_use',
                 [
-                    '_locale' => $tg->getLocaleCode(),
+                    '_locale' => $countryCode,
                 ],
                 referenceType: UrlGeneratorInterface::ABSOLUTE_URL
             ),

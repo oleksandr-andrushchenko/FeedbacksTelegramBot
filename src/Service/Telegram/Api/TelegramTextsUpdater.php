@@ -30,6 +30,7 @@ class TelegramTextsUpdater
 
         $domain = 'tg.texts';
         $group = $telegram->getBot()->getGroup()->name;
+        $countryCode = $telegram->getBot()->getCountryCode();
 
         foreach ([$bot->getLocaleCode()] as $localeCode) {
             $name = $this->translator->trans(sprintf('%s.name', $group), domain: $domain, locale: $localeCode);
@@ -42,14 +43,14 @@ class TelegramTextsUpdater
                 'privacy_policy_link' => $this->siteUrlGenerator->generate(
                     'app.site_privacy_policy',
                     [
-                        '_locale' => $localeCode,
+                        '_locale' => $countryCode,
                     ],
                     referenceType: UrlGeneratorInterface::ABSOLUTE_URL
                 ),
                 'terms_of_use_link' => $this->siteUrlGenerator->generate(
                     'app.site_terms_of_use',
                     [
-                        '_locale' => $localeCode,
+                        '_locale' => $countryCode,
                     ],
                     referenceType: UrlGeneratorInterface::ABSOLUTE_URL
                 ),
