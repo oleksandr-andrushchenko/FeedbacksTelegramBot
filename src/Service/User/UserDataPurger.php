@@ -21,8 +21,6 @@ class UserDataPurger
         $user
             ->setUsername(null)
             ->setName(null)
-            ->setCountryCode(null)
-            ->setLocaleCode(null)
             ->setPhoneNumber(null)
             ->setEmail(null)
             ->setPurgedAt(new DateTimeImmutable())
@@ -34,8 +32,6 @@ class UserDataPurger
             $messengerUser
                 ->setUsername(null)
                 ->setName(null)
-                ->setCountryCode(null)
-                ->setLocaleCode(null)
                 ->setIsShowHints(true)
             ;
         }

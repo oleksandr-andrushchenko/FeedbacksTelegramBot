@@ -16,7 +16,6 @@ class TelegramMessengerUserUpserter
         private readonly TelegramUserProvider $userProvider,
         private readonly MessengerUserUpserter $messengerUserUpserter,
         private readonly UserUpserter $userUpserter,
-        private readonly TelegramNewMessengerUserCountryProvider $newMessengerUserCountryProvider,
     )
     {
     }
@@ -28,14 +27,12 @@ class TelegramMessengerUserUpserter
         if ($user === null) {
             $messengerUser = null;
         } else {
-            $countryCode = $this->newMessengerUserCountryProvider->getCountry($telegram);
-
             $messengerUserTransfer = new MessengerUserTransfer(
                 Messenger::telegram,
                 (string) $user->getId(),
                 $user->getUsername(),
                 trim($user->getFirstName() . ' ' . $user->getLastName()),
-                $countryCode,
+                $telegram->getBot()->getCountryCode(),
                 $telegram->getBot()->getLocaleCode(),
             );
             $messengerUser = $this->messengerUserUpserter->upsertMessengerUser($messengerUserTransfer);

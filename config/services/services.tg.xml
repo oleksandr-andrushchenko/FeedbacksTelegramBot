@@ -85,7 +85,6 @@
             <argument type="service" id="app.telegram_user_provider"/>
             <argument type="service" id="app.messenger_user_upserter"/>
             <argument type="service" id="app.user_upserter"/>
-            <argument type="service" id="app.telegram_new_messenger_user_country_provider"/>
         </service>
         <service id="app.telegram_update_checker" class="App\Service\Telegram\TelegramUpdateChecker"
                  lazy="true">
@@ -224,7 +223,6 @@
                  class="App\Service\Telegram\Chat\StartTelegramCommandHandler" lazy="true">
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
             <argument type="service" id="app.site_url_generator"/>
-            <argument type="service" id="app.feedback_user_subscription_manager"/>
         </service>
         <service id="app.telegram_conversation" class="App\Service\Telegram\Conversation\TelegramConversation"
                  abstract="true" lazy="true">

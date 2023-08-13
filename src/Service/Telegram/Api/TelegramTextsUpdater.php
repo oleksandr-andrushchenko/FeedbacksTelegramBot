@@ -35,7 +35,7 @@ class TelegramTextsUpdater
         foreach ([$bot->getLocaleCode()] as $localeCode) {
             $name = $this->translator->trans(sprintf('%s.name', $group), domain: $domain, locale: $localeCode);
             $telegram->setMyName([
-                'name' => $this->stage === 'prod' ? $name : sprintf('(%s) %s', ucfirst($this->stage), $name),
+                'name' => $this->stage === 'prod' ? $name : sprintf('(%s, %s) %s', ucfirst($this->stage), $bot->getPrimaryBot() === null ? 'Primary' : 'Mirror', $name),
                 'language_code' => $localeCode,
             ]);
             $description = $this->twig->render(sprintf('tg.%s.html.twig', TelegramView::DESCRIPTION->value), [

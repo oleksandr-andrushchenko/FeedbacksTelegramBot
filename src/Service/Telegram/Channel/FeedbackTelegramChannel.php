@@ -26,6 +26,7 @@ use App\Service\Telegram\FallbackTelegramCommand;
 use App\Service\Telegram\TelegramCommand;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Service\Telegram\TelegramConversationFactory;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannelInterface
 {
@@ -39,9 +40,10 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     public const HINTS = '/hints';
     public const PURGE = '/purge';
     public const CONTACT = '/contact';
+    public const COMMANDS = '/commands';
     public const RESTART = '/restart';
 
-    public const COMMANDS = [
+    public const SUPPORTS = [
         'create' => self::CREATE,
         'search' => self::SEARCH,
         'subscribe' => self::SUBSCRIBE,
@@ -51,6 +53,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         'hints' => self::HINTS,
         'purge' => self::PURGE,
         'contact' => self::CONTACT,
+        'commands' => self::COMMANDS,
         'restart' => self::RESTART,
     ];
 
@@ -80,6 +83,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         yield new TelegramCommand(self::HINTS, fn () => $this->hints($tg), menu: true, key: 'hints', beforeConversations: true);
         yield new TelegramCommand(self::PURGE, fn () => $this->purge($tg), menu: true, key: 'purge', beforeConversations: true);
         yield new TelegramCommand(self::CONTACT, fn () => $this->contact($tg), menu: true, key: 'contact', beforeConversations: true);
+        yield new TelegramCommand(self::COMMANDS, fn () => $this->commands($tg), menu: true, key: 'commands', beforeConversations: true);
         yield new TelegramCommand(self::RESTART, fn () => $this->restart($tg), menu: true, key: 'restart', beforeConversations: true);
 
         yield new FallbackTelegramCommand(fn () => $this->fallback($tg));
@@ -98,6 +102,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
             $this->chooseActionChatSender->getHintsButton($tg)->getText() => $this->hints($tg),
             $this->chooseActionChatSender->getPurgeButton($tg)->getText() => $this->purge($tg),
             $this->chooseActionChatSender->getContactButton($tg)->getText() => $this->contact($tg),
+            $this->chooseActionChatSender->getCommandsButton($tg)->getText() => $this->commands($tg),
             $this->chooseActionChatSender->getRestartButton($tg)->getText() => $this->restart($tg),
             $this->chooseActionChatSender->getShowLessButton($tg)->getText() => $this->less($tg),
             $this->chooseActionChatSender->getShowMoreButton($tg)->getText() => $this->more($tg),
@@ -220,6 +225,15 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     public function contact(TelegramAwareHelper $tg): null
     {
         return $tg->stopConversations()->startConversation(ContactTelegramConversation::class)->null();
+    }
+
+    public function commands(TelegramAwareHelper $tg): null
+    {
+        $tg->stopConversations();
+
+        $tg->reply($tg->view(TelegramView::COMMANDS), parseMode: 'HTML', disableWebPagePreview: true);
+
+        return $this->chooseActionChatSender->sendActions($tg);
     }
 
     public function restart(TelegramAwareHelper $tg): null

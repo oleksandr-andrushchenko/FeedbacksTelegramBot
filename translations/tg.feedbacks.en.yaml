@@ -5,10 +5,11 @@ icon:
   subscriptions: 🌟
   country: 🌎
   locale: 🌎
-  restart: 🔄
-  purge: ⚠️
   hints: ℹ️
+  purge: ⚠️
   contact: ✉️
+  commands: 📎
+  restart: 🔄
 
 command:
   create: Add feedback
@@ -17,7 +18,8 @@ command:
   subscriptions: My Premium
   country: My Country
   locale: My Language
-  restart: Restart
-  purge: Purge Data
   hints: Toggle Hints
+  purge: Purge Data
   contact: Contact Us
+  commands: Commands
+  restart: Restart

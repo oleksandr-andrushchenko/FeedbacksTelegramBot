@@ -5,7 +5,8 @@ command:
   subscriptions: Мой Премиум
   country: Моя Страна
   locale: Мой язык
-  restart: Перезапустить
-  purge: Удалить Данные
   hints: Переключить Подсказки
+  purge: Удалить Данные
   contact: Обратная Свзяь
+  commands: Команды
+  restart: Перезапустить

@@ -19,5 +19,6 @@ enum TelegramView: string
     case DESCRIBE_PURGE = 'describe_purge';
     case DESCRIBE_CONTACT = 'describe_contact';
     case QUERY_CONTACT = 'query_contact';
+    case COMMANDS = 'commands';
     case DESCRIBE_RESTART = 'describe_restart';
 }

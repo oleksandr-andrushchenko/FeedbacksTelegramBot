@@ -40,6 +40,7 @@ class ChooseActionTelegramChatSender
             $keyboards[] = $this->getLocaleButton($tg);
             $keyboards[] = $this->getHintsButton($tg);
             $keyboards[] = $this->getPurgeButton($tg);
+            $keyboards[] = $this->getCommandsButton($tg);
             $keyboards[] = $this->getRestartButton($tg);
             $keyboards[] = $this->getShowLessButton($tg);
         } else {
@@ -144,6 +145,11 @@ class ChooseActionTelegramChatSender
     public static function getContactButton(TelegramAwareHelper $tg): KeyboardButton
     {
         return $tg->button(self::command($tg, 'contact'));
+    }
+
+    public static function getCommandsButton(TelegramAwareHelper $tg): KeyboardButton
+    {
+        return $tg->button(self::command($tg, 'commands'));
     }
 
     public static function getRestartButton(TelegramAwareHelper $tg): KeyboardButton

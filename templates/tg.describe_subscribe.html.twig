@@ -2,8 +2,7 @@
 ℹ️ {{ 'describe.title'|trans }}
 
 {% for name,command in commands %}
-{% include 'tg.command.html.twig' with {name: name} %}:
-
+🔹{% include 'tg.command.html.twig' with {name: name} %}:
 {% for period,limit in command.limits %}
  - <b>{{ limit }}</b> {{ 'tries_for'|trans({}, 'tg') }} <b>1 {{ period|trans({}, 'tg') }}</b>
 {% endfor %}

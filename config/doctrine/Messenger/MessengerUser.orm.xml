@@ -32,7 +32,7 @@
         </field>
         <field name="isShowExtendedKeyboard" column="is_show_extended_keyboard" type="boolean">
             <options>
-                <option name="default">1</option>
+                <option name="default">0</option>
             </options>
         </field>
         <field name="createdAt" column="created_at" type="datetime_immutable"/>

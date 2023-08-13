@@ -64,8 +64,6 @@ class PurgeConversationTelegramConversation extends TelegramConversation impleme
             'items' => [
                 'username',
                 'name',
-                'language',
-                'country',
                 'phone_number',
                 'email',
             ],

@@ -20,7 +20,7 @@ class MessengerUser
         private ?string $localeCode = null,
         private ?User $user = null,
         private bool $isShowHints = true,
-        private bool $isShowExtendedKeyboard = true,
+        private bool $isShowExtendedKeyboard = false,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
         private ?int $id = null,

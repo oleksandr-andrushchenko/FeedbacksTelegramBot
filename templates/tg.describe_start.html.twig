@@ -1,15 +1,4 @@
 {% trans_default_domain 'tg.start' %}
 ℹ️ {{ 'describe.title'|trans }}
 
-‼️ {{ 'describe.agreements'|trans({'%privacy_policy_link%': privacy_policy_link, '%terms_of_use_link%': terms_of_use_link})|raw }}
-
-{{ 'describe.commands_title'|trans }}
-
-{% for name,command in commands %}
-{% include 'tg.command.html.twig' with {name: name} %}:
-{{ ('describe.' ~ name)|trans }}
-
-{% endfor %}
-ℹ️ {{ 'describe.summary'|trans }}
-
-{% include 'tg.hints.html.twig' %}
+‼️ {{ 'describe.agreements'|trans({'%privacy_policy%': '<a href="' ~ privacy_policy_link ~ '">' ~ 'describe.privacy_policy'|trans ~ '</a>', '%terms_of_use%': '<a href="' ~ terms_of_use_link ~ '">' ~ 'describe.terms_of_use'|trans ~ '</a>'})|raw }}

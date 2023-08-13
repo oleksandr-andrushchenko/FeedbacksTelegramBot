@@ -10,7 +10,6 @@ use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\Chat\StartTelegramCommandHandler;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Entity\Telegram\TelegramConversation as Conversation;
-use App\Service\Telegram\TelegramNewMessengerUserCountryProvider;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
 class RestartConversationTelegramConversation extends TelegramConversation implements TelegramConversationInterface
@@ -23,7 +22,6 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
         readonly TelegramAwareHelper $awareHelper,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly StartTelegramCommandHandler $startHandler,
-        private readonly TelegramNewMessengerUserCountryProvider $newMessengerUserCountryProvider,
     )
     {
         parent::__construct($awareHelper, new TelegramConversationState());
@@ -85,12 +83,10 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
 
         $this->state->setStep(self::STEP_CONFIRMED);
 
-        $countryCode = $this->newMessengerUserCountryProvider->getCountry($tg->getTelegram());
-
         $tg->getTelegram()->getMessengerUser()
             ?->setIsShowHints(true)
-            ?->setIsShowExtendedKeyboard(true)
-            ?->setCountryCode($countryCode)
+            ?->setIsShowExtendedKeyboard(false)
+            ?->setCountryCode($tg->getTelegram()->getBot()->getCountryCode())
             ?->setLocaleCode($tg->getTelegram()->getBot()->getLocaleCode())
         ;
 
