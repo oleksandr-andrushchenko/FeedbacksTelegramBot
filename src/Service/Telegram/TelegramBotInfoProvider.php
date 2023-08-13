@@ -13,7 +13,6 @@ class TelegramBotInfoProvider
         return [
             'group' => $bot->getGroup()->name,
             'username' => $bot->getUsername(),
-            'token' => '***',
             'texts' => $bot->textsSet() ? 'Yes' : 'No',
             'webhook' => $bot->webhookSet() ? 'Yes' : 'No',
             'commands' => $bot->commandsSet() ? 'Yes' : 'No',
