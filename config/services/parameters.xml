@@ -114,30 +114,5 @@
                 </parameter>
             </parameter>
         </parameter>
-
-        <parameter key="app.telegram_payment_methods" type="collection">
-            <parameter key="portmone" type="collection">
-                <parameter key="token">%env(FEEDBACKS_PORTMONE_TOKEN)%</parameter>
-                <parameter key="currency">UAH</parameter>
-                <parameter key="flag">ua</parameter>
-                <parameter key="countries" type="collection">
-                    <parameter>ua</parameter>
-                    <parameter>ru</parameter>
-                </parameter>
-            </parameter>
-            <parameter key="sberbank" type="collection">
-                <parameter key="token">%env(FEEDBACKS_SBERBANK_TOKEN)%</parameter>
-                <parameter key="currency">RUB</parameter>
-                <parameter key="flag">ru</parameter>
-                <parameter key="countries" type="collection">
-                    <parameter>ru</parameter>
-                </parameter>
-            </parameter>
-            <parameter key="stripe" type="collection">
-                <parameter key="token">%env(FEEDBACKS_STRIPE_TOKEN)%</parameter>
-                <parameter key="currency">USD</parameter>
-                <parameter key="flag">us</parameter>
-            </parameter>
-        </parameter>
     </parameters>
 </container>
