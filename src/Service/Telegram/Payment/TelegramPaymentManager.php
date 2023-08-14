@@ -8,9 +8,10 @@ use App\Entity\Messenger\MessengerUser;
 use App\Entity\Money;
 use App\Entity\Telegram\TelegramPayment;
 use App\Entity\Telegram\TelegramPaymentManagerOptions;
+use App\Entity\Telegram\TelegramPaymentMethod;
 use App\Entity\User\User;
-use App\Enum\Telegram\TelegramPaymentMethodName;
 use App\Enum\Telegram\TelegramPaymentStatus;
+use App\Exception\Telegram\Api\InvalidCurrencyTelegramException;
 use App\Exception\Telegram\PaymentNotFoundException;
 use App\Exception\Telegram\UnknownPaymentException;
 use App\Repository\Telegram\TelegramPaymentRepository;
@@ -31,7 +32,6 @@ class TelegramPaymentManager
     public function __construct(
         private readonly TelegramPaymentManagerOptions $options,
         private readonly TelegramInvoiceSender $invoiceSender,
-        private readonly TelegramPaymentMethodProvider $paymentMethodProvider,
         private readonly CurrencyProvider $currencyProvider,
         private readonly EntityManagerInterface $entityManager,
         private readonly TelegramPaymentRepository $paymentRepository,
@@ -41,11 +41,25 @@ class TelegramPaymentManager
     {
     }
 
+    /**
+     * @param Telegram $telegram
+     * @param MessengerUser $messengerUser
+     * @param int $chatId
+     * @param TelegramPaymentMethod $paymentMethod
+     * @param string $title
+     * @param string $description
+     * @param string $label
+     * @param string $purpose
+     * @param array $payload
+     * @param Money $price
+     * @return TelegramPayment
+     * @throws InvalidCurrencyTelegramException
+     */
     public function sendPaymentRequest(
         Telegram $telegram,
         MessengerUser $messengerUser,
         int $chatId,
-        TelegramPaymentMethodName $paymentMethodName,
+        TelegramPaymentMethod $paymentMethod,
         string $title,
         string $description,
         string $label,
@@ -63,17 +77,12 @@ class TelegramPaymentManager
             $uuid,
             $messengerUser,
             $chatId,
-            $paymentMethodName,
+            $paymentMethod,
             $purpose,
             $price,
-            $payload,
-            $telegram->getBot()
+            $payload
         );
         $this->entityManager->persist($payment);
-
-        if ($this->options->logActivities()) {
-            $this->activityLogger->logActivity($payment);
-        }
 
         $this->invoiceSender->sendInvoice(
             $telegram,
@@ -81,7 +90,7 @@ class TelegramPaymentManager
             $title,
             $description,
             json_encode($payment->getPayload()),
-            $this->paymentMethodProvider->getPaymentMethod($payment->getMethod())->getToken(),
+            $paymentMethod->getToken(),
             $currency->getCode(),
             [
                 new LabeledPrice([
@@ -90,6 +99,10 @@ class TelegramPaymentManager
                 ]),
             ]
         );
+
+        if ($this->options->logActivities()) {
+            $this->activityLogger->logActivity($payment);
+        }
 
         return $payment;
     }

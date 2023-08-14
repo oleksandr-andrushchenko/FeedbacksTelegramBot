@@ -5,18 +5,20 @@ declare(strict_types=1);
 namespace App\Service\Telegram\Conversation;
 
 use App\Entity\Feedback\FeedbackSubscriptionPlan;
+use App\Entity\Intl\Currency;
 use App\Entity\Money;
 use App\Entity\Telegram\SubscribeTelegramConversationState;
 use App\Entity\Telegram\TelegramConversation as Conversation;
 use App\Entity\Telegram\TelegramPaymentMethod;
+use App\Exception\Telegram\Api\InvalidCurrencyTelegramException;
 use App\Exception\ValidatorException;
+use App\Repository\Telegram\TelegramPaymentMethodRepository;
 use App\Service\Feedback\FeedbackSubscriptionPlanProvider;
-use App\Service\Intl\CountryProvider;
 use App\Service\Intl\CurrencyProvider;
+use App\Service\MoneyFormatter;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\Chat\SubscribeDescribeTelegramChatSender;
 use App\Service\Telegram\Payment\TelegramPaymentManager;
-use App\Service\Telegram\Payment\TelegramPaymentMethodProvider;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Service\Validator;
 use Longman\TelegramBot\Entities\KeyboardButton;
@@ -26,21 +28,22 @@ use Longman\TelegramBot\Entities\KeyboardButton;
  */
 class SubscribeTelegramConversation extends TelegramConversation implements TelegramConversationInterface
 {
-    public const STEP_SUBSCRIPTION_PLAN_QUERIED = 10;
-    public const STEP_PAYMENT_METHOD_QUERIED = 20;
-    public const STEP_PAYMENT_QUERIED = 30;
-    public const STEP_CANCEL_PRESSED = 40;
+    public const STEP_CURRENCY_QUERIED = 10;
+    public const STEP_SUBSCRIPTION_PLAN_QUERIED = 20;
+    public const STEP_PAYMENT_METHOD_QUERIED = 30;
+    public const STEP_PAYMENT_QUERIED = 40;
+    public const STEP_CANCEL_PRESSED = 50;
 
     public function __construct(
         readonly TelegramAwareHelper $awareHelper,
         private readonly Validator $validator,
         private readonly FeedbackSubscriptionPlanProvider $subscriptionPlansProvider,
-        private readonly TelegramPaymentMethodProvider $paymentMethodProvider,
-        private readonly CountryProvider $countryProvider,
-        private readonly CurrencyProvider $currencyProvider,
+        private readonly TelegramPaymentMethodRepository $paymentMethodRepository,
         private readonly TelegramPaymentManager $paymentManager,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly SubscribeDescribeTelegramChatSender $subscribeDescribeChatSender,
+        private readonly CurrencyProvider $currencyProvider,
+        private readonly MoneyFormatter $moneyFormatter,
     )
     {
         parent::__construct($awareHelper, new SubscribeTelegramConversationState());
@@ -51,7 +54,14 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
         if ($this->state->getStep() === null) {
             $this->describe($tg);
 
-            return $this->askSubscriptionPlan($tg);
+            $this->state->setIsCurrencyStep($tg->getTelegram()->getMessengerUser()?->getCurrencyCode() === null);
+            $this->state->setIsPaymentMethodStep(count($this->getPaymentMethods($tg)) > 1);
+
+            if ($this->state->isCurrencyStep()) {
+                return $this->queryCurrency($tg);
+            }
+
+            return $this->querySubscriptionPlan($tg);
         }
 
         if ($tg->matchText(null)) {
@@ -59,8 +69,11 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
         }
 
         if ($tg->matchText($this->getBackButton($tg)->getText())) {
+            if ($this->state->getStep() === self::STEP_SUBSCRIPTION_PLAN_QUERIED) {
+                return $this->queryCurrency($tg);
+            }
             if ($this->state->getStep() === self::STEP_PAYMENT_METHOD_QUERIED) {
-                return $this->askSubscriptionPlan($tg);
+                return $this->querySubscriptionPlan($tg);
             }
         }
 
@@ -70,6 +83,10 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
             $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.subscribe'));
 
             return $this->chooseActionChatSender->sendActions($tg);
+        }
+
+        if ($this->state->getStep() === self::STEP_CURRENCY_QUERIED) {
+            return $this->gotCurrency($tg);
         }
 
         if ($this->state->getStep() === self::STEP_SUBSCRIPTION_PLAN_QUERIED) {
@@ -92,28 +109,73 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
         $this->subscribeDescribeChatSender->sendSubscribeDescribe($tg);
     }
 
-    public function askSubscriptionPlan(TelegramAwareHelper $tg): null
+    public function queryCurrency(TelegramAwareHelper $tg): null
     {
-        $this->state->setStep(self::STEP_SUBSCRIPTION_PLAN_QUERIED);
-        $this->state->setIsPaymentMethodStep(count($this->getPaymentMethods($tg)) !== 1);
+        $this->state->setStep(self::STEP_CURRENCY_QUERIED);
 
         return $tg->reply(
-            $this->getStep(1) . $this->getSubscriptionPlanQuery($tg),
+            $this->getStep(1) . $this->getCurrencyQuery($tg),
             $tg->keyboard(...[
-                ...$this->getSubscriptionPlanButtons($tg),
+                ...$this->getCurrencyButtons($tg),
                 $this->getCancelButton($tg),
             ])
         )->null();
     }
 
+    public function gotCurrency(TelegramAwareHelper $tg): null
+    {
+        $currency = $this->getCurrencyByButton($tg->getText(), $tg);
+
+        if ($currency === null) {
+            $tg->replyWrong($tg->trans('reply.wrong'));
+
+            return $this->queryCurrency($tg);
+        }
+
+        $this->state->setCurrency($currency);
+        try {
+            $this->validator->validate($this->state, groups: 'currency');
+            $tg->getTelegram()->getMessengerUser()?->setCurrencyCode($currency->getCode());
+        } catch (ValidatorException $exception) {
+            $tg->reply($exception->getFirstMessage());
+
+            return $this->queryCurrency($tg);
+        }
+
+        return $this->querySubscriptionPlan($tg);
+    }
+
+    public function querySubscriptionPlan(TelegramAwareHelper $tg): null
+    {
+        $this->state->setStep(self::STEP_SUBSCRIPTION_PLAN_QUERIED);
+
+        $keyboards = $this->getSubscriptionPlanButtons($tg);
+
+        if ($this->state->isCurrencyStep()) {
+            $keyboards[] = $this->getBackButton($tg);
+        } else {
+            $keyboards[] = $this->getChangeCurrencyButton($tg);
+        }
+
+        $keyboards[] = $this->getCancelButton($tg);
+
+        return $tg->reply($this->getStep(2) . $this->getSubscriptionPlanQuery($tg), $tg->keyboard(...$keyboards))->null();
+    }
+
     public function gotSubscriptionPlan(TelegramAwareHelper $tg, Conversation $conversation): null
     {
+        if ($tg->matchText($this->getChangeCurrencyButton($tg)->getText())) {
+            $this->state->setIsCurrencyStep(true);
+
+            return $this->queryCurrency($tg);
+        }
+
         $subscriptionPlan = $this->getSubscriptionPlanByButton($tg->getText(), $tg);
 
         if ($subscriptionPlan === null) {
             $tg->replyWrong($tg->trans('reply.wrong'));
 
-            return $this->askSubscriptionPlan($tg);
+            return $this->querySubscriptionPlan($tg);
         }
 
         $this->state->setSubscriptionPlan($subscriptionPlan);
@@ -122,24 +184,24 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
         } catch (ValidatorException $exception) {
             $tg->reply($exception->getFirstMessage());
 
-            return $this->askSubscriptionPlan($tg);
+            return $this->querySubscriptionPlan($tg);
         }
 
         if ($this->state->isPaymentMethodStep()) {
-            return $this->askPaymentMethod($tg);
+            return $this->queryPaymentMethod($tg);
         }
 
         $this->state->setPaymentMethod($this->getPaymentMethods($tg)[0]);
 
-        return $this->askPayment($tg, $conversation);
+        return $this->queryPayment($tg, $conversation);
     }
 
-    public function askPaymentMethod(TelegramAwareHelper $tg): null
+    public function queryPaymentMethod(TelegramAwareHelper $tg): null
     {
         $this->state->setStep(self::STEP_PAYMENT_METHOD_QUERIED);
 
         return $tg->reply(
-            $this->getStep(2) . $this->getPaymentMethodQuery($tg),
+            $this->getStep(3) . $this->getPaymentMethodQuery($tg),
             $tg->keyboard(...[
                 ...$this->getPaymentMethodButtons($tg),
                 $this->getBackButton($tg),
@@ -155,7 +217,7 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
         if ($paymentMethod === null) {
             $tg->replyWrong($tg->trans('reply.wrong'));
 
-            return $this->askPaymentMethod($tg);
+            return $this->queryPaymentMethod($tg);
         }
 
         $this->state->setPaymentMethod($paymentMethod);
@@ -164,13 +226,13 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
         } catch (ValidatorException $exception) {
             $tg->reply($exception->getFirstMessage());
 
-            return $this->askPaymentMethod($tg);
+            return $this->queryPaymentMethod($tg);
         }
 
-        return $this->askPayment($tg, $conversation);
+        return $this->queryPayment($tg, $conversation);
     }
 
-    public function askPayment(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function queryPayment(TelegramAwareHelper $tg, Conversation $conversation): null
     {
         $this->state->setStep(self::STEP_PAYMENT_QUERIED);
 
@@ -180,24 +242,43 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
             'plan' => $this->getSubscriptionPlanText($subscriptionPlan, $tg),
         ];
 
-        $tg->reply($this->getStep(3) . $this->getPaymentQuery($tg));
+        $tg->reply($this->getStep(4) . $this->getPaymentQuery($tg));
 
-        $this->paymentManager->sendPaymentRequest(
-            $tg->getTelegram(),
-            $tg->getTelegram()->getMessengerUser(),
-            $tg->getChatId(),
-            $this->state->getPaymentMethod()->getName(),
-            $tg->trans('query.payment_invoice_title', $transParameters, domain: 'tg.subscribe'),
-            $tg->trans('query.payment_invoice_description', $transParameters, domain: 'tg.subscribe'),
-            $this->getSubscriptionPlanButton($subscriptionPlan, $tg)->getText(),
-            $subscriptionPlan->getName()->name,
-            [],
-            $this->getPrice($subscriptionPlan, $tg)
-        );
+        try {
+            $this->paymentManager->sendPaymentRequest(
+                $tg->getTelegram(),
+                $tg->getTelegram()->getMessengerUser(),
+                $tg->getChatId(),
+                $this->state->getPaymentMethod(),
+                $tg->trans('query.payment_invoice_title', $transParameters, domain: 'tg.subscribe'),
+                $tg->trans('query.payment_invoice_description', $transParameters, domain: 'tg.subscribe'),
+                $this->getSubscriptionPlanButton($subscriptionPlan, $tg)->getText(),
+                $subscriptionPlan->getName()->name,
+                [],
+                $this->getPrice($subscriptionPlan, $tg)
+            );
+        } catch (InvalidCurrencyTelegramException $exception) {
+            $tg->replyFail($tg->trans('reply.invalid_currency', ['currency' => $exception->getCurrency()], domain: 'tg.subscribe'));
+
+            return $this->queryCurrency($tg);
+        }
 
         $tg->stopConversation($conversation);
 
         return $this->chooseActionChatSender->sendActions($tg);
+    }
+
+    public static function getCurrencyQuery(TelegramAwareHelper $tg): string
+    {
+        return $tg->trans('query.currency', domain: 'tg.subscribe');
+    }
+
+    public function getCurrencyButtons(TelegramAwareHelper $tg): array
+    {
+        return array_map(
+            fn (Currency $currency) => $this->getCurrencyButton($currency, $tg),
+            $this->getCurrencies($tg)
+        );
     }
 
     public static function getSubscriptionPlanQuery(TelegramAwareHelper $tg): string
@@ -220,13 +301,39 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
     public function getPrice(FeedbackSubscriptionPlan $subscriptionPlan, TelegramAwareHelper $tg): Money
     {
         $usdPrice = $subscriptionPlan->getPrice($tg->getCountryCode());
-        $currencyCode = $this->state->getPaymentMethod()?->getCurrency();
-        if ($currencyCode === null) {
-            $currencyCode = $this->countryProvider->getCountry($tg->getCountryCode())?->getCurrency() ?? $this->currencyProvider->getDefaultCurrency()->getCode();
+
+        if ($this->state->getCurrency() === null) {
+            $currencyCode = $tg->getTelegram()->getMessengerUser()?->getCurrencyCode();
+            $currency = $this->currencyProvider->getCurrency($currencyCode);
+        } else {
+            $currency = $this->state->getCurrency();
         }
-        $currency = $this->currencyProvider->getCurrency($currencyCode) ?? $this->currencyProvider->getDefaultCurrency();
 
         return new Money(ceil($usdPrice / $currency->getRate()), $currency->getCode());
+    }
+
+    public function getCurrencyButton(Currency $currency, TelegramAwareHelper $tg): KeyboardButton
+    {
+        return $tg->button(join(' ', [
+            $this->currencyProvider->getCurrencyIcon($currency),
+            $this->currencyProvider->getCurrencyName($currency, $tg->getLocaleCode()),
+        ]));
+    }
+
+    public function getCurrencyText(Currency $currency, TelegramAwareHelper $tg): string
+    {
+        return $currency->getCode();
+    }
+
+    public function getCurrencyByButton(string $button, TelegramAwareHelper $tg): ?Currency
+    {
+        foreach ($this->getCurrencies($tg) as $currency) {
+            if (static::getCurrencyButton($currency, $tg)->getText() === $button) {
+                return $currency;
+            }
+        }
+
+        return null;
     }
 
     public function getSubscriptionPlanButton(FeedbackSubscriptionPlan $subscriptionPlan, TelegramAwareHelper $tg): KeyboardButton
@@ -234,10 +341,9 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
         $price = $this->getPrice($subscriptionPlan, $tg);
 
         return $tg->button(
-            sprintf('%s [%s %s]',
+            sprintf('%s - %s',
                 $this->getSubscriptionPlanText($subscriptionPlan, $tg),
-                $price->getCurrency(),
-                sprintf('%d,00', $price->getAmount()),
+                $this->moneyFormatter->formatMoney($price, true)
             )
         );
     }
@@ -277,13 +383,7 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
 
     public function getPaymentMethodButton(TelegramPaymentMethod $paymentMethod, TelegramAwareHelper $tg): KeyboardButton
     {
-        $country = $this->countryProvider->getCountry($paymentMethod->getFlag());
-
-        return $tg->button(join('', [
-            $this->countryProvider->getCountryIcon($country),
-            $paymentMethod->isGlobal() ? '🌎' : '',
-            $tg->trans(sprintf('payment_method.%s', $paymentMethod->getName()->name)),
-        ]));
+        return $tg->button($tg->trans(sprintf('payment_method.%s', $paymentMethod->getName()->name)));
     }
 
     public function getPaymentMethodByButton(string $button, TelegramAwareHelper $tg): ?TelegramPaymentMethod
@@ -307,14 +407,37 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
         return $tg->button($tg->trans('keyboard.back'));
     }
 
+    public function getChangeCurrencyButton(TelegramAwareHelper $tg): KeyboardButton
+    {
+        return $tg->button($tg->trans('keyboard.change_currency', domain: 'tg.subscribe'));
+    }
+
     public static function getCancelButton(TelegramAwareHelper $tg): KeyboardButton
     {
         return $tg->button($tg->trans('keyboard.cancel'));
     }
 
+    /**
+     * @param TelegramAwareHelper $tg
+     * @return TelegramPaymentMethod[]
+     */
     public function getPaymentMethods(TelegramAwareHelper $tg): array
     {
-        return $this->paymentMethodProvider->getPaymentMethods(country: $tg->getCountryCode());
+        return $this->paymentMethodRepository->findByBot($tg->getTelegram()->getBot());
+    }
+
+    /**
+     * @param TelegramAwareHelper $tg
+     * @return Currency[]
+     */
+    public function getCurrencies(TelegramAwareHelper $tg): array
+    {
+        $currencyCodes = [];
+        foreach ($this->getPaymentMethods($tg) as $paymentMethod) {
+            $currencyCodes = array_merge($currencyCodes, $paymentMethod->getCurrencyCodes());
+        }
+
+        return $this->currencyProvider->getCurrencies(currencyCodes: $currencyCodes);
     }
 
     public function getSubscriptionPlans(TelegramAwareHelper $tg): array
@@ -322,15 +445,22 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
         return $this->subscriptionPlansProvider->getSubscriptionPlans(country: $tg->getCountryCode());
     }
 
-    private function getStep(int|string $num): string
+    private function getStep(int $num): string
     {
-        if ($this->state->isPaymentMethodStep()) {
-            $total = 3;
-        } else {
+        $total = 4;
+
+        if (!$this->state->isCurrencyStep()) {
             if ($num > 1) {
                 $num--;
             }
-            $total = 2;
+            --$total;
+        }
+
+        if (!$this->state->isPaymentMethodStep()) {
+            if ($num > 2) {
+                $num--;
+            }
+            --$total;
         }
 
         return sprintf('[%d/%d] ', $num, $total);

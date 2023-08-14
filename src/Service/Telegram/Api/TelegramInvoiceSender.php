@@ -5,12 +5,30 @@ declare(strict_types=1);
 namespace App\Service\Telegram\Api;
 
 use App\Entity\Telegram\TelegramInvoicePhoto;
+use App\Exception\Telegram\Api\InvalidCurrencyTelegramException;
+use App\Exception\Telegram\TelegramException;
 use App\Service\Telegram\Telegram;
 use Longman\TelegramBot\Entities\Payments\LabeledPrice;
 use Longman\TelegramBot\Entities\ServerResponse;
 
 class TelegramInvoiceSender
 {
+    /**
+     * @param Telegram $telegram
+     * @param int $chatId
+     * @param string $title
+     * @param string $description
+     * @param string $payload
+     * @param string $providerToken
+     * @param string $currency
+     * @param array $prices
+     * @param TelegramInvoicePhoto|null $photo
+     * @param bool $needPhoneNumber
+     * @param bool $sendPhoneNumberToProvider
+     * @param bool $protectContent
+     * @return ServerResponse
+     * @throws InvalidCurrencyTelegramException
+     */
     public function sendInvoice(
         Telegram $telegram,
         int $chatId,
@@ -64,6 +82,14 @@ class TelegramInvoiceSender
             $data['protect_content'] = $protectContent;
         }
 
-        return $telegram->sendInvoice($data);
+        try {
+            return $telegram->sendInvoice($data);
+        } catch (TelegramException $exception) {
+            if (str_contains($exception->getMessage(), 'CURRENCY_INVALID')) {
+                throw new InvalidCurrencyTelegramException($currency);
+            }
+
+            throw $exception;
+        }
     }
 }

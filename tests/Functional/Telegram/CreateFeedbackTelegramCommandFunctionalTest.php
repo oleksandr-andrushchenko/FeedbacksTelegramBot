@@ -43,8 +43,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             ->expectsState(
                 new CreateFeedbackTelegramConversationState(CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
             )
-            ->shouldSeeReply(...$this->getShouldSeeReplyOnSearchTermAsked())
-            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnSearchTermAsked($this->tg))
+            ->shouldSeeReply(...$this->getShouldSeeReplyOnSearchTermQueried())
+            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnSearchTermQueried($this->tg))
         ;
 
         $messengerUser = $this->getMessengerUserRepository()->findOneByMessengerAndIdentifier(
@@ -109,8 +109,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                                 ->setType($expectedSearchTermType)
                                 ->setMessengerUser(null)
                         ),
-                    'shouldSeeReply' => $this->getShouldSeeReplyOnRatingAsked(),
-                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnRatingAsked($tg),
+                    'shouldSeeReply' => $this->getShouldSeeReplyOnRatingQueried(),
+                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnRatingQueried($tg),
                 ],
             ];
         }
@@ -127,8 +127,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                         $this->addSearchTermPossibleTypes(new SearchTermTransfer($command))
                             ->setType(SearchTermType::phone_number)
                     ),
-                'shouldSeeReply' => $this->getShouldSeeReplyOnRatingAsked(),
-                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnRatingAsked($tg),
+                'shouldSeeReply' => $this->getShouldSeeReplyOnRatingQueried(),
+                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnRatingQueried($tg),
             ],
         ];
 
@@ -144,15 +144,15 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                         $this->addSearchTermPossibleTypes(new SearchTermTransfer($command))
                             ->setType(SearchTermType::email),
                     ),
-                'shouldSeeReply' => $this->getShouldSeeReplyOnRatingAsked(),
-                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnRatingAsked($tg),
+                'shouldSeeReply' => $this->getShouldSeeReplyOnRatingQueried(),
+                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnRatingQueried($tg),
             ],
         ];
 
-        yield from $this->onSearchTermStepToTypeAskedDataProvider('search_term_step', $state);
+        yield from $this->onSearchTermStepToTypeQueriedDataProvider('search_term_step', $state);
     }
 
-    public function onSearchTermStepToTypeAskedDataProvider(string $key, CreateFeedbackTelegramConversationState $state): Generator
+    public function onSearchTermStepToTypeQueriedDataProvider(string $key, CreateFeedbackTelegramConversationState $state): Generator
     {
         /** @var MessengerUserTransfer $messengerUser */
 
@@ -167,8 +167,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                     ->setSearchTerm(
                         $this->addSearchTermPossibleTypes(new SearchTermTransfer($command), SearchTermType::messenger_profile_url)
                     ),
-                'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeAsked(),
-                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeAsked($tg, $expectedState),
+                'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeQueried(),
+                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
             ],
         ];
 
@@ -184,8 +184,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                         ->setSearchTerm(
                             $this->addSearchTermPossibleTypes(new SearchTermTransfer($command), $expectedSearchTermPossibleType)
                         ),
-                    'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeAsked(),
-                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeAsked($tg, $expectedState),
+                    'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeQueried(),
+                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
                 ],
             ];
         }
@@ -201,8 +201,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                     ->setSearchTerm(
                         $this->addSearchTermPossibleTypes(new SearchTermTransfer($command), SearchTermType::messenger_username)
                     ),
-                'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeAsked(),
-                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeAsked($tg, $expectedState),
+                'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeQueried(),
+                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
             ],
         ];
 
@@ -224,8 +224,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                                     SearchTermType::unknown,
                                 ])
                         ),
-                    'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeAsked(),
-                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeAsked($tg, $expectedState),
+                    'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeQueried(),
+                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
                 ],
             ];
         }
@@ -247,8 +247,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                                     SearchTermType::unknown,
                                 ])
                         ),
-                    'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeAsked(),
-                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeAsked($tg, $expectedState),
+                    'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeQueried(),
+                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
                 ],
             ];
         }
@@ -269,8 +269,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                                     SearchTermType::unknown,
                                 ])
                         ),
-                    'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeAsked(),
-                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeAsked($tg, $expectedState),
+                    'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeQueried(),
+                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
                 ],
             ];
         }
@@ -290,8 +290,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                                 SearchTermType::unknown,
                             ])
                     ),
-                'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeAsked(),
-                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeAsked($tg, $expectedState),
+                'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeQueried(),
+                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
             ],
         ];
 
@@ -310,8 +310,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                                 SearchTermType::unknown,
                             ])
                     ),
-                'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeAsked(),
-                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeAsked($tg, $expectedState),
+                'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeQueried(),
+                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
             ],
         ];
     }
@@ -362,8 +362,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                                 $this->getMessengerProfileUrlSearchTerm($messengerUser)
                             )->setType($expectedSearchTermType)
                         ),
-                    'shouldSeeReply' => $this->getShouldSeeReplyOnConfirmAsked($tg, $expectedState),
-                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnConfirmAsked($tg, $expectedState),
+                    'shouldSeeReply' => $this->getShouldSeeReplyOnConfirmQueried($tg, $expectedState),
+                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnConfirmQueried($tg, $expectedState),
                 ],
             ];
         }
@@ -384,13 +384,13 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                             )->setType($expectedSearchTermType)
                                 ->setMessengerUser(null)
                         ),
-                    'shouldSeeReply' => $this->getShouldSeeReplyOnConfirmAsked($tg, $expectedState),
-                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnConfirmAsked($tg, $expectedState),
+                    'shouldSeeReply' => $this->getShouldSeeReplyOnConfirmQueried($tg, $expectedState),
+                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnConfirmQueried($tg, $expectedState),
                 ],
             ];
         }
 
-        yield from $this->onSearchTermStepToTypeAskedDataProvider('change_search_term_step', $state);
+        yield from $this->onSearchTermStepToTypeQueriedDataProvider('change_search_term_step', $state);
     }
 
     /**
@@ -404,8 +404,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         $state->setStep(CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_TYPE_QUERIED);
 
         $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
-            ->shouldSeeReply(...$this->getShouldSeeReplyOnRatingAsked())
-            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnRatingAsked($this->tg))
+            ->shouldSeeReply(...$this->getShouldSeeReplyOnRatingQueried())
+            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnRatingQueried($this->tg))
         ;
     }
 
@@ -521,8 +521,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 //        $mocks && $mocks($this);
 
         $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
-            ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmAsked($this->tg, $expectedState))
-            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmAsked($this->tg, $expectedState))
+            ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried($this->tg, $expectedState))
+            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmQueried($this->tg, $expectedState))
         ;
     }
 
@@ -649,8 +649,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         ;
 
         $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
-            ->shouldSeeReply(...$this->getShouldSeeReplyOnDescriptionAsked())
-            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnDescriptionAsked($this->tg))
+            ->shouldSeeReply(...$this->getShouldSeeReplyOnDescriptionQueried())
+            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnDescriptionQueried($this->tg))
         ;
     }
 
@@ -686,8 +686,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         ;
 
         $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
-            ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmAsked($this->tg, $expectedState))
-            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmAsked($this->tg, $expectedState))
+            ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried($this->tg, $expectedState))
+            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmQueried($this->tg, $expectedState))
         ;
     }
 
@@ -716,8 +716,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         $mocks && $mocks($this);
 
         $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
-            ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmAsked($this->tg, $expectedState))
-            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmAsked($this->tg, $expectedState))
+            ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried($this->tg, $expectedState))
+            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmQueried($this->tg, $expectedState))
         ;
     }
 
@@ -856,8 +856,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         $mocks && $mocks($this);
 
         $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
-            ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmAsked($this->tg, $expectedState))
-            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmAsked($this->tg, $expectedState))
+            ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried($this->tg, $expectedState))
+            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmQueried($this->tg, $expectedState))
         ;
     }
 
@@ -1214,14 +1214,14 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 //        }
     }
 
-    private function getShouldSeeReplyOnSearchTermTypeAsked(): array
+    private function getShouldSeeReplyOnSearchTermTypeQueried(): array
     {
         return [
             'query.search_term_type',
         ];
     }
 
-    private function getShouldSeeKeyboardOnSearchTermTypeAsked(TelegramAwareHelper $tg, CreateFeedbackTelegramConversationState $state): array
+    private function getShouldSeeKeyboardOnSearchTermTypeQueried(TelegramAwareHelper $tg, CreateFeedbackTelegramConversationState $state): array
     {
         return [
             ...CreateFeedbackTelegramConversation::getSearchTermTypeButtons(SearchTermType::sort($state->getSearchTerm()->getPossibleTypes()), $tg),
@@ -1229,30 +1229,28 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         ];
     }
 
-    private function getShouldSeeReplyOnSearchTermAsked(): array
+    private function getShouldSeeReplyOnSearchTermQueried(): array
     {
         return [
-            'title',
-            'limits',
             'query.search_term',
         ];
     }
 
-    private function getShouldSeeKeyboardOnSearchTermAsked(TelegramAwareHelper $tg): array
+    private function getShouldSeeKeyboardOnSearchTermQueried(TelegramAwareHelper $tg): array
     {
         return [
             CreateFeedbackTelegramConversation::getCancelButton($tg),
         ];
     }
 
-    private function getShouldSeeReplyOnRatingAsked(): array
+    private function getShouldSeeReplyOnRatingQueried(): array
     {
         return [
             'query.rating',
         ];
     }
 
-    private function getShouldSeeKeyboardOnRatingAsked(TelegramAwareHelper $tg): array
+    private function getShouldSeeKeyboardOnRatingQueried(TelegramAwareHelper $tg): array
     {
         return [
             ...CreateFeedbackTelegramConversation::getRatingButtons($tg),
@@ -1260,14 +1258,14 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         ];
     }
 
-    private function getShouldSeeReplyOnDescriptionAsked(): array
+    private function getShouldSeeReplyOnDescriptionQueried(): array
     {
         return [
             'query.description',
         ];
     }
 
-    private function getShouldSeeKeyboardOnDescriptionAsked(TelegramAwareHelper $tg): array
+    private function getShouldSeeKeyboardOnDescriptionQueried(TelegramAwareHelper $tg): array
     {
         return [
             CreateFeedbackTelegramConversation::getLeaveEmptyButton($tg),
@@ -1275,7 +1273,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         ];
     }
 
-    private function getShouldSeeReplyOnConfirmAsked(TelegramAwareHelper $tg, CreateFeedbackTelegramConversationState $state): array
+    private function getShouldSeeReplyOnConfirmQueried(TelegramAwareHelper $tg, CreateFeedbackTelegramConversationState $state): array
     {
         return [
             'query.confirm',
@@ -1287,7 +1285,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         ];
     }
 
-    private function getShouldSeeKeyboardOnConfirmAsked(TelegramAwareHelper $tg, CreateFeedbackTelegramConversationState $state): array
+    private function getShouldSeeKeyboardOnConfirmQueried(TelegramAwareHelper $tg, CreateFeedbackTelegramConversationState $state): array
     {
         return [
             CreateFeedbackTelegramConversation::getConfirmButton($tg),

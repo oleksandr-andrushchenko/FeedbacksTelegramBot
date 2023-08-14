@@ -162,9 +162,9 @@ class Telegram
             $this->logger->error($exception);
 
             $message = sprintf(
-                'Failed to %s for "%s" telegram',
+                'Failed to %s for "%s" telegram bot',
                 strtolower(implode(' ', preg_split('/(?=[A-Z])/', $name))),
-                $this->getBot()->getGroup()->name,
+                $this->getBot()->getUsername(),
             );
 
             throw new TelegramException($message, 0, $exception);

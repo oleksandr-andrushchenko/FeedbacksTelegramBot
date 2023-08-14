@@ -32,7 +32,8 @@ class MessengerUserUpserter
                 $messengerUserTransfer->getUsername(),
                 $messengerUserTransfer->getName(),
                 $messengerUserTransfer->getCountryCode(),
-                $messengerUserTransfer->getLocaleCode()
+                $messengerUserTransfer->getLocaleCode(),
+                $messengerUserTransfer->getCurrencyCode(),
             );
             $this->entityManager->persist($messengerUser);
 

@@ -17,7 +17,6 @@
         <field name="username" column="username" length="32" unique="true"/>
         <field name="token" column="token" length="46"/>
         <field name="countryCode" column="country_code" length="2"/>
-        <field name="localeCode" column="locale_code" length="2"/>
         <field name="group" column="group_name" type="smallint" enum-type="App\Enum\Telegram\TelegramGroup">
             <options>
                 <option name="unsigned">true</option>

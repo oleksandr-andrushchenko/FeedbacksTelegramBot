@@ -6,7 +6,6 @@ namespace App\Entity\Telegram;
 
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Money;
-use App\Enum\Telegram\TelegramPaymentMethodName;
 use App\Enum\Telegram\TelegramPaymentStatus;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -20,11 +19,10 @@ class TelegramPayment
         private readonly string $uuid,
         private readonly MessengerUser $messengerUser,
         private readonly int $chatId,
-        private readonly TelegramPaymentMethodName $method,
+        private readonly TelegramPaymentMethod $method,
         private readonly string $purpose,
         Money $price,
         private readonly array $payload,
-        private readonly TelegramBot $bot,
         private ?array $preCheckoutQuery = null,
         private ?array $successfulPayment = null,
         private ?TelegramPaymentStatus $status = TelegramPaymentStatus::REQUEST_SENT,
@@ -57,7 +55,7 @@ class TelegramPayment
         return $this->chatId;
     }
 
-    public function getMethod(): TelegramPaymentMethodName
+    public function getMethod(): TelegramPaymentMethod
     {
         return $this->method;
     }
@@ -75,11 +73,6 @@ class TelegramPayment
     public function getPayload(): array
     {
         return $this->payload;
-    }
-
-    public function getBot(): TelegramBot
-    {
-        return $this->bot;
     }
 
     public function getPreCheckoutQuery(): ?array

@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace App\Service\Telegram;
 
 use App\Entity\Telegram\TelegramBot;
-use App\Exception\Telegram\TelegramNotFoundException;
+use App\Exception\Intl\CountryNotFoundException;
 use App\Object\Telegram\TelegramBotTransfer;
-use App\Repository\Telegram\TelegramBotRepository;
+use App\Service\Intl\CountryProvider;
 use Doctrine\ORM\EntityManagerInterface;
 
 class TelegramBotCreator
 {
     public function __construct(
-        private readonly TelegramBotRepository $botRepository,
+        private readonly CountryProvider $countryProvider,
         private readonly EntityManagerInterface $entityManager,
     )
     {
@@ -22,26 +22,21 @@ class TelegramBotCreator
     /**
      * @param TelegramBotTransfer $botTransfer
      * @return TelegramBot
-     * @throws TelegramNotFoundException
+     * @throws CountryNotFoundException
      */
     public function createTelegramBot(TelegramBotTransfer $botTransfer): TelegramBot
     {
-        if ($botTransfer->getPrimaryBotUsername() === null) {
-            $primaryBot = null;
-        } else {
-            $primaryBot = $this->botRepository->findOneByUsername($botTransfer->getPrimaryBotUsername());
-
-            if ($primaryBot === null) {
-                throw new TelegramNotFoundException($botTransfer->getUsername());
-            }
+        $countryCode = $botTransfer->getCountryCode();
+        if (!$this->countryProvider->hasCountry($countryCode)) {
+            throw new CountryNotFoundException($countryCode);
         }
+
         $bot = new TelegramBot(
             $botTransfer->getUsername(),
             $botTransfer->getToken(),
-            $botTransfer->getCountryCode(),
-            $botTransfer->getLocaleCode(),
+            $countryCode,
             $botTransfer->getGroup(),
-            $primaryBot
+            $botTransfer->getPrimaryBot()
         );
         $this->entityManager->persist($bot);
 

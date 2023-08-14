@@ -17,16 +17,11 @@
         <field name="uuid" column="uuid" length="32" unique="true"/>
         <many-to-one field="messengerUser" target-entity="App\Entity\Messenger\MessengerUser"/>
         <field name="chatId" column="chat_id" type="bigint"/>
-        <field name="method" column="method" type="smallint" enum-type="App\Enum\Telegram\TelegramPaymentMethodName">
-            <options>
-                <option name="unsigned">true</option>
-            </options>
-        </field>
+        <many-to-one field="method" target-entity="App\Entity\Telegram\TelegramPaymentMethod"/>
         <field name="purpose" column="purpose"/>
         <field name="priceAmount" column="price_amount" type="decimal" precision="7" scale="2"/>
         <field name="priceCurrency" column="price_currency"/>
         <field name="payload" column="payload" type="json"/>
-        <many-to-one field="bot" target-entity="App\Entity\Telegram\TelegramBot"/>
         <field name="preCheckoutQuery" column="pre_checkout_query" type="json" nullable="true"/>
         <field name="successfulPayment" column="successful_payment" type="json" nullable="true"/>
         <field name="status" column="status" type="smallint" enum-type="App\Enum\Telegram\TelegramPaymentStatus">

@@ -45,7 +45,6 @@ class TelegramBotTextsShowCommand extends Command
         try {
             $username = $input->getArgument('name');
             $bot = $this->repository->findOneByUsername($username);
-
             if ($bot === null) {
                 throw new TelegramNotFoundException($username);
             }

@@ -57,6 +57,7 @@ class OpenSearchInstagramMessengerUserFinder implements InstagramMessengerUserFi
                         $user['username'],
                         $user['full_name'],
                         null,
+                        null,
                         null
                     );
                 }

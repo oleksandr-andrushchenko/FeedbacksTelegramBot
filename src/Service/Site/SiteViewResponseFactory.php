@@ -44,7 +44,7 @@ class SiteViewResponseFactory
                 throw new NotFoundHttpException();
             }
 
-            $locale = $this->localeProvider->getLocale($country->getLocales()[0]);
+            $locale = $this->localeProvider->getLocale($country->getLocaleCodes()[0]);
             $this->localeSwitcher->setLocale($locale->getCode());
         }
 

@@ -21,9 +21,10 @@
             <argument type="service" id="app.string_mb_uc_firster"/>
         </service>
         <service id="app.intl_currency_provider" class="App\Service\Intl\CurrencyProvider" lazy="true">
-            <argument type="string">%app.default_currency%</argument>
             <argument>%app.currencies_file%</argument>
             <argument type="service" id="app.normalizer.intl_currency"/>
+            <argument type="service" id="translator"/>
+            <argument type="service" id="app.intl_country_provider"/>
         </service>
         <service id="app.intl_country_provider" class="App\Service\Intl\CountryProvider" lazy="true">
             <argument type="service" id="translator"/>

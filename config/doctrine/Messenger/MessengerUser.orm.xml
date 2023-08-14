@@ -24,6 +24,7 @@
 
         <field name="countryCode" column="country_code" length="5" nullable="true"/>
         <field name="localeCode" column="locale_code" length="5" nullable="true"/>
+        <field name="currencyCode" column="currency_code" length="3" nullable="true"/>
         <many-to-one field="user" target-entity="App\Entity\User\User"/>
         <field name="isShowHints" column="is_show_hints" type="boolean">
             <options>

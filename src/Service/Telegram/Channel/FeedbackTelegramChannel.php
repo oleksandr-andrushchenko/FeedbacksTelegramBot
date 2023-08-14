@@ -186,7 +186,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     {
         $subscription = $this->subscriptionManager->createByTelegramPayment($payment);
 
-        $tg->replyOk($tg->trans('reply.payment.ok', [
+        $tg->replyOk($tg->trans('reply.payment_ok', [
             'plan' => $tg->trans(sprintf('subscription_plan.%s', $subscription->getSubscriptionPlan()->name)),
             'expire_at' => $subscription->getExpireAt()->format($tg->trans('datetime_format')),
         ], domain: 'tg.subscribe'));

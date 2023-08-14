@@ -25,6 +25,17 @@ class LocaleProvider
         return $this->getLocale($this->defaultCode);
     }
 
+    public function hasLocale(string $code): bool
+    {
+        foreach ($this->getLocales() as $locale) {
+            if ($locale->getCode() === $code) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function getLocale(string $code): ?Locale
     {
         foreach ($this->getLocales() as $locale) {
@@ -75,7 +86,7 @@ class LocaleProvider
         }
 
         if ($country !== null) {
-            $filter = $this->countryProvider->getCountry($country)->getLocales() ?? [];
+            $filter = $this->countryProvider->getCountry($country)->getLocaleCodes() ?? [];
             $locales = array_intersect($locales, $filter);
         }
 

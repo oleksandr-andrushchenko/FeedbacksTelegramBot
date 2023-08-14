@@ -20,10 +20,32 @@ class CountryProvider
     {
     }
 
+    public function hasCountry(string $code): bool
+    {
+        foreach ($this->getCountries() as $country) {
+            if ($country->getCode() === $code) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function getCountry(string $code): ?Country
     {
         foreach ($this->getCountries() as $country) {
             if ($country->getCode() === $code) {
+                return $country;
+            }
+        }
+
+        return null;
+    }
+
+    public function getCountryByCurrency(string $currencyCode): ?Country
+    {
+        foreach ($this->getCountries() as $country) {
+            if ($country->getCurrencyCode() === $currencyCode) {
                 return $country;
             }
         }
@@ -45,7 +67,7 @@ class CountryProvider
 
     public function getCountryDefaultLocale(Country $country): ?string
     {
-        return $country->getLocales()[0] ?? null;
+        return $country->getLocaleCodes()[0] ?? null;
     }
 
     /**
@@ -65,7 +87,7 @@ class CountryProvider
         $countries = $this->countries;
 
         if ($locale !== null) {
-            $countries = array_filter($countries, fn (Country $country) => in_array($locale, $country->getLocales(), true));
+            $countries = array_filter($countries, fn (Country $country) => in_array($locale, $country->getLocaleCodes(), true));
         }
 
         return $locale === null ? $countries : array_values($countries);

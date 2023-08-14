@@ -6,6 +6,7 @@ namespace App\Service\Telegram\Conversation;
 
 use App\Entity\Telegram\TelegramConversationState;
 use App\Enum\Telegram\TelegramView;
+use App\Service\Intl\CountryProvider;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\Chat\StartTelegramCommandHandler;
 use App\Service\Telegram\TelegramAwareHelper;
@@ -22,6 +23,7 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
         readonly TelegramAwareHelper $awareHelper,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly StartTelegramCommandHandler $startHandler,
+        private readonly CountryProvider $countryProvider,
     )
     {
         parent::__construct($awareHelper, new TelegramConversationState());
@@ -83,11 +85,14 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
 
         $this->state->setStep(self::STEP_CONFIRMED);
 
+        $countryCode = $tg->getTelegram()->getBot()->getCountryCode();
+        $country = $this->countryProvider->getCountry($countryCode);
+
         $tg->getTelegram()->getMessengerUser()
-            ?->setIsShowHints(true)
+            ?->setIsShowHints(false)
             ?->setIsShowExtendedKeyboard(false)
-            ?->setCountryCode($tg->getTelegram()->getBot()->getCountryCode())
-            ?->setLocaleCode($tg->getTelegram()->getBot()->getLocaleCode())
+            ?->setCountryCode($country->getCode())
+            ?->setLocaleCode($this->countryProvider->getCountryDefaultLocale($country))
         ;
 
         $tg->stopConversation($conversation)->stopConversations();

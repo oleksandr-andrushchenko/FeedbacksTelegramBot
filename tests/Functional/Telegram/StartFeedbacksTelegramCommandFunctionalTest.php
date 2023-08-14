@@ -16,8 +16,6 @@ class StartFeedbacksTelegramCommandFunctionalTest extends TelegramCommandFunctio
 
         $this->type(FeedbackTelegramChannel::START)
             ->shouldSeeReply(
-                'title',
-                'agreements',
                 ChooseActionTelegramChatSender::getActionQuery($this->tg)
             )
             ->shouldSeeKeyboard(

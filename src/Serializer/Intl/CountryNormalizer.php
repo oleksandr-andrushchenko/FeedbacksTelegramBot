@@ -20,9 +20,9 @@ class CountryNormalizer implements NormalizerInterface, DenormalizerInterface
     {
         return [
             'code' => $object->getCode(),
-            'currency' => $object->getCurrency(),
-            'locales' => $object->getLocales(),
-            'phone' => $object->getPhone(),
+            'currency' => $object->getCurrencyCode(),
+            'locales' => $object->getLocaleCodes(),
+            'phone' => $object->getPhoneCode(),
         ];
     }
 

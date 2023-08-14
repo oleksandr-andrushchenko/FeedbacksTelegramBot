@@ -6,6 +6,7 @@ namespace App\Service\Telegram;
 
 use App\Entity\Intl\Locale;
 use App\Entity\Messenger\MessengerUser;
+use App\Service\Intl\CountryProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\LocaleSwitcher;
 
@@ -13,6 +14,7 @@ class TelegramLocaleSwitcher
 {
     public function __construct(
         private readonly LocaleSwitcher $localeSwitcher,
+        private readonly CountryProvider $countryProvider,
     )
     {
     }
@@ -24,7 +26,9 @@ class TelegramLocaleSwitcher
         $localeCode = null;
 
         if ($messengerUser?->getId() === null) {
-            $localeCode = $telegram->getBot()->getLocaleCode();
+            $countryCode = $telegram->getBot()->getCountryCode();
+            $country = $this->countryProvider->getCountry($countryCode);
+            $localeCode = $this->countryProvider->getCountryDefaultLocale($country);
         }
 
         $localeCode ??= $messengerUser?->getLocaleCode();

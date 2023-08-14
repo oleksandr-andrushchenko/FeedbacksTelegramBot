@@ -21,9 +21,6 @@
 /.serverless/
 ###< bref/symfony-bridge ###
 
-/data/currencies.json
-#/data/countries.json
-
 /data/locale_tools_countries.json
 /data/i18n_iso_country_translations.json
 /data/i18n_iso_language_translations.json

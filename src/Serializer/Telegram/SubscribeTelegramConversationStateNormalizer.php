@@ -6,7 +6,8 @@ namespace App\Serializer\Telegram;
 
 use App\Entity\Feedback\FeedbackSubscriptionPlan;
 use App\Entity\Telegram\SubscribeTelegramConversationState;
-use App\Entity\Telegram\TelegramPaymentMethod;
+use App\Repository\Telegram\TelegramPaymentMethodRepository;
+use App\Service\Intl\CurrencyProvider;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -18,8 +19,8 @@ class SubscribeTelegramConversationStateNormalizer implements NormalizerInterfac
         private readonly DenormalizerInterface $baseConversationStateDenormalizer,
         private readonly NormalizerInterface $subscriptionPlanNormalizer,
         private readonly DenormalizerInterface $subscriptionPlanDenormalizer,
-        private readonly NormalizerInterface $paymentMethodNormalizer,
-        private readonly DenormalizerInterface $paymentMethodDenormalizer,
+        private readonly TelegramPaymentMethodRepository $paymentMethodRepository,
+        private readonly CurrencyProvider $currencyProvider,
     )
     {
     }
@@ -34,8 +35,10 @@ class SubscribeTelegramConversationStateNormalizer implements NormalizerInterfac
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
         return array_merge($this->baseConversationStateNormalizer->normalize($object, $format, $context), [
+            'currency' => $object->getCurrency() === null ? null : $object->getCurrency()->getCode(),
+            'currency_step' => $object->isCurrencyStep(),
             'subscription_plan' => $object->getSubscriptionPlan() === null ? null : $this->subscriptionPlanNormalizer->normalize($object->getSubscriptionPlan(), $format, $context),
-            'payment_method' => $object->getPaymentMethod() === null ? null : $this->paymentMethodNormalizer->normalize($object->getPaymentMethod(), $format, $context),
+            'payment_method' => $object->getPaymentMethod() === null ? null : $object->getPaymentMethod()->getId(),
             'payment_method_step' => $object->isPaymentMethodStep(),
         ]);
     }
@@ -51,8 +54,10 @@ class SubscribeTelegramConversationStateNormalizer implements NormalizerInterfac
         $object = $this->baseConversationStateDenormalizer->denormalize($data, $type, $format, $context);
 
         $object
+            ->setCurrency(isset($data['currency']) ? $this->currencyProvider->getCurrency($data['currency']) : null)
+            ->setIsCurrencyStep($data['currency_step'] ?? null)
             ->setSubscriptionPlan(isset($data['subscription_plan']) ? $this->subscriptionPlanDenormalizer->denormalize($data['subscription_plan'], FeedbackSubscriptionPlan::class, $format, $context) : null)
-            ->setPaymentMethod(isset($data['payment_method']) ? $this->paymentMethodDenormalizer->denormalize($data['payment_method'], TelegramPaymentMethod::class, $format, $context) : null)
+            ->setPaymentMethod(isset($data['payment_method']) ? $this->paymentMethodRepository->find($data['payment_method']) : null)
             ->setIsPaymentMethodStep($data['payment_method_step'] ?? null)
         ;
 

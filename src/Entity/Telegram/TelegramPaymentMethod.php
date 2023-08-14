@@ -5,17 +5,30 @@ declare(strict_types=1);
 namespace App\Entity\Telegram;
 
 use App\Enum\Telegram\TelegramPaymentMethodName;
+use DateTimeImmutable;
+use DateTimeInterface;
 
-readonly class TelegramPaymentMethod
+class TelegramPaymentMethod
 {
     public function __construct(
-        private TelegramPaymentMethodName $name,
-        private string $token,
-        private string $currency,
-        private array $countries,
-        private ?string $flag,
+        private readonly TelegramBot $bot,
+        private readonly TelegramPaymentMethodName $name,
+        private readonly string $token,
+        private readonly array $currencyCodes,
+        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
+        private ?int $id = null,
     )
     {
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getBot(): TelegramBot
+    {
+        return $this->bot;
     }
 
     public function getName(): TelegramPaymentMethodName
@@ -28,23 +41,13 @@ readonly class TelegramPaymentMethod
         return $this->token;
     }
 
-    public function getCurrency(): string
+    public function getCurrencyCodes(): array
     {
-        return $this->currency;
+        return $this->currencyCodes;
     }
 
-    public function getCountries(): array
+    public function getCreatedAt(): DateTimeInterface
     {
-        return $this->countries;
-    }
-
-    public function getFlag(): ?string
-    {
-        return $this->flag;
-    }
-
-    public function isGlobal(): bool
-    {
-        return count($this->countries) === 0;
+        return $this->createdAt;
     }
 }

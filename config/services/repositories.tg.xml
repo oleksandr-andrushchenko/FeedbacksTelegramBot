@@ -20,5 +20,8 @@
         <service id="app.repository.telegram_bot" class="App\Repository\Telegram\TelegramBotRepository">
             <argument type="service" id="doctrine"/>
         </service>
+        <service id="app.repository.telegram_payment_method" class="App\Repository\Telegram\TelegramPaymentMethodRepository">
+            <argument type="service" id="doctrine"/>
+        </service>
     </services>
 </container>

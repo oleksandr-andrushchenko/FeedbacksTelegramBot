@@ -20,17 +20,17 @@ readonly class Country
         return $this->code;
     }
 
-    public function getCurrency(): string
+    public function getCurrencyCode(): string
     {
         return $this->currency;
     }
 
-    public function getLocales(): array
+    public function getLocaleCodes(): array
     {
         return $this->locales;
     }
 
-    public function getPhone(): string
+    public function getPhoneCode(): string
     {
         return $this->phone;
     }

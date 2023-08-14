@@ -13,7 +13,6 @@ class RestartFeedbacksTelegramCommandFunctionalTest extends TelegramCommandFunct
     {
         $this->type(FeedbackTelegramChannel::RESTART)
             ->shouldSeeReply(
-                'title',
                 'query.confirm',
             )
             ->shouldSeeKeyboard(

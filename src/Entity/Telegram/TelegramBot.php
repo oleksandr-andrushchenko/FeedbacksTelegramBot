@@ -14,7 +14,6 @@ class TelegramBot
         private readonly string $username,
         private readonly string $token,
         private readonly string $countryCode,
-        private readonly string $localeCode,
         private readonly TelegramGroup $group,
         private readonly ?TelegramBot $primaryBot = null,
         private bool $isCheckUpdates = true,
@@ -48,11 +47,6 @@ class TelegramBot
     public function getCountryCode(): string
     {
         return $this->countryCode;
-    }
-
-    public function getLocaleCode(): string
-    {
-        return $this->localeCode;
     }
 
     public function getGroup(): TelegramGroup

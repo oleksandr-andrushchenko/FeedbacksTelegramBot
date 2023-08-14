@@ -1,5 +1,5 @@
 App\Entity\Telegram\TelegramConversation:
-  telegram_conversation_create_feedback_search_term_asked:
+  telegram_conversation_create_feedback_search_term_queried:
     __construct:
       messengerUser: '@messenger_user_1_telegram'
       chatId: <(\App\Tests\Fixtures::TELEGRAM_CHAT_ID_1)>

@@ -22,5 +22,8 @@
         <service id="app.trim_quotes_env_var_processor" class="App\Service\TrimQuotesEnvVarProcessor" lazy="true">
             <tag name="container.env_var_processor"/>
         </service>
+        <service id="app.money_formatter" class="App\Service\MoneyFormatter" lazy="true">
+            <argument type="service" id="app.intl_currency_provider"/>
+        </service>
     </services>
 </container>

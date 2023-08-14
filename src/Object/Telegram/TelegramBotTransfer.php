@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Object\Telegram;
 
+use App\Entity\Telegram\TelegramBot;
 use App\Enum\Telegram\TelegramGroup;
 
 readonly class TelegramBotTransfer
@@ -15,7 +16,7 @@ readonly class TelegramBotTransfer
         private string $countryCode,
         private string $localeCode,
         private TelegramGroup $group,
-        private ?string $primaryBotUsername = null,
+        private ?TelegramBot $primaryBot = null,
     )
     {
     }
@@ -45,8 +46,8 @@ readonly class TelegramBotTransfer
         return $this->group;
     }
 
-    public function getPrimaryBotUsername(): ?string
+    public function getPrimaryBot(): ?TelegramBot
     {
-        return $this->primaryBotUsername;
+        return $this->primaryBot;
     }
 }

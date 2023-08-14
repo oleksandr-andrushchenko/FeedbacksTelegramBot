@@ -4,7 +4,6 @@ App\Entity\Telegram\TelegramBot:
       username: any_bot
       token: 0:any
       countryCode: ua
-      localeCode: uk
       group: <(\App\Enum\Telegram\TelegramGroup::feedbacks)>
       primaryBot: null
       isCheckUpdates: true

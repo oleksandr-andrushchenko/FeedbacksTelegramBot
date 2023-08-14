@@ -6,15 +6,16 @@ namespace App\Object\Messenger;
 
 use App\Enum\Messenger\Messenger;
 
-class MessengerUserTransfer
+readonly class MessengerUserTransfer
 {
     public function __construct(
-        private readonly Messenger $messenger,
-        private readonly string $id,
-        private readonly ?string $username,
-        private readonly ?string $name,
-        private readonly ?string $countryCode,
-        private readonly ?string $localeCode,
+        private Messenger $messenger,
+        private string $id,
+        private ?string $username,
+        private ?string $name,
+        private ?string $countryCode,
+        private ?string $localeCode,
+        private ?string $currencyCode,
     )
     {
     }
@@ -47,5 +48,10 @@ class MessengerUserTransfer
     public function getLocaleCode(): ?string
     {
         return $this->localeCode;
+    }
+
+    public function getCurrencyCode(): ?string
+    {
+        return $this->currencyCode;
     }
 }

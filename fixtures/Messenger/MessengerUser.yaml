@@ -7,7 +7,10 @@ App\Entity\Messenger\MessengerUser:
       name: Tg 1 First Last
       countryCode: ua
       localeCode: uk
+      currencyCode: UAH
       user: '@user_1'
+      isShowHints: false
+      isShowExtendedKeyboard: false
   messenger_user_1_instagram:
     __construct:
       messenger: <(\App\Enum\Messenger\Messenger::instagram)>
@@ -16,7 +19,10 @@ App\Entity\Messenger\MessengerUser:
       name: Inst 1 First Last
       countryCode: ua
       localeCode: uk
+      currencyCode: UAH
       user: '@user_1'
+      isShowHints: false
+      isShowExtendedKeyboard: false
   messenger_user_2_telegram:
     __construct:
       messenger: <(\App\Enum\Messenger\Messenger::telegram)>
@@ -25,7 +31,10 @@ App\Entity\Messenger\MessengerUser:
       name: Tg 2 First Last
       countryCode: ua
       localeCode: uk
+      currencyCode: UAH
       user: '@user_2'
+      isShowHints: false
+      isShowExtendedKeyboard: false
   messenger_user_2_instagram:
     __construct:
       messenger: <(\App\Enum\Messenger\Messenger::instagram)>
@@ -34,7 +43,10 @@ App\Entity\Messenger\MessengerUser:
       name: Inst 2 First Last
       countryCode: ua
       localeCode: uk
+      currencyCode: UAH
       user: '@user_2'
+      isShowHints: false
+      isShowExtendedKeyboard: false
   messenger_user_3_telegram:
     __construct:
       messenger: <(\App\Enum\Messenger\Messenger::telegram)>
@@ -43,7 +55,10 @@ App\Entity\Messenger\MessengerUser:
       name: Tg 3 First Last
       countryCode: ua
       localeCode: uk
+      currencyCode: UAH
       user: '@user_3'
+      isShowHints: false
+      isShowExtendedKeyboard: false
   messenger_user_3_instagram:
     __construct:
       messenger: <(\App\Enum\Messenger\Messenger::instagram)>
@@ -52,4 +67,7 @@ App\Entity\Messenger\MessengerUser:
       name: Inst 3 First Last
       countryCode: ua
       localeCode: uk
+      currencyCode: UAH
       user: '@user_3'
+      isShowHints: false
+      isShowExtendedKeyboard: false

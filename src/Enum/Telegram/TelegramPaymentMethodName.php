@@ -11,11 +11,6 @@ enum TelegramPaymentMethodName: int
     case sberbank = 2;
     case stripe = 3;
 
-    public static function random(): self
-    {
-        return self::cases()[array_rand(self::cases())];
-    }
-
     public static function fromName(string $name): ?self
     {
         foreach (self::cases() as $enum) {

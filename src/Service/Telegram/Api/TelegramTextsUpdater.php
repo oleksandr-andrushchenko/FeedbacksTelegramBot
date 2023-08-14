@@ -6,6 +6,7 @@ namespace App\Service\Telegram\Api;
 
 use App\Entity\Telegram\TelegramBot;
 use App\Enum\Telegram\TelegramView;
+use App\Service\Intl\CountryProvider;
 use App\Service\Site\SiteUrlGenerator;
 use App\Service\Telegram\TelegramRegistry;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -20,6 +21,7 @@ class TelegramTextsUpdater
         private readonly TranslatorInterface $translator,
         private readonly SiteUrlGenerator $siteUrlGenerator,
         private readonly Environment $twig,
+        private readonly CountryProvider $countryProvider,
     )
     {
     }
@@ -31,13 +33,15 @@ class TelegramTextsUpdater
         $domain = 'tg.texts';
         $group = $telegram->getBot()->getGroup()->name;
         $countryCode = $telegram->getBot()->getCountryCode();
+        $country = $this->countryProvider->getCountry($countryCode);
 
 //        $localeCodes = [$bot->getLocaleCode()];
         $localeCodes = $telegram->getOptions()->getLocaleCodes();
 
         foreach ($localeCodes as $localeCode) {
 //            $transLocaleCode = $localeCode;
-            $transLocaleCode = $bot->getLocaleCode();
+//            $transLocaleCode = $bot->getLocaleCode();
+            $transLocaleCode = $this->countryProvider->getCountryDefaultLocale($country);
             $name = $this->translator->trans(sprintf('%s.name', $group), domain: $domain, locale: $transLocaleCode);
             $telegram->setMyName([
                 'name' => $this->stage === 'prod' ? $name : sprintf('(%s, %s) %s', ucfirst($this->stage), $bot->getPrimaryBot() === null ? 'Primary' : 'Mirror', $name),
@@ -49,14 +53,14 @@ class TelegramTextsUpdater
                 'privacy_policy_link' => $this->siteUrlGenerator->generate(
                     'app.site_privacy_policy',
                     [
-                        '_locale' => $countryCode,
+                        '_locale' => $country->getCode(),
                     ],
                     referenceType: UrlGeneratorInterface::ABSOLUTE_URL
                 ),
                 'terms_of_use_link' => $this->siteUrlGenerator->generate(
                     'app.site_terms_of_use',
                     [
-                        '_locale' => $countryCode,
+                        '_locale' => $country->getCode(),
                     ],
                     referenceType: UrlGeneratorInterface::ABSOLUTE_URL
                 ),

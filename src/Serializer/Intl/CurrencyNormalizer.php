@@ -23,9 +23,9 @@ class CurrencyNormalizer implements NormalizerInterface, DenormalizerInterface
             'rate' => $object->getRate(),
             'exp' => $object->getExp(),
 //            'symbol' => $object->getSymbol(),
-//            'native' => $object->getNative(),
-//            'symbol_left' => $object->isSymbolLeft(),
-//            'space_between' => $object->isSpaceBetween(),
+            'native' => $object->getNative(),
+            'symbol_left' => $object->isSymbolLeft(),
+            'space_between' => $object->isSpaceBetween(),
         ];
     }
 
@@ -40,10 +40,10 @@ class CurrencyNormalizer implements NormalizerInterface, DenormalizerInterface
             $data['code'],
             $data['rate'],
             $data['exp'],
-//            $data['symbol'] ?? null,
-//            $data['native'] ?? null,
-//            $data['symbol_left'] ?? null,
-//            $data['space_between'] ?? null,
+//            symbol: $data['symbol'] ?? null,
+            native: $data['native'] ?? null,
+            symbolLeft: $data['symbol_left'] ?? null,
+            spaceBetween: $data['space_between'] ?? null,
         );
     }
 

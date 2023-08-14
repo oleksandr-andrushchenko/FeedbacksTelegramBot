@@ -98,7 +98,8 @@ class Fixtures
             constant(sprintf('App\Tests\Fixtures::INSTAGRAM_USERNAME_%d', $number)),
             'Instagram Name',
             'us',
-            'en'
+            'en',
+            'USD'
         );
     }
 
@@ -110,7 +111,8 @@ class Fixtures
             sprintf('fb_user_%d', $number),
             sprintf('Facebook %d Name', $number),
             'us',
-            'en'
+            'en',
+            'USD'
         );
     }
 
@@ -122,7 +124,8 @@ class Fixtures
             sprintf('reddit_user_%d', $number),
             sprintf('Reddit %d Name', $number),
             'us',
-            'en'
+            'en',
+            'USD'
         );
     }
 
@@ -134,7 +137,8 @@ class Fixtures
             sprintf('onlyfans_user_%d', $number),
             sprintf('Onlyfans %d Name', $number),
             'us',
-            'en'
+            'en',
+            'USD'
         );
     }
 
@@ -146,7 +150,8 @@ class Fixtures
             constant(sprintf('App\Tests\Fixtures::TELEGRAM_USERNAME_%d', $number)),
             'Telegram Name',
             'us',
-            'en'
+            'en',
+            'USD'
         );
     }
 
@@ -158,7 +163,8 @@ class Fixtures
             Fixtures::TIKTOK_USERNAME_1,
             'Tiktok Name',
             'us',
-            'en'
+            'en',
+            'USD'
         );
     }
 
@@ -170,7 +176,8 @@ class Fixtures
             Fixtures::TWITTER_USERNAME_1,
             'Twitter Name',
             'us',
-            'en'
+            'en',
+            'USD'
         );
     }
 
@@ -182,7 +189,8 @@ class Fixtures
             Fixtures::TWITTER_USERNAME_1,
             'Youtube Name',
             'us',
-            'en'
+            'en',
+            'USD'
         );
     }
 
@@ -194,7 +202,8 @@ class Fixtures
             Fixtures::UNKNOWN_USERNAME_1,
             'Unknown Name',
             'us',
-            'en'
+            'en',
+            'USD'
         );
     }
 

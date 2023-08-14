@@ -49,10 +49,10 @@ class TelegramBotCommandsRemoveCommand extends Command
         try {
             $username = $input->getArgument('name');
             $bot = $this->repository->findOneByUsername($username);
-
             if ($bot === null) {
                 throw new TelegramNotFoundException($username);
             }
+
             $telegram = $this->registry->getTelegram($bot->getUsername());
 
             $this->remover->removeTelegramCommands($telegram);

@@ -592,7 +592,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         return $tg->button($tg->trans('keyboard.cancel'));
     }
 
-    private function getStep(int|string $num): string
+    private function getStep(int $num): string
     {
         return "[{$num}/3] ";
     }

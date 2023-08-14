@@ -6,7 +6,9 @@ namespace App\Command\Telegram;
 
 use App\Enum\Telegram\TelegramGroup;
 use App\Exception\Telegram\TelegramGroupNotFoundException;
+use App\Exception\Telegram\TelegramNotFoundException;
 use App\Object\Telegram\TelegramBotTransfer;
+use App\Repository\Telegram\TelegramBotRepository;
 use App\Service\Telegram\TelegramBotCreator;
 use App\Service\Telegram\TelegramBotInfoProvider;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,6 +22,7 @@ use Throwable;
 class TelegramBotCreateCommand extends Command
 {
     public function __construct(
+        private readonly TelegramBotRepository $repository,
         private readonly TelegramBotCreator $creator,
         private readonly EntityManagerInterface $entityManager,
         private readonly TelegramBotInfoProvider $infoProvider,
@@ -34,12 +37,12 @@ class TelegramBotCreateCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('group', InputArgument::REQUIRED, 'Group name')
-            ->addArgument('username', InputArgument::REQUIRED, 'Username')
-            ->addArgument('token', InputArgument::REQUIRED, 'Token')
-            ->addArgument('country', InputArgument::REQUIRED, 'Country code')
-            ->addArgument('locale', InputArgument::REQUIRED, 'Locale code')
-            ->addArgument('primary-bot-username', InputArgument::OPTIONAL, 'Primary username')
+            ->addArgument('group', InputArgument::REQUIRED, 'Telegram Group name')
+            ->addArgument('username', InputArgument::REQUIRED, 'Telegram bot username')
+            ->addArgument('token', InputArgument::REQUIRED, 'Telegram bot Token')
+            ->addArgument('country', InputArgument::REQUIRED, 'Telegram bot Country code')
+            ->addArgument('locale', InputArgument::REQUIRED, 'Telegram bot Locale code')
+            ->addArgument('primary-username', InputArgument::OPTIONAL, 'Telegram Primary bot username')
             ->setDescription('Create telegram bot')
         ;
     }
@@ -54,9 +57,19 @@ class TelegramBotCreateCommand extends Command
         try {
             $groupName = $input->getArgument('group');
             $group = TelegramGroup::fromName($groupName);
-
             if ($group === null) {
                 throw new TelegramGroupNotFoundException($groupName);
+            }
+
+            $primaryUsername = $input->getArgument('primary-username');
+            if ($primaryUsername === null) {
+                $primaryBot = null;
+            } else {
+                $primaryBot = $this->repository->findOneByUsername($primaryUsername);
+
+                if ($primaryBot === null) {
+                    throw new TelegramNotFoundException($primaryUsername);
+                }
             }
 
             $botTransfer = new TelegramBotTransfer(
@@ -65,7 +78,7 @@ class TelegramBotCreateCommand extends Command
                 $input->getArgument('country'),
                 $input->getArgument('locale'),
                 $group,
-                $input->getArgument('primary-bot-username'),
+                $primaryBot,
             );
 
             $bot = $this->creator->createTelegramBot($botTransfer);
