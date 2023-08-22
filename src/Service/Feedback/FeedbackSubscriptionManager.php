@@ -12,7 +12,7 @@ use App\Repository\Feedback\FeedbackUserSubscriptionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use DateTimeImmutable;
 
-class FeedbackUserSubscriptionManager
+class FeedbackSubscriptionManager
 {
     public function __construct(
         private readonly FeedbackSubscriptionPlanProvider $subscriptionPlanProvider,
@@ -75,6 +75,8 @@ class FeedbackUserSubscriptionManager
 
     public function hasActiveSubscription(MessengerUser $messengerUser): bool
     {
+        // todo: remove
+        return true;
         if ($messengerUser->getUser()?->getSubscriptionExpireAt() === null) {
             return false;
         }

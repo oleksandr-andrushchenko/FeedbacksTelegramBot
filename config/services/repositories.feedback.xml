@@ -11,7 +11,12 @@
         <service id="app.repository.feedback_search" class="App\Repository\Feedback\FeedbackSearchRepository">
             <argument type="service" id="doctrine"/>
         </service>
-        <service id="app.repository.feedback_user_subscription" class="App\Repository\Feedback\FeedbackUserSubscriptionRepository">
+        <service id="app.repository.feedback_search_search"
+                 class="App\Repository\Feedback\FeedbackSearchSearchRepository">
+            <argument type="service" id="doctrine"/>
+        </service>
+        <service id="app.repository.feedback_user_subscription"
+                 class="App\Repository\Feedback\FeedbackUserSubscriptionRepository">
             <argument type="service" id="doctrine"/>
         </service>
     </services>

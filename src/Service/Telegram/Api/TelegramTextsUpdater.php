@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service\Telegram\Api;
 
 use App\Entity\Telegram\TelegramBot;
-use App\Enum\Telegram\TelegramView;
 use App\Service\Intl\CountryProvider;
 use App\Service\Site\SiteUrlGenerator;
 use App\Service\Telegram\TelegramRegistry;
@@ -41,13 +40,13 @@ class TelegramTextsUpdater
         foreach ($localeCodes as $localeCode) {
 //            $transLocaleCode = $localeCode;
 //            $transLocaleCode = $bot->getLocaleCode();
-            $transLocaleCode = $this->countryProvider->getCountryDefaultLocale($country);
+            $transLocaleCode = $country->getLocaleCodes()[0] ?? null;
             $name = $this->translator->trans(sprintf('%s.name', $group), domain: $domain, locale: $transLocaleCode);
             $telegram->setMyName([
                 'name' => $this->stage === 'prod' ? $name : sprintf('(%s, %s) %s', ucfirst($this->stage), $bot->getPrimaryBot() === null ? 'Primary' : 'Mirror', $name),
                 'language_code' => $localeCode,
             ]);
-            $description = $this->twig->render(sprintf('tg.%s.html.twig', TelegramView::DESCRIPTION->value), [
+            $description = $this->twig->render('tg.description.html.twig', [
                 'locale' => $transLocaleCode,
                 'title' => $this->translator->trans(sprintf('%s.description', $group), domain: $domain, locale: $transLocaleCode),
                 'privacy_policy_link' => $this->siteUrlGenerator->generate(

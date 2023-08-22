@@ -6,15 +6,15 @@ namespace App\Service\Telegram\Conversation;
 
 use App\Entity\Telegram\SearchFeedbackTelegramConversationState;
 use App\Enum\Feedback\SearchTermType;
-use App\Enum\Telegram\TelegramView;
 use App\Exception\Feedback\CreateFeedbackSearchLimitExceeded;
 use App\Exception\ValidatorException;
 use App\Object\Feedback\FeedbackSearchTransfer;
 use App\Object\Feedback\SearchTermTransfer;
-use App\Object\Messenger\MessengerUserTransfer;
 use App\Service\Feedback\FeedbackSearcher;
 use App\Service\Feedback\FeedbackSearchCreator;
 use App\Service\Feedback\SearchTerm\SearchTermParserOnlyInterface;
+use App\Service\Feedback\View\FeedbackTelegramViewProvider;
+use App\Service\Feedback\View\SearchTermTelegramViewProvider;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Entity\Telegram\TelegramConversation as Conversation;
@@ -35,11 +35,13 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
     public function __construct(
         readonly TelegramAwareHelper $awareHelper,
         private readonly Validator $validator,
-        private readonly FeedbackSearchCreator $feedbackSearchCreator,
-        private readonly FeedbackSearcher $feedbackSearcher,
+        private readonly FeedbackSearchCreator $creator,
+        private readonly FeedbackSearcher $searcher,
         private readonly SearchTermParserOnlyInterface $searchTermParser,
         private readonly EntityManagerInterface $entityManager,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
+        private readonly SearchTermTelegramViewProvider $searchTermViewProvider,
+        private readonly FeedbackTelegramViewProvider $feedbackViewProvider,
     )
     {
         parent::__construct($awareHelper, new SearchFeedbackTelegramConversationState());
@@ -100,16 +102,16 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
             return;
         }
 
-        $options = $this->feedbackSearchCreator->getOptions();
+        $options = $this->creator->getOptions();
 
-        $tg->reply($tg->view(TelegramView::DESCRIBE_SEARCH, [
+        $tg->reply($tg->view('describe_search', [
             'accept_payments' => $tg->getTelegram()->getBot()->acceptPayments(),
             'limits' => [
                 'day' => $options->userPerDayLimit(),
                 'month' => $options->userPerMonthLimit(),
                 'year' => $options->userPerYearLimit(),
             ],
-        ]), parseMode: 'HTML');
+        ]));
     }
 
     public function querySearchTerm(TelegramAwareHelper $tg, bool $change = null): null
@@ -122,7 +124,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
         $buttons = [];
 
         if ($change) {
-            $buttons[] = $this->getLeaveAsButton($this->state->getSearchTerm()->getText(), $tg);
+            $buttons[] = $this->getLeaveAsButton(strip_tags($this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm())), $tg);
         }
 
         $buttons[] = $this->getCancelButton($tg);
@@ -138,7 +140,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
     public function gotSearchTerm(TelegramAwareHelper $tg): null
     {
         if ($this->state->isChange()) {
-            if ($tg->matchText($this->getLeaveAsButton($this->state->getSearchTerm()->getText(), $tg)->getText())) {
+            if ($tg->matchText($this->getLeaveAsButton(strip_tags($this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm())), $tg)->getText())) {
                 return $this->queryConfirm($tg);
             }
         }
@@ -198,7 +200,13 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
         $sortedPossibleTypes = SearchTermType::sort($possibleTypes);
 
         $tg->reply(
-            $tg->trans('query.search_term_type', ['search_term' => $this->state->getSearchTerm()->getText()], domain: 'tg.search'),
+            $tg->trans(
+                'query.search_term_type',
+                [
+                    'search_term' => sprintf('<u>%s</u>', $this->state->getSearchTerm()->getText()),
+                ],
+                domain: 'tg.search'
+            ),
             $tg->keyboard(...[
                 ...$this->getSearchTermTypeButtons($sortedPossibleTypes, $tg),
                 $this->getBackButton($tg),
@@ -241,23 +249,21 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
 
         $this->searchTermParser->parseWithNetwork($this->state->getSearchTerm());
 
-        $tg->reply($tg->trans('query.confirm', domain: 'tg.search'))
-            ->reply(
-                $tg->view(
-                    TelegramView::FEEDBACK,
-                    [
-                        'search_term' => $this->state->getSearchTerm(),
-                    ]
-                ),
-                $tg->keyboard(
-                    $this->getConfirmButton($tg),
-                    $this->getChangeSearchTermButton($tg),
-                    $this->getBackButton($tg),
-                    $this->getCancelButton($tg)
-                ),
-                parseMode: 'HTML'
+        $tg->reply(
+            $tg->trans(
+                'query.confirm',
+                [
+                    'search_term' => sprintf('<u>%s</u>', $this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm())),
+                ],
+                domain: 'tg.search'
+            ),
+            $tg->keyboard(
+                $this->getConfirmButton($tg),
+                $this->getChangeSearchTermButton($tg),
+                $this->getBackButton($tg),
+                $this->getCancelButton($tg)
             )
-        ;
+        );
 
         return null;
     }
@@ -280,7 +286,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
             $this->validator->validate($this->state->getSearchTerm());
             $this->validator->validate($this->state);
 
-            $feedbackSearch = $this->feedbackSearchCreator->createFeedbackSearch(
+            $feedbackSearch = $this->creator->createFeedbackSearch(
                 new FeedbackSearchTransfer(
                     $conversation->getMessengerUser(),
                     $this->state->getSearchTerm()
@@ -288,56 +294,25 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
             );
             $this->entityManager->flush();
 
-            $feedbacks = $this->feedbackSearcher->searchFeedbacks($feedbackSearch);
+            $feedbacks = $this->searcher->searchFeedbacks($feedbackSearch);
             $count = count($feedbacks);
 
+            $searchTermText = $this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm());
+
             if ($count === 0) {
-                $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.empty_list', [
-                    'search_term' => $feedbackSearch->getSearchTermText(),
-                ], domain: 'tg.search'));
+                $tg->stopConversation($conversation)
+                    ->replyUpset($tg->trans('reply.empty_list', ['search_term' => sprintf('<u>%s</u>', $searchTermText)], domain: 'tg.search'))
+                ;
 
                 return $this->chooseActionChatSender->sendActions($tg);
             }
 
-            $tg->reply(
-                $tg->trans('reply.title', [
-                    'search_term' => $feedbackSearch->getSearchTermNormalizedText() ?? $feedbackSearch->getSearchTermText(),
-                    'search_term_type' => $this->getSearchTermTypeButton($feedbackSearch->getSearchTermType(), $tg)->getText(),
-                    'count' => $count,
-                ], domain: 'tg.search'),
-                disableWebPagePreview: true
-            );
+            $tg->reply($tg->trans('reply.title', ['search_term' => sprintf('<u>%s</u>', $searchTermText), 'count' => $count], domain: 'tg.search'));
 
             foreach ($feedbacks as $index => $feedback) {
                 $tg->reply(
-                    $tg->view(
-                        TelegramView::FEEDBACK,
-                        [
-                            'number' => $index + 1,
-                            'search_term' => (new SearchTermTransfer($feedback->getSearchTermText()))
-                                ->setType($feedback->getSearchTermType())
-                                ->setMessenger($feedback->getSearchTermMessenger())
-                                // todo:
-                                ->setMessengerProfileUrl(null)
-                                ->setMessengerUsername($feedback->getSearchTermMessengerUsername())
-                                ->setMessengerUser(
-                                    $feedback->getSearchTermMessengerUser() === null ? null : new MessengerUserTransfer(
-                                        $feedback->getSearchTermMessengerUser()->getMessenger(),
-                                        $feedback->getSearchTermMessengerUser()->getIdentifier(),
-                                        $feedback->getSearchTermMessengerUser()->getUsername(),
-                                        $feedback->getSearchTermMessengerUser()->getName(),
-                                        $feedback->getSearchTermMessengerUser()->getCountryCode(),
-                                        $feedback->getSearchTermMessengerUser()->getLocaleCode(),
-                                        $feedback->getSearchTermMessengerUser()->getCurrencyCode()
-                                    )
-                                ),
-                            'rating' => $feedback->getRating(),
-                            'description' => $feedback->getDescription(),
-                        ]
-                    ),
-                    parseMode: 'HTML',
-                    protectContent: true,
-                    disableWebPagePreview: true
+                    $this->feedbackViewProvider->getFeedbackTelegramView($tg, $feedback, $index + 1),
+                    protectContent: true
                 );
             }
 
@@ -359,9 +334,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
                     'limit' => $exception->getLimit(),
                     'or_subscribe' => $tg->getTelegram()->getBot()->acceptPayments()
                         ? ' ' . $tg->trans('reply.fail.limit_exceeded.or_subscribe', [
-                            'command' => $tg->view(TelegramView::COMMAND, [
-                                'name' => 'subscribe',
-                            ]),
+                            'command' => $tg->command('subscribe', html: true),
                         ], domain: 'tg.search')
                         : '',
                 ], domain: 'tg.search'),

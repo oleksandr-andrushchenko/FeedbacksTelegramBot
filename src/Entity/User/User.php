@@ -15,6 +15,8 @@ class User
         private ?string $name = null,
         private ?string $countryCode = null,
         private ?string $localeCode = null,
+        private ?string $currencyCode = null,
+        private ?string $timezone = null,
         private ?Rating $rating = null,
         private ?int $phoneNumber = null,
         private ?string $email = null,
@@ -64,6 +66,31 @@ class User
     public function setLocaleCode(?string $localeCode): self
     {
         $this->localeCode = $localeCode;
+
+        return $this;
+    }
+
+
+    public function getCurrencyCode(): ?string
+    {
+        return $this->currencyCode;
+    }
+
+    public function setCurrencyCode(?string $currencyCode): self
+    {
+        $this->currencyCode = $currencyCode;
+
+        return $this;
+    }
+
+    public function getTimezone(): ?string
+    {
+        return $this->timezone;
+    }
+
+    public function setTimezone(?string $timezone): self
+    {
+        $this->timezone = $timezone;
 
         return $this;
     }

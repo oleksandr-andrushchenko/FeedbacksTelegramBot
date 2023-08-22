@@ -34,7 +34,7 @@ class TelegramBotCurrenciesProvider implements CurrenciesProviderInterface
             $exp = $currency['exp'];
             $minAmount = $currency['min_amount'];
 
-            $rate = pow(10, $exp) / $minAmount;
+            $rate = round(pow(10, $exp) / $minAmount, 4);
 
             $currencies[$code] = new Currency($code, $rate, $exp, $symbol, $native, $symbolLeft, $spaceBetween);
         }

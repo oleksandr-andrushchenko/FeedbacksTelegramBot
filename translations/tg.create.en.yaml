@@ -1,13 +1,13 @@
 describe:
   title: This command allows to create feedbacks (reports, complains or gratitudes) on user, organization or place.
-  limits: "Due to complexity and huge amount of user requests, this command, by default, has next limitations:"
-  subscribe: Premium subscription plan allows you to use our bot without any limitations, try %command% command please.
+  limits: 'Due to complexity and huge amount of user requests, this command, by default, has next limitations:'
+  subscribe: Premium subscription allows you to use our bot without any limitations, try %command% command please.
 query:
   search_term: Who or what you would you like to leave feedback on? It can be a social network or messenger profile URL, nickname, email address, phone number, website, person's name or organization name, etc.
   search_term_type: Who or what "%search_term%" is?
   rating: Rate your experience with "%search_term%".
-  description: Add any information about "%search_term%" and describe your experience with "%search_term%".
-  confirm: Confirm feedback creation?
+  description: Add any information and/or describe your experience with "%search_term%".
+  confirm: Confirm feedback creation on "%search_term%"? %feedback%
 keyboard:
   change_search_term: Change search term
   change_rating: Change rate

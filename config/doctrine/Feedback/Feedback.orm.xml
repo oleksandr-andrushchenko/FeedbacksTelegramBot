@@ -39,6 +39,5 @@
         <field name="countryCode" column="country_code" length="2" nullable="true"/>
         <field name="localeCode" column="locale_code" length="2" nullable="true"/>
         <field name="createdAt" column="created_at" type="datetime_immutable"/>
-        <field name="updatedAt" column="updated_at" type="datetime_immutable" nullable="true"/>
     </entity>
 </doctrine-mapping>

@@ -41,33 +41,7 @@ class LocalesUpdateCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $translations = $this->translationsProvider->getLocaleTranslations();
-
-            if ($translations === null) {
-                throw new RuntimeException('Unable to fetch locale translations');
-            }
-
-            foreach ($translations as $locale => $data) {
-                if (!in_array($locale, $this->supportedLocales, true)) {
-                    continue;
-                }
-
-                $yaml = '';
-                foreach ($data as $language => $translation) {
-                    $yaml .= sprintf("%s: %s\r\n", $language, $translation);
-                }
-
-                $written = file_put_contents(str_replace('{locale}', $locale, $this->translationTargetFile), $yaml);
-
-                if ($written === false) {
-                    throw new RuntimeException(sprintf('Unable to write "%s" locale translation', $locale));
-                }
-
-                $io->note(json_encode([
-                    'locale' => $locale,
-                    'translations' => array_keys($data),
-                ]));
-            }
+            $this->updateLocaleTranslations($io);
         } catch (Throwable $exception) {
             $io->error($exception->getMessage());
 
@@ -78,5 +52,36 @@ class LocalesUpdateCommand extends Command
         $io->success('Languages have been updated');
 
         return Command::SUCCESS;
+    }
+
+    private function updateLocaleTranslations(SymfonyStyle $io): void
+    {
+        $translations = $this->translationsProvider->getLocaleTranslations();
+
+        if ($translations === null) {
+            throw new RuntimeException('Unable to fetch locale translations');
+        }
+
+        foreach ($translations as $locale => $data) {
+            if (!in_array($locale, $this->supportedLocales, true)) {
+                continue;
+            }
+
+            $yaml = '';
+            foreach ($data as $language => $translation) {
+                $yaml .= sprintf("%s: %s\r\n", $language, $translation);
+            }
+
+            $written = file_put_contents(str_replace('{locale}', $locale, $this->translationTargetFile), $yaml);
+
+            if ($written === false) {
+                throw new RuntimeException(sprintf('Unable to write "%s" locale translation', $locale));
+            }
+
+            $io->note(json_encode([
+                'locale' => $locale,
+                'translations' => array_keys($data),
+            ]));
+        }
     }
 }

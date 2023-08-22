@@ -7,7 +7,6 @@ namespace App\Service\Telegram\Conversation;
 use App\Entity\Telegram\CreateFeedbackTelegramConversationState;
 use App\Enum\Feedback\Rating;
 use App\Enum\Feedback\SearchTermType;
-use App\Enum\Telegram\TelegramView;
 use App\Exception\Feedback\CreateFeedbackLimitExceeded;
 use App\Exception\Messenger\SameMessengerUserException;
 use App\Exception\ValidatorException;
@@ -15,6 +14,7 @@ use App\Object\Feedback\FeedbackTransfer;
 use App\Object\Feedback\SearchTermTransfer;
 use App\Service\Feedback\FeedbackCreator;
 use App\Service\Feedback\SearchTerm\SearchTermParserOnlyInterface;
+use App\Service\Feedback\View\SearchTermTelegramViewProvider;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Service\Util\Array\ArrayValueEraser;
@@ -37,10 +37,11 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
     public function __construct(
         readonly TelegramAwareHelper $awareHelper,
         private readonly Validator $validator,
-        private readonly FeedbackCreator $feedbackCreator,
+        private readonly FeedbackCreator $creator,
         private readonly SearchTermParserOnlyInterface $searchTermParser,
         private readonly ArrayValueEraser $arrayValueEraser,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
+        private readonly SearchTermTelegramViewProvider $searchTermViewProvider,
     )
     {
         parent::__construct($awareHelper, new CreateFeedbackTelegramConversationState());
@@ -117,16 +118,16 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
             return;
         }
 
-        $options = $this->feedbackCreator->getOptions();
+        $options = $this->creator->getOptions();
 
-        $tg->reply($tg->view(TelegramView::DESCRIBE_CREATE, [
+        $tg->reply($tg->view('describe_create', [
             'accept_payments' => $tg->getTelegram()->getBot()->acceptPayments(),
             'limits' => [
                 'day' => $options->userPerDayLimit(),
                 'month' => $options->userPerMonthLimit(),
                 'year' => $options->userPerYearLimit(),
             ],
-        ]), parseMode: 'HTML');
+        ]));
     }
 
     public function querySearchTerm(TelegramAwareHelper $tg, bool $change = null): null
@@ -139,7 +140,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         $buttons = [];
 
         if ($change) {
-            $buttons[] = $this->getLeaveAsButton($this->state->getSearchTerm()->getText(), $tg);
+            $buttons[] = $this->getLeaveAsButton(strip_tags($this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm())), $tg);
         }
 
         $buttons[] = $this->getCancelButton($tg);
@@ -155,7 +156,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
     public function gotSearchTerm(TelegramAwareHelper $tg): null
     {
         if ($this->state->isChange()) {
-            if ($tg->matchText($this->getLeaveAsButton($this->state->getSearchTerm()->getText(), $tg)->getText())) {
+            if ($tg->matchText($this->getLeaveAsButton(strip_tags($this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm())), $tg)->getText())) {
                 return $this->queryConfirm($tg);
             }
         }
@@ -220,7 +221,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         }
 
         $tg->reply(
-            $tg->trans('query.search_term_type', ['search_term' => $this->state->getSearchTerm()->getText()], domain: 'tg.create'),
+            $tg->trans('query.search_term_type', ['search_term' => sprintf('<u>%s</u>', $this->state->getSearchTerm()->getText())], domain: 'tg.create'),
             $tg->keyboard(...[
                 ...$this->getSearchTermTypeButtons($sortedPossibleTypes, $tg),
                 $this->getBackButton($tg),
@@ -271,9 +272,9 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
             ($change ? '' : $this->getStep(2)) . $tg->trans(
                 'query.rating',
                 [
-                    'search_term' => $this->state->getSearchTerm()->getText(),
+                    'search_term' => sprintf('<u>%s</u>', $this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm())),
                 ],
-                domain: 'tg.create'
+                domain: 'tg.create',
             ),
             $tg->keyboard(...[
                 ...$this->getRatingButtons($tg),
@@ -333,7 +334,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
             ($change ? '' : $this->getStep(3)) . $tg->trans(
                 'query.description',
                 [
-                    'search_term' => $this->state->getSearchTerm()->getText(),
+                    'search_term' => sprintf('<u>%s</u>', $this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm())),
                 ],
                 domain: 'tg.create'
             ),
@@ -385,28 +386,27 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
         $this->searchTermParser->parseWithNetwork($this->state->getSearchTerm());
 
-        $tg->reply($tg->trans('query.confirm', domain: 'tg.create'))
-            ->reply(
-                $tg->view(
-                    TelegramView::FEEDBACK,
-                    [
-                        'search_term' => $this->state->getSearchTerm(),
-                        'rating' => $this->state->getRating(),
-                        'description' => $this->state->getDescription(),
-                    ]
-                ),
-                $tg->keyboard(
-                    $this->getConfirmButton($tg),
-                    $this->getChangeSearchTermButton($tg),
-                    $this->getChangeRatingButton($tg),
-                    $this->state->getDescription() === null ? $this->getAddDescriptionButton($tg) : $this->getChangeDescriptionButton($tg),
-                    $this->getBackButton($tg),
-                    $this->getCancelButton($tg)
-                ),
-                parseMode: 'HTML',
-                disableWebPagePreview: true
+        $ratingText = $tg->trans(sprintf('rating.%s', $this->state->getRating()->name), ['rating' => $this->state->getRating()->value]);
+        $descriptionText = $this->state->getDescription();
+
+        $tg->reply(
+            $tg->trans(
+                'query.confirm',
+                [
+                    'search_term' => sprintf('<u>%s</u>', $this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm())),
+                    'feedback' => sprintf("\r\n\r\n\"<b>%s</b>\"", trim(implode(' ', [$descriptionText, $ratingText]))),
+                ],
+                domain: 'tg.create'
+            ),
+            $tg->keyboard(
+                $this->getConfirmButton($tg),
+                $this->getChangeSearchTermButton($tg),
+                $this->getChangeRatingButton($tg),
+                $this->state->getDescription() === null ? $this->getAddDescriptionButton($tg) : $this->getChangeDescriptionButton($tg),
+                $this->getBackButton($tg),
+                $this->getCancelButton($tg)
             )
-        ;
+        );
 
         return null;
     }
@@ -434,14 +434,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
             $this->validator->validate($this->state->getSearchTerm());
             $this->validator->validate($this->state);
 
-            $this->feedbackCreator->createFeedback(
-                new FeedbackTransfer(
-                    $conversation->getMessengerUser(),
-                    $this->state->getSearchTerm(),
-                    $this->state->getRating(),
-                    $this->state->getDescription()
-                )
-            );
+            $this->creator->createFeedback($this->getFeedbackTransfer($tg));
 
             // todo: change text to something like: "want to add more?"
             $tg->stopConversation($conversation)->replyOk($tg->trans('reply.ok', domain: 'tg.create'));
@@ -476,19 +469,26 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
                     'limit' => $exception->getLimit(),
                     'or_subscribe' => $tg->getTelegram()->getBot()->acceptPayments()
                         ? ' ' . $tg->trans('reply.fail.limit_exceeded.or_subscribe', [
-                            'command' => $tg->view(TelegramView::COMMAND, [
-                                'name' => 'subscribe',
-                            ]),
+                            'command' => $tg->command('subscribe', html: true),
                         ], domain: 'tg.create')
                         : '',
-                ], domain: 'tg.create'),
-                parseMode: 'HTML'
+                ], domain: 'tg.create')
             );
 
             $tg->stopConversation($conversation);
 
             return $this->chooseActionChatSender->sendActions($tg);
         }
+    }
+
+    public function getFeedbackTransfer(TelegramAwareHelper $tg): FeedbackTransfer
+    {
+        return new FeedbackTransfer(
+            $tg->getTelegram()->getMessengerUser(),
+            $this->state->getSearchTerm(),
+            $this->state->getRating(),
+            $this->state->getDescription()
+        );
     }
 
     /**

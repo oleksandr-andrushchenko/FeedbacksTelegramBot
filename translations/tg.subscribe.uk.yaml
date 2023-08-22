@@ -6,8 +6,8 @@ query:
   subscription_plan: Виберіть план підписки.
   payment_method: Виберіть спосіб оплати.
   payment: Дотримуйтеся наведених нижче інструкцій щодо оплати.
-  payment_invoice_title: '"%plan%" підписка'
-  payment_invoice_description: "Без обмежень на створення відгуків і пошук на наступний період: %plan%"
+  payment_invoice_title: Преміум підписка "%plan%"
+  payment_invoice_description: "%plan% без обмежень (по кількості запитів) на наступні команди: %limited_commands%. Також, на %plan% стають доступні наступні команди: %hidden_commands%. Підписка розповсюджується на наступних ботів: %bots%"
 keyboard:
   change_currency: Змінити валюту
 reply:

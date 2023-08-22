@@ -10,48 +10,42 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class LocaleProvider
 {
     public function __construct(
-        private readonly string $defaultCode,
         private readonly TranslatorInterface $translator,
         private readonly array $data,
         private readonly CountryProvider $countryProvider,
         private readonly array $supported,
-        private ?array $locales = null,
     )
     {
     }
 
-    public function getDefaultLocale(): Locale
-    {
-        return $this->getLocale($this->defaultCode);
-    }
-
     public function hasLocale(string $code): bool
     {
-        foreach ($this->getLocales() as $locale) {
-            if ($locale->getCode() === $code) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_key_exists($code, $this->data);
     }
 
     public function getLocale(string $code): ?Locale
     {
-        foreach ($this->getLocales() as $locale) {
-            if ($locale->getCode() === $code) {
-                return $locale;
-            }
+        if (!$this->hasLocale($code)) {
+            return null;
         }
 
-        return null;
+        return $this->denormalize($this->data[$code]);
     }
 
     public function getLocaleIcon(Locale $locale): string
     {
         $country = $this->countryProvider->getCountry($locale->getFlag());
 
+        if ($country === null) {
+            var_dump($locale->getFlag());die;
+        }
+
         return $this->countryProvider->getCountryIcon($country);
+    }
+
+    public function getUnknownLocaleIcon(): string
+    {
+        return $this->countryProvider->getUnknownCountryIcon();
     }
 
     public function getLocaleName(Locale $localeObj, string $locale = null): string
@@ -59,37 +53,52 @@ class LocaleProvider
         return $this->translator->trans($localeObj->getCode(), domain: 'locales', locale: $locale);
     }
 
+    public function getUnknownLocaleName(string $locale = null): string
+    {
+        return $this->translator->trans('zz', domain: 'locales', locale: $locale);
+    }
+
+    public function getComposeLocaleName(Locale $localeObj = null, string $locale = null): string
+    {
+        if ($localeObj === null) {
+            return join(' ', [
+                $this->getUnknownLocaleIcon(),
+                $this->getUnknownLocaleName($locale),
+            ]);
+        }
+
+        return join(' ', [
+            $this->getLocaleIcon($localeObj),
+            $this->getLocaleName($localeObj, $locale),
+        ]);
+    }
+
     /**
      * @param bool|null $supported
-     * @param string|null $country
+     * @param string|null $countryCode
      * @return Locale[]
      */
-    public function getLocales(bool $supported = null, string $country = null): array
+    public function getLocales(bool $supported = null, string $countryCode = null): array
     {
-        if ($this->locales === null) {
-            $locales = [];
-
-            foreach ($this->data as $code => $locale) {
-                $locales[] = new Locale(
-                    $code,
-                    $locale['flag'] ?? $code
-                );
-            }
-
-            $this->locales = $locales;
-        }
-
-        $locales = $this->locales;
+        $data = $this->data;
 
         if ($supported) {
-            $locales = array_filter($locales, fn (Locale $locale) => in_array($locale->getCode(), $this->supported, true));
+            $data = array_filter($data, fn ($code) => in_array($code, $this->supported, true), ARRAY_FILTER_USE_KEY);
         }
 
-        if ($country !== null) {
-            $filter = $this->countryProvider->getCountry($country)->getLocaleCodes() ?? [];
-            $locales = array_intersect($locales, $filter);
+        if ($countryCode !== null) {
+            $filter = $this->countryProvider->getCountry($countryCode)->getLocaleCodes() ?? [];
+            $data = array_filter($data, fn ($code) => in_array($code, $filter, true), ARRAY_FILTER_USE_KEY);
         }
 
-        return $supported === null && $country === null ? $locales : array_values($locales);
+        return array_map(fn ($record) => $this->denormalize($record), $supported === null && $countryCode === null ? $data : array_values($data));
+    }
+
+    private function denormalize(array $record): Locale
+    {
+        return new Locale(
+            $code = $record['code'],
+            $record['flag'] ?? $code
+        );
     }
 }

@@ -6,16 +6,17 @@ namespace App\Service\Telegram;
 
 use App\Exception\Telegram\InvalidTelegramUpdateException;
 use App\Exception\Telegram\PaymentNotFoundException;
-use App\Exception\Telegram\TelegramException;
 use App\Exception\Telegram\UnknownPaymentException;
 use App\Service\Telegram\Payment\TelegramPaymentManager;
 use Longman\TelegramBot\TelegramLog;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Throwable;
 
 class TelegramUpdateHandler
 {
     public function __construct(
+        private readonly string $environment,
         private readonly TelegramUpdateFactory $updateFactory,
         private readonly TelegramUpdateChecker $updateChecker,
         private readonly TelegramNonAdminUpdateChecker $nonAdminUpdateChecker,
@@ -36,6 +37,7 @@ class TelegramUpdateHandler
      * @return void
      * @throws InvalidTelegramUpdateException
      * @throws PaymentNotFoundException
+     * @throws Throwable
      * @throws UnknownPaymentException
      */
     public function handleTelegramUpdate(Telegram $telegram, Request $request): void
@@ -86,7 +88,10 @@ class TelegramUpdateHandler
             } elseif ($fallbackCommand = $this->commandFinder->findFallbackCommand($commands)) {
                 call_user_func($fallbackCommand->getCallback());
             }
-        } catch (TelegramException $exception) {
+        } catch (Throwable $exception) {
+            if ($this->environment === 'test') {
+                throw $exception;
+            }
             $this->logger->error($exception);
 
             if ($errorCommand = $this->commandFinder->findErrorCommand($commands)) {

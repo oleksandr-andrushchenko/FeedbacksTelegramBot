@@ -11,11 +11,12 @@ readonly class MessengerUserTransfer
     public function __construct(
         private Messenger $messenger,
         private string $id,
-        private ?string $username,
-        private ?string $name,
-        private ?string $countryCode,
-        private ?string $localeCode,
-        private ?string $currencyCode,
+        private ?string $username = null,
+        private ?string $name = null,
+        private ?string $countryCode = null,
+        private ?string $localeCode = null,
+        private ?string $currencyCode = null,
+        private ?string $timezone = null,
     )
     {
     }
@@ -53,5 +54,10 @@ readonly class MessengerUserTransfer
     public function getCurrencyCode(): ?string
     {
         return $this->currencyCode;
+    }
+
+    public function getTimezone(): ?string
+    {
+        return $this->timezone;
     }
 }

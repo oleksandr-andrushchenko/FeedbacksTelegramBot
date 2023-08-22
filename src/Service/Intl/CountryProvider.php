@@ -7,7 +7,6 @@ namespace App\Service\Intl;
 use App\Entity\Intl\Country;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
 class CountryProvider
 {
@@ -15,31 +14,23 @@ class CountryProvider
         private readonly TranslatorInterface $translator,
         private readonly string $dataPath,
         private DenormalizerInterface $denormalizer,
-        private ?array $countries = null,
+        private ?array $data = null,
     )
     {
     }
 
     public function hasCountry(string $code): bool
     {
-        foreach ($this->getCountries() as $country) {
-            if ($country->getCode() === $code) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_key_exists($code, $this->getData());
     }
 
     public function getCountry(string $code): ?Country
     {
-        foreach ($this->getCountries() as $country) {
-            if ($country->getCode() === $code) {
-                return $country;
-            }
+        if (!$this->hasCountry($code)) {
+            return null;
         }
 
-        return null;
+        return $this->denormalize($this->getData()[$code]);
     }
 
     public function getCountryByCurrency(string $currencyCode): ?Country
@@ -60,36 +51,63 @@ class CountryProvider
         return "\xF0\x9F\x87" . chr(ord($code[0]) + 0x45) . "\xF0\x9F\x87" . chr(ord($code[1]) + 0x45);
     }
 
+    public function getUnknownCountryIcon(): string
+    {
+        return '🌎';
+    }
+
     public function getCountryName(Country $country, string $locale = null): string
     {
         return $this->translator->trans($country->getCode(), domain: 'countries', locale: $locale);
     }
 
-    public function getCountryDefaultLocale(Country $country): ?string
+    public function getUnknownCountryName(string $locale = null): string
     {
-        return $country->getLocaleCodes()[0] ?? null;
+        return $this->translator->trans('zz', domain: 'countries', locale: $locale);
+    }
+
+    public function getComposeCountryName(Country $country = null, string $locale = null): string
+    {
+        if ($country === null) {
+            return join(' ', [
+                $this->getUnknownCountryIcon(),
+                $this->getUnknownCountryName($locale),
+            ]);
+        }
+
+        return join(' ', [
+            $this->getCountryIcon($country),
+            $this->getCountryName($country, $locale),
+        ]);
     }
 
     /**
-     * @param string|null $locale
+     * @param string|null $localeCode
      * @return Country[]
-     * @throws ExceptionInterface
      */
-    public function getCountries(string $locale = null): array
+    public function getCountries(string $localeCode = null): array
     {
-        if ($this->countries === null) {
+        $countries = array_map(fn ($record) => $this->denormalize($record), array_values($this->getData()));
+
+        if ($localeCode !== null) {
+            $countries = array_filter($countries, fn ($country) => in_array($localeCode, $country->getLocaleCodes(), true));
+        }
+
+        return $localeCode === null ? $countries : array_values($countries);
+    }
+
+    private function denormalize(array $record): Country
+    {
+        return $this->denormalizer->denormalize($record, Country::class, format: 'internal');
+    }
+
+    private function getData(): array
+    {
+        if ($this->data === null) {
             $content = file_get_contents($this->dataPath);
-            $data = json_decode($content, true);
-
-            $this->countries = array_map(fn ($data) => $this->denormalizer->denormalize($data, Country::class), $data);
+            $this->data = json_decode($content, true);
         }
 
-        $countries = $this->countries;
-
-        if ($locale !== null) {
-            $countries = array_filter($countries, fn (Country $country) => in_array($locale, $country->getLocaleCodes(), true));
-        }
-
-        return $locale === null ? $countries : array_values($countries);
+        return $this->data;
     }
 }

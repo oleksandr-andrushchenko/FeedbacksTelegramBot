@@ -24,7 +24,6 @@ class FeedbackSearchNormalizer implements NormalizerInterface
                 'search_term' => $object->getSearchTermText(),
                 'search_term_type' => $object->getSearchTermType()->name,
                 'created_at' => $object->getCreatedAt()->getTimestamp(),
-                'updated_at' => $object->getUpdatedAt()?->getTimestamp(),
             ];
         }
 

@@ -17,6 +17,8 @@
         <field name="localeCode" column="locale_code" length="2" nullable="true"/>
         <field name="rating" column="rating" type="smallint" enum-type="App\Enum\Feedback\Rating" nullable="true"/>
         <field name="countryCode" column="country_code" length="2" nullable="true"/>
+        <field name="currencyCode" column="currency_code" length="3" nullable="true"/>
+        <field name="timezone" column="timezone" length="32" nullable="true"/>
         <field name="phoneNumber" column="phone_number" type="bigint" nullable="true">
             <options>
                 <option name="unsigned">true</option>

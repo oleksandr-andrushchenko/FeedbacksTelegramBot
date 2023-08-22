@@ -5,6 +5,8 @@ App\Entity\User\User:
       name: User 1 First Last
       countryCode: ua
       localeCode: uk
+      currencyCode: UAH
+      timezone: Europe/Kiev
       rating: null
       phoneNumber: null
       email: null
@@ -14,6 +16,8 @@ App\Entity\User\User:
       name: User 2 First Last
       countryCode: ua
       localeCode: uk
+      currencyCode: UAH
+      timezone: Europe/Kiev
       rating: null
       phoneNumber: null
       email: null
@@ -23,6 +27,8 @@ App\Entity\User\User:
       name: User 3 First Last
       countryCode: ua
       localeCode: uk
+      currencyCode: UAH
+      timezone: Europe/Kiev
       rating: null
       phoneNumber: null
       email: null

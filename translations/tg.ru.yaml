@@ -7,8 +7,6 @@ payment_method:
   sberbank: Sberbank
   stripe: Stripe
 
-datetime_format: d.m H:i
-date_format: d.m
 active: Активний
 inactive: Неактивний
 enabled: Включено
@@ -29,7 +27,6 @@ tries_for: попыток на протяжении
 
 query:
   action: Выберите действие.
-
 
 keyboard:
   confirm: 👌 Подтвердить

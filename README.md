@@ -24,18 +24,11 @@
 * generate badge (picture) with username/rating to post in messengers
 * "list my feedbacks" command
 * "list feedbacks on me" command
-* "subscribe on mine/somebodies feedbacks" command
+* -> "subscribe on mine/somebodies feedbacks" command (or, for beginning, - just say smth like "we gonna notify you when smbd left smth")
 * after country selection - link to che channel
-* add country flag to feedback view
 * add command: how many times user X were been searched for (top command, usually - it gonna be current account - search for itself, but how many times somebody were searching me)
 * manual payments
 * ban users
-* add check payment possibility (does at least payment method exists), + implement manual payments
-* select currency as separate step on subscription
-* create & implement limits display checker (if limits = 0 - do not display)
-* create & implement buy subscription display checker (not accept payments - do not display, has subscriptions - display list button)
-* there are 2 types of bot should exists: primary and mirrors
 * mirrors should redirect users to primary bot
 * each primary bot should have country(and/or locale) and if user is out of this country/locale - propose to go to native bot
 * log new user activity
-* new commands command

@@ -7,8 +7,6 @@ payment_method:
   sberbank: Sberbank
   stripe: Stripe
 
-datetime_format: d.m H:i
-date_format: d.m
 active: Активний
 inactive: Неактивний
 enabled: Ввімкнено

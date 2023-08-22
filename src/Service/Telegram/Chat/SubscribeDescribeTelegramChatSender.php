@@ -6,7 +6,6 @@ namespace App\Service\Telegram\Chat;
 
 use App\Entity\Feedback\FeedbackCreatorOptions;
 use App\Entity\Feedback\FeedbackSearchCreatorOptions;
-use App\Enum\Telegram\TelegramView;
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
 use App\Service\Telegram\TelegramAwareHelper;
 
@@ -21,7 +20,7 @@ class SubscribeDescribeTelegramChatSender
 
     public function sendSubscribeDescribe(TelegramAwareHelper $tg): null
     {
-        return $tg->reply($tg->view(TelegramView::DESCRIBE_SUBSCRIBE, [
+        return $tg->reply($tg->view('describe_subscribe', [
             'commands' => [
                 'create' => [
                     'command' => FeedbackTelegramChannel::CREATE,
@@ -40,6 +39,6 @@ class SubscribeDescribeTelegramChatSender
                     ],
                 ],
             ],
-        ]), parseMode: 'HTML')->null();
+        ]))->null();
     }
 }

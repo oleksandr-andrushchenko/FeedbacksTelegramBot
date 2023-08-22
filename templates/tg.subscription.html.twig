@@ -1,5 +1,5 @@
 {% trans_default_domain 'tg' %}
-{% if number is defined %}
+{% if number %}
 {{ 'icon.number'|trans ~ number }}:
 {% endif %}
 {% apply spaceless %}
@@ -11,7 +11,7 @@
     ]) %}
 
     {% set first_line = first_line|merge([
-        '[' ~ subscription.payment.price.currency ~ ' ' ~ subscription.payment.price.amount ~ ',00]'
+        '[' ~ price ~ ']'
     ]) %}
 
     {% set first_line = first_line|merge([
@@ -25,12 +25,4 @@
     {{ first_line|join(' ')|raw }}
 {% endapply %}
 
-{% apply spaceless %}
-    {% set second_line = [] %}
-
-    {% set second_line = second_line|merge([
-        subscription.createdAt.format('datetime_format'|trans) ~ ' - ' ~ subscription.expireAt.format('datetime_format'|trans) ~ ' GMT'
-    ]) %}
-
-    {{ second_line|join(' ')|raw }}
-{% endapply %}
+{{ created_at }} - {{ expire_at }} GMT

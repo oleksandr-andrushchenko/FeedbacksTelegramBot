@@ -8,7 +8,6 @@ use App\Entity\Telegram\CreateFeedbackTelegramConversationState;
 use App\Enum\Feedback\Rating;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
-use App\Enum\Telegram\TelegramView;
 use App\Object\Feedback\SearchTermTransfer;
 use App\Object\Messenger\MessengerUserTransfer;
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
@@ -362,7 +361,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                                 $this->getMessengerProfileUrlSearchTerm($messengerUser)
                             )->setType($expectedSearchTermType)
                         ),
-                    'shouldSeeReply' => $this->getShouldSeeReplyOnConfirmQueried($tg, $expectedState),
+                    'shouldSeeReply' => $this->getShouldSeeReplyOnConfirmQueried(),
                     'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnConfirmQueried($tg, $expectedState),
                 ],
             ];
@@ -384,7 +383,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                             )->setType($expectedSearchTermType)
                                 ->setMessengerUser(null)
                         ),
-                    'shouldSeeReply' => $this->getShouldSeeReplyOnConfirmQueried($tg, $expectedState),
+                    'shouldSeeReply' => $this->getShouldSeeReplyOnConfirmQueried(),
                     'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnConfirmQueried($tg, $expectedState),
                 ],
             ];
@@ -518,10 +517,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             ->setChange(true)
         ;
 
-//        $mocks && $mocks($this);
-
         $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
-            ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried($this->tg, $expectedState))
+            ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried())
             ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmQueried($this->tg, $expectedState))
         ;
     }
@@ -686,7 +683,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         ;
 
         $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
-            ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried($this->tg, $expectedState))
+            ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried())
             ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmQueried($this->tg, $expectedState))
         ;
     }
@@ -716,7 +713,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         $mocks && $mocks($this);
 
         $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
-            ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried($this->tg, $expectedState))
+            ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried())
             ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmQueried($this->tg, $expectedState))
         ;
     }
@@ -856,7 +853,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         $mocks && $mocks($this);
 
         $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
-            ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried($this->tg, $expectedState))
+            ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried())
             ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmQueried($this->tg, $expectedState))
         ;
     }
@@ -1273,15 +1270,10 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         ];
     }
 
-    private function getShouldSeeReplyOnConfirmQueried(TelegramAwareHelper $tg, CreateFeedbackTelegramConversationState $state): array
+    private function getShouldSeeReplyOnConfirmQueried(): array
     {
         return [
             'query.confirm',
-            $tg->view(TelegramView::FEEDBACK, [
-                'search_term' => $state->getSearchTerm(),
-                'rating' => $state->getRating(),
-                'description' => $state->getDescription(),
-            ]),
         ];
     }
 

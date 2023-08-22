@@ -1,9 +1,12 @@
 describe:
-  title: Due to worldwide popularity of our bot, its important to know from where you are. Bot use your country to determinate search scope, available payment methods etc.
-  known: "Your current country is %icon% %name%"
-  unknown: "%icon% We do not know your country yet"
+  title: Bot use your country to determinate search scope, available payment methods, currency, correct date and time display etc.
 query:
+  change_confirm: Would you like to change it?
   country: Select your country please.
+  timezone: Select your timezone please.
 reply:
+  current_country: Your current country - %country%.
+  current_timezone: Your current timezone - %timezone%.
+  unknown_timezone: Unknown
   canceled: Country selection dialog has been canceled.
-  ok: "Your country has been successfully updated on %icon% %name%"
+  ok: Successfully updated.

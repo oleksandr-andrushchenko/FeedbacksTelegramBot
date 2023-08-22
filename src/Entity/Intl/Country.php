@@ -10,7 +10,8 @@ readonly class Country
         private string $code,
         private string $currency,
         private array $locales,
-        private string $phone
+        private string $phone,
+        private array $timezones
     )
     {
     }
@@ -33,6 +34,11 @@ readonly class Country
     public function getPhoneCode(): string
     {
         return $this->phone;
+    }
+
+    public function getTimezones(): array
+    {
+        return $this->timezones;
     }
 
     public function __toString(): string

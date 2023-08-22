@@ -18,31 +18,37 @@ class CountryNormalizer implements NormalizerInterface, DenormalizerInterface
      */
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
-        return [
-            'code' => $object->getCode(),
-            'currency' => $object->getCurrencyCode(),
-            'locales' => $object->getLocaleCodes(),
-            'phone' => $object->getPhoneCode(),
-        ];
+        if ($format === 'internal') {
+            return [
+                'c' => $object->getCode(),
+                'cu' => $object->getCurrencyCode(),
+                'l' => $object->getLocaleCodes(),
+                'p' => $object->getPhoneCode(),
+                't' => $object->getTimezones(),
+            ];
+        }
     }
 
     public function supportsNormalization(mixed $data, string $format = null): bool
     {
-        return $data instanceof Country;
+        return $data instanceof Country && in_array($format, ['internal'], true);
     }
 
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): Country
     {
-        return new $type(
-            $data['code'],
-            $data['currency'],
-            $data['locales'],
-            $data['phone']
-        );
+        if ($format === 'internal') {
+            return new $type(
+                $data['c'],
+                $data['cu'],
+                $data['l'],
+                $data['p'],
+                $data['t'],
+            );
+        }
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
     {
-        return is_array($data) && $type === Country::class;
+        return is_array($data) && $type === Country::class && in_array($format, ['internal'], true);
     }
 }

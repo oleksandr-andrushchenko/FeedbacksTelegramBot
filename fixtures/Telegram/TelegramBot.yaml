@@ -10,3 +10,6 @@ App\Entity\Telegram\TelegramBot:
       isCheckRequests: true
       isAcceptPayments: false
       isAdminOnly: false
+      isTextsSet: false
+      isWebhookSet: false
+      isCommandsSet: false

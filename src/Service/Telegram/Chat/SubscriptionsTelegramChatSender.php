@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram\Chat;
 
-use App\Enum\Telegram\TelegramView;
-use App\Service\Feedback\FeedbackUserSubscriptionManager;
+use App\Service\Feedback\FeedbackSubscriptionManager;
+use App\Service\Feedback\View\SubscriptionTelegramViewProvider;
 use App\Service\Telegram\TelegramAwareHelper;
 
 class SubscriptionsTelegramChatSender
 {
     public function __construct(
-        private readonly FeedbackUserSubscriptionManager $userSubscriptionManager,
+        private readonly FeedbackSubscriptionManager $subscriptionManager,
+        private readonly SubscriptionTelegramViewProvider $subscriptionViewProvider
     )
     {
     }
 
     public function sendFeedbackSubscriptions(TelegramAwareHelper $tg): null
     {
-        $subscriptions = $this->userSubscriptionManager->getSubscriptions($tg->getTelegram()->getMessengerUser());
+        $subscriptions = $this->subscriptionManager->getSubscriptions($tg->getTelegram()->getMessengerUser());
 
         $count = count($subscriptions);
 
@@ -28,11 +29,8 @@ class SubscriptionsTelegramChatSender
 
         $tg->reply($tg->trans('reply.title', ['count' => $count], domain: 'tg.subscriptions'));
 
-        foreach (array_reverse($subscriptions, true) as $index => $userSubscription) {
-            $tg->reply($tg->view(TelegramView::SUBSCRIPTION, [
-                'number' => $index + 1,
-                'subscription' => $userSubscription,
-            ]), parseMode: 'HTML');
+        foreach (array_reverse($subscriptions, true) as $index => $subscription) {
+            $tg->reply($this->subscriptionViewProvider->getSubscriptionTelegramView($tg, $subscription, $index + 1));
         }
 
         return null;

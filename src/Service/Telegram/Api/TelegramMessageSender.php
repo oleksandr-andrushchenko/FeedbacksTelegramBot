@@ -15,10 +15,10 @@ class TelegramMessageSender implements TelegramMessageSenderInterface
         int $chatId,
         string $text,
         Keyboard $keyboard = null,
-        string $parseMode = null,
+        string $parseMode = 'HTML',
         int $replyToMessageId = null,
         bool $protectContent = null,
-        bool $disableWebPagePreview = null
+        bool $disableWebPagePreview = true
     ): ServerResponse
     {
         $data = [

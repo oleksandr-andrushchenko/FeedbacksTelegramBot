@@ -22,17 +22,17 @@ class FeedbackSearcher
      * @param int $limit
      * @return Feedback[]
      */
-    public function searchFeedbacks(FeedbackSearch $feedbackSearch, int $limit = 100): array
+    public function searchFeedbacks(FeedbackSearch $feedbackSearch, int $limit = 20): array
     {
         $feedbacks = $this->feedbackRepository->createQueryBuilder('f')
             ->andWhere('f.searchTermNormalizedText = :searchTermNormalizedText')
             ->setParameter('searchTermNormalizedText', $feedbackSearch->getSearchTermNormalizedText())
-            ->setMaxResults($limit)
+            ->setMaxResults(100)
             ->getQuery()
             ->getResult()
         ;
 
-        $feedbacks = array_values(array_filter($feedbacks, function (Feedback $feedback) use ($feedbackSearch) {
+        $feedbacks = array_filter($feedbacks, function (Feedback $feedback) use ($feedbackSearch) {
             if (
                 $feedbackSearch->getSearchTermType() !== SearchTermType::unknown
                 && $feedback->getSearchTermType() !== SearchTermType::unknown
@@ -49,17 +49,11 @@ class FeedbackSearcher
             }
 
             return true;
-        }));
-
-//        order by requester country
-        $countryCode = $feedbackSearch->getCountryCode();
-
-        usort($feedbacks, fn (Feedback $a, Feedback $b) => match (true) {
-            $a->getCountryCode() === $countryCode && $b->getCountryCode() !== $countryCode => 1,
-            $a->getCountryCode() !== $countryCode && $b->getCountryCode() === $countryCode => -1,
-            default => 0,
         });
 
-        return $feedbacks;
+        $feedbacks = array_values($feedbacks);
+        $feedbacks = array_reverse($feedbacks, true);
+
+        return array_slice($feedbacks, 0, $limit, true);
     }
 }

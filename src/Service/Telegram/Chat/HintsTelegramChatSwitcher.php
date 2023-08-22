@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram\Chat;
 
-use App\Enum\Telegram\TelegramView;
 use App\Service\Telegram\TelegramAwareHelper;
 
 class HintsTelegramChatSwitcher
@@ -15,9 +14,7 @@ class HintsTelegramChatSwitcher
         $messengerUser->setIsShowHints(!$messengerUser->showHints());
 
         $transParameters = [
-            'command' => $tg->view(TelegramView::COMMAND, [
-                'name' => 'hints',
-            ]),
+            'command' => $tg->command('hints', html: true),
         ];
 
         if ($messengerUser->showHints()) {
@@ -28,6 +25,6 @@ class HintsTelegramChatSwitcher
             $transParameters['will'] = $tg->trans('enable');
         }
 
-        return $tg->replyOk($tg->trans('reply.hints.ok', $transParameters), parseMode: 'HTML')->null();
+        return $tg->replyOk($tg->trans('reply.hints.ok', $transParameters))->null();
     }
 }

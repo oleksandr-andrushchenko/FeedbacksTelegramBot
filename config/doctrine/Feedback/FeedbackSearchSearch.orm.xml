@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Entity\Feedback\FeedbackSearchSearch"
+            repository-class="App\Repository\Feedback\FeedbackSearchSearchRepository" table="feedback_search_searches">
+
+        <id name="id" column="id" type="integer">
+            <generator/>
+            <options>
+                <option name="unsigned">true</option>
+            </options>
+        </id>
+        <many-to-one field="user" target-entity="App\Entity\User\User"/>
+        <many-to-one field="messengerUser" target-entity="App\Entity\Messenger\MessengerUser"/>
+        <field name="searchTermText" column="search_term_text"/>
+        <field name="searchTermNormalizedText" column="search_term_normalized_text"/>
+        <field name="searchTermType" column="search_term_type" type="smallint" enum-type="App\Enum\Feedback\SearchTermType">
+            <options>
+                <option name="unsigned">true</option>
+            </options>
+        </field>
+        <field name="searchTermMessenger" column="search_term_messenger" type="smallint" enum-type="App\Enum\Messenger\Messenger" nullable="true">
+            <options>
+                <option name="unsigned">true</option>
+            </options>
+        </field>
+        <field name="searchTermMessengerUsername" column="search_term_messenger_username" nullable="true"/>
+        <many-to-one field="searchTermMessengerUser" target-entity="App\Entity\Messenger\MessengerUser"/>
+        <field name="countryCode" column="country_code" length="2" nullable="true"/>
+        <field name="localeCode" column="locale_code" length="2" nullable="true"/>
+        <field name="createdAt" column="created_at" type="datetime_immutable"/>
+    </entity>
+</doctrine-mapping>

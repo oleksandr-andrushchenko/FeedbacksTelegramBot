@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram\Chat;
 
-use App\Enum\Telegram\TelegramView;
 use App\Service\Site\SiteUrlGenerator;
 use App\Service\Telegram\Conversation\CountryTelegramConversation;
 use App\Service\Telegram\TelegramAwareHelper;
@@ -38,7 +37,7 @@ class StartTelegramCommandHandler
 
         $countryCode = $tg->getCountryCode();
 
-        $tg->reply($tg->view(TelegramView::DESCRIBE_START, [
+        $tg->reply($tg->view('describe_start', [
             'privacy_policy_link' => $this->siteUrlGenerator->generate(
                 'app.site_privacy_policy',
                 [
@@ -53,6 +52,6 @@ class StartTelegramCommandHandler
                 ],
                 referenceType: UrlGeneratorInterface::ABSOLUTE_URL
             ),
-        ]), parseMode: 'HTML', disableWebPagePreview: true);
+        ]));
     }
 }

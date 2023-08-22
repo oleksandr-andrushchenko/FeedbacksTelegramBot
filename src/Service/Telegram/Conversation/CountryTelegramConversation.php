@@ -6,7 +6,6 @@ namespace App\Service\Telegram\Conversation;
 
 use App\Entity\Intl\Country;
 use App\Entity\Telegram\TelegramConversationState;
-use App\Enum\Telegram\TelegramView;
 use App\Service\Intl\CountryProvider;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\TelegramAwareHelper;
@@ -15,9 +14,11 @@ use Longman\TelegramBot\Entities\KeyboardButton;
 
 class CountryTelegramConversation extends TelegramConversation implements TelegramConversationInterface
 {
+    public const STEP_CHANGE_CONFIRM_QUERIED = 5;
     public const STEP_GUESS_COUNTRY_QUERIED = 10;
     public const STEP_COUNTRY_QUERIED = 20;
-    public const STEP_CANCEL_PRESSED = 30;
+    public const STEP_TIMEZONE_QUERIED = 30;
+    public const STEP_CANCEL_PRESSED = 40;
 
     public function __construct(
         readonly TelegramAwareHelper $awareHelper,
@@ -33,17 +34,15 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         if ($this->state->getStep() === null) {
             $this->describe($tg);
 
-            $countries = $this->getGuessCountries($tg);
-
-            if (count($countries) === 0) {
-                return $this->queryCountry($tg);
-            }
-
-            return $this->queryGuessCountry($countries, $tg);
+            return $this->queryChangeConfirm($tg);
         }
 
         if ($tg->matchText(null)) {
             return $tg->replyWrong($tg->trans('reply.wrong'))->null();
+        }
+
+        if ($this->state->getStep() === self::STEP_CHANGE_CONFIRM_QUERIED) {
+            return $this->gotChangeConfirm($tg, $conversation);
         }
 
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
@@ -55,11 +54,15 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         }
 
         if ($this->state->getStep() === self::STEP_GUESS_COUNTRY_QUERIED) {
-            return $this->gotGuessCountry($tg, $conversation);
+            return $this->gotCountry($tg, $conversation, true);
         }
 
         if ($this->state->getStep() === self::STEP_COUNTRY_QUERIED) {
-            return $this->gotCountry($tg, $conversation);
+            return $this->gotCountry($tg, $conversation, false);
+        }
+
+        if ($this->state->getStep() === self::STEP_TIMEZONE_QUERIED) {
+            return $this->gotTimezone($tg, $conversation);
         }
 
         return null;
@@ -81,14 +84,67 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
             return;
         }
 
+        $tg->reply($tg->view('describe_country'));
+    }
+
+    public function getCurrentCountryReply(TelegramAwareHelper $tg): string
+    {
         $countryCode = $tg->getCountryCode();
         $country = $countryCode === null ? null : $this->provider->getCountry($countryCode);
 
-        $tg->reply($tg->view(TelegramView::DESCRIBE_COUNTRY, [
-            'country' => $country,
-            'icon' => $country === null ? null : $this->provider->getCountryIcon($country),
-            'name' => $country === null ? null : $this->provider->getCountryName($country),
-        ]), parseMode: 'HTML');
+        return $tg->trans(
+            'reply.current_country',
+            [
+                'country' => sprintf('<u>%s</u>', $this->provider->getComposeCountryName($country)),
+            ],
+            domain: 'tg.country'
+        );
+    }
+
+    public function getCurrentTimezoneReply(TelegramAwareHelper $tg): string
+    {
+        return $tg->trans(
+            'reply.current_timezone',
+            [
+                'timezone' => sprintf('<u>%s</u>', $tg->getTimezone() ?? $tg->trans('reply.unknown_timezone', domain: 'tg.country')),
+            ],
+            domain: 'tg.country'
+        );
+    }
+
+    public function queryChangeConfirm(TelegramAwareHelper $tg): null
+    {
+        $this->state->setStep(self::STEP_CHANGE_CONFIRM_QUERIED);
+
+        $keyboards = [];
+        $keyboards[] = $this->getChangeConfirmYesButton($tg);
+        $keyboards[] = $this->getChangeConfirmNoButton($tg);
+
+        return $tg->reply(
+            join(' ', [
+                $this->getCurrentCountryReply($tg),
+                $this->getCurrentTimezoneReply($tg),
+                $this->getChangeConfirmQuery($tg),
+            ]),
+            $tg->keyboard(...$keyboards)
+        )->null();
+    }
+
+    public function gotChangeConfirm(TelegramAwareHelper $tg, Conversation $conversation): null
+    {
+        if ($tg->matchText($this->getChangeConfirmNoButton($tg)->getText())) {
+            $tg->stopConversation($conversation);
+
+            return $this->chooseActionChatSender->sendActions($tg);
+        }
+
+        $countries = $this->getGuessCountries($tg);
+
+        if (count($countries) === 0) {
+            return $this->queryCountry($tg);
+        }
+
+        return $this->queryGuessCountry($countries, $tg);
     }
 
     public function queryGuessCountry(array $countries, TelegramAwareHelper $tg): null
@@ -102,75 +158,100 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         return $tg->reply($this->getCountryQuery($tg), $tg->keyboard(...$keyboards))->null();
     }
 
-    public function gotGuessCountry(TelegramAwareHelper $tg, Conversation $conversation): null
-    {
-        if ($tg->matchText($this->getOtherCountryButton($tg)->getText())) {
-            return $this->queryCountry($tg);
-        }
-
-        $countries = $this->getGuessCountries($tg);
-
-        $country = $this->getCountryByButton($tg->getText(), $countries, $tg);
-
-        if ($country === null) {
-            $tg->replyWrong($tg->trans('reply.wrong'));
-
-            return $this->queryGuessCountry($countries, $tg);
-        }
-
-        $tg->getTelegram()->getMessengerUser()?->setCountryCode($country->getCode());
-
-        $tg->replyOk($tg->trans('reply.ok', [
-            'icon' => $this->provider->getCountryIcon($country),
-            'name' => $this->provider->getCountryName($country),
-        ], domain: 'tg.country'));
-
-        $tg->stopConversation($conversation);
-
-        return $this->chooseActionChatSender->sendActions($tg);
-    }
-
     public function queryCountry(TelegramAwareHelper $tg): null
     {
         $this->state->setStep(self::STEP_COUNTRY_QUERIED);
 
-        $keyboards = $this->getCountryButtons($this->provider->getCountries(), $tg);
-        $keyboards[] = $this->getAbsentCountryButton($tg);
+        $keyboards = $this->getCountryButtons($this->getCountries(), $tg);
         $keyboards[] = $this->getCancelButton($tg);
 
         return $tg->reply($this->getCountryQuery($tg), $tg->keyboard(...$keyboards))->null();
     }
 
-    public function gotCountry(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotCountry(TelegramAwareHelper $tg, Conversation $conversation, bool $guess): null
     {
-        if ($tg->matchText($this->getAbsentCountryButton($tg)->getText())) {
-            $tg->getTelegram()->getMessengerUser()?->setCountryCode(null);
-
-            $tg->stopConversation($conversation);
-
-            return $this->chooseActionChatSender->sendActions($tg);
+        if ($guess && $tg->matchText($this->getOtherCountryButton($tg)->getText())) {
+            return $this->queryCountry($tg);
         }
 
-        $countries = $this->getCountries();
-
+        $countries = $guess ? $this->getGuessCountries($tg) : $this->getCountries();
         $country = $this->getCountryByButton($tg->getText(), $countries, $tg);
 
         if ($country === null) {
             $tg->replyWrong($tg->trans('reply.wrong'));
 
-            return $this->queryCountry($tg);
+            return $guess ? $this->queryGuessCountry($countries, $tg) : $this->queryCountry($tg);
         }
 
-        $tg->getTelegram()->getMessengerUser()?->setCountryCode($country->getCode());
+        if ($country->getCode() !== $tg->getCountryCode()) {
+            $tg->getTelegram()->getMessengerUser()?->getUser()
+                ->setCountryCode($country->getCode())
+                ->setTimezone(null)
+            ;
+        }
 
-        $tg->replyOk($tg->trans('reply.ok', [
-            'icon' => $this->provider->getCountryIcon($country),
-            'name' => $this->provider->getCountryName($country),
-        ], domain: 'tg.country'));
+        $timezones = $this->getTimezones($tg);
+
+        if (count($timezones) > 1) {
+            return $this->queryTimezone($tg);
+        }
+
+        $tg->getTelegram()->getMessengerUser()?->getUser()->setTimezone($timezones[0] ?? null);
+
+        return $this->replyAndClose($tg, $conversation);
+    }
+
+    private function replyAndClose(TelegramAwareHelper $tg, Conversation $conversation): null
+    {
+        $tg->replyOk(join(' ', [
+            $tg->trans('reply.ok', domain: 'tg.country'),
+            $this->getCurrentCountryReply($tg),
+            $this->getCurrentTimezoneReply($tg),
+        ]));
 
         $tg->stopConversation($conversation);
 
         return $this->chooseActionChatSender->sendActions($tg);
+    }
+
+    public function queryTimezone(TelegramAwareHelper $tg): null
+    {
+        $this->state->setStep(self::STEP_TIMEZONE_QUERIED);
+
+        $keyboards = $this->getTimezoneButtons($tg);
+        $keyboards[] = $this->getCancelButton($tg);
+
+        return $tg->reply($this->getTimezoneQuery($tg), $tg->keyboard(...$keyboards))->null();
+    }
+
+    public function gotTimezone(TelegramAwareHelper $tg, Conversation $conversation): null
+    {
+        $timezone = $this->getTimezoneByButton($tg->getText(), $tg);
+
+        if ($timezone === null) {
+            $tg->replyWrong($tg->trans('reply.wrong'));
+
+            return $this->queryTimezone($tg);
+        }
+
+        $tg->getTelegram()->getMessengerUser()?->getUser()->setTimezone($timezone);
+
+        return $this->replyAndClose($tg, $conversation);
+    }
+
+    public static function getChangeConfirmQuery(TelegramAwareHelper $tg): string
+    {
+        return $tg->trans('query.change_confirm', domain: 'tg.country');
+    }
+
+    public static function getChangeConfirmYesButton(TelegramAwareHelper $tg): KeyboardButton
+    {
+        return $tg->button($tg->trans('keyboard.yes'));
+    }
+
+    public static function getChangeConfirmNoButton(TelegramAwareHelper $tg): KeyboardButton
+    {
+        return $tg->button($tg->trans('keyboard.no'));
     }
 
     /**
@@ -185,10 +266,7 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
 
     public function getCountryButton(Country $country, TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button(join(' ', [
-            $this->provider->getCountryIcon($country),
-            $this->provider->getCountryName($country, $tg->getLocaleCode()),
-        ]));
+        return $tg->button($this->provider->getComposeCountryName($country));
     }
 
     public function getCountryByButton(string $button, array $countries, TelegramAwareHelper $tg): ?Country
@@ -207,14 +285,46 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         return $tg->trans('query.country', domain: 'tg.country');
     }
 
-    public static function getOtherCountryButton(TelegramAwareHelper $tg): KeyboardButton
+    public function getOtherCountryButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button(sprintf('%s %s', '🌎', $tg->trans('keyboard.other')));
+        return $tg->button(sprintf('%s %s', $this->provider->getUnknownCountryIcon(), $tg->trans('keyboard.other')));
     }
 
-    public static function getAbsentCountryButton(TelegramAwareHelper $tg): KeyboardButton
+    public function getTimezones(TelegramAwareHelper $tg): array
     {
-        return $tg->button(sprintf('%s %s', '🌎', $tg->trans('keyboard.absent')));
+        $country = $this->provider->getCountry($tg->getCountryCode());
+
+        return $country->getTimezones();
+    }
+
+    /**
+     * @param TelegramAwareHelper $tg
+     * @return KeyboardButton[]
+     */
+    public function getTimezoneButtons(TelegramAwareHelper $tg): array
+    {
+        return array_map(fn (string $timezone) => $this->getTimezoneButton($timezone, $tg), $this->getTimezones($tg));
+    }
+
+    public function getTimezoneButton(string $timezone, TelegramAwareHelper $tg): KeyboardButton
+    {
+        return $tg->button($timezone);
+    }
+
+    public function getTimezoneByButton(string $button, TelegramAwareHelper $tg): ?string
+    {
+        foreach ($this->getTimezones($tg) as $timezone) {
+            if ($this->getTimezoneButton($timezone, $tg)->getText() === $button) {
+                return $timezone;
+            }
+        }
+
+        return null;
+    }
+
+    public static function getTimezoneQuery(TelegramAwareHelper $tg): string
+    {
+        return $tg->trans('query.timezone', domain: 'tg.country');
     }
 
     public static function getCancelButton(TelegramAwareHelper $tg): KeyboardButton

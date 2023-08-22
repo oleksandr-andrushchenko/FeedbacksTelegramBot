@@ -28,7 +28,7 @@ class TelegramLocaleSwitcher
         if ($messengerUser?->getId() === null) {
             $countryCode = $telegram->getBot()->getCountryCode();
             $country = $this->countryProvider->getCountry($countryCode);
-            $localeCode = $this->countryProvider->getCountryDefaultLocale($country);
+            $localeCode = $country->getLocaleCodes()[0] ?? null;
         }
 
         $localeCode ??= $messengerUser?->getLocaleCode();
@@ -36,7 +36,7 @@ class TelegramLocaleSwitcher
         $localeCode ??= $this->localeSwitcher->getLocale();
 
         $messengerUser?->setLocaleCode($localeCode);
-        $this->localeSwitcher->setLocale($localeCode);
+        $this->setLocale($localeCode);
         $request->setLocale($this->localeSwitcher->getLocale());
     }
 
@@ -49,7 +49,14 @@ class TelegramLocaleSwitcher
         if ($localeCode === null) {
             $this->localeSwitcher->reset();;
         } else {
-            $this->localeSwitcher->setLocale($localeCode);
+            $this->setLocale($localeCode);
         }
+    }
+
+    public function setLocale(string|Locale $locale): void
+    {
+        $localeCode = is_string($locale) ? $locale : $locale->getCode();
+//        setlocale(LC_TIME, $localeCode);
+        $this->localeSwitcher->setLocale($localeCode);
     }
 }

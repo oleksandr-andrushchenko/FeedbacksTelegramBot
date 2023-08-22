@@ -1,6 +1,7 @@
 command:
   create: Додати Відгук
-  search: Знайти Відгук
+  search: Знайти Відгуки
+  lookup: Знайти Запити
   subscribe: Купити Преміум
   subscriptions: Мій Преміум
   country: Моя Країна

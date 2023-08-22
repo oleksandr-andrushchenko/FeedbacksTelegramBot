@@ -1,0 +1,12 @@
+describe:
+  title: This command allows to find lookups on interested user, organization or place.
+  limits: This command is available for premium users only.
+  subscribe: For unlock, - use %command% please.
+query:
+  search_term: Who or what you are interested in? It can be a social network or messenger profile URL, nickname, email address, phone number, website, person's name or organization name, etc.
+  search_term_type: Who or what "%search_term%" is?
+reply:
+  no_active_subscription: This command is locked, use %subscribe_command% to unlock it.
+  canceled: Lookup search dialog has been canceled.
+  empty_list: No lookups were found by "%search_term%".
+  title: 'There are %count% lookup(-s) have been successfully found by "%search_term%":'

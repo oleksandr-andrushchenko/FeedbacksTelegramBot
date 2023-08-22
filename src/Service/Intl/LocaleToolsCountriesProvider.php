@@ -38,6 +38,8 @@ class LocaleToolsCountriesProvider implements CountriesProviderInterface
                 $country['idd'],
                 $country['idd']['prefix'],
                 $country['idd']['suffixes'],
+                $country['locale'],
+                $country['locale']['timezones'],
             )) {
                 continue;
             }
@@ -65,7 +67,9 @@ class LocaleToolsCountriesProvider implements CountriesProviderInterface
                 continue;
             }
 
-            $countries[$code] = new Country($code, $currencies[0], $locales, $phones[0]);
+            $timezones = array_map(fn (array $timezone) => $timezone['name'], $country['locale']['timezones']);
+
+            $countries[$code] = new Country($code, $currencies[0], $locales, $phones[0], $timezones);
         }
 
         return count($countries) === 0 ? null : array_values($countries);

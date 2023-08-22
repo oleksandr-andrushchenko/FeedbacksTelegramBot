@@ -20,7 +20,7 @@ class FeedbackSearchCreator
         private readonly EntityManagerInterface $entityManager,
         private readonly Validator $validator,
         private readonly UserCreateFeedbackSearchStatisticsProvider $userStatisticsProvider,
-        private readonly FeedbackUserSubscriptionManager $userSubscriptionManager,
+        private readonly FeedbackSubscriptionManager $subscriptionManager,
         private readonly ActivityLogger $activityLogger,
     )
     {
@@ -42,7 +42,7 @@ class FeedbackSearchCreator
         $this->validator->validate($feedbackSearchTransfer);
 
         $messengerUser = $feedbackSearchTransfer->getMessengerUser();
-        $hasActiveSubscription = $this->userSubscriptionManager->hasActiveSubscription($messengerUser);
+        $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($messengerUser);
 
         if (!$hasActiveSubscription) {
             $this->checkLimits($feedbackSearchTransfer);
@@ -61,8 +61,8 @@ class FeedbackSearchCreator
             $searchTermTransfer->getMessenger(),
             $searchTermTransfer->getMessengerUsername(),
             $hasActiveSubscription,
-            $messengerUser?->getCountryCode(),
-            $messengerUser?->getLocaleCode()
+            $messengerUser->getUser()->getCountryCode(),
+            $messengerUser->getLocaleCode()
         );
         $this->entityManager->persist($feedbackSearch);
 

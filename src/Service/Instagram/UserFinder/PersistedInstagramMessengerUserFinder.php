@@ -18,20 +18,20 @@ class PersistedInstagramMessengerUserFinder implements InstagramMessengerUserFin
 
     public function findInstagramMessengerUser(string $username, $_ = null): ?MessengerUserTransfer
     {
-        $user = $this->messengerUserRepository->findOneByMessengerAndUsername(Messenger::instagram, $username);
+        $messengerUser = $this->messengerUserRepository->findOneByMessengerAndUsername(Messenger::instagram, $username);
 
-        if ($user === null) {
+        if ($messengerUser === null) {
             return null;
         }
 
         return new MessengerUserTransfer(
-            $user->getMessenger(),
-            $user->getIdentifier(),
-            $user->getUsername(),
-            $user->getName(),
-            $user->getCountryCode(),
-            $user->getLocaleCode(),
-            $user->getCurrencyCode()
+            $messengerUser->getMessenger(),
+            $messengerUser->getIdentifier(),
+            $messengerUser->getUsername(),
+            $messengerUser->getName(),
+            $messengerUser->getUser()->getCountryCode(),
+            $messengerUser->getLocaleCode(),
+            $messengerUser->getUser()->getCurrencyCode()
         );
     }
 }

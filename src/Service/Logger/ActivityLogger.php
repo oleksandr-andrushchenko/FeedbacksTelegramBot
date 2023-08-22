@@ -18,7 +18,8 @@ class ActivityLogger
 
     public function logActivity(object $object): void
     {
-        $message = sprintf('"%s" has been %s(?)', get_class($object), $object->getUpdatedAt() === null ? 'created' : 'updated');
+        $updated = method_exists($object, 'getUpdatedAt') && $object->getUpdatedAt() !== null;
+        $message = sprintf('"%s" has been %s(?)', get_class($object), $updated ? 'updated' : 'created');
         $context = $this->normalizer->normalize($object, 'activity');
 
         $this->logger->info($message, $context);

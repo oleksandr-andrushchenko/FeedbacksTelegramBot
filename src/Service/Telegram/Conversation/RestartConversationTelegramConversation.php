@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service\Telegram\Conversation;
 
 use App\Entity\Telegram\TelegramConversationState;
-use App\Enum\Telegram\TelegramView;
 use App\Service\Intl\CountryProvider;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\Chat\StartTelegramCommandHandler;
@@ -62,7 +61,7 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
             return;
         }
 
-        $tg->reply($tg->view(TelegramView::DESCRIBE_RESTART), parseMode: 'HTML');
+        $tg->reply($tg->view('describe_restart'));
     }
 
     public function queryConfirm(TelegramAwareHelper $tg): null
@@ -91,8 +90,12 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
         $tg->getTelegram()->getMessengerUser()
             ?->setIsShowHints(false)
             ?->setIsShowExtendedKeyboard(false)
+            ?->setLocaleCode($country->getLocaleCodes()[0] ?? null)
+            ?->getUser()
             ?->setCountryCode($country->getCode())
-            ?->setLocaleCode($this->countryProvider->getCountryDefaultLocale($country))
+            ?->setLocaleCode($country->getLocaleCodes()[0] ?? null)
+            ?->setCurrencyCode($country->getCurrencyCode())
+            ?->setTimezone($country->getTimezones()[0] ?? null)
         ;
 
         $tg->stopConversation($conversation)->stopConversations();

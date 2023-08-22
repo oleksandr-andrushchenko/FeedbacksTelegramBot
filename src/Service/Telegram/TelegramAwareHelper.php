@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service\Telegram;
 
 use App\Entity\Telegram\TelegramConversation;
-use App\Enum\Telegram\TelegramView;
 use App\Service\Telegram\Api\TelegramChatActionSenderInterface;
 use App\Service\Telegram\Api\TelegramMessageSenderInterface;
 use Longman\TelegramBot\ChatAction;
@@ -65,7 +64,17 @@ class TelegramAwareHelper
 
     public function getCountryCode(): ?string
     {
-        return $this->getTelegram()->getMessengerUser()?->getCountryCode();
+        return $this->getTelegram()->getMessengerUser()?->getUser()->getCountryCode();
+    }
+
+    public function getCurrencyCode(): ?string
+    {
+        return $this->getTelegram()->getMessengerUser()?->getUser()->getCurrencyCode();
+    }
+
+    public function getTimezone(): ?string
+    {
+        return $this->getTelegram()->getMessengerUser()?->getUser()->getTimezone();
     }
 
     public function startConversation(string $conversationClass): static
@@ -89,17 +98,17 @@ class TelegramAwareHelper
         return $this;
     }
 
-    public function view(TelegramView $template, array $context = []): string
+    public function view(string $template, array $context = []): string
     {
-        return $this->twig->render('tg.' . $template->value . '.html.twig', $context);
+        return $this->twig->render('tg.' . $template . '.html.twig', $context);
     }
 
     public function reply(
         string $text,
         Keyboard $keyboard = null,
-        string $parseMode = null,
+        string $parseMode = 'HTML',
         bool $protectContent = null,
-        bool $disableWebPagePreview = null
+        bool $disableWebPagePreview = true
     ): static
     {
         $this->chatActionSender->sendChatAction(
@@ -128,13 +137,12 @@ class TelegramAwareHelper
     public function replyOk(
         string $text,
         Keyboard $keyboard = null,
-        string $parseMode = null,
+        string $parseMode = 'HTML',
         bool $protectContent = null,
-        bool $disableWebPagePreview = null
+        bool $disableWebPagePreview = true
     ): static
     {
-        $this->reply($text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
-        $this->reply('🫡');
+        $this->reply('🫡' . $text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
 
         return $this;
     }
@@ -142,14 +150,12 @@ class TelegramAwareHelper
     public function replyFail(
         string $text,
         Keyboard $keyboard = null,
-        string $parseMode = null,
+        string $parseMode = 'HTML',
         bool $protectContent = null,
-        bool $disableWebPagePreview = null
+        bool $disableWebPagePreview = true
     ): static
     {
-        // todo: find command by key
-        $this->reply($text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
-        $this->reply('🤕');
+        $this->reply('🤕' . $text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
 
         return $this;
     }
@@ -157,13 +163,12 @@ class TelegramAwareHelper
     public function replyWrong(
         string $text,
         Keyboard $keyboard = null,
-        string $parseMode = null,
+        string $parseMode = 'HTML',
         bool $protectContent = null,
-        bool $disableWebPagePreview = null
+        bool $disableWebPagePreview = true
     ): static
     {
-        $this->reply($text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
-        $this->reply('🤔');
+        $this->reply('🤔' . $text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
 
         return $this;
     }
@@ -171,13 +176,12 @@ class TelegramAwareHelper
     public function replyUpset(
         string $text,
         Keyboard $keyboard = null,
-        string $parseMode = null,
+        string $parseMode = 'HTML',
         bool $protectContent = null,
-        bool $disableWebPagePreview = null
+        bool $disableWebPagePreview = true
     ): static
     {
-        $this->reply($text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
-        $this->reply('😐');
+        $this->reply('😐' . $text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
 
         return $this;
     }
@@ -190,6 +194,22 @@ class TelegramAwareHelper
     public function button(string $text): KeyboardButton
     {
         return $this->keyboardFactory->createTelegramButton($text);
+    }
+
+    public function command(string $name, bool $locked = false, bool $html = false): string
+    {
+        if ($html) {
+            return $this->view('command', [
+                'name' => $name,
+            ]);
+        }
+
+        $domain = 'tg.' . $this->getTelegram()->getBot()->getGroup()->name;
+
+        return join(' ', [
+            $locked ? '🔒' : $this->trans('icon.' . $name, domain: $domain),
+            $this->trans('command.' . $name, domain: $domain),
+        ]);
     }
 
     public function null(): null

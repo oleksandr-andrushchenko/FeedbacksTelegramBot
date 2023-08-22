@@ -8,10 +8,12 @@ use App\Entity\Feedback\FeedbackSubscriptionPlan;
 use App\Entity\Intl\Currency;
 use App\Entity\Money;
 use App\Entity\Telegram\SubscribeTelegramConversationState;
+use App\Entity\Telegram\TelegramBot;
 use App\Entity\Telegram\TelegramConversation as Conversation;
 use App\Entity\Telegram\TelegramPaymentMethod;
 use App\Exception\Telegram\Api\InvalidCurrencyTelegramException;
 use App\Exception\ValidatorException;
+use App\Repository\Telegram\TelegramBotRepository;
 use App\Repository\Telegram\TelegramPaymentMethodRepository;
 use App\Service\Feedback\FeedbackSubscriptionPlanProvider;
 use App\Service\Intl\CurrencyProvider;
@@ -44,6 +46,7 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
         private readonly SubscribeDescribeTelegramChatSender $subscribeDescribeChatSender,
         private readonly CurrencyProvider $currencyProvider,
         private readonly MoneyFormatter $moneyFormatter,
+        private readonly TelegramBotRepository $botRepository,
     )
     {
         parent::__construct($awareHelper, new SubscribeTelegramConversationState());
@@ -54,7 +57,7 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
         if ($this->state->getStep() === null) {
             $this->describe($tg);
 
-            $this->state->setIsCurrencyStep($tg->getTelegram()->getMessengerUser()?->getCurrencyCode() === null);
+            $this->state->setIsCurrencyStep($tg->getTelegram()->getMessengerUser()?->getUser()->getCurrencyCode() === null);
             $this->state->setIsPaymentMethodStep(count($this->getPaymentMethods($tg)) > 1);
 
             if ($this->state->isCurrencyStep()) {
@@ -135,7 +138,7 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
         $this->state->setCurrency($currency);
         try {
             $this->validator->validate($this->state, groups: 'currency');
-            $tg->getTelegram()->getMessengerUser()?->setCurrencyCode($currency->getCode());
+            $tg->getTelegram()->getMessengerUser()?->getUser()->setCurrencyCode($currency->getCode());
         } catch (ValidatorException $exception) {
             $tg->reply($exception->getFirstMessage());
 
@@ -238,8 +241,12 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
 
         $subscriptionPlan = $this->state->getSubscriptionPlan();
 
+        $bots = $this->botRepository->findByGroup($tg->getTelegram()->getBot()->getGroup());
         $transParameters = [
             'plan' => $this->getSubscriptionPlanText($subscriptionPlan, $tg),
+            'limited_commands' => '"' . join('", "', array_map(fn ($command) => $tg->command($command), ['create', 'search'])) . '"',
+            'hidden_commands' => '"' . join('", "', array_map(fn ($command) => $tg->command($command), ['lookup'])) . '"',
+            'bots' => join(', ', array_map(fn (TelegramBot $bot) => '@' . $bot->getUsername(), $bots)),
         ];
 
         $tg->reply($this->getStep(4) . $this->getPaymentQuery($tg));
@@ -303,7 +310,7 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
         $usdPrice = $subscriptionPlan->getPrice($tg->getCountryCode());
 
         if ($this->state->getCurrency() === null) {
-            $currencyCode = $tg->getTelegram()->getMessengerUser()?->getCurrencyCode();
+            $currencyCode = $tg->getTelegram()->getMessengerUser()?->getUser()->getCurrencyCode();
             $currency = $this->currencyProvider->getCurrency($currencyCode);
         } else {
             $currency = $this->state->getCurrency();
@@ -314,15 +321,7 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
 
     public function getCurrencyButton(Currency $currency, TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button(join(' ', [
-            $this->currencyProvider->getCurrencyIcon($currency),
-            $this->currencyProvider->getCurrencyName($currency, $tg->getLocaleCode()),
-        ]));
-    }
-
-    public function getCurrencyText(Currency $currency, TelegramAwareHelper $tg): string
-    {
-        return $currency->getCode();
+        return $tg->button($this->currencyProvider->getComposeCurrencyName($currency));
     }
 
     public function getCurrencyByButton(string $button, TelegramAwareHelper $tg): ?Currency

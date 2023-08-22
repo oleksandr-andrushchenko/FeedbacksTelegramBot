@@ -18,37 +18,41 @@ class CurrencyNormalizer implements NormalizerInterface, DenormalizerInterface
      */
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
-        return [
-            'code' => $object->getCode(),
-            'rate' => $object->getRate(),
-            'exp' => $object->getExp(),
-//            'symbol' => $object->getSymbol(),
-            'native' => $object->getNative(),
-            'symbol_left' => $object->isSymbolLeft(),
-            'space_between' => $object->isSpaceBetween(),
-        ];
+        if ($format === 'internal') {
+            return [
+                'c' => $object->getCode(),
+                'r' => $object->getRate(),
+                'e' => $object->getExp(),
+//            's' => $object->getSymbol(),
+                'n' => $object->getNative(),
+                'sl' => $object->isSymbolLeft(),
+                'sb' => $object->isSpaceBetween(),
+            ];
+        }
     }
 
     public function supportsNormalization(mixed $data, string $format = null): bool
     {
-        return $data instanceof Currency;
+        return $data instanceof Currency && in_array($format, ['internal'], true);
     }
 
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): Currency
     {
-        return new $type(
-            $data['code'],
-            $data['rate'],
-            $data['exp'],
-//            symbol: $data['symbol'] ?? null,
-            native: $data['native'] ?? null,
-            symbolLeft: $data['symbol_left'] ?? null,
-            spaceBetween: $data['space_between'] ?? null,
-        );
+        if ($format === 'internal') {
+            return new $type(
+                $data['c'],
+                $data['r'],
+                $data['e'],
+//            symbol: $data['s'] ?? null,
+                native: $data['n'] ?? null,
+                symbolLeft: $data['sl'] ?? null,
+                spaceBetween: $data['sb'] ?? null,
+            );
+        }
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
     {
-        return is_array($data) && $type === Currency::class;
+        return is_array($data) && $type === Currency::class && in_array($format, ['internal'], true);
     }
 }

@@ -29,7 +29,6 @@ class Feedback
         private readonly ?string $countryCode = null,
         private readonly ?string $localeCode = null,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
-        private ?DateTimeInterface $updatedAt = null,
         private ?int $id = null,
     )
     {
@@ -108,17 +107,5 @@ class Feedback
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
-    }
-
-    public function getUpdatedAt(): ?DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?DateTimeInterface $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
     }
 }

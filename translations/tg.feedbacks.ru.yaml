@@ -1,10 +1,11 @@
 command:
-  create: Добавить отзыв
-  search: Найти отзыв
+  create: Добавить Отзыв
+  search: Найти Отзывы
+  lookup: Найти Запросы
   subscribe: Купить Премиум
   subscriptions: Мой Премиум
   country: Моя Страна
-  locale: Мой язык
+  locale: Мой Язык
   hints: Переключить Подсказки
   purge: Удалить Данные
   contact: Контакты

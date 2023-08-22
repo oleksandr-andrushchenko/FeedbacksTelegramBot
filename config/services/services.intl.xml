@@ -32,11 +32,13 @@
             <argument type="service" id="app.normalizer.intl_country"/>
         </service>
         <service id="app.intl_locale_provider" class="App\Service\Intl\LocaleProvider" lazy="true">
-            <argument type="string">%app.default_locale%</argument>
             <argument type="service" id="translator"/>
             <argument>%app.locales%</argument>
             <argument type="service" id="app.intl_country_provider"/>
             <argument>%app.supported_locales%</argument>
+        </service>
+        <service id="app.intl_time_provider" class="App\Service\Intl\TimeProvider" lazy="true">
+            <argument type="service" id="app.translator"/>
         </service>
     </services>
 </container>

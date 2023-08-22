@@ -6,6 +6,7 @@ namespace App\Service\User;
 
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\User\User;
+use App\Object\Messenger\MessengerUserTransfer;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -17,16 +18,18 @@ class UserUpserter
     {
     }
 
-    public function upsertUserByMessengerUser(MessengerUser $messengerUser): User
+    public function upsertUserByMessengerUser(MessengerUser $messengerUser, MessengerUserTransfer $messengerUserTransfer): User
     {
         $user = $messengerUser->getUser();
 
         if ($user === null) {
             $user = new User(
-                $messengerUser->getUsername(),
-                $messengerUser->getName(),
-                $messengerUser->getCountryCode(),
-                $messengerUser->getLocaleCode()
+                username: $messengerUser->getUsername(),
+                name: $messengerUser->getName(),
+                countryCode: $messengerUserTransfer->getCountryCode(),
+                localeCode: $messengerUser->getLocaleCode(),
+                currencyCode: $messengerUserTransfer->getCurrencyCode(),
+                timezone: $messengerUserTransfer->getTimezone()
             );
 
             $this->entityManager->persist($user);
@@ -42,10 +45,6 @@ class UserUpserter
 
         if (empty($user->getName()) && !empty($messengerUser->getName())) {
             $user->setName($messengerUser->getName());
-        }
-
-        if ($user->getCountryCode() === null && $messengerUser->getCountryCode() !== null) {
-            $user->setCountryCode($messengerUser->getCountryCode());
         }
 
         if ($user->getLocaleCode() === null && $messengerUser->getLocaleCode() !== null) {

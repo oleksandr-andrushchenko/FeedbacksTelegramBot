@@ -1,0 +1,48 @@
+{% trans_default_domain 'tg' %}
+{% apply spaceless %}
+    {% set search_term_line = [] %}
+    {% if search_term.messengerProfileUrl is not null %}
+        {% set search_term_line = search_term_line|merge([
+            [
+                '<a href="' ~ search_term.messengerProfileUrl ~ '">',
+                search_term.messengerUsername ?? search_term.messengerProfileUrl,
+                '</a>'
+            ]|join
+        ]) %}
+    {% elseif search_term.messengerUsername is not null %}
+        {% set search_term_line = search_term_line|merge([
+            search_term.messengerUsername
+        ]) %}
+    {% elseif search_term.type is not null and search_term.type.name == 'url' %}
+        {% set search_term_line = search_term_line|merge([
+            '<a href="' ~ search_term.text ~ '">' ~ search_term.normalizedText ~ '</a>'
+        ]) %}
+    {% elseif search_term.type is not null and search_term.type.name == 'phone_number' %}
+        {% set search_term_line = search_term_line|merge([
+            search_term.normalizedText
+        ]) %}
+    {% elseif search_term.type is not null and search_term.type.name == 'email' %}
+        {% set search_term_line = search_term_line|merge([
+            search_term.normalizedText
+        ]) %}
+    {% else %}
+        {% set search_term_line = search_term_line|merge([
+            search_term.text
+        ]) %}
+    {% endif %}
+
+    {% if search_term.messengerUser is not null %}
+        {% set search_term_line = search_term_line|merge([
+            '/',
+            search_term.messengerUser.name
+        ]) %}
+    {% endif %}
+
+    {% if search_term.type is not null %}
+        {% set search_term_line = search_term_line|merge([
+            '(' ~ ('search_term_type.' ~ search_term.type.name)|trans ~ ')'
+        ]) %}
+    {% endif %}
+
+    {{ search_term_line|join(' ')|raw }}
+{% endapply %}

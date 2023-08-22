@@ -7,8 +7,6 @@ payment_method:
   sberbank: Sberbank
   stripe: Stripe
 
-datetime_format: m/d H:i
-date_format: m/d
 active: Active
 inactive: Inactive
 enabled: Enabled
@@ -26,11 +24,14 @@ email: Email
 
 toggle_hint: Use %command% command to disable help hints like this.
 tries_for: tries for a
+no_details: No details
 
 query:
   action: Select an action please.
 
 keyboard:
+  yes: Yes
+  no: No
   confirm: 👌 Confirm
   back: ⬅️ Get back
   cancel: ❌ Cancel

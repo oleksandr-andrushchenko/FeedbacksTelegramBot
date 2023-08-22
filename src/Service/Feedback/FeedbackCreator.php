@@ -21,7 +21,7 @@ class FeedbackCreator
         private readonly EntityManagerInterface $entityManager,
         private readonly Validator $validator,
         private readonly UserCreateFeedbackStatisticsProvider $userStatisticsProvider,
-        private readonly FeedbackUserSubscriptionManager $userSubscriptionManager,
+        private readonly FeedbackSubscriptionManager $subscriptionManager,
         private readonly ActivityLogger $activityLogger,
     )
     {
@@ -46,15 +46,30 @@ class FeedbackCreator
         $this->checkSearchTermUser($feedbackTransfer);
 
         $messengerUser = $feedbackTransfer->getMessengerUser();
-        $hasActiveSubscription = $this->userSubscriptionManager->hasActiveSubscription($messengerUser);
+        $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($messengerUser);
 
         if (!$hasActiveSubscription) {
             $this->checkLimits($feedbackTransfer);
         }
 
+        $feedback = $this->constructFeedback($feedbackTransfer);
+
+        $this->entityManager->persist($feedback);
+
+        if ($this->options->logActivities()) {
+            $this->activityLogger->logActivity($feedback);
+        }
+
+        return $feedback;
+    }
+
+    public function constructFeedback(FeedbackTransfer $feedbackTransfer): Feedback
+    {
+        $messengerUser = $feedbackTransfer->getMessengerUser();
+        $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($messengerUser);
         $searchTermTransfer = $feedbackTransfer->getSearchTerm();
 
-        $feedback = new Feedback(
+        return new Feedback(
             $messengerUser->getUser(),
             $messengerUser,
             $searchTermTransfer->getText(),
@@ -66,16 +81,9 @@ class FeedbackCreator
             $feedbackTransfer->getRating(),
             $feedbackTransfer->getDescription(),
             $hasActiveSubscription,
-            $messengerUser?->getCountryCode(),
+            $messengerUser?->getUser()->getCountryCode(),
             $messengerUser?->getLocaleCode()
         );
-        $this->entityManager->persist($feedback);
-
-        if ($this->options->logActivities()) {
-            $this->activityLogger->logActivity($feedback);
-        }
-
-        return $feedback;
     }
 
     /**

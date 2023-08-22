@@ -26,7 +26,6 @@ class FeedbackNormalizer implements NormalizerInterface
                 'rate' => $object->getRating()->name,
                 'description' => $object->getDescription(),
                 'created_at' => $object->getCreatedAt()->getTimestamp(),
-                'updated_at' => $object->getUpdatedAt()?->getTimestamp(),
             ];
         }
 

@@ -1,13 +1,4 @@
 {% trans_default_domain 'tg.country' %}
 ℹ️ {{ 'describe.title'|trans }}
 
-{% apply spaceless %}
-{% if country %}
-    {{ 'describe.known'|trans({'%icon%': icon, '%name%': name}) }}
-{% else %}
-    {{ 'describe.unknown'|trans({'%icon%': '🌎'}) }}
-{% endif %}
-{% endapply %}
-
-
 {% include 'tg.hints.html.twig' %}

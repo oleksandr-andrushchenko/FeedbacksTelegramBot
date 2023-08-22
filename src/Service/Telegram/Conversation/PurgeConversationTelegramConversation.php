@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service\Telegram\Conversation;
 
 use App\Entity\Telegram\TelegramConversationState;
-use App\Enum\Telegram\TelegramView;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Entity\Telegram\TelegramConversation as Conversation;
@@ -60,14 +59,14 @@ class PurgeConversationTelegramConversation extends TelegramConversation impleme
             return;
         }
 
-        $tg->reply($tg->view(TelegramView::DESCRIBE_PURGE, [
+        $tg->reply($tg->view('describe_purge', [
             'items' => [
                 'username',
                 'name',
                 'phone_number',
                 'email',
             ],
-        ]), parseMode: 'HTML');
+        ]));
     }
 
     public function queryConfirm(TelegramAwareHelper $tg): null

@@ -7,12 +7,16 @@
     <parameters>
         <parameter key="app.locales" type="collection">
             <parameter key="en" type="collection">
+                <parameter key="code">en</parameter>
                 <parameter key="flag">us</parameter>
             </parameter>
             <parameter key="uk" type="collection">
+                <parameter key="code">uk</parameter>
                 <parameter key="flag">ua</parameter>
             </parameter>
-            <parameter key="ru" type="collection"/>
+            <parameter key="ru" type="collection">
+                <parameter key="code">ru</parameter>
+            </parameter>
         </parameter>
     </parameters>
 </container>

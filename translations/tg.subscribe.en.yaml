@@ -6,8 +6,8 @@ query:
   subscription_plan: Select a subscription plan from the menu below please.
   payment_method: Select a payment method from the menu below please.
   payment: Proceed with the payment instructions below please.
-  payment_invoice_title: '"%plan%" subscription'
-  payment_invoice_description: "No limits on feedbacks creation and searching for the next period: %plan%"
+  payment_invoice_title: Premium subscription "%plan%"
+  payment_invoice_description: No quantity limits on feedbacks creation and searching for %plan%
 keyboard:
   change_currency: Change currency
 reply:

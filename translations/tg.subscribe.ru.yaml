@@ -6,12 +6,12 @@ query:
   subscription_plan: Выберите план подписки.
   payment_method: Выберите способ оплаты.
   payment: Следуйте инструкциям по оплате ниже.
-  payment_invoice_title: '"%plan%" подписка'
-  payment_invoice_description: "Нет ограничений на создание и поиск отзывов на следующий период: %plan%"
+  payment_invoice_title: Премиум подписка "%plan%"
+  payment_invoice_description: "%plan% без количественных ограничений на создание и поиск отзывов."
 keyboard:
   change_currency: Изменить валюту
 reply:
   payment_ok: Ваш платеж за премиальную подписку "%plan%" получен. Премиум-подписка истечет в %expire_at% GMT.
   already_have: "У вас уже есть активная премиум-подписка:"
   invalid_currency: Валюта "%currency%" сейчас не принимается, пожалуйста, выберите другую валюту.
-  canceled: Диалог получения премиум-подписки был отменен.
+  canceled: Диалог получения премиум-подписки отменен.

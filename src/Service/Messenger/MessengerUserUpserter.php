@@ -29,11 +29,9 @@ class MessengerUserUpserter
             $messengerUser = new MessengerUser(
                 $messengerUserTransfer->getMessenger(),
                 $messengerUserTransfer->getId(),
-                $messengerUserTransfer->getUsername(),
-                $messengerUserTransfer->getName(),
-                $messengerUserTransfer->getCountryCode(),
-                $messengerUserTransfer->getLocaleCode(),
-                $messengerUserTransfer->getCurrencyCode(),
+                username: $messengerUserTransfer->getUsername(),
+                name: $messengerUserTransfer->getName(),
+                localeCode: $messengerUserTransfer->getLocaleCode(),
             );
             $this->entityManager->persist($messengerUser);
 

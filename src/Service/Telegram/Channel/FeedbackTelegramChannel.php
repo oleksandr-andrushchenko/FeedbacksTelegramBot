@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Service\Telegram\Channel;
 
 use App\Entity\Telegram\TelegramPayment;
-use App\Enum\Telegram\TelegramView;
-use App\Exception\Telegram\TelegramException;
-use App\Service\Feedback\FeedbackUserSubscriptionManager;
+use App\Service\Feedback\FeedbackSubscriptionManager;
+use App\Service\Feedback\View\SubscriptionTelegramViewProvider;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\Chat\SubscribeDescribeTelegramChatSender;
 use App\Service\Telegram\Chat\StartTelegramCommandHandler;
@@ -15,6 +14,7 @@ use App\Service\Telegram\Chat\SubscriptionsTelegramChatSender;
 use App\Service\Telegram\Chat\HintsTelegramChatSwitcher;
 use App\Service\Telegram\Conversation\CountryTelegramConversation;
 use App\Service\Telegram\Conversation\LocaleTelegramConversation;
+use App\Service\Telegram\Conversation\LookupTelegramConversation;
 use App\Service\Telegram\Conversation\SubscribeTelegramConversation;
 use App\Service\Telegram\Conversation\CreateFeedbackTelegramConversation;
 use App\Service\Telegram\Conversation\ContactTelegramConversation;
@@ -26,13 +26,14 @@ use App\Service\Telegram\FallbackTelegramCommand;
 use App\Service\Telegram\TelegramCommand;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Service\Telegram\TelegramConversationFactory;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Throwable;
 
 class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannelInterface
 {
     public const START = '/start';
     public const CREATE = '/add';
     public const SEARCH = '/find';
+    public const LOOKUP = '/lookup';
     public const SUBSCRIBE = '/subscribe';
     public const SUBSCRIPTIONS = '/subscriptions';
     public const COUNTRY = '/country';
@@ -46,6 +47,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     public const SUPPORTS = [
         'create' => self::CREATE,
         'search' => self::SEARCH,
+        'lookup' => self::LOOKUP,
         'subscribe' => self::SUBSCRIBE,
         'subscriptions' => self::SUBSCRIPTIONS,
         'country' => self::COUNTRY,
@@ -60,12 +62,13 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     public function __construct(
         TelegramAwareHelper $awareHelper,
         TelegramConversationFactory $conversationFactory,
-        private readonly FeedbackUserSubscriptionManager $subscriptionManager,
+        private readonly FeedbackSubscriptionManager $subscriptionManager,
         private readonly SubscriptionsTelegramChatSender $subscriptionsChatSender,
         private readonly HintsTelegramChatSwitcher $hintsChatSwitcher,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly SubscribeDescribeTelegramChatSender $subscribeDescribeChatSender,
         private readonly StartTelegramCommandHandler $startHandler,
+        private readonly SubscriptionTelegramViewProvider $subscriptionViewProvider,
     )
     {
         parent::__construct($awareHelper, $conversationFactory);
@@ -76,6 +79,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         yield new TelegramCommand(self::START, fn () => $this->start($tg), menu: false);
         yield new TelegramCommand(self::CREATE, fn () => $this->create($tg), menu: true, key: 'create', beforeConversations: true);
         yield new TelegramCommand(self::SEARCH, fn () => $this->search($tg), menu: true, key: 'search', beforeConversations: true);
+        yield new TelegramCommand(self::LOOKUP, fn () => $this->lookup($tg), menu: true, key: 'lookup', beforeConversations: true);
         yield new TelegramCommand(self::SUBSCRIBE, fn () => $this->subscribe($tg), menu: true, key: 'subscribe', beforeConversations: true);
         yield new TelegramCommand(self::SUBSCRIPTIONS, fn () => $this->subscriptions($tg), menu: true, key: 'subscriptions', beforeConversations: true);
         yield new TelegramCommand(self::COUNTRY, fn () => $this->country($tg), menu: true, key: 'country', beforeConversations: true);
@@ -87,7 +91,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         yield new TelegramCommand(self::RESTART, fn () => $this->restart($tg), menu: true, key: 'restart', beforeConversations: true);
 
         yield new FallbackTelegramCommand(fn () => $this->fallback($tg));
-        yield new ErrorTelegramCommand(fn (TelegramException $exception) => $this->exception($tg));
+        yield new ErrorTelegramCommand(fn (Throwable $exception) => $this->exception($tg));
     }
 
     public function fallback(TelegramAwareHelper $tg): null
@@ -95,6 +99,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         return match ($tg->getText()) {
             $this->chooseActionChatSender->getCreateButton($tg)->getText() => $this->create($tg),
             $this->chooseActionChatSender->getSearchButton($tg)->getText() => $this->search($tg),
+            $this->chooseActionChatSender->getLookupButton($tg)->getText() => $this->lookup($tg),
             $this->chooseActionChatSender->getSubscribeButton($tg)->getText() => $this->subscribe($tg),
             $this->chooseActionChatSender->getSubscriptionsButton($tg)->getText() => $this->subscriptions($tg),
             $this->chooseActionChatSender->getCountryButton($tg)->getText() => $this->country($tg),
@@ -113,6 +118,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     public function exception(TelegramAwareHelper $tg): null
     {
         $tg->replyFail($tg->trans('reply.fail.unknown'));
+        $tg->stopConversations();
 
         return $this->chooseActionChatSender->sendActions($tg);
     }
@@ -132,6 +138,11 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     public function search(TelegramAwareHelper $tg): null
     {
         return $tg->stopConversations()->startConversation(SearchFeedbackTelegramConversation::class)->null();
+    }
+
+    public function lookup(TelegramAwareHelper $tg): null
+    {
+        return $tg->stopConversations()->startConversation(LookupTelegramConversation::class)->null();
     }
 
     public function subscribe(TelegramAwareHelper $tg): null
@@ -154,9 +165,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         $this->describeSubscribe($tg);
 
         $tg->reply($tg->trans('reply.subscribe.already_have'))
-            ->reply($tg->view(TelegramView::SUBSCRIPTION, [
-                'subscription' => $activeSubscription,
-            ]), parseMode: 'HTML')->null()
+            ->reply($this->subscriptionViewProvider->getSubscriptionTelegramView($tg, $activeSubscription))
         ;
 
         return $this->chooseActionChatSender->sendActions($tg);
@@ -231,7 +240,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     {
         $tg->stopConversations();
 
-        $tg->reply($tg->view(TelegramView::COMMANDS), parseMode: 'HTML', disableWebPagePreview: true);
+        $tg->reply($tg->view('commands'));
 
         return $this->chooseActionChatSender->sendActions($tg);
     }

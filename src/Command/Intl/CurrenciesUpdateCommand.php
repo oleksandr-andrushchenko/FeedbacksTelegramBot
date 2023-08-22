@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command\Intl;
 
+use App\Entity\Intl\Currency;
 use App\Service\Intl\CurrenciesProviderInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -48,8 +49,12 @@ class CurrenciesUpdateCommand extends Command
                 throw new RuntimeException('Unable to fetch currencies');
             }
 
-            $json = json_encode(array_map(fn ($currency) => $this->normalizer->normalize($currency), $currencies));
+            $data = [];
+            foreach ($currencies as $currency) {
+                $data[$currency->getCode()] = $this->normalizer->normalize($currency, format: 'internal');
+            }
 
+            $json = json_encode($data);
             $written = file_put_contents($this->targetFile, $json);
 
             if ($written === false) {

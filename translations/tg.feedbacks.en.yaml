@@ -1,6 +1,7 @@
 icon:
   create: ✏️
   search: 🔍
+  lookup: 🔎
   subscribe: ⭐️
   subscriptions: 🌟
   country: 🌎
@@ -12,8 +13,9 @@ icon:
   restart: 🔄
 
 command:
-  create: Add feedback
-  search: Find feedback
+  create: Add Feedback
+  search: Find Feedbacks
+  lookup: Find Lookups
   subscribe: Get Premium
   subscriptions: My Premium
   country: My Country

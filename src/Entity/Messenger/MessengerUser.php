@@ -16,9 +16,7 @@ class MessengerUser
         private readonly string $identifier,
         private ?string $username = null,
         private ?string $name = null,
-        private ?string $countryCode = null,
         private ?string $localeCode = null,
-        private ?string $currencyCode = null,
         private ?User $user = null,
         private bool $isShowHints = false,
         private bool $isShowExtendedKeyboard = false,
@@ -87,18 +85,6 @@ class MessengerUser
         return $this;
     }
 
-    public function getCountryCode(): ?string
-    {
-        return $this->countryCode;
-    }
-
-    public function setCountryCode(?string $countryCode): self
-    {
-        $this->countryCode = $countryCode;
-
-        return $this;
-    }
-
     public function getLocaleCode(): ?string
     {
         return $this->localeCode;
@@ -107,18 +93,6 @@ class MessengerUser
     public function setLocaleCode(?string $localeCode): self
     {
         $this->localeCode = $localeCode;
-
-        return $this;
-    }
-
-    public function getCurrencyCode(): ?string
-    {
-        return $this->currencyCode;
-    }
-
-    public function setCurrencyCode(?string $currencyCode): self
-    {
-        $this->currencyCode = $currencyCode;
 
         return $this;
     }

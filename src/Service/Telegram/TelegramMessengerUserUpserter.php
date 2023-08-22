@@ -27,24 +27,24 @@ class TelegramMessengerUserUpserter
         $user = $this->userProvider->getTelegramUserByUpdate($telegram->getUpdate());
 
         if ($user === null) {
-            $messengerUser = null;
-        } else {
-            $countryCode = $telegram->getBot()->getCountryCode();
-            $country = $this->countryProvider->getCountry($countryCode);
-            $localeCode = $this->countryProvider->getCountryDefaultLocale($country);
-
-            $messengerUserTransfer = new MessengerUserTransfer(
-                Messenger::telegram,
-                (string) $user->getId(),
-                $user->getUsername(),
-                trim($user->getFirstName() . ' ' . $user->getLastName()),
-                $country->getCode(),
-                $localeCode,
-                $country->getCurrencyCode()
-            );
-            $messengerUser = $this->messengerUserUpserter->upsertMessengerUser($messengerUserTransfer);
-            $this->userUpserter->upsertUserByMessengerUser($messengerUser);
+            return null;
         }
+
+        $countryCode = $telegram->getBot()->getCountryCode();
+        $country = $this->countryProvider->getCountry($countryCode);
+
+        $messengerUserTransfer = new MessengerUserTransfer(
+            Messenger::telegram,
+            (string) $user->getId(),
+            username: $user->getUsername(),
+            name: trim($user->getFirstName() . ' ' . $user->getLastName()),
+            countryCode: $country->getCode(),
+            localeCode: $country->getLocaleCodes()[0] ?? null,
+            currencyCode: $country->getCurrencyCode(),
+            timezone: $country->getTimezones()[0] ?? null
+        );
+        $messengerUser = $this->messengerUserUpserter->upsertMessengerUser($messengerUserTransfer);
+        $this->userUpserter->upsertUserByMessengerUser($messengerUser, $messengerUserTransfer);
 
         return $messengerUser;
     }

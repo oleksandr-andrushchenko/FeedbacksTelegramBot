@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram\Conversation;
 
-use App\Entity\ContactOptions;
 use App\Entity\Telegram\CreateFeedbackTelegramConversationState;
 use App\Entity\Telegram\TelegramConversation as Conversation;
 use App\Enum\Telegram\TelegramGroup;
-use App\Enum\Telegram\TelegramView;
 use App\Exception\ValidatorException;
 use App\Object\User\UserFeedbackMessageTransfer;
 use App\Service\ContactOptionsFactory;
@@ -64,7 +62,7 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
             return;
         }
 
-        $tg->reply($tg->view(TelegramView::DESCRIBE_CONTACT), parseMode: 'HTML');
+        $tg->reply($tg->view('describe_contact'));
     }
 
     public function queryMessage(TelegramAwareHelper $tg): null
@@ -72,18 +70,16 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
         $this->state->setStep(self::STEP_MESSAGE_QUERIED);
 
         $country = $this->countryProvider->getCountry($tg->getCountryCode());
-        $localeCode = $this->countryProvider->getCountryDefaultLocale($country);
+        $localeCode = $country->getLocaleCodes()[0] ?? null;
 
         $tg->reply(
             $tg->view(
-                TelegramView::QUERY_CONTACT,
+                'query_contact',
                 [
                     'contacts' => $this->contactOptionsFactory->createContactOptions(TelegramGroup::feedbacks, $localeCode),
                 ]
             ),
-            parseMode: 'HTML',
-            protectContent: true,
-            disableWebPagePreview: true
+            protectContent: true
         );
 
         return $tg->reply($tg->trans('query.message', domain: 'tg.contact'), $tg->keyboard($this->getBackButton($tg)))->null();

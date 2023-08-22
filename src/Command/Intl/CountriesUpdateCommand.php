@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command\Intl;
 
+use App\Entity\Intl\Country;
 use App\Service\Intl\CountriesProviderInterface;
 use App\Service\Intl\CountryTranslationsProviderInterface;
 use Symfony\Component\Console\Command\Command;
@@ -68,8 +69,12 @@ class CountriesUpdateCommand extends Command
             throw new RuntimeException('Unable to fetch countries');
         }
 
-        $json = json_encode(array_map(fn ($country) => $this->normalizer->normalize($country), $countries));
+        $data = [];
+        foreach ($countries as $country) {
+            $data[$country->getCode()] = $this->normalizer->normalize($country, format: 'internal');
+        }
 
+        $json = json_encode($data);
         $written = file_put_contents($this->targetFile, $json);
 
         if ($written === false) {
