@@ -49,48 +49,34 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
 
     public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
     {
-        if ($this->state->getStep() === null) {
-            $this->describe($tg);
+        return match (true) {
+            $this->state->getStep() === null => $this->start($tg, $conversation),
 
-            // todo: after this - finalize Payments requirements
-            $this->replyCurrentSubscription($tg);
+            $tg->matchText(null) => $this->wrong($tg),
+            $tg->matchText($this->getBackButton($tg)->getText()) => $this->gotBack($tg),
+            $tg->matchText($this->getCancelButton($tg)->getText()) => $this->gotCancel($tg, $conversation),
 
-            if (!$this->subscriptionManager->hasActiveSubscription($tg->getTelegram()->getMessengerUser())) {
-                $tg->stopConversation($conversation);
+            $this->state->getStep() === self::STEP_SEARCH_TERM_QUERIED => $this->gotSearchTerm($tg, $conversation),
+            $this->state->getStep() === self::STEP_SEARCH_TERM_TYPE_QUERIED => $this->gotSearchTermType($tg, $conversation),
 
-                return $this->chooseActionChatSender->sendActions($tg);
-            }
+            default => $this->wrong($tg)
+        };
+    }
 
-            return $this->querySearchTerm($tg);
-        }
+    public function start(TelegramAwareHelper $tg, Conversation $conversation): null
+    {
+        $this->describe($tg);
 
-        if ($tg->matchText(null)) {
-            return $tg->replyWrong($tg->trans('reply.wrong'))->null();
-        }
+        // todo: remove
+        $this->replyCurrentSubscription($tg);
 
-        if ($tg->matchText($this->getBackButton($tg)->getText())) {
-            if ($this->state->getStep() === self::STEP_SEARCH_TERM_TYPE_QUERIED) {
-                return $this->querySearchTerm($tg);
-            }
-        }
-
-        if ($tg->matchText($this->getCancelButton($tg)->getText())) {
-            $this->state->setStep(self::STEP_CANCEL_PRESSED);
-
-            $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.lookup'));
+        if (!$this->subscriptionManager->hasActiveSubscription($tg->getTelegram()->getMessengerUser())) {
+            $tg->stopConversation($conversation);
 
             return $this->chooseActionChatSender->sendActions($tg);
         }
 
-        if ($this->state->getStep() === self::STEP_SEARCH_TERM_QUERIED) {
-            return $this->gotSearchTerm($tg, $conversation);
-        }
-
-        if ($this->state->getStep() === self::STEP_SEARCH_TERM_TYPE_QUERIED) {
-            return $this->gotSearchTermType($tg, $conversation);
-        }
-
-        return null;
+        return $this->querySearchTerm($tg);
     }
 
     public function describe(TelegramAwareHelper $tg): void
@@ -126,6 +112,29 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
         );
 
         return null;
+    }
+
+    public function gotBack(TelegramAwareHelper $tg): null
+    {
+        if ($this->state->getStep() === self::STEP_SEARCH_TERM_TYPE_QUERIED) {
+            return $this->querySearchTerm($tg);
+        }
+
+        return $this->wrong($tg);
+    }
+
+    public function gotCancel(TelegramAwareHelper $tg, Conversation $conversation): null
+    {
+        $this->state->setStep(self::STEP_CANCEL_PRESSED);
+
+        $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.lookup'));
+
+        return $this->chooseActionChatSender->sendActions($tg);
+    }
+
+    public function wrong(TelegramAwareHelper $tg): ?string
+    {
+        return $tg->replyWrong($tg->trans('reply.wrong'))->null();
     }
 
     public function gotSearchTerm(TelegramAwareHelper $tg, Conversation $conversation): null
@@ -295,7 +304,7 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
         return $tg->button($tg->trans('keyboard.cancel'));
     }
 
-    private function getStep(int $num): string
+    public function getStep(int $num): string
     {
         return "[{$num}/1] ";
     }

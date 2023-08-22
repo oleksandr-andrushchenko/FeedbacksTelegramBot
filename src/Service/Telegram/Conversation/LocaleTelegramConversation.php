@@ -32,37 +32,27 @@ class LocaleTelegramConversation extends TelegramConversation implements Telegra
 
     public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
     {
-        if ($this->state->getStep() === null) {
-            $this->describe($tg);
+        return match (true) {
+            $this->state->getStep() === null => $this->start($tg),
 
-            return $this->queryChangeConfirm($tg);
-        }
+            $tg->matchText(null) => $this->wrong($tg),
 
-        if ($tg->matchText(null)) {
-            return $tg->replyWrong($tg->trans('reply.wrong'))->null();
-        }
+            $this->state->getStep() === self::STEP_CHANGE_CONFIRM_QUERIED => $this->gotChangeConfirm($tg, $conversation),
 
-        if ($this->state->getStep() === self::STEP_CHANGE_CONFIRM_QUERIED) {
-            return $this->gotChangeConfirm($tg, $conversation);
-        }
+            $tg->matchText($this->getCancelButton($tg)->getText()) => $this->gotCancel($tg, $conversation),
 
-        if ($tg->matchText($this->getCancelButton($tg)->getText())) {
-            $this->state->setStep(self::STEP_CANCEL_PRESSED);
+            $this->state->getStep() === self::STEP_GUESS_LOCALE_QUERIED => $this->gotLocale($tg, $conversation, true),
+            $this->state->getStep() === self::STEP_LOCALE_QUERIED => $this->gotLocale($tg, $conversation, false),
 
-            $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.locale'));
+            default => $this->wrong($tg)
+        };
+    }
 
-            return $this->chooseActionChatSender->sendActions($tg);
-        }
+    public function start(TelegramAwareHelper $tg): null
+    {
+        $this->describe($tg);
 
-        if ($this->state->getStep() === self::STEP_GUESS_LOCALE_QUERIED) {
-            return $this->gotLocale($tg, $conversation, true);
-        }
-
-        if ($this->state->getStep() === self::STEP_LOCALE_QUERIED) {
-            return $this->gotLocale($tg, $conversation, false);
-        }
-
-        return null;
+        return $this->queryChangeConfirm($tg);
     }
 
     /**
@@ -88,14 +78,21 @@ class LocaleTelegramConversation extends TelegramConversation implements Telegra
             return;
         }
 
-        $localeCode = $tg->getLocaleCode();
-        $locale = $localeCode === null ? null : $this->provider->getLocale($localeCode);
+        $tg->reply($tg->view('describe_locale'));
+    }
 
-        $tg->reply($tg->view('describe_locale', [
-            'locale' => $locale,
-            'icon' => $locale === null ? null : $this->provider->getLocaleIcon($locale),
-            'name' => $locale === null ? null : $this->provider->getLocaleName($locale),
-        ]));
+    public function gotCancel(TelegramAwareHelper $tg, Conversation $conversation): null
+    {
+        $this->state->setStep(self::STEP_CANCEL_PRESSED);
+
+        $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.locale'));
+
+        return $this->chooseActionChatSender->sendActions($tg);
+    }
+
+    public function wrong(TelegramAwareHelper $tg): ?string
+    {
+        return $tg->replyWrong($tg->trans('reply.wrong'))->null();
     }
 
     public function getCurrentLocaleReply(TelegramAwareHelper $tg): string

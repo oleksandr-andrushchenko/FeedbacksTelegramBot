@@ -26,9 +26,9 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 
     /**
      * @param callable $fn
-     * @dataProvider onStartStepDataProvider
+     * @dataProvider startSuccessDataProvider
      */
-    public function testOnStartStepSuccess(callable $fn): void
+    public function testStartSuccess(callable $fn): void
     {
         extract($fn($this->tg));
 
@@ -45,16 +45,71 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             ->shouldSeeReply(...$this->getShouldSeeReplyOnSearchTermQueried())
             ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnSearchTermQueried($this->tg))
         ;
-
-        $messengerUser = $this->getMessengerUserRepository()->findOneByMessengerAndIdentifier(
-            Messenger::telegram,
-            (string) $this->getUpdateUserId()
-        );
-
-        $this->assertNotNull($messengerUser);
     }
 
-    public function onStartStepDataProvider(): Generator
+    /**
+     * @param callable $fn
+     * @dataProvider startSuccessDataProvider
+     */
+    public function testStartWithHintsSuccess(callable $fn): void
+    {
+        extract($fn($this->tg));
+
+        $this->getUpdateMessengerUser()->setIsShowHints(true);
+
+        $this->getEntityManager()->remove($this->getTelegramConversation());
+        $this->getEntityManager()->flush();
+
+        $this
+            ->command($command)
+            ->conversation($conversationClass, $conversationState)
+            ->invoke()
+            ->expectsState(
+                new CreateFeedbackTelegramConversationState(CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
+            )
+            ->shouldSeeReply(
+                'describe.title',
+                'describe.limits',
+                'toggle_hints',
+                ...$this->getShouldSeeReplyOnSearchTermQueried(),
+            )
+            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnSearchTermQueried($this->tg))
+        ;
+    }
+
+    /**
+     * @param callable $fn
+     * @dataProvider startSuccessDataProvider
+     */
+    public function testStartWithHintsAndPaymentsSuccess(callable $fn): void
+    {
+        extract($fn($this->tg));
+
+        $this->getUpdateMessengerUser()->setIsShowHints(true);
+        $this->telegram->getBot()->setIsAcceptPayments(true);
+
+        $this->getEntityManager()->remove($this->getTelegramConversation());
+        $this->getEntityManager()->flush();
+
+        $this
+            ->command($command)
+            ->conversation($conversationClass, $conversationState)
+            ->invoke()
+            ->expectsState(
+                new CreateFeedbackTelegramConversationState(CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
+            )
+            ->shouldSeeReply(
+                'describe.title',
+                'describe.limits',
+                'describe.subscribe',
+                'toggle_hints',
+                ...$this->getShouldSeeReplyOnSearchTermQueried(),
+            )
+            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnSearchTermQueried($this->tg))
+        ;
+    }
+
+    public function startSuccessDataProvider(): Generator
     {
         yield sprintf('start_step_as_%s', 'text') => [
             fn ($tg) => [
@@ -73,22 +128,23 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 
     /**
      * @param callable $fn
-     * @dataProvider onSearchTermStepDataProvider
+     * @dataProvider gotSearchTermSuccessDataProvider
      */
-    public function testOnSearchTermStepSuccess(callable $fn): void
+    public function testGotSearchTermSuccess(callable $fn): void
     {
         extract($fn($this->tg));
         $state->setStep(CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED);
 
         $mocks && $mocks();
 
-        $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
+        $this
+            ->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
             ->shouldSeeReply(...$shouldSeeReply)
             ->shouldSeeKeyboard(...$shouldSeeKeyboard)
         ;
     }
 
-    public function onSearchTermStepDataProvider(): Generator
+    public function gotSearchTermSuccessDataProvider(): Generator
     {
         $state = (new CreateFeedbackTelegramConversationState())
             ->setStep(CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
@@ -148,10 +204,10 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             ],
         ];
 
-        yield from $this->onSearchTermStepToTypeQueriedDataProvider('search_term_step', $state);
+        yield from $this->gotUnknownSearchTermSuccessDataProvider('search_term_step', $state);
     }
 
-    public function onSearchTermStepToTypeQueriedDataProvider(string $key, CreateFeedbackTelegramConversationState $state): Generator
+    public function gotUnknownSearchTermSuccessDataProvider(string $key, CreateFeedbackTelegramConversationState $state): Generator
     {
         /** @var MessengerUserTransfer $messengerUser */
 
@@ -318,9 +374,9 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     /**
      * @param callable $fn
      * @return void
-     * @dataProvider onChangeSearchTermStepDataProvider
+     * @dataProvider gotSearchTermChangeSuccessDataProvider
      */
-    public function testOnChangeSearchTermStepSuccess(callable $fn): void
+    public function testGotSearchTermChangeSuccess(callable $fn): void
     {
         extract($fn($this->tg));
         $state
@@ -330,13 +386,14 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 
         $mocks && $mocks($this);
 
-        $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
+        $this
+            ->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
             ->shouldSeeReply(...$shouldSeeReply)
             ->shouldSeeKeyboard(...$shouldSeeKeyboard)
         ;
     }
 
-    public function onChangeSearchTermStepDataProvider(): Generator
+    public function gotSearchTermChangeSuccessDataProvider(): Generator
     {
         $state = (new CreateFeedbackTelegramConversationState())
             ->setStep(CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
@@ -389,26 +446,27 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             ];
         }
 
-        yield from $this->onSearchTermStepToTypeQueriedDataProvider('change_search_term_step', $state);
+        yield from $this->gotUnknownSearchTermSuccessDataProvider('change_search_term_step', $state);
     }
 
     /**
      * @param callable $fn
      * @return void
-     * @dataProvider onSearchTermTypeStepDataProvider
+     * @dataProvider gotSearchTermTypeSuccessDataProvider
      */
-    public function testOnSearchTermTypeStepSuccess(callable $fn): void
+    public function testGotSearchTermTypeSuccess(callable $fn): void
     {
         extract($fn($this->tg));
         $state->setStep(CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_TYPE_QUERIED);
 
-        $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
+        $this
+            ->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
             ->shouldSeeReply(...$this->getShouldSeeReplyOnRatingQueried())
             ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnRatingQueried($this->tg))
         ;
     }
 
-    public function onSearchTermTypeStepDataProvider(): Generator
+    public function gotSearchTermTypeSuccessDataProvider(): Generator
     {
         $searchTermTypes = SearchTermType::cases();
 
@@ -507,9 +565,9 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     /**
      * @param callable $fn
      * @return void
-     * @dataProvider onChangeSearchTermTypeStepDataProvider
+     * @dataProvider gotSearchTermTypeChangeSuccess
      */
-    public function testOnChangeSearchTermTypeStepSuccess(callable $fn): void
+    public function testGotSearchTermTypeChangeSuccess(callable $fn): void
     {
         extract($fn($this->tg));
         $state
@@ -517,13 +575,14 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             ->setChange(true)
         ;
 
-        $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
+        $this
+            ->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
             ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried())
             ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmQueried($this->tg, $expectedState))
         ;
     }
 
-    public function onChangeSearchTermTypeStepDataProvider(): Generator
+    public function gotSearchTermTypeChangeSuccess(): Generator
     {
         $generalState = (new CreateFeedbackTelegramConversationState())
             ->setStep(CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_TYPE_QUERIED)
@@ -631,9 +690,9 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     /**
      * @param Rating $rating
      * @return void
-     * @dataProvider onRatingStepDataProvider
+     * @dataProvider gotRatingSuccessDataProvider
      */
-    public function testOnRatingStepSuccess(Rating $rating): void
+    public function testGotRatingSuccess(Rating $rating): void
     {
         $command = CreateFeedbackTelegramConversation::getRatingButton($rating, $this->tg)->getText();
         $state = (new CreateFeedbackTelegramConversationState())
@@ -645,13 +704,14 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             ->setRating($rating)
         ;
 
-        $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
+        $this
+            ->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
             ->shouldSeeReply(...$this->getShouldSeeReplyOnDescriptionQueried())
             ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnDescriptionQueried($this->tg))
         ;
     }
 
-    public function onRatingStepDataProvider(): Generator
+    public function gotRatingSuccessDataProvider(): Generator
     {
         foreach (Rating::cases() as $rating) {
             yield sprintf('rating_step_as_%s', $rating->name) => ['rating' => $rating];
@@ -661,9 +721,9 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     /**
      * @param Rating $rating
      * @return void
-     * @dataProvider onChangeRatingStepDataProvider
+     * @dataProvider gotRatingChangeSuccessDataProvider
      */
-    public function testOnChangeRatingStepSuccess(Rating $rating): void
+    public function testGotRatingChangeSuccess(Rating $rating): void
     {
         $command = CreateFeedbackTelegramConversation::getRatingButton($rating, $this->tg)->getText();
         $state = (new CreateFeedbackTelegramConversationState())
@@ -682,13 +742,14 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             ->setChange(false)
         ;
 
-        $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
+        $this
+            ->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
             ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried())
             ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmQueried($this->tg, $expectedState))
         ;
     }
 
-    public function onChangeRatingStepDataProvider(): Generator
+    public function gotRatingChangeSuccessDataProvider(): Generator
     {
         foreach (Rating::cases() as $rating) {
             yield sprintf('change_rating_step_as_%s', $rating->name) => ['rating' => $rating];
@@ -698,9 +759,9 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     /**
      * @param callable $fn
      * @return void
-     * @dataProvider onDescriptionStepSuccessDataProvider
+     * @dataProvider gotDescriptionSuccessDataProvider
      */
-    public function testOnDescriptionStepSuccess(callable $fn): void
+    public function testGotDescriptionSuccess(callable $fn): void
     {
         extract($fn($this->tg));
         $state->setStep(CreateFeedbackTelegramConversation::STEP_DESCRIPTION_QUERIED);
@@ -712,13 +773,14 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 
         $mocks && $mocks($this);
 
-        $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
+        $this
+            ->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
             ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried())
             ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmQueried($this->tg, $expectedState))
         ;
     }
 
-    public function onDescriptionStepSuccessDataProvider(): Generator
+    public function gotDescriptionSuccessDataProvider(): Generator
     {
         $generalState = (new CreateFeedbackTelegramConversationState())
             ->setStep(CreateFeedbackTelegramConversation::STEP_DESCRIPTION_QUERIED)
@@ -834,9 +896,9 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     /**
      * @param callable $fn
      * @return void
-     * @dataProvider onChangeDescriptionStepSuccessDataProvider
+     * @dataProvider gotDescriptionChangeSuccessDataProvider
      */
-    public function testOnChangeDescriptionStepSuccess(callable $fn): void
+    public function testGotDescriptionChangeSuccess(callable $fn): void
     {
         extract($fn($this->tg));
         $state
@@ -852,13 +914,14 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 
         $mocks && $mocks($this);
 
-        $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
+        $this
+            ->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
             ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried())
             ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmQueried($this->tg, $expectedState))
         ;
     }
 
-    public function onChangeDescriptionStepSuccessDataProvider(): Generator
+    public function gotDescriptionChangeSuccessDataProvider(): Generator
     {
         $generalState = (new CreateFeedbackTelegramConversationState())
             ->setStep(CreateFeedbackTelegramConversation::STEP_DESCRIPTION_QUERIED)
@@ -989,20 +1052,21 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     /**
      * @param callable $fn
      * @return void
-     * @dataProvider onConfirmStepSuccessDataProvider
+     * @dataProvider gotConfirmChangeSuccessDataProvider
      */
-    public function testOnConfirmStepSuccess1(callable $fn): void
+    public function testGotConfirmChangeSuccess(callable $fn): void
     {
         extract($fn($this->tg));
         $state->setStep(CreateFeedbackTelegramConversation::STEP_CONFIRM_QUERIED);
 
-        $this->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
+        $this
+            ->type($command, $state, $expectedState, conversationClass: CreateFeedbackTelegramConversation::class)
             ->shouldSeeReply($expectedReply)
             ->shouldSeeKeyboard(...$expectedKeyboard)
         ;
     }
 
-    public function onConfirmStepSuccessDataProvider(): Generator
+    public function gotConfirmChangeSuccessDataProvider(): Generator
     {
         $searchTerm = new SearchTermTransfer('any');
         $description = 'whatever';
@@ -1074,9 +1138,9 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
      * @param int $step
      * @param bool|null $change
      * @return void
-     * @dataProvider cancelSuccessDataProvider
+     * @dataProvider gotCancelSuccessDataProvider
      */
-    public function testCancelSuccess(int $step, bool $change = null): void
+    public function testGotCancelSuccess(int $step, bool $change = null): void
     {
         $this->typeCancel(
             state: $state = (new CreateFeedbackTelegramConversationState())
@@ -1086,17 +1150,12 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                 ->setStep(CreateFeedbackTelegramConversation::STEP_CANCEL_PRESSED),
             shouldSeeReply: [
                 'reply.canceled',
-                ChooseActionTelegramChatSender::getActionQuery($this->tg),
-            ],
-            shouldSeeKeyboard: [
-                ChooseActionTelegramChatSender::getCreateButton($this->tg),
-                ChooseActionTelegramChatSender::getSearchButton($this->tg),
             ],
             conversationClass: CreateFeedbackTelegramConversation::class
         );
     }
 
-    public function cancelSuccessDataProvider(): Generator
+    public function gotCancelSuccessDataProvider(): Generator
     {
         yield 'search_term' => [
             CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED,
@@ -1142,9 +1201,9 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     /**
      * @param CreateFeedbackTelegramConversationState $state
      * @return void
-     * @dataProvider confirmSuccessDataProvider
+     * @dataProvider gotConfirmSuccessDataProvider
      */
-    public function testConfirmSuccess(CreateFeedbackTelegramConversationState $state): void
+    public function testGotConfirmSuccess(CreateFeedbackTelegramConversationState $state): void
     {
         $feedbackRepository = $this->getFeedbackRepository();
         $previousFeedbackCount = $feedbackRepository->count([]);
@@ -1153,11 +1212,6 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             state: $state,
             shouldSeeReply: [
                 'reply.ok',
-                ChooseActionTelegramChatSender::getActionQuery($this->tg),
-            ],
-            shouldSeeKeyboard: [
-                ChooseActionTelegramChatSender::getCreateButton($this->tg),
-                ChooseActionTelegramChatSender::getSearchButton($this->tg),
             ],
             conversationClass: CreateFeedbackTelegramConversation::class
         );
@@ -1175,7 +1229,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 //        $this->assertEquals($state->getSearchTerm()->getMessengerUser()->getId(), $feedback->getSearchTermMessengerUser()->getIdentifier());
     }
 
-    public function confirmSuccessDataProvider(): Generator
+    public function gotConfirmSuccessDataProvider(): Generator
     {
         $generalState = (new CreateFeedbackTelegramConversationState())
             ->setStep(CreateFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)

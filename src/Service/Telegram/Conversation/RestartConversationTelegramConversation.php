@@ -30,29 +30,20 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
 
     public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
     {
-        if ($this->state->getStep() === null) {
-            $this->describe($tg);
+        return match (true) {
+            $this->state->getStep() === null => $this->start($tg),
+            $tg->matchText(null) => $this->wrong($tg),
+            $tg->matchText($this->getCancelButton($tg)->getText()) => $this->gotCancel($tg, $conversation),
+            $this->state->getStep() === self::STEP_CONFIRM_QUERIED => $this->gotConfirm($tg, $conversation),
+            default => $this->wrong($tg)
+        };
+    }
 
-            return $this->queryConfirm($tg);
-        }
+    public function start(TelegramAwareHelper $tg): null
+    {
+        $this->describe($tg);
 
-        if ($tg->matchText(null)) {
-            return $tg->replyWrong($tg->trans('reply.wrong'))->null();
-        }
-
-        if ($tg->matchText($this->getCancelButton($tg)->getText())) {
-            $this->state->setStep(self::STEP_CANCEL_PRESSED);
-
-            $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.restart'));
-
-            return $this->chooseActionChatSender->sendActions($tg);
-        }
-
-        if ($this->state->getStep() === self::STEP_CONFIRM_QUERIED) {
-            return $this->gotConfirm($tg, $conversation);
-        }
-
-        return null;
+        return $this->queryConfirm($tg);
     }
 
     public function describe(TelegramAwareHelper $tg): void
@@ -62,6 +53,15 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
         }
 
         $tg->reply($tg->view('describe_restart'));
+    }
+
+    public function gotCancel(TelegramAwareHelper $tg, Conversation $conversation): null
+    {
+        $this->state->setStep(self::STEP_CANCEL_PRESSED);
+
+        $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.restart'));
+
+        return $this->chooseActionChatSender->sendActions($tg);
     }
 
     public function queryConfirm(TelegramAwareHelper $tg): null
@@ -118,5 +118,10 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
     public static function getCancelButton(TelegramAwareHelper $tg): KeyboardButton
     {
         return $tg->button($tg->trans('keyboard.cancel'));
+    }
+
+    public function wrong(TelegramAwareHelper $tg): ?string
+    {
+        return $tg->replyWrong($tg->trans('reply.wrong'))->null();
     }
 }

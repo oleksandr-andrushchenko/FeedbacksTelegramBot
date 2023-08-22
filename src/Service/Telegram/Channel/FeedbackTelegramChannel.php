@@ -111,7 +111,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
             $this->chooseActionChatSender->getRestartButton($tg)->getText() => $this->restart($tg),
             $this->chooseActionChatSender->getShowLessButton($tg)->getText() => $this->less($tg),
             $this->chooseActionChatSender->getShowMoreButton($tg)->getText() => $this->more($tg),
-            default => $this->wrong($tg),
+            default => $this->wrong($tg)
         };
     }
 
@@ -264,7 +264,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         return $this->chooseActionChatSender->sendActions($tg);
     }
 
-    public function wrong(TelegramAwareHelper $tg): null|string
+    public function wrong(TelegramAwareHelper $tg): ?string
     {
         $tg->replyWrong($tg->trans('reply.wrong'));
 

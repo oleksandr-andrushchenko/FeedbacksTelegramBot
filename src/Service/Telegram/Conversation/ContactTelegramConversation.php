@@ -33,27 +33,23 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
 
     public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
     {
-        if ($this->state->getStep() === null) {
-            $this->describe($tg);
+        return match (true) {
+            $this->state->getStep() === null => $this->start($tg),
 
-            return $this->queryMessage($tg);
-        }
+            $tg->matchText(null) => $this->wrong($tg),
+            $tg->matchText($this->getBackButton($tg)->getText()) => $this->gotBack($tg, $conversation),
 
-        if ($tg->matchText(null)) {
-            return $tg->replyWrong($tg->trans('reply.wrong'))->null();
-        }
+            $this->state->getStep() === self::STEP_MESSAGE_QUERIED => $this->gotMessage($tg, $conversation),
 
-        if ($tg->matchText($this->getBackButton($tg)->getText())) {
-            $tg->stopConversation($conversation);
+            default => $this->wrong($tg)
+        };
+    }
 
-            return $this->chooseActionChatSender->sendActions($tg);
-        }
+    public function start(TelegramAwareHelper $tg): null
+    {
+        $this->describe($tg);
 
-        if ($this->state->getStep() === self::STEP_MESSAGE_QUERIED) {
-            return $this->gotMessage($tg, $conversation);
-        }
-
-        return null;
+        return $this->queryMessage($tg);
     }
 
     public function describe(TelegramAwareHelper $tg): void
@@ -83,6 +79,18 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
         );
 
         return $tg->reply($tg->trans('query.message', domain: 'tg.contact'), $tg->keyboard($this->getBackButton($tg)))->null();
+    }
+
+    public function gotBack(TelegramAwareHelper $tg, Conversation $conversation): null
+    {
+        $tg->stopConversation($conversation);
+
+        return $this->chooseActionChatSender->sendActions($tg);
+    }
+
+    public function wrong(TelegramAwareHelper $tg): ?string
+    {
+        return $tg->replyWrong($tg->trans('reply.wrong'))->null();
     }
 
     public function gotMessage(TelegramAwareHelper $tg, Conversation $conversation): null

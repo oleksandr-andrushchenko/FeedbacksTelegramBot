@@ -32,3 +32,5 @@
 * mirrors should redirect users to primary bot
 * each primary bot should have country(and/or locale) and if user is out of this country/locale - propose to go to native bot
 * log new user activity
+* allow to buy subscription even if already have one
+* ask about custom message before propose typing in contact command

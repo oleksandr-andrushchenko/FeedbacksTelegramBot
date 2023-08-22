@@ -109,6 +109,17 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
         $this->chatProvider = $this->getTelegramChatProvider();
     }
 
+    protected function fnd()
+    {
+        $this->databaseDown();
+        $this->databaseUp();
+        static::$fixtures = [];
+
+        $this->bootFixtures([
+            TelegramBot::class,
+        ]);
+    }
+
     protected function tg(): TelegramAwareHelper
     {
         return $this->tg;
@@ -171,7 +182,7 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
         return $this;
     }
 
-    protected function expectsReplyCalls(array $expectedReplyCalls = []): static
+    protected function expectsReplyCalls(string ...$expectedReplyCalls): static
     {
         if ($count = count($expectedReplyCalls)) {
             $this
@@ -220,7 +231,7 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
         return $this
             ->command($command)
             ->conversation($conversationClass, $state)
-            ->expectsReplyCalls($expectedReplyCalls)
+            ->expectsReplyCalls(...$expectedReplyCalls)
             ->invoke()
             ->expectsState($expectedState)
         ;
@@ -229,16 +240,18 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
     protected function typeCancel(
         TelegramConversationState $state,
         TelegramConversationState $expectedState,
-        array $shouldSeeReply,
-        array $shouldSeeKeyboard,
+        array $shouldSeeReply = [],
+        array $shouldSeeKeyboard = [],
         string $conversationClass = null
     ): void
     {
         $command = $this->tg->trans('keyboard.cancel');
 
-        $this->type($command, $state, conversationClass: $conversationClass)
+        $this
+            ->type($command, $state, conversationClass: $conversationClass)
             ->shouldSeeReply(...$shouldSeeReply)
             ->shouldSeeKeyboard(...$shouldSeeKeyboard)
+            ->shouldSeeChooseAction()
         ;
 
         $this->assertTelegramCommandState($expectedState);
@@ -247,22 +260,24 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
 
     protected function typeConfirm(
         TelegramConversationState $state,
-        array $shouldSeeReply,
-        array $shouldSeeKeyboard,
+        array $shouldSeeReply = [],
+        array $shouldSeeKeyboard = [],
         string $conversationClass = null
     ): void
     {
         $command = $this->tg->trans('keyboard.confirm');
 
-        $this->type($command, $state, conversationClass: $conversationClass)
+        $this
+            ->type($command, $state, conversationClass: $conversationClass)
             ->shouldSeeReply(...$shouldSeeReply)
             ->shouldSeeKeyboard(...$shouldSeeKeyboard)
+            ->shouldSeeChooseAction()
         ;
 
         $this->assertEquals(false, $this->getConversation()->active());
     }
 
-    protected function shouldSeeReply(...$expectedReplies): static
+    protected function shouldSeeReply(string ...$expectedReplies): static
     {
         /** @var string[] $actualReplies */
         /** @var string[] $expectedReplies */
@@ -304,7 +319,7 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
     protected function shouldSeeKeyboard(...$expectedButtons): static
     {
         /** @var Keyboard[] $actualKeyboards */
-        /** @var KeyboardButton[] $expectedButtons */
+        /** @var KeyboardButton[]|string[] $expectedButtons */
         $actualKeyboards = array_map(
             fn (array $call) => $call[3],
             $this->getTelegramMessageSender()->getCalls()
@@ -323,7 +338,7 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
         }
 
         $expectedButtons = array_map(
-            fn (KeyboardButton $button) => $button->getText(),
+            fn ($button) => is_string($button) ? $button : $button->getText(),
             $expectedButtons
         );
 
@@ -353,6 +368,31 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
             }
         }
         return $this;
+    }
+
+    protected function shouldSeeChooseAction(): static
+    {
+        return $this
+            ->shouldSeeReply(
+                'query.action',
+            )
+            ->shouldSeeKeyboard(
+                'command.create',
+                'command.search',
+                'command.lookup',
+                'keyboard.more',
+            )
+        ;
+    }
+
+    protected function shouldSeeExtendedChooseAction(): static
+    {
+        return $this
+            ->shouldSeeChooseAction()
+            ->shouldSeeKeyboard(
+                'keyboard.less',
+            )
+        ;
     }
 
     protected function getTelegramConversation(): TelegramConversation

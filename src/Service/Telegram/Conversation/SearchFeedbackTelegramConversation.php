@@ -49,51 +49,26 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
 
     public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
     {
-        if ($this->state->getStep() === null) {
-            $this->describe($tg);
+        return match (true) {
+            $this->state->getStep() === null => $this->start($tg),
 
-            return $this->querySearchTerm($tg);
-        }
+            $tg->matchText(null) => $this->wrong($tg),
+            $tg->matchText($this->getBackButton($tg)->getText()) => $this->gotBack($tg),
+            $tg->matchText($this->getCancelButton($tg)->getText()) => $this->gotCancel($tg, $conversation),
 
-        if ($tg->matchText(null)) {
-            return $tg->replyWrong($tg->trans('reply.wrong'))->null();
-        }
+            $this->state->getStep() === self::STEP_SEARCH_TERM_QUERIED => $this->gotSearchTerm($tg),
+            $this->state->getStep() === self::STEP_SEARCH_TERM_TYPE_QUERIED => $this->gotSearchTermType($tg),
+            $this->state->getStep() === self::STEP_CONFIRM_QUERIED => $this->gotConfirm($tg, $conversation),
 
-        if ($tg->matchText($this->getBackButton($tg)->getText())) {
-            if ($this->state->getStep() === self::STEP_SEARCH_TERM_TYPE_QUERIED) {
-                return $this->querySearchTerm($tg);
-            }
+            default => $this->wrong($tg)
+        };
+    }
 
-            if ($this->state->getStep() === self::STEP_CONFIRM_QUERIED) {
-                if ($this->state->getSearchTerm()->getPossibleTypes() === null) {
-                    return $this->querySearchTerm($tg);
-                }
+    public function start(TelegramAwareHelper $tg): null
+    {
+        $this->describe($tg);
 
-                return $this->querySearchTermType($tg);
-            }
-        }
-
-        if ($tg->matchText($this->getCancelButton($tg)->getText())) {
-            $this->state->setStep(self::STEP_CANCEL_PRESSED);
-
-            $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.search'));
-
-            return $this->chooseActionChatSender->sendActions($tg);
-        }
-
-        if ($this->state->getStep() === self::STEP_SEARCH_TERM_QUERIED) {
-            return $this->gotSearchTerm($tg);
-        }
-
-        if ($this->state->getStep() === self::STEP_SEARCH_TERM_TYPE_QUERIED) {
-            return $this->gotSearchTermType($tg);
-        }
-
-        if ($this->state->getStep() === self::STEP_CONFIRM_QUERIED) {
-            return $this->gotConfirm($tg, $conversation);
-        }
-
-        return null;
+        return $this->querySearchTerm($tg);
     }
 
     public function describe(TelegramAwareHelper $tg): void
@@ -135,6 +110,37 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
         );
 
         return null;
+    }
+
+    public function gotBack(TelegramAwareHelper $tg): null
+    {
+        if ($this->state->getStep() === self::STEP_SEARCH_TERM_TYPE_QUERIED) {
+            return $this->querySearchTerm($tg);
+        }
+
+        if ($this->state->getStep() === self::STEP_CONFIRM_QUERIED) {
+            if ($this->state->getSearchTerm()->getPossibleTypes() === null) {
+                return $this->querySearchTerm($tg);
+            }
+
+            return $this->querySearchTermType($tg);
+        }
+
+        return $this->wrong($tg);
+    }
+
+    public function gotCancel(TelegramAwareHelper $tg, Conversation $conversation): null
+    {
+        $this->state->setStep(self::STEP_CANCEL_PRESSED);
+
+        $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.search'));
+
+        return $this->chooseActionChatSender->sendActions($tg);
+    }
+
+    public function wrong(TelegramAwareHelper $tg): ?string
+    {
+        return $tg->replyWrong($tg->trans('reply.wrong'))->null();
     }
 
     public function gotSearchTerm(TelegramAwareHelper $tg): null
@@ -398,7 +404,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
         return $tg->button($tg->trans('keyboard.cancel'));
     }
 
-    private function getStep(int $num): string
+    public function getStep(int $num): string
     {
         return "[{$num}/1] ";
     }

@@ -49,6 +49,15 @@ abstract class DatabaseTestCase extends KernelTestCase
         $this->rollBackIfNeed();
     }
 
+    protected function refreshDatabase(): static
+    {
+        $this->databaseDown();
+        $this->databaseUp();
+        static::$fixtures = [];
+
+        return $this;
+    }
+
     protected function beginTransaction(): void
     {
         $conn = $this->getEntityManager()->getConnection();
@@ -164,12 +173,7 @@ abstract class DatabaseTestCase extends KernelTestCase
         /** @var LoaderInterface $service */
         $service = static::getContainer()->get('fidry_alice_data_fixtures.loader.doctrine');
 
-        $old = $fixtures;
         $fixtures = array_diff($fixtures, self::$fixtures);
-
-        if (count($old) > count($fixtures)) {
-            var_dump('skipped');
-        }
 
         $service->load(
             array_map(

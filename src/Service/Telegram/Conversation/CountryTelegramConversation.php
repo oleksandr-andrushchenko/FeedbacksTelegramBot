@@ -31,41 +31,28 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
 
     public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
     {
-        if ($this->state->getStep() === null) {
-            $this->describe($tg);
+        return match (true) {
+            $this->state->getStep() === null => $this->start($tg),
 
-            return $this->queryChangeConfirm($tg);
-        }
+            $tg->matchText(null) => $this->wrong($tg),
 
-        if ($tg->matchText(null)) {
-            return $tg->replyWrong($tg->trans('reply.wrong'))->null();
-        }
+            $this->state->getStep() === self::STEP_CHANGE_CONFIRM_QUERIED => $this->gotChangeConfirm($tg, $conversation),
 
-        if ($this->state->getStep() === self::STEP_CHANGE_CONFIRM_QUERIED) {
-            return $this->gotChangeConfirm($tg, $conversation);
-        }
+            $tg->matchText($this->getCancelButton($tg)->getText()) => $this->gotCancel($tg, $conversation),
 
-        if ($tg->matchText($this->getCancelButton($tg)->getText())) {
-            $this->state->setStep(self::STEP_CANCEL_PRESSED);
+            $this->state->getStep() === self::STEP_GUESS_COUNTRY_QUERIED => $this->gotCountry($tg, $conversation, true),
+            $this->state->getStep() === self::STEP_COUNTRY_QUERIED => $this->gotCountry($tg, $conversation, false),
+            $this->state->getStep() === self::STEP_TIMEZONE_QUERIED => $this->gotTimezone($tg, $conversation),
 
-            $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.country'));
+            default => $this->wrong($tg)
+        };
+    }
 
-            return $this->chooseActionChatSender->sendActions($tg);
-        }
+    public function start(TelegramAwareHelper $tg): null
+    {
+        $this->describe($tg);
 
-        if ($this->state->getStep() === self::STEP_GUESS_COUNTRY_QUERIED) {
-            return $this->gotCountry($tg, $conversation, true);
-        }
-
-        if ($this->state->getStep() === self::STEP_COUNTRY_QUERIED) {
-            return $this->gotCountry($tg, $conversation, false);
-        }
-
-        if ($this->state->getStep() === self::STEP_TIMEZONE_QUERIED) {
-            return $this->gotTimezone($tg, $conversation);
-        }
-
-        return null;
+        return $this->queryChangeConfirm($tg);
     }
 
     public function getGuessCountries(TelegramAwareHelper $tg): array
@@ -85,6 +72,20 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         }
 
         $tg->reply($tg->view('describe_country'));
+    }
+
+    public function gotCancel(TelegramAwareHelper $tg, Conversation $conversation): null
+    {
+        $this->state->setStep(self::STEP_CANCEL_PRESSED);
+
+        $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.country'));
+
+        return $this->chooseActionChatSender->sendActions($tg);
+    }
+
+    public function wrong(TelegramAwareHelper $tg): ?string
+    {
+        return $tg->replyWrong($tg->trans('reply.wrong'))->null();
     }
 
     public function getCurrentCountryReply(TelegramAwareHelper $tg): string

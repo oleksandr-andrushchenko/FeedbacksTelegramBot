@@ -22,7 +22,7 @@ country: Country
 phone_number: Phone number
 email: Email
 
-toggle_hint: Use %command% command to disable help hints like this.
+toggle_hints: Use %command% command to disable help hints like this.
 tries_for: tries for a
 no_details: No details
 

@@ -28,29 +28,23 @@ class PurgeConversationTelegramConversation extends TelegramConversation impleme
 
     public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
     {
-        if ($this->state->getStep() === null) {
-            $this->describe($tg);
+        return match (true) {
+            $this->state->getStep() === null => $this->start($tg),
 
-            return $this->queryConfirm($tg);
-        }
+            $tg->matchText(null) => $this->wrong($tg),
+            $tg->matchText($this->getCancelButton($tg)->getText()) => $this->gotCancel($tg, $conversation),
 
-        if ($tg->matchText(null)) {
-            return $tg->replyWrong($tg->trans('reply.wrong'))->null();
-        }
+            $this->state->getStep() === self::STEP_CONFIRM_QUERIED => $this->gotConfirm($tg, $conversation),
 
-        if ($tg->matchText($this->getCancelButton($tg)->getText())) {
-            $this->state->setStep(self::STEP_CANCEL_PRESSED);
+            default => $this->wrong($tg)
+        };
+    }
 
-            $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.domain'));
+    public function start(TelegramAwareHelper $tg): null
+    {
+        $this->describe($tg);
 
-            return $this->chooseActionChatSender->sendActions($tg);
-        }
-
-        if ($this->state->getStep() === self::STEP_CONFIRM_QUERIED) {
-            return $this->gotConfirm($tg, $conversation);
-        }
-
-        return null;
+        return $this->queryConfirm($tg);
     }
 
     public function describe(TelegramAwareHelper $tg): void
@@ -79,6 +73,20 @@ class PurgeConversationTelegramConversation extends TelegramConversation impleme
         $keyboards[] = $this->getCancelButton($tg);
 
         return $tg->reply($this->getConfirmQuery($tg), $tg->keyboard(...$keyboards))->null();
+    }
+
+    public function gotCancel(TelegramAwareHelper $tg, Conversation $conversation): null
+    {
+        $this->state->setStep(self::STEP_CANCEL_PRESSED);
+
+        $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.purge'));
+
+        return $this->chooseActionChatSender->sendActions($tg);
+    }
+
+    public function wrong(TelegramAwareHelper $tg): ?string
+    {
+        return $tg->replyWrong($tg->trans('reply.wrong'))->null();
     }
 
     public function gotConfirm(TelegramAwareHelper $tg, Conversation $conversation): null
