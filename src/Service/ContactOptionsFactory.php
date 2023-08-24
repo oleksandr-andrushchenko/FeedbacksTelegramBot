@@ -21,7 +21,7 @@ class ContactOptionsFactory
     {
     }
 
-    public function createContactOptions(TelegramGroup $group, string $locale): ContactOptions
+    public function createContactOptions(TelegramGroup $group, string $localeCode): ContactOptions
     {
         if (!array_key_exists($group->name, $this->options)) {
             throw new ContactOptionsNotFoundException($group->name);
@@ -32,14 +32,15 @@ class ContactOptionsFactory
         $domain = sprintf('%s.contacts', $group->name);
 
         return new ContactOptions(
-            $this->translator->trans('company', domain: $domain, locale: $locale),
-            $this->translator->trans('address', domain: $domain, locale: $locale),
-            $this->translator->trans('tax', domain: $domain, locale: $locale),
-            sprintf('@%s', $primary->getUsername()),
+            $this->translator->trans('company', domain: $domain, locale: $localeCode),
+            $this->translator->trans('address', domain: $domain, locale: $localeCode),
+            $this->translator->trans('tax', domain: $domain, locale: $localeCode),
+            $primary->getUsername(),
+            $this->translator->trans(sprintf('%s.name', $group->name), domain: 'tg.texts', locale: $localeCode),
             sprintf('https://t.me/%s', $primary->getUsername()),
             $options['website'],
-            $this->translator->trans('phone', domain: $domain, locale: $locale),
-            $this->translator->trans('email', domain: $domain, locale: $locale),
+            $this->translator->trans('phone', domain: $domain, locale: $localeCode),
+            $this->translator->trans('email', domain: $domain, locale: $localeCode),
             $options['telegram'],
             $options['instagram'],
             $options['github'],

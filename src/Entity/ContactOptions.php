@@ -10,6 +10,7 @@ readonly class ContactOptions
         private string $company,
         private string $address,
         private string $tax,
+        private string $botUsername,
         private string $botName,
         private ?string $botLink,
         private string $website,
@@ -36,6 +37,11 @@ readonly class ContactOptions
     public function getTax(): string
     {
         return $this->tax;
+    }
+
+    public function getBotUsername(): string
+    {
+        return $this->botUsername;
     }
 
     public function getBotName(): string
