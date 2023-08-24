@@ -4,60 +4,96 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Telegram;
 
+use App\Entity\Messenger\MessengerUser;
+use App\Entity\Telegram\TelegramBot;
 use App\Entity\Telegram\TelegramConversationState;
+use App\Entity\User\User;
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
 use App\Service\Telegram\Conversation\RestartConversationTelegramConversation;
+use Generator;
 
 class RestartTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestCase
 {
-    public function testStartSuccess(): void
+    /**
+     * @param string $command
+     * @param bool $showHints
+     * @return void
+     * @dataProvider startSuccessDataProvider
+     */
+    public function testStartSuccess(string $command, bool $showHints): void
     {
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+        ]);
+        $this->getUpdateMessengerUser()->setIsShowHints($showHints);
+
+        if ($showHints) {
+            $shouldReply = [
+                'describe.title',
+                'toggle_hints',
+            ];
+        } else {
+            $shouldReply = [];
+        }
+
         $this
-            ->type(
-                FeedbackTelegramChannel::RESTART
+            ->type($command)
+            ->shouldSeeActiveConversation(
+                RestartConversationTelegramConversation::class,
+                (new TelegramConversationState())
+                    ->setStep(RestartConversationTelegramConversation::STEP_CONFIRM_QUERIED)
             )
             ->shouldSeeReply(
-                'query.confirm',
+                ...$shouldReply,
+                ...['query.confirm'],
             )
-            ->shouldSeeKeyboard(
-                RestartConversationTelegramConversation::getConfirmButton($this->tg),
-                RestartConversationTelegramConversation::getCancelButton($this->tg),
+            ->shouldSeeButtons(
+                'keyboard.yes',
+                'keyboard.no',
             )
         ;
     }
 
-    public function testStartWithHintsSuccess(): void
+    public function startSuccessDataProvider(): Generator
     {
-        $this->getUpdateMessengerUser()->setIsShowHints(true);
-        $this->getEntityManager()->flush();
+        yield 'button & no hints' => [
+            'command' => 'icon.restart command.restart',
+            'showHints' => false,
+        ];
 
-        $this
-            ->type(
-                FeedbackTelegramChannel::RESTART
-            )
-            ->shouldSeeReply(
-                'describe.title',
-                'toggle_hints',
-                'query.confirm',
-            )
-            ->shouldSeeKeyboard(
-                RestartConversationTelegramConversation::getConfirmButton($this->tg),
-                RestartConversationTelegramConversation::getCancelButton($this->tg),
-            )
-        ;
+        yield 'button & hints' => [
+            'command' => 'icon.restart command.restart',
+            'showHints' => true,
+        ];
+
+        yield 'command & no hints' => [
+            'command' => FeedbackTelegramChannel::RESTART,
+            'showHints' => false,
+        ];
+
+        yield 'command & hints' => [
+            'command' => FeedbackTelegramChannel::RESTART,
+            'showHints' => true,
+        ];
     }
 
     public function testGotConfirmSuccess(): void
     {
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+        ]);
+        $this->createConversation(
+            RestartConversationTelegramConversation::class,
+            (new TelegramConversationState())
+                ->setStep(RestartConversationTelegramConversation::STEP_CONFIRM_QUERIED)
+        );
         $this
-            ->command(
-                RestartConversationTelegramConversation::getConfirmButton($this->tg)->getText()
-            )
-            ->conversation(
-                RestartConversationTelegramConversation::class,
-                new TelegramConversationState(RestartConversationTelegramConversation::STEP_CONFIRM_QUERIED)
-            )
-            ->invoke()
+            ->type('keyboard.yes')
+            ->shouldSeeNotActiveConversation()
             ->shouldSeeReply(
                 'reply.ok',
             )

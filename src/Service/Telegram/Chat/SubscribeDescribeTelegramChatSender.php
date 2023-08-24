@@ -38,6 +38,10 @@ class SubscribeDescribeTelegramChatSender
                         'year' => $this->searchCreatorOptions->userPerYearLimit(),
                     ],
                 ],
+                'lookup' => [
+                    'command' => FeedbackTelegramChannel::LOOKUP,
+                    'limits' => '*',
+                ],
             ],
         ]))->null();
     }

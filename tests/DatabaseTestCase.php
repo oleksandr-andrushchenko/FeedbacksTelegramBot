@@ -17,7 +17,6 @@ abstract class DatabaseTestCase extends KernelTestCase
     use EntityManagerProviderTrait;
 
     protected static bool $databaseBooted = false;
-    protected static array $fixtures = [];
 
     public function setUp(): void
     {
@@ -31,8 +30,6 @@ abstract class DatabaseTestCase extends KernelTestCase
         $this->databaseDown();
 
         parent::tearDown();
-
-        self::$fixtures = [];
     }
 
     protected function databaseUp(): void
@@ -53,7 +50,6 @@ abstract class DatabaseTestCase extends KernelTestCase
     {
         $this->databaseDown();
         $this->databaseUp();
-        static::$fixtures = [];
 
         return $this;
     }
@@ -173,16 +169,12 @@ abstract class DatabaseTestCase extends KernelTestCase
         /** @var LoaderInterface $service */
         $service = static::getContainer()->get('fidry_alice_data_fixtures.loader.doctrine');
 
-        $fixtures = array_diff($fixtures, self::$fixtures);
-
         $service->load(
             array_map(
                 fn ($entityClass) => sprintf(__DIR__ . '/../fixtures/%s.yaml', str_replace(['App\Entity\\', '\\'], ['', '/'], $entityClass)),
                 $fixtures
             )
         );
-
-        self::$fixtures = array_merge(self::$fixtures, $fixtures);
 
         return $this;
     }

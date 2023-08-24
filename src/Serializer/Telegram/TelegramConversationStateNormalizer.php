@@ -19,9 +19,6 @@ class TelegramConversationStateNormalizer implements NormalizerInterface, Denorm
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
         return [
-            'type' => $object->getType(),
-            'text' => $object->getText(),
-            'message_id' => $object->getMessageId(),
             'step' => $object->getStep(),
         ];
     }

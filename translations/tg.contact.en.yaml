@@ -10,7 +10,8 @@ query:
   linkedin: Linkedin
   email: Email
   phone: Phone
-  message: Type a message please.
+  left_message_confirm: Would you like to leave a message?
+  message: Type your message please.
 reply:
-  ok: Your message has been sent. Thank you!
+  ok: Your message has been sent and will be processed as soon as possible.
   canceled: Message adding dialog has been canceled.

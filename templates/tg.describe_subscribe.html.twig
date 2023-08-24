@@ -3,9 +3,13 @@
 
 {% for name,command in commands %}
 🔹{% include 'tg.command.html.twig' with {name: name} %}:
+{% if command.limits is iterable %}
 {% for period,limit in command.limits %}
- - <b>{{ limit }}</b> {{ 'tries_for'|trans({}, 'tg') }} <b>1 {{ period|trans({}, 'tg') }}</b>
+ - {{ 'command_limits.tries_for'|trans({'%count%': '<b>' ~ limit ~ '</b>', '%period%': '<b>1 ' ~ period|trans({}, 'tg') ~ '</b>'}, 'tg')|raw }}
 {% endfor %}
+{% elseif command.limits == '*' %}
+ - {{ 'command_limits.no_free_tries'|trans({}, 'tg') }}
+{% endif %}
 
 {% endfor %}
 ℹ️ {{ 'describe.summary'|trans }}

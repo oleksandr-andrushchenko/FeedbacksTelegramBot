@@ -18,6 +18,7 @@ interface TelegramMessageSenderInterface
         string $parseMode = 'HTML',
         int $replyToMessageId = null,
         bool $protectContent = null,
-        bool $disableWebPagePreview = true
+        bool $disableWebPagePreview = true,
+        bool $keepKeyboard = false
     ): ServerResponse;
 }

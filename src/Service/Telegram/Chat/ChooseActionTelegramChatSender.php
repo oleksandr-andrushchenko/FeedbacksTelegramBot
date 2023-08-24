@@ -8,6 +8,7 @@ use App\Service\Feedback\FeedbackSubscriptionManager;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\LocaleProvider;
 use App\Service\Telegram\TelegramAwareHelper;
+use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
 class ChooseActionTelegramChatSender
@@ -20,38 +21,49 @@ class ChooseActionTelegramChatSender
     {
     }
 
-    public function sendActions(TelegramAwareHelper $tg): null
+    public function sendActions(TelegramAwareHelper $tg, string $text = null): null
     {
-        $keyboards = [];
-        $keyboards[] = $this->getCreateButton($tg);
-        $keyboards[] = $this->getSearchButton($tg);
-        $keyboards[] = $this->getLookupButton($tg);
+        return $tg->reply(
+            $this->getQuery($tg, text: $text),
+            $this->getKeyboard($tg)
+        )->null();
+    }
+
+    public function getQuery(TelegramAwareHelper $tg, string $text = null): string
+    {
+        return $text ?? $this->getActionQuery($tg);
+    }
+
+    public function getKeyboard(TelegramAwareHelper $tg): Keyboard
+    {
+        $buttons = [];
+        $buttons[] = $this->getCreateButton($tg);
+        $buttons[] = $this->getSearchButton($tg);
+        $buttons[] = $this->getLookupButton($tg);
 
         $messengerUser = $tg->getTelegram()->getMessengerUser();
         $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($messengerUser);
 
         if ($tg->getTelegram()->getBot()->acceptPayments() && !$hasActiveSubscription) {
-            $keyboards[] = $this->getSubscribeButton($tg);
+            $buttons[] = $this->getSubscribeButton($tg);
         } elseif ($this->subscriptionManager->hasSubscription($messengerUser)) {
-            $keyboards[] = $this->getSubscriptionsButton($tg);
+            $buttons[] = $this->getSubscriptionsButton($tg);
         }
 
         if ($messengerUser?->showExtendedKeyboard()) {
-            $keyboards[] = $this->getCountryButton($tg);
-            $keyboards[] = $this->getLocaleButton($tg);
-            $keyboards[] = $this->getHintsButton($tg);
-            $keyboards[] = $this->getPurgeButton($tg);
-            $keyboards[] = $this->getContactButton($tg);
-            $keyboards[] = $this->getCommandsButton($tg);
-            $keyboards[] = $this->getRestartButton($tg);
-            $keyboards[] = $this->getShowLessButton($tg);
+            $buttons[] = $this->getCountryButton($tg);
+            $buttons[] = $this->getLocaleButton($tg);
+            $buttons[] = $this->getHintsButton($tg);
+            $buttons[] = $this->getPurgeButton($tg);
+            $buttons[] = $this->getContactButton($tg);
+            $buttons[] = $this->getCommandsButton($tg);
+            $buttons[] = $this->getRestartButton($tg);
+            $buttons[] = $this->getShowLessButton($tg);
         } else {
-            $keyboards[] = $this->getShowMoreButton($tg);
+            $buttons[] = $this->getShowMoreButton($tg);
         }
 
-        $keyboards = array_chunk($keyboards, 2);
-
-        return $tg->reply($this->getActionQuery($tg), $tg->keyboard(...$keyboards))->null();
+        return $tg->keyboard(...array_chunk($buttons, 2));
     }
 
     public static function getActionQuery(TelegramAwareHelper $tg): string

@@ -38,4 +38,9 @@ abstract class TelegramConversation implements TelegramConversationInterface
 
         return $this;
     }
+
+    public function null(): null
+    {
+        return null;
+    }
 }

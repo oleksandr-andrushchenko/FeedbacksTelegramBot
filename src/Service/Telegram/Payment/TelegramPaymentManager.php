@@ -17,7 +17,7 @@ use App\Exception\Telegram\UnknownPaymentException;
 use App\Repository\Telegram\TelegramPaymentRepository;
 use App\Service\Intl\CurrencyProvider;
 use App\Service\Logger\ActivityLogger;
-use App\Service\Telegram\Api\TelegramInvoiceSender;
+use App\Service\Telegram\Api\TelegramInvoiceSenderInterface;
 use App\Service\Telegram\Telegram;
 use App\Service\UuidGenerator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,7 +31,7 @@ class TelegramPaymentManager
 {
     public function __construct(
         private readonly TelegramPaymentManagerOptions $options,
-        private readonly TelegramInvoiceSender $invoiceSender,
+        private readonly TelegramInvoiceSenderInterface $invoiceSender,
         private readonly CurrencyProvider $currencyProvider,
         private readonly EntityManagerInterface $entityManager,
         private readonly TelegramPaymentRepository $paymentRepository,

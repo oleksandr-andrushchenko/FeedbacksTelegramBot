@@ -7,7 +7,7 @@ App\Entity\Messenger\MessengerUser:
       name: Tg 1 First Last
       localeCode: uk
       user: '@user_1'
-      isShowHints: false
+      isShowHints: true
       isShowExtendedKeyboard: false
   messenger_user_1_instagram:
     __construct:
@@ -17,7 +17,7 @@ App\Entity\Messenger\MessengerUser:
       name: Inst 1 First Last
       localeCode: uk
       user: '@user_1'
-      isShowHints: false
+      isShowHints: true
       isShowExtendedKeyboard: false
   messenger_user_2_telegram:
     __construct:
@@ -27,7 +27,7 @@ App\Entity\Messenger\MessengerUser:
       name: Tg 2 First Last
       localeCode: uk
       user: '@user_2'
-      isShowHints: false
+      isShowHints: true
       isShowExtendedKeyboard: false
   messenger_user_2_instagram:
     __construct:
@@ -37,7 +37,7 @@ App\Entity\Messenger\MessengerUser:
       name: Inst 2 First Last
       localeCode: uk
       user: '@user_2'
-      isShowHints: false
+      isShowHints: true
       isShowExtendedKeyboard: false
   messenger_user_3_telegram:
     __construct:
@@ -47,7 +47,7 @@ App\Entity\Messenger\MessengerUser:
       name: Tg 3 First Last
       localeCode: uk
       user: '@user_3'
-      isShowHints: false
+      isShowHints: true
       isShowExtendedKeyboard: false
   messenger_user_3_instagram:
     __construct:
@@ -57,5 +57,5 @@ App\Entity\Messenger\MessengerUser:
       name: Inst 3 First Last
       localeCode: uk
       user: '@user_3'
-      isShowHints: false
+      isShowHints: true
       isShowExtendedKeyboard: false

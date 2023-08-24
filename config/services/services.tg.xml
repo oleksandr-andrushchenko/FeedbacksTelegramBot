@@ -192,6 +192,7 @@
             <argument type="service" id="app.subscribe_describe_telegram_chat_sender"/>
             <argument type="service" id="app.start_telegram_command_handler"/>
             <argument type="service" id="app.subscription_telegram_view_provider"/>
+            <argument type="service" id="app.intl_time_provider"/>
             <tag name="app.telegram_channel" channel="feedbacks"/>
         </service>
         <service id="app.telegram_aware_helper" class="App\Service\Telegram\TelegramAwareHelper" lazy="true">

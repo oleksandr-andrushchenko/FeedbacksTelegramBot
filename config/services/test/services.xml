@@ -6,6 +6,7 @@
 
     <services>
         <service id="app.telegram_message_sender" class="App\Tests\Fake\Service\Telegram\Api\FakeTelegramMessageSender" lazy="true"/>
+        <service id="app.telegram_invoice_sender" class="App\Tests\Fake\Service\Telegram\Api\FakeTelegramInvoiceSender" lazy="true"/>
         <service id="app.telegram_chat_action_sender" class="App\Tests\Fake\Service\Telegram\Api\FakeTelegramChatActionSender" lazy="true"/>
         <service id="app.instagram_messenger_user_provider" class="App\Tests\Fake\Service\Instagram\FakeInstagramMessengerUserProvider" lazy="true">
             <tag name="app.telegram_user_finder" finder="open-query"/>

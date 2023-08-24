@@ -23,35 +23,32 @@ class UserUpserter
         $user = $messengerUser->getUser();
 
         if ($user === null) {
-            $user = new User(
-                username: $messengerUser->getUsername(),
-                name: $messengerUser->getName(),
-                countryCode: $messengerUserTransfer->getCountryCode(),
-                localeCode: $messengerUser->getLocaleCode(),
-                currencyCode: $messengerUserTransfer->getCurrencyCode(),
-                timezone: $messengerUserTransfer->getTimezone()
-            );
-
+            $user = new User();
             $this->entityManager->persist($user);
 
             $messengerUser->setUser($user);
-
-            return $user;
+        } else {
+            $user->setUpdatedAt(new DateTimeImmutable());
         }
 
         if (empty($user->getUsername()) && !empty($messengerUser->getUsername())) {
             $user->setUsername($messengerUser->getUsername());
         }
-
         if (empty($user->getName()) && !empty($messengerUser->getName())) {
             $user->setName($messengerUser->getName());
         }
-
+        if (empty($user->getCountryCode()) && !empty($messengerUserTransfer->getCountryCode())) {
+            $user->setCountryCode($messengerUserTransfer->getCountryCode());
+        }
         if ($user->getLocaleCode() === null && $messengerUser->getLocaleCode() !== null) {
             $user->setLocaleCode($messengerUser->getLocaleCode());
         }
-
-        $user->setUpdatedAt(new DateTimeImmutable());
+        if (empty($user->getCurrencyCode()) && !empty($messengerUserTransfer->getCurrencyCode())) {
+            $user->setCurrencyCode($messengerUserTransfer->getCurrencyCode());
+        }
+        if (empty($user->getTimezone()) && !empty($messengerUserTransfer->getTimezone())) {
+            $user->setTimezone($messengerUserTransfer->getTimezone());
+        }
 
         return $user;
     }

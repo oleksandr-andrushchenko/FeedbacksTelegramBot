@@ -1,7 +1,7 @@
 describe:
   title: This command allows to create feedbacks (reports, complains or gratitudes) on user, organization or place.
-  limits: 'Due to complexity and huge amount of user requests, this command, by default, has next limitations:'
-  subscribe: Premium subscription allows you to use our bot without any limitations, try %command% command please.
+  limits: 'Due to big amount of requests, this command, has next limitations:'
+  subscribe: Premium subscription allows to use this and other commands without any limitations, %command%.
 query:
   search_term: Who or what you would you like to leave feedback on? It can be a social network or messenger profile URL, nickname, email address, phone number, website, person's name or organization name, etc.
   search_term_type: Who or what "%search_term%" is?
@@ -19,5 +19,4 @@ reply:
   fail:
     same_messenger_user: Feedbacks on yourself is not allowed.
     limit_exceeded:
-      main: "You have reached feedback creation limit (%limit%) for the next period: %period%. Try again later%or_subscribe% please."
-      or_subscribe: or buy premium subscription %command%
+      main: "You have reached feedback creation limit (%limit%) for the next period: %period%. Try again later or buy premium subscription %command% please."

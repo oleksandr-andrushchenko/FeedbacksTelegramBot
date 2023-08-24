@@ -1,7 +1,6 @@
 {% trans_default_domain 'tg.lookup' %}
 ℹ️ {{ 'describe.title'|trans }}
 
-ℹ️ {{ 'describe.limits'|trans }} {% if accept_payments %}{{ 'describe.subscribe'|trans({'%command%': include('tg.command.html.twig', {name: 'subscribe'})})|raw }}{% endif %}
-
+ℹ️ {{ 'describe.limits'|trans }} {{ 'describe.subscribe'|trans({'%command%': include('tg.command.html.twig', {name: 'subscribe'})})|raw }}
 
 {% include 'tg.hints.html.twig' %}

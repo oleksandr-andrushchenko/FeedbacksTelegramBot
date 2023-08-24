@@ -18,7 +18,8 @@ class TelegramMessageSender implements TelegramMessageSenderInterface
         string $parseMode = 'HTML',
         int $replyToMessageId = null,
         bool $protectContent = null,
-        bool $disableWebPagePreview = true
+        bool $disableWebPagePreview = true,
+        bool $keepKeyboard = false
     ): ServerResponse
     {
         $data = [
@@ -34,7 +35,13 @@ class TelegramMessageSender implements TelegramMessageSenderInterface
             $data['parse_mode'] = $parseMode;
         }
 
-        $data['reply_markup'] = $keyboard ?? Keyboard::remove();
+        if ($keyboard === null) {
+            if (!$keepKeyboard) {
+                $data['reply_markup'] = Keyboard::remove();
+            }
+        } else {
+            $data['reply_markup'] = $keyboard;
+        }
 
         if ($protectContent !== null) {
             $data['protect_content'] = $protectContent;

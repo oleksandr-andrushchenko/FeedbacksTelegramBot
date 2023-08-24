@@ -1,7 +1,6 @@
 describe:
-  title: This command allows you to stop current dialog, restore default settings and restart the bot.
+  title: This command allows to stop current dialog, restore default settings and restart the bot.
 query:
   confirm: Confirm bot restart?
 reply:
   ok: Restart has been successfully made.
-  canceled: Restart dialog has been canceled.

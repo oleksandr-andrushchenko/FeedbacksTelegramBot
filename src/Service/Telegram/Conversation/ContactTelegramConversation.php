@@ -18,7 +18,9 @@ use Longman\TelegramBot\Entities\KeyboardButton;
 
 class ContactTelegramConversation extends TelegramConversation implements TelegramConversationInterface
 {
-    public const STEP_MESSAGE_QUERIED = 10;
+    public const STEP_LEFT_MESSAGE_CONFIRM_QUERIED = 10;
+    public const STEP_MESSAGE_QUERIED = 20;
+    public const STEP_CANCEL_PRESSED = 30;
 
     public function __construct(
         readonly TelegramAwareHelper $awareHelper,
@@ -33,37 +35,16 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
 
     public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
     {
-        return match (true) {
-            $this->state->getStep() === null => $this->start($tg),
-
-            $tg->matchText(null) => $this->wrong($tg),
-            $tg->matchText($this->getBackButton($tg)->getText()) => $this->gotBack($tg, $conversation),
-
-            $this->state->getStep() === self::STEP_MESSAGE_QUERIED => $this->gotMessage($tg, $conversation),
-
-            default => $this->wrong($tg)
+        return match ($this->state->getStep()) {
+            default => $this->start($tg),
+            self::STEP_LEFT_MESSAGE_CONFIRM_QUERIED => $this->gotLeftMessageConfirm($tg, $conversation),
+            self::STEP_MESSAGE_QUERIED => $this->gotMessage($tg, $conversation),
         };
     }
 
-    public function start(TelegramAwareHelper $tg): null
+    public function start(TelegramAwareHelper $tg): ?string
     {
         $this->describe($tg);
-
-        return $this->queryMessage($tg);
-    }
-
-    public function describe(TelegramAwareHelper $tg): void
-    {
-        if (!$tg->getTelegram()->getMessengerUser()->showHints()) {
-            return;
-        }
-
-        $tg->reply($tg->view('describe_contact'));
-    }
-
-    public function queryMessage(TelegramAwareHelper $tg): null
-    {
-        $this->state->setStep(self::STEP_MESSAGE_QUERIED);
 
         $country = $this->countryProvider->getCountry($tg->getCountryCode());
         $localeCode = $country->getLocaleCodes()[0] ?? null;
@@ -78,23 +59,74 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
             protectContent: true
         );
 
-        return $tg->reply($tg->trans('query.message', domain: 'tg.contact'), $tg->keyboard($this->getBackButton($tg)))->null();
+        return $this->queryLeftMessageConfirm($tg);
     }
 
-    public function gotBack(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function describe(TelegramAwareHelper $tg): void
     {
-        $tg->stopConversation($conversation);
+        if (!$tg->getTelegram()->getMessengerUser()->showHints()) {
+            return;
+        }
+
+        $tg->reply($tg->view('describe_contact'));
+    }
+
+    public function queryLeftMessageConfirm(TelegramAwareHelper $tg): null
+    {
+        $this->state->setStep(self::STEP_LEFT_MESSAGE_CONFIRM_QUERIED);
+
+        $buttons = [];
+        $buttons[] = $this->getLeftMessageConfirmYesButton($tg);
+        $buttons[] = $this->getLeftMessageConfirmNoButton($tg);
+
+        return $tg->reply(
+            $this->getLeftMessageConfirmQuery($tg),
+            $tg->keyboard(...$buttons)
+        )->null();
+    }
+
+    public function gotLeftMessageConfirm(TelegramAwareHelper $tg, Conversation $conversation): null
+    {
+        if ($tg->matchText($this->getLeftMessageConfirmNoButton($tg)->getText())) {
+            return $this->chooseActionChatSender->sendActions($tg->stopConversation($conversation));
+        }
+
+        if (!$tg->matchText($this->getLeftMessageConfirmYesButton($tg)->getText())) {
+            return $this->queryLeftMessageConfirm($tg->replyWrong($tg->trans('reply.wrong')));
+        }
+
+        return $this->queryMessage($tg);
+    }
+
+    public function queryMessage(TelegramAwareHelper $tg): ?string
+    {
+        $this->state->setStep(self::STEP_MESSAGE_QUERIED);
+
+        return $tg->reply(
+            $this->getMessageQuery($tg),
+            $tg->keyboard($this->getCancelButton($tg))
+        )->null();
+    }
+
+    public function gotCancel(TelegramAwareHelper $tg, Conversation $conversation): null
+    {
+        $this->state->setStep(self::STEP_CANCEL_PRESSED);
+
+        $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.contact'));
 
         return $this->chooseActionChatSender->sendActions($tg);
     }
 
-    public function wrong(TelegramAwareHelper $tg): ?string
-    {
-        return $tg->replyWrong($tg->trans('reply.wrong'))->null();
-    }
-
     public function gotMessage(TelegramAwareHelper $tg, Conversation $conversation): null
     {
+        if ($tg->matchText(null)) {
+            return $this->queryMessage($tg->replyWrong($tg->trans('reply.wrong')));
+        }
+
+        if ($tg->matchText($this->getCancelButton($tg)->getText())) {
+            return $this->gotCancel($tg, $conversation);
+        }
+
         try {
             $this->messageCreator->createUserFeedbackMessage(
                 new UserFeedbackMessageTransfer(
@@ -114,8 +146,28 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
         }
     }
 
-    public static function getBackButton(TelegramAwareHelper $tg): KeyboardButton
+    public static function getLeftMessageConfirmQuery(TelegramAwareHelper $tg): string
     {
-        return $tg->button($tg->trans('keyboard.back'));
+        return $tg->trans('query.left_message_confirm', domain: 'tg.contact');
+    }
+
+    public static function getLeftMessageConfirmYesButton(TelegramAwareHelper $tg): KeyboardButton
+    {
+        return $tg->button($tg->trans('keyboard.yes'));
+    }
+
+    public static function getLeftMessageConfirmNoButton(TelegramAwareHelper $tg): KeyboardButton
+    {
+        return $tg->button($tg->trans('keyboard.no'));
+    }
+
+    public static function getMessageQuery(TelegramAwareHelper $tg): string
+    {
+        return $tg->trans('query.message', domain: 'tg.contact');
+    }
+
+    public static function getCancelButton(TelegramAwareHelper $tg): KeyboardButton
+    {
+        return $tg->button($tg->trans('keyboard.cancel'));
     }
 }

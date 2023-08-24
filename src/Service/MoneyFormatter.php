@@ -24,9 +24,19 @@ class MoneyFormatter
         $symbol = $native ? $currency->getNative() : $currency->getSymbol();
 
         if ($currency->isSymbolLeft()) {
-            return sprintf('%s%s%s', $symbol, $space, $amount);
+            return $symbol . $space . $amount;
         }
 
-        return sprintf('%s%s%s', $amount, $space, $symbol);
+        return $amount . $space . $symbol;
+    }
+
+    public function formatMoneyAsTelegramButton(Money $money): string
+    {
+        $currency = $this->currencyProvider->getCurrency($money->getCurrency());
+
+        $amount = number_format($money->getAmount(), 2, ',', ' ');
+        $symbol = $currency->getCode();
+
+        return $amount . $symbol;
     }
 }

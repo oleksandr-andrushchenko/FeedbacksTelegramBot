@@ -75,8 +75,6 @@ class FeedbackSubscriptionManager
 
     public function hasActiveSubscription(MessengerUser $messengerUser): bool
     {
-        // todo: remove
-        return true;
         if ($messengerUser->getUser()?->getSubscriptionExpireAt() === null) {
             return false;
         }

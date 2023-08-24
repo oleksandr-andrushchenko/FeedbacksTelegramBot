@@ -9,7 +9,9 @@ payment_method:
 
 active: Active
 inactive: Inactive
+enable: Enable
 enabled: Enabled
+disable: Disable
 disabled: Disabled
 day: Day
 month: Month
@@ -18,13 +20,20 @@ year: Year
 username: Username
 name: Name
 language: Language
+locale: Language
+currency: Currency
+timezone: Timezone
+settings: Bot settings
 country: Country
 phone_number: Phone number
 email: Email
 
 toggle_hints: Use %command% command to disable help hints like this.
-tries_for: tries for a
 no_details: No details
+
+command_limits:
+  tries_for: '%count% tries for a %period%'
+  no_free_tries: Available for premium users only
 
 query:
   action: Select an action please.

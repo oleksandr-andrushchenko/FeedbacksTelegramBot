@@ -28,25 +28,16 @@ class MessengerUserUpserter
         if ($messengerUser === null) {
             $messengerUser = new MessengerUser(
                 $messengerUserTransfer->getMessenger(),
-                $messengerUserTransfer->getId(),
-                username: $messengerUserTransfer->getUsername(),
-                name: $messengerUserTransfer->getName(),
-                localeCode: $messengerUserTransfer->getLocaleCode(),
+                $messengerUserTransfer->getId()
             );
             $this->entityManager->persist($messengerUser);
-
-            return $messengerUser;
+        } else {
+            $messengerUser->setUpdatedAt(new DateTimeImmutable());
         }
 
-        if ($messengerUserTransfer->getUsername() !== null) {
-            $messengerUser->setUsername($messengerUserTransfer->getUsername());
-        }
-
-        if ($messengerUserTransfer->getName() !== null) {
-            $messengerUser->setName($messengerUserTransfer->getName());
-        }
-
-        $messengerUser->setUpdatedAt(new DateTimeImmutable());
+        $messengerUser->setUsername($messengerUserTransfer->getUsername());
+        $messengerUser->setName($messengerUserTransfer->getName());
+        $messengerUser->setLocaleCode($messengerUserTransfer->getLocaleCode());
 
         return $messengerUser;
     }

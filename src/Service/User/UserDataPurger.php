@@ -23,6 +23,10 @@ class UserDataPurger
             ->setName(null)
             ->setPhoneNumber(null)
             ->setEmail(null)
+            ->setCountryCode(null)
+            ->setLocaleCode(null)
+            ->setCurrencyCode(null)
+            ->setTimezone(null)
             ->setPurgedAt(new DateTimeImmutable())
         ;
 
@@ -32,7 +36,9 @@ class UserDataPurger
             $messengerUser
                 ->setUsername(null)
                 ->setName(null)
+                ->setLocaleCode(null)
                 ->setIsShowHints(true)
+                ->setIsShowExtendedKeyboard(false)
             ;
         }
     }

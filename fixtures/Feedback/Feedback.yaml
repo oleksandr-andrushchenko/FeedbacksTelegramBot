@@ -12,6 +12,8 @@ App\Entity\Feedback\Feedback:
       rating: <(\App\Enum\Feedback\Rating::neutral)>
       description: 'neutral'
       hasActiveSubscription: false
+      countryCode: 'ua'
+      localeCode: 'uk'
   feedback_23_telegram_instagram_username:
     __construct:
       user: '@user_2'
@@ -25,3 +27,5 @@ App\Entity\Feedback\Feedback:
       rating: <(\App\Enum\Feedback\Rating::extremely_satisfied)>
       description: 'awesome'
       hasActiveSubscription: false
+      countryCode: 'ua'
+      localeCode: 'uk'

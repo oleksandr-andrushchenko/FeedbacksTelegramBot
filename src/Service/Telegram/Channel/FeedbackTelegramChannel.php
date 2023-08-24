@@ -7,6 +7,7 @@ namespace App\Service\Telegram\Channel;
 use App\Entity\Telegram\TelegramPayment;
 use App\Service\Feedback\FeedbackSubscriptionManager;
 use App\Service\Feedback\View\SubscriptionTelegramViewProvider;
+use App\Service\Intl\TimeProvider;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\Chat\SubscribeDescribeTelegramChatSender;
 use App\Service\Telegram\Chat\StartTelegramCommandHandler;
@@ -69,6 +70,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         private readonly SubscribeDescribeTelegramChatSender $subscribeDescribeChatSender,
         private readonly StartTelegramCommandHandler $startHandler,
         private readonly SubscriptionTelegramViewProvider $subscriptionViewProvider,
+        private readonly TimeProvider $timeProvider,
     )
     {
         parent::__construct($awareHelper, $conversationFactory);
@@ -197,10 +199,8 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
 
         $tg->replyOk($tg->trans('reply.payment_ok', [
             'plan' => $tg->trans(sprintf('subscription_plan.%s', $subscription->getSubscriptionPlan()->name)),
-            'expire_at' => $subscription->getExpireAt()->format($tg->trans('datetime_format')),
+            'expire_at' => $this->timeProvider->getDatetime($subscription->getExpireAt()),
         ], domain: 'tg.subscribe'));
-
-        // todo: show buttons (or continue active conversation)
 
         $tg->stopConversations();
 

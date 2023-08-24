@@ -11,24 +11,8 @@ use App\Service\Telegram\Telegram;
 use Longman\TelegramBot\Entities\Payments\LabeledPrice;
 use Longman\TelegramBot\Entities\ServerResponse;
 
-class TelegramInvoiceSender
+class TelegramInvoiceSender implements TelegramInvoiceSenderInterface
 {
-    /**
-     * @param Telegram $telegram
-     * @param int $chatId
-     * @param string $title
-     * @param string $description
-     * @param string $payload
-     * @param string $providerToken
-     * @param string $currency
-     * @param array $prices
-     * @param TelegramInvoicePhoto|null $photo
-     * @param bool $needPhoneNumber
-     * @param bool $sendPhoneNumberToProvider
-     * @param bool $protectContent
-     * @return ServerResponse
-     * @throws InvalidCurrencyTelegramException
-     */
     public function sendInvoice(
         Telegram $telegram,
         int $chatId,

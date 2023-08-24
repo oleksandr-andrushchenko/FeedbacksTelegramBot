@@ -40,11 +40,9 @@ class TelegramLocaleSwitcher
         $request->setLocale($this->localeSwitcher->getLocale());
     }
 
-    public function switchLocale(?MessengerUser $messengerUser, null|string|Locale $locale): void
+    public function switchLocale(null|string|Locale $locale): void
     {
         $localeCode = $locale === null ? null : (is_string($locale) ? $locale : $locale->getCode());
-
-        $messengerUser?->setLocaleCode($localeCode);
 
         if ($localeCode === null) {
             $this->localeSwitcher->reset();;

@@ -4,125 +4,92 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Telegram;
 
+use App\Entity\Feedback\Feedback;
+use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\SearchFeedbackTelegramConversationState;
+use App\Entity\Telegram\TelegramBot;
+use App\Entity\Telegram\TelegramConversationState;
+use App\Entity\User\User;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
 use App\Object\Feedback\SearchTermTransfer;
 use App\Object\Messenger\MessengerUserTransfer;
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
-use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\Conversation\SearchFeedbackTelegramConversation;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Tests\Fixtures;
-use App\Tests\Traits\Feedback\FeedbackRepositoryProviderTrait;
 use App\Tests\Traits\Feedback\FeedbackSearchRepositoryProviderTrait;
 use Generator;
 
 class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestCase
 {
     use FeedbackSearchRepositoryProviderTrait;
-    use FeedbackRepositoryProviderTrait;
 
     /**
-     * @param callable $fn
+     * @param string $command
+     * @param bool $showHints
      * @return void
      * @dataProvider startSuccessDataProvider
      */
-    public function testStartSuccess(callable $fn): void
+    public function testStartSuccess(string $command, bool $showHints): void
     {
-        extract($fn($this->tg));
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+        ]);
+        $this->getUpdateMessengerUser()->setIsShowHints($showHints);
 
-        $this->getEntityManager()->remove($this->getTelegramConversation());
-        $this->getEntityManager()->flush();
-
-        $this
-            ->command($command)
-            ->conversation($conversationClass, $conversationState)
-            ->invoke()
-            ->expectsState(
-                new SearchFeedbackTelegramConversationState(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
-            )
-            ->shouldSeeReply(...$this->getShouldSeeReplyOnSearchTermQueried())
-            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnSearchTermQueried($this->tg))
-        ;
-    }
-
-    /**
-     * @param callable $fn
-     * @return void
-     * @dataProvider startSuccessDataProvider
-     */
-    public function testStartWithHintsSuccess(callable $fn): void
-    {
-        extract($fn($this->tg));
-
-        $this->getUpdateMessengerUser()->setIsShowHints(true);
-
-        $this->getEntityManager()->remove($this->getTelegramConversation());
-        $this->getEntityManager()->flush();
-
-        $this
-            ->command($command)
-            ->conversation($conversationClass, $conversationState)
-            ->invoke()
-            ->expectsState(
-                new SearchFeedbackTelegramConversationState(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
-            )
-            ->shouldSeeReply(
-                'describe.title',
-                'describe.limits',
-                'toggle_hints',
-                ...$this->getShouldSeeReplyOnSearchTermQueried(),
-            )
-            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnSearchTermQueried($this->tg))
-        ;
-    }
-
-    /**
-     * @param callable $fn
-     * @return void
-     * @dataProvider startSuccessDataProvider
-     */
-    public function testStartWithHintsAndPaymentsSuccess(callable $fn): void
-    {
-        extract($fn($this->tg));
-
-        $this->getUpdateMessengerUser()->setIsShowHints(true);
-        $this->telegram->getBot()->setIsAcceptPayments(true);
-
-        $this->getEntityManager()->remove($this->getTelegramConversation());
-        $this->getEntityManager()->flush();
-
-        $this
-            ->command($command)
-            ->conversation($conversationClass, $conversationState)
-            ->invoke()
-            ->expectsState(
-                new SearchFeedbackTelegramConversationState(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
-            )
-            ->shouldSeeReply(
+        if ($showHints) {
+            $shouldReply = [
                 'describe.title',
                 'describe.limits',
                 'describe.subscribe',
                 'toggle_hints',
-                ...$this->getShouldSeeReplyOnSearchTermQueried()
+            ];
+        } else {
+            $shouldReply = [];
+        }
+
+        $this
+            ->type($command)
+            ->shouldSeeActiveConversation(
+                SearchFeedbackTelegramConversation::class,
+                (new SearchFeedbackTelegramConversationState())
+                    ->setStep(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
             )
-            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnSearchTermQueried($this->tg))
+            ->shouldSeeReply(
+                ...$shouldReply,
+                ...[
+                    'query.search_term',
+                ]
+            )
+            ->shouldSeeButtons(
+                'keyboard.cancel',
+            )
         ;
     }
 
     public function startSuccessDataProvider(): Generator
     {
-        yield sprintf('start_step_as_%s', 'text') => [
-            fn ($tg) => [
-                'command' => ChooseActionTelegramChatSender::getSearchButton($tg)->getText(),
-            ],
+        yield 'button & no hints' => [
+            'command' => 'icon.search command.search',
+            'showHints' => false,
         ];
 
-        yield sprintf('start_step_as_%s', 'command') => [
-            fn ($tg) => [
-                'command' => FeedbackTelegramChannel::SEARCH,
-            ],
+        yield 'button & hints' => [
+            'command' => 'icon.search command.search',
+            'showHints' => true,
+        ];
+
+        yield 'command & no hints' => [
+            'command' => FeedbackTelegramChannel::SEARCH,
+            'showHints' => false,
+        ];
+
+        yield 'command & hints' => [
+            'command' => FeedbackTelegramChannel::SEARCH,
+            'showHints' => true,
         ];
     }
 
@@ -133,15 +100,24 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
      */
     public function testGotSearchTermSuccess(callable $fn): void
     {
-        extract($fn($this->tg));
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+        ]);
+
+        extract($fn($this->getTg()));
+
         $state->setStep(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED);
+        $conversation = $this->createConversation(SearchFeedbackTelegramConversation::class, $state);
 
         $mocks && $mocks();
 
         $this
-            ->type($command, $state, $expectedState, conversationClass: SearchFeedbackTelegramConversation::class)
+            ->type($command)
+            ->shouldSeeActiveConversation($conversation->getClass(), $expectedState)
             ->shouldSeeReply(...$shouldSeeReply)
-            ->shouldSeeKeyboard(...$shouldSeeKeyboard)
+            ->shouldSeeButtons(...$shouldSeeButtons)
         ;
     }
 
@@ -153,7 +129,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 
         // messenger profile urls
         foreach (Fixtures::getMessengerUserProfileUrls() as $commandKey => [$messengerUser, $expectedSearchTermType]) {
-            yield sprintf('search_term_step_as_%s_profile_url', $commandKey) => [
+            yield sprintf('%s profile url', $commandKey) => [
                 fn ($tg) => [
                     'command' => $this->getMessengerUserProfileUrl($messengerUser),
                     'mocks' => null,
@@ -166,13 +142,13 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                                 ->setMessengerUser(null)
                         ),
                     'shouldSeeReply' => $this->getShouldSeeReplyOnConfirmQueried(),
-                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnConfirmQueried($tg),
+                    'shouldSeeButtons' => $this->getShouldSeeKeyboardOnConfirmQueried(),
                 ],
             ];
         }
 
         // normalized phone number
-        yield sprintf('search_term_step_as_normalized_%s', SearchTermType::phone_number->name) => [
+        yield sprintf('normalized %s', SearchTermType::phone_number->name) => [
             fn ($tg) => [
                 'command' => $command = '15613145672',
                 'mocks' => null,
@@ -184,12 +160,12 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                             ->setType(SearchTermType::phone_number)
                     ),
                 'shouldSeeReply' => $this->getShouldSeeReplyOnConfirmQueried(),
-                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnConfirmQueried($tg),
+                'shouldSeeButtons' => $this->getShouldSeeKeyboardOnConfirmQueried(),
             ],
         ];
 
         // normalized email
-        yield sprintf('search_term_step_as_normalized_%s', SearchTermType::email->name) => [
+        yield sprintf('normalized %s', SearchTermType::email->name) => [
             fn ($tg) => [
                 'command' => $command = 'example@gmail.com',
                 'mocks' => null,
@@ -201,7 +177,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                             ->setType(SearchTermType::email),
                     ),
                 'shouldSeeReply' => $this->getShouldSeeReplyOnConfirmQueried(),
-                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnConfirmQueried($tg),
+                'shouldSeeButtons' => $this->getShouldSeeKeyboardOnConfirmQueried(),
             ],
         ];
 
@@ -213,7 +189,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         /** @var MessengerUserTransfer $messengerUser */
 
         // unknown messenger profile url
-        yield sprintf('%s_as_messenger_profile_url', $key) => [
+        yield sprintf('%s & messenger profile url', $key) => [
             fn ($tg) => [
                 'command' => $command = 'https://unknown.com/me',
                 'mocks' => null,
@@ -224,13 +200,13 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                         $this->addSearchTermPossibleTypes(new SearchTermTransfer($command), SearchTermType::messenger_profile_url)
                     ),
                 'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeQueried(),
-                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
+                'shouldSeeButtons' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
             ],
         ];
 
         // messenger usernames
         foreach (Fixtures::getMessengerUserUsernames() as $commandKey => [$messengerUser, $expectedSearchTermPossibleType]) {
-            yield sprintf('%s_as_%s_username', $key, $commandKey) => [
+            yield sprintf('%s & %s username', $key, $commandKey) => [
                 fn ($tg) => [
                     'command' => $command = $messengerUser->getUsername(),
                     'mocks' => null,
@@ -241,13 +217,13 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                             $this->addSearchTermPossibleTypes(new SearchTermTransfer($command), $expectedSearchTermPossibleType)
                         ),
                     'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeQueried(),
-                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
+                    'shouldSeeButtons' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
                 ],
             ];
         }
 
         // unknown messenger username
-        yield sprintf('%s_as_messenger_username', $key) => [
+        yield sprintf('%s & messenger username', $key) => [
             fn ($tg) => [
                 'command' => $command = 'me',
                 'mocks' => null,
@@ -258,13 +234,13 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                         $this->addSearchTermPossibleTypes(new SearchTermTransfer($command), SearchTermType::messenger_username)
                     ),
                 'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeQueried(),
-                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
+                'shouldSeeButtons' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
             ],
         ];
 
         // person names
         foreach (Fixtures::PERSONS as $personKey => $personName) {
-            yield sprintf('%s_as_person_name_%s', $key, $personKey) => [
+            yield sprintf('%s & person name & %s', $key, $personKey) => [
                 fn ($tg) => [
                     'command' => $personName,
                     'mocks' => null,
@@ -281,14 +257,14 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                                 ])
                         ),
                     'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeQueried(),
-                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
+                    'shouldSeeButtons' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
                 ],
             ];
         }
 
         // place names
         foreach (Fixtures::PLACES as $placeKey => $placeName) {
-            yield sprintf('%s_as_place_name_%s', $key, $placeKey) => [
+            yield sprintf('%s & place name & %s', $key, $placeKey) => [
                 fn ($tg) => [
                     'command' => $placeName,
                     'mocks' => null,
@@ -304,14 +280,14 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                                 ])
                         ),
                     'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeQueried(),
-                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
+                    'shouldSeeButtons' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
                 ],
             ];
         }
 
         // organizations names
         foreach (Fixtures::ORGANIZATIONS as $orgKey => $orgName) {
-            yield sprintf('%s_as_organization_name_%s', $key, $orgKey) => [
+            yield sprintf('%s & organization name & %s', $key, $orgKey) => [
                 fn ($tg) => [
                     'command' => $orgName,
                     'mocks' => null,
@@ -326,13 +302,13 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                                 ])
                         ),
                     'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeQueried(),
-                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
+                    'shouldSeeButtons' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
                 ],
             ];
         }
 
         // phone number
-        yield sprintf('search_term_step_as_%s', SearchTermType::phone_number->name) => [
+        yield sprintf('%s & %s', $key, SearchTermType::phone_number->name) => [
             fn ($tg) => [
                 'command' => $command = '+1 (561) 314-5672',
                 'mocks' => null,
@@ -347,12 +323,12 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                             ])
                     ),
                 'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeQueried(),
-                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
+                'shouldSeeButtons' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
             ],
         ];
 
         // email
-        yield sprintf('%s_as_%s', $key, SearchTermType::email->name) => [
+        yield sprintf('%s & %s', $key, SearchTermType::email->name) => [
             fn ($tg) => [
                 'command' => $command = 'example+123@gma//il.com',
                 'mocks' => null,
@@ -367,7 +343,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                             ])
                     ),
                 'shouldSeeReply' => $this->getShouldSeeReplyOnSearchTermTypeQueried(),
-                'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
+                'shouldSeeButtons' => $this->getShouldSeeKeyboardOnSearchTermTypeQueried($tg, $expectedState),
             ],
         ];
     }
@@ -379,18 +355,28 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
      */
     public function testGotSearchTermChangeSuccess(callable $fn): void
     {
-        extract($fn($this->tg));
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+        ]);
+
+        extract($fn($this->getTg()));
+
         $state
             ->setStep(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
             ->setChange(true)
         ;
 
+        $conversation = $this->createConversation(SearchFeedbackTelegramConversation::class, $state);
+
         $mocks && $mocks($this);
 
         $this
-            ->type($command, $state, $expectedState, conversationClass: SearchFeedbackTelegramConversation::class)
+            ->type($command)
+            ->shouldSeeActiveConversation($conversation->getClass(), $expectedState)
             ->shouldSeeReply(...$shouldSeeReply)
-            ->shouldSeeKeyboard(...$shouldSeeKeyboard)
+            ->shouldSeeButtons(...$shouldSeeButtons)
         ;
     }
 
@@ -418,7 +404,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                             )->setType($expectedSearchTermType)
                         ),
                     'shouldSeeReply' => $this->getShouldSeeReplyOnConfirmQueried(),
-                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnConfirmQueried($tg),
+                    'shouldSeeButtons' => $this->getShouldSeeKeyboardOnConfirmQueried(),
                 ],
             ];
         }
@@ -440,7 +426,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                                 ->setMessengerUser(null)
                         ),
                     'shouldSeeReply' => $this->getShouldSeeReplyOnConfirmQueried(),
-                    'shouldSeeKeyboard' => $this->getShouldSeeKeyboardOnConfirmQueried($tg),
+                    'shouldSeeButtons' => $this->getShouldSeeKeyboardOnConfirmQueried(),
                 ],
             ];
         }
@@ -449,19 +435,31 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     }
 
     /**
-     * @param callable $fn
+     * @param string $command
+     * @param SearchFeedbackTelegramConversationState $state
+     * @param SearchFeedbackTelegramConversationState $expectedState
      * @return void
      * @dataProvider gotSearchTermTypeSuccessDataProvider
      */
-    public function testGotSearchTermTypeSuccess(callable $fn): void
+    public function testGotSearchTermTypeSuccess(
+        string $command,
+        SearchFeedbackTelegramConversationState $state,
+        SearchFeedbackTelegramConversationState $expectedState
+    ): void
     {
-        extract($fn($this->tg));
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+        ]);
         $state->setStep(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_TYPE_QUERIED);
+        $conversation = $this->createConversation(SearchFeedbackTelegramConversation::class, $state);
 
         $this
-            ->type($command, $state, $expectedState, conversationClass: SearchFeedbackTelegramConversation::class)
+            ->type($command)
+            ->shouldSeeActiveConversation($conversation->getClass(), $expectedState)
             ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried())
-            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmQueried($this->tg))
+            ->shouldSeeButtons(...$this->getShouldSeeKeyboardOnConfirmQueried())
         ;
     }
 
@@ -472,112 +470,116 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         /** @var MessengerUserTransfer $messengerUser */
 
         // unknown messenger profile url
-        yield 'search_term_type_step_as_messenger_profile_url' => [
-            fn ($tg) => [
-                'command' => SearchFeedbackTelegramConversation::getSearchTermTypeButton(SearchTermType::messenger_profile_url, $tg)->getText(),
-                'state' => $state = (new SearchFeedbackTelegramConversationState())
-                    ->setStep(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_TYPE_QUERIED)
-                    ->setSearchTerm(
-                        $searchTerm = (new SearchTermTransfer('https://unknown.com/me'))
-                            ->setPossibleTypes($searchTermTypes)
-                    ),
-                'expectedState' => (clone $state)
-                    ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
-                    ->setSearchTerm(
-                        (clone $searchTerm)
-                            ->setType(SearchTermType::messenger_username)
-                            ->setNormalizedText('me')
-                            ->setMessenger(Messenger::unknown)
-                            ->setMessengerUsername('me')
-                            ->setMessengerProfileUrl($searchTerm->getText())
-                    ),
-            ],
+        yield 'messenger profile url' => [
+            'command' => sprintf('search_term_type.%s', SearchTermType::messenger_profile_url->name),
+            'state' => $state = (new SearchFeedbackTelegramConversationState())
+                ->setStep(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_TYPE_QUERIED)
+                ->setSearchTerm(
+                    $searchTerm = (new SearchTermTransfer('https://unknown.com/me'))
+                        ->setPossibleTypes($searchTermTypes)
+                ),
+            'expectedState' => (clone $state)
+                ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
+                ->setSearchTerm(
+                    (clone $searchTerm)
+                        ->setType(SearchTermType::messenger_username)
+                        ->setNormalizedText('me')
+                        ->setMessenger(Messenger::unknown)
+                        ->setMessengerUsername('me')
+                        ->setMessengerProfileUrl($searchTerm->getText())
+                ),
         ];
 
         // messenger usernames
         foreach (Fixtures::getMessengerUserUsernames() as $commandKey => [$messengerUser, $searchTermType]) {
-            yield sprintf('search_term_type_step_as_%s_username', $commandKey) => [
-                fn ($tg) => [
-                    'command' => SearchFeedbackTelegramConversation::getSearchTermTypeButton($searchTermType, $tg)->getText(),
-                    'state' => $state = (new SearchFeedbackTelegramConversationState())
-                        ->setStep(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_TYPE_QUERIED)
-                        ->setSearchTerm(
-                            $searchTerm = (new SearchTermTransfer($messengerUser->getUsername()))
-                                ->setPossibleTypes($searchTermTypes)
-                        ),
-                    'expectedState' => (clone $state)
-                        ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
-                        ->setSearchTerm(
-                            $this->getMessengerUsernameSearchTerm($messengerUser)
-                                ->setType($searchTermType)
-                                ->setMessengerUser(null)
-                                ->setPossibleTypes($searchTerm->getPossibleTypes())
-                        ),
-                ],
+            yield sprintf('%s username', $commandKey) => [
+                'command' => sprintf('search_term_type.%s', $searchTermType->name),
+                'state' => $state = (new SearchFeedbackTelegramConversationState())
+                    ->setStep(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_TYPE_QUERIED)
+                    ->setSearchTerm(
+                        $searchTerm = (new SearchTermTransfer($messengerUser->getUsername()))
+                            ->setPossibleTypes($searchTermTypes)
+                    ),
+                'expectedState' => (clone $state)
+                    ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
+                    ->setSearchTerm(
+                        $this->getMessengerUsernameSearchTerm($messengerUser)
+                            ->setType($searchTermType)
+                            ->setMessengerUser(null)
+                            ->setPossibleTypes($searchTerm->getPossibleTypes())
+                    ),
             ];
         }
 
         // unknown messenger username
-        yield 'search_term_type_step_as_messenger_username' => [
-            fn ($tg) => [
-                'command' => SearchFeedbackTelegramConversation::getSearchTermTypeButton(SearchTermType::messenger_username, $tg)->getText(),
+        yield 'messenger username' => [
+            'command' => sprintf('search_term_type.%s', SearchTermType::messenger_username->name),
+            'state' => $state = (new SearchFeedbackTelegramConversationState())
+                ->setStep(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_TYPE_QUERIED)
+                ->setSearchTerm(
+                    $searchTerm = (new SearchTermTransfer('me'))
+                        ->setPossibleTypes($searchTermTypes)
+                ),
+            'expectedState' => (clone $state)
+                ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
+                ->setSearchTerm(
+                    (clone $searchTerm)
+                        ->setType(SearchTermType::messenger_username)
+                        ->setMessenger(Messenger::unknown)
+                        ->setMessengerUsername('me')
+                ),
+        ];
+
+        // non-messengers
+        foreach (Fixtures::NON_MESSENGER_SEARCH_TYPES as $typeKey => [$searchTermType, $searchTermText, $searchTermNormalizedText]) {
+            yield sprintf('%s', $typeKey) => [
+                'command' => sprintf('search_term_type.%s', $searchTermType->name),
                 'state' => $state = (new SearchFeedbackTelegramConversationState())
                     ->setStep(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_TYPE_QUERIED)
                     ->setSearchTerm(
-                        $searchTerm = (new SearchTermTransfer('me'))
+                        $searchTerm = (new SearchTermTransfer($searchTermText))
                             ->setPossibleTypes($searchTermTypes)
                     ),
                 'expectedState' => (clone $state)
                     ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
                     ->setSearchTerm(
                         (clone $searchTerm)
-                            ->setType(SearchTermType::messenger_username)
-                            ->setMessenger(Messenger::unknown)
-                            ->setMessengerUsername('me')
+                            ->setType($searchTermType)
+                            ->setNormalizedText($searchTermNormalizedText)
                     ),
-            ],
-        ];
-
-        // non-messengers
-        foreach (Fixtures::NON_MESSENGER_SEARCH_TYPES as $typeKey => [$searchTermType, $searchTermText, $searchTermNormalizedText]) {
-            yield sprintf('search_term_type_step_as_%s', $typeKey) => [
-                fn ($tg) => [
-                    'command' => SearchFeedbackTelegramConversation::getSearchTermTypeButton($searchTermType, $tg)->getText(),
-                    'state' => $state = (new SearchFeedbackTelegramConversationState())
-                        ->setStep(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_TYPE_QUERIED)
-                        ->setSearchTerm(
-                            $searchTerm = (new SearchTermTransfer($searchTermText))
-                                ->setPossibleTypes($searchTermTypes)
-                        ),
-                    'expectedState' => (clone $state)
-                        ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
-                        ->setSearchTerm(
-                            (clone $searchTerm)
-                                ->setType($searchTermType)
-                                ->setNormalizedText($searchTermNormalizedText)
-                        ),
-                ],
             ];
         }
     }
 
     /**
-     * @param callable $fn
+     * @param string $command
+     * @param SearchFeedbackTelegramConversationState $state
+     * @param SearchFeedbackTelegramConversationState $expectedState
      * @return void
      * @dataProvider gotSearchTermTypeChangeSuccess
      */
-    public function testGotSearchTermTypeChangeSuccess(callable $fn): void
+    public function testGotSearchTermTypeChangeSuccess(
+        string $command,
+        SearchFeedbackTelegramConversationState $state,
+        SearchFeedbackTelegramConversationState $expectedState
+    ): void
     {
-        extract($fn($this->tg));
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+        ]);
         $state
             ->setStep(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_TYPE_QUERIED)
             ->setChange(true)
         ;
+        $conversation = $this->createConversation(SearchFeedbackTelegramConversation::class, $state);
 
         $this
-            ->type($command, $state, $expectedState, conversationClass: SearchFeedbackTelegramConversation::class)
+            ->type($command)
+            ->shouldSeeActiveConversation($conversation->getClass(), $expectedState)
             ->shouldSeeReply(...$this->getShouldSeeReplyOnConfirmQueried())
-            ->shouldSeeKeyboard(...$this->getShouldSeeKeyboardOnConfirmQueried($this->tg))
+            ->shouldSeeButtons(...$this->getShouldSeeKeyboardOnConfirmQueried())
         ;
     }
 
@@ -592,58 +594,73 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         /** @var MessengerUserTransfer $messengerUser */
 
         // unknown messenger profile url
-        yield 'change_search_term_type_step_as_messenger_profile_url' => [
-            fn ($tg) => [
-                'command' => SearchFeedbackTelegramConversation::getSearchTermTypeButton(SearchTermType::messenger_profile_url, $tg)->getText(),
-                'state' => $state = (clone $generalState)
-                    ->setSearchTerm(
-                        $searchTerm = (new SearchTermTransfer('https://unknown.com/me'))
-                            ->setPossibleTypes($searchTermTypes)
-                    ),
-                'expectedState' => (clone $state)
-                    ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
-                    ->setChange(false)
-                    ->setSearchTerm(
-                        (clone $searchTerm)
-                            ->setType(SearchTermType::messenger_username)
-                            ->setNormalizedText('me')
-                            ->setMessenger(Messenger::unknown)
-                            ->setMessengerUsername('me')
-                            ->setMessengerProfileUrl($searchTerm->getText())
-                    ),
-            ],
+        yield 'change & messenger profile url' => [
+            'command' => sprintf('search_term_type.%s', SearchTermType::messenger_profile_url->name),
+            'state' => $state = (clone $generalState)
+                ->setSearchTerm(
+                    $searchTerm = (new SearchTermTransfer('https://unknown.com/me'))
+                        ->setPossibleTypes($searchTermTypes)
+                ),
+            'expectedState' => (clone $state)
+                ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
+                ->setChange(false)
+                ->setSearchTerm(
+                    (clone $searchTerm)
+                        ->setType(SearchTermType::messenger_username)
+                        ->setNormalizedText('me')
+                        ->setMessenger(Messenger::unknown)
+                        ->setMessengerUsername('me')
+                        ->setMessengerProfileUrl($searchTerm->getText())
+                ),
         ];
 
         // messenger usernames
         foreach (Fixtures::getMessengerUserUsernames() as $commandKey => [$messengerUser, $searchTermType]) {
-            yield sprintf('change_search_term_type_step_as_%s_username', $commandKey) => [
-                fn ($tg) => [
-                    'command' => SearchFeedbackTelegramConversation::getSearchTermTypeButton($searchTermType, $tg)->getText(),
-                    'state' => $state = (clone $generalState)
-                        ->setSearchTerm(
-                            $searchTerm = (new SearchTermTransfer($messengerUser->getUsername()))
-                                ->setPossibleTypes($searchTermTypes)
-                        ),
-                    'expectedState' => (clone $state)
-                        ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
-                        ->setChange(false)
-                        ->setSearchTerm(
-                            $this->getMessengerUsernameSearchTerm($messengerUser)
-                                ->setType($searchTermType)
-                                ->setMessengerUser(null)
-                                ->setPossibleTypes($searchTerm->getPossibleTypes())
-                        ),
-                ],
+            yield sprintf('change & %s username', $commandKey) => [
+                'command' => sprintf('search_term_type.%s', $searchTermType->name),
+                'state' => $state = (clone $generalState)
+                    ->setSearchTerm(
+                        $searchTerm = (new SearchTermTransfer($messengerUser->getUsername()))
+                            ->setPossibleTypes($searchTermTypes)
+                    ),
+                'expectedState' => (clone $state)
+                    ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
+                    ->setChange(false)
+                    ->setSearchTerm(
+                        $this->getMessengerUsernameSearchTerm($messengerUser)
+                            ->setType($searchTermType)
+                            ->setMessengerUser(null)
+                            ->setPossibleTypes($searchTerm->getPossibleTypes())
+                    ),
             ];
         }
 
         // unknown messenger username
-        yield 'change_search_term_type_step_as_messenger_username' => [
-            fn ($tg) => [
-                'command' => SearchFeedbackTelegramConversation::getSearchTermTypeButton(SearchTermType::messenger_username, $tg)->getText(),
+        yield 'change & messenger username' => [
+            'command' => sprintf('search_term_type.%s', SearchTermType::messenger_username->name),
+            'state' => $state = (clone $generalState)
+                ->setSearchTerm(
+                    $searchTerm = (new SearchTermTransfer('me'))
+                        ->setPossibleTypes($searchTermTypes)
+                ),
+            'expectedState' => (clone $state)
+                ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
+                ->setChange(false)
+                ->setSearchTerm(
+                    (clone $searchTerm)
+                        ->setType(SearchTermType::messenger_username)
+                        ->setMessenger(Messenger::unknown)
+                        ->setMessengerUsername('me')
+                ),
+        ];
+
+        // non-messengers
+        foreach (Fixtures::NON_MESSENGER_SEARCH_TYPES as $typeKey => [$searchTermType, $searchTermText, $searchTermNormalizedText]) {
+            yield sprintf('change & %s', $typeKey) => [
+                'command' => sprintf('search_term_type.%s', $searchTermType->name),
                 'state' => $state = (clone $generalState)
                     ->setSearchTerm(
-                        $searchTerm = (new SearchTermTransfer('me'))
+                        $searchTerm = (new SearchTermTransfer($searchTermText))
                             ->setPossibleTypes($searchTermTypes)
                     ),
                 'expectedState' => (clone $state)
@@ -651,50 +668,45 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                     ->setChange(false)
                     ->setSearchTerm(
                         (clone $searchTerm)
-                            ->setType(SearchTermType::messenger_username)
-                            ->setMessenger(Messenger::unknown)
-                            ->setMessengerUsername('me')
+                            ->setType($searchTermType)
+                            ->setNormalizedText($searchTermNormalizedText)
                     ),
-            ],
-        ];
-
-        // non-messengers
-        foreach (Fixtures::NON_MESSENGER_SEARCH_TYPES as $typeKey => [$searchTermType, $searchTermText, $searchTermNormalizedText]) {
-            yield sprintf('change_search_term_type_step_as_%s', $typeKey) => [
-                fn ($tg) => [
-                    'command' => SearchFeedbackTelegramConversation::getSearchTermTypeButton($searchTermType, $tg)->getText(),
-                    'state' => $state = (clone $generalState)
-                        ->setSearchTerm(
-                            $searchTerm = (new SearchTermTransfer($searchTermText))
-                                ->setPossibleTypes($searchTermTypes)
-                        ),
-                    'expectedState' => (clone $state)
-                        ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
-                        ->setChange(false)
-                        ->setSearchTerm(
-                            (clone $searchTerm)
-                                ->setType($searchTermType)
-                                ->setNormalizedText($searchTermNormalizedText)
-                        ),
-                ],
             ];
         }
     }
 
     /**
-     * @param callable $fn
+     * @param string $command
+     * @param TelegramConversationState $state
+     * @param TelegramConversationState $expectedState
+     * @param string $expectedReply
+     * @param array $expectedButtons
      * @return void
      * @dataProvider gotConfirmChangeSuccessDataProvider
      */
-    public function testGotConfirmChangeSuccess(callable $fn): void
+    public function testGotConfirmChangeSuccess(
+        string $command,
+        TelegramConversationState $state,
+        TelegramConversationState $expectedState,
+        string $expectedReply,
+        array $expectedButtons
+    ): void
     {
-        extract($fn($this->tg));
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+        ]);
+
         $state->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED);
 
+        $conversation = $this->createConversation(SearchFeedbackTelegramConversation::class, $state);
+
         $this
-            ->type($command, $state, $expectedState, conversationClass: SearchFeedbackTelegramConversation::class)
+            ->type($command)
+            ->shouldSeeActiveConversation($conversation->getClass(), $expectedState)
             ->shouldSeeReply($expectedReply)
-            ->shouldSeeKeyboard(...$expectedKeyboard)
+            ->shouldSeeButtons(...$expectedButtons)
         ;
     }
 
@@ -703,30 +715,28 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         $searchTerm = new SearchTermTransfer('any');
 
         $commands = [
-            'search_term_change' => [
-                fn ($tg) => SearchFeedbackTelegramConversation::getChangeSearchTermButton($tg)->getText(),
+            'search term change' => [
+                '📝 keyboard.change_search_term',
                 SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED,
                 'query.search_term',
-                fn ($tg) => [
-                    SearchFeedbackTelegramConversation::getLeaveAsButton($searchTerm->getText(), $tg),
-                    SearchFeedbackTelegramConversation::getCancelButton($tg),
+                [
+                    'keyboard.leave_as',
+                    'keyboard.cancel',
                 ],
             ],
         ];
 
-        foreach ($commands as $commandKey => [$command, $expectedStep, $expectedText, $expectedKeyboard]) {
-            yield sprintf('confirm_step_as_%s', $commandKey) => [
-                fn ($tg) => [
-                    'command' => $command($tg),
-                    'state' => $state = (new SearchFeedbackTelegramConversationState())
-                        ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
-                        ->setSearchTerm($searchTerm),
-                    'expectedState' => (clone $state)
-                        ->setStep($expectedStep)
-                        ->setChange(true),
-                    'expectedReply' => $expectedText,
-                    'expectedKeyboard' => $expectedKeyboard($tg),
-                ],
+        foreach ($commands as $commandKey => [$command, $expectedStep, $expectedText, $expectedButtons]) {
+            yield sprintf('%s', $commandKey) => [
+                'command' => $command,
+                'state' => $state = (new SearchFeedbackTelegramConversationState())
+                    ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
+                    ->setSearchTerm($searchTerm),
+                'expectedState' => (clone $state)
+                    ->setStep($expectedStep)
+                    ->setChange(true),
+                'expectedReply' => $expectedText,
+                'expectedButtons' => $expectedButtons,
             ];
         }
     }
@@ -739,35 +749,45 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
      */
     public function testGotCancelSuccess(int $step, bool $change = null): void
     {
-        $this->typeCancel(
-            state: $state = (new SearchFeedbackTelegramConversationState())
-                ->setStep($step)
-                ->setChange($change),
-            expectedState: (clone $state)
-                ->setStep(SearchFeedbackTelegramConversation::STEP_CANCEL_PRESSED),
-            shouldSeeReply: [
-                'reply.canceled',
-            ],
-            conversationClass: SearchFeedbackTelegramConversation::class
-        );
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+        ]);
+
+        $state = (new SearchFeedbackTelegramConversationState())
+            ->setStep($step)
+            ->setChange($change)
+        ;
+        $expectedState = (clone $state)
+            ->setStep(SearchFeedbackTelegramConversation::STEP_CANCEL_PRESSED)
+        ;
+        $conversation = $this->createConversation(SearchFeedbackTelegramConversation::class, $state);
+
+        $this
+            ->type('keyboard.cancel')
+            ->shouldSeeNotActiveConversation($conversation->getClass(), $expectedState)
+            ->shouldSeeReply('reply.canceled')
+            ->shouldSeeChooseAction()
+        ;
     }
 
     public function gotCancelSuccessDataProvider(): Generator
     {
-        yield 'search_term' => [
+        yield 'search term' => [
             SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED,
         ];
 
-        yield 'change_search_term' => [
+        yield 'change search term' => [
             SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED,
             true,
         ];
 
-        yield 'search_term_type' => [
+        yield 'search term type' => [
             SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_TYPE_QUERIED,
         ];
 
-        yield 'change_search_term_type' => [
+        yield 'change search term type' => [
             SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_TYPE_QUERIED,
             true,
         ];
@@ -788,6 +808,14 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         array $shouldSeeReplyFeedbacks
     ): void
     {
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+            Feedback::class,
+        ]);
+
+        $conversation = $this->createConversation(SearchFeedbackTelegramConversation::class, $state);
         $shouldSeeReply = [];
 
         $count = count($shouldSeeReplyFeedbacks);
@@ -795,17 +823,19 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             $shouldSeeReply[] = 'reply.empty_list';
         } else {
             $shouldSeeReply[] = 'reply.title';
-            $shouldSeeReply = array_merge($shouldSeeReply, array_fill(0, count($shouldSeeReplyFeedbacks), $this->getFeedbackReply()));
+            $shouldSeeReply = array_merge($shouldSeeReply, array_fill(0, count($shouldSeeReplyFeedbacks), 'somebody_from'));
         }
 
         $feedbackSearchRepository = $this->getFeedbackSearchRepository();
         $previousFeedbackSearchCount = $feedbackSearchRepository->count([]);
 
-        $this->typeConfirm(
-            state: $state,
-            shouldSeeReply: $shouldSeeReply,
-            conversationClass: SearchFeedbackTelegramConversation::class
-        );
+        $this
+            ->type('keyboard.confirm')
+            ->shouldSeeReply(...$shouldSeeReply)
+            ->shouldSeeChooseAction()
+        ;
+
+        $this->assertFalse($conversation->active());
 
         $this->assertEquals($previousFeedbackSearchCount + 1, $feedbackSearchRepository->count([]));
 
@@ -816,8 +846,6 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         ]);
 
         $this->assertNotNull($feedbackSearch);
-
-        $this->assertEquals($this->getUpdateMessengerUser()->getId(), $feedbackSearch->getMessengerUser()->getId());
     }
 
     public function gotConfirmSuccessDataProvider(): Generator
@@ -826,7 +854,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
         ;
 
-        yield 'empty_list' => [
+        yield 'unknown & empty' => [
             'state' => (clone $generalState)
                 ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
                 ->setSearchTerm(
@@ -836,23 +864,15 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             'shouldSeeReplyFeedbacks' => [],
         ];
 
-        yield 'instagram_username' => [
+        yield 'instagram username & not empty' => [
             'state' => (clone $generalState)
                 ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
                 ->setSearchTerm(
                     $this->getMessengerUsernameSearchTerm(Fixtures::getInstagramMessengerUserTransferFixture(3))
                         ->setType(SearchTermType::instagram_username)
                 ),
-            'shouldSeeReplyFeedbacks' => [
-                1,
-                2,
-            ],
+            'shouldSeeReplyFeedbacks' => [1, 2],
         ];
-    }
-
-    private function getFeedbackReply(): string
-    {
-        return 'somebody_from';
     }
 
     private function getShouldSeeReplyOnSearchTermTypeQueried(): array
@@ -866,21 +886,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
     {
         return [
             ...SearchFeedbackTelegramConversation::getSearchTermTypeButtons(SearchTermType::sort($state->getSearchTerm()->getPossibleTypes()), $tg),
-            SearchFeedbackTelegramConversation::getCancelButton($tg),
-        ];
-    }
-
-    private function getShouldSeeReplyOnSearchTermQueried(): array
-    {
-        return [
-            'query.search_term',
-        ];
-    }
-
-    private function getShouldSeeKeyboardOnSearchTermQueried(TelegramAwareHelper $tg): array
-    {
-        return [
-            SearchFeedbackTelegramConversation::getCancelButton($tg),
+            'keyboard.cancel',
         ];
     }
 
@@ -891,12 +897,12 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         ];
     }
 
-    private function getShouldSeeKeyboardOnConfirmQueried(TelegramAwareHelper $tg): array
+    private function getShouldSeeKeyboardOnConfirmQueried(): array
     {
         return [
-            SearchFeedbackTelegramConversation::getConfirmButton($tg),
-            SearchFeedbackTelegramConversation::getChangeSearchTermButton($tg),
-            SearchFeedbackTelegramConversation::getCancelButton($tg),
+            'keyboard.confirm',
+            '📝 keyboard.change_search_term',
+            'keyboard.cancel',
         ];
     }
 }

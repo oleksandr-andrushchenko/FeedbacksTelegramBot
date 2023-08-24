@@ -6,42 +6,53 @@ namespace App\Tests\Functional\Telegram;
 
 use App\Entity\Telegram\TelegramBot;
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
+use Generator;
 
 class StartTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestCase
 {
-    public function testStartSuccess(): void
+    /**
+     * @param bool $showHints
+     * @return void
+     * @dataProvider startSuccessDataProvider
+     */
+    public function testStartSuccess(bool $showHints): void
     {
-        $this->refreshDatabase()->bootFixtures([
+        $this->bootFixtures([
             TelegramBot::class,
         ]);
 
+        if ($showHints) {
+            $shouldReply = [
+                'describe.title',
+                'describe.agreements',
+            ];
+        } else {
+            $shouldReply = [];
+        }
+
         $this
             ->type(FeedbackTelegramChannel::START)
-            ->shouldSeeChooseAction()
         ;
 
-        $this->assertCount(1, $this->getMessengerUserRepository()->findAll());
+        $this->assertNotNull($this->getUpdateMessengerUser());
+        $this->assertNotNull($this->getUpdateMessengerUser()->getUser());
 
-        $this->assertEquals(
-            $this->telegram->getUpdate()->getMessage()->getFrom()->getId(),
-            $this->getMessengerUserRepository()->findOneBy([])?->getIdentifier()
-        );
+        $this->getUpdateMessengerUser()->setIsShowHints($showHints);
+        $this
+            ->shouldSeeNotActiveConversation()
+            ->shouldSeeReply(...$shouldReply)
+            ->shouldSeeChooseAction()
+        ;
     }
 
-    public function testStartWithHintsSuccess(): void
+    public function startSuccessDataProvider(): Generator
     {
-        $this->getUpdateMessengerUser()->setIsShowHints(true);
+        yield 'no hints' => [
+            'showHints' => false,
+        ];
 
-        $this->getEntityManager()->remove($this->getTelegramConversation());
-        $this->getEntityManager()->flush();
-
-        $this
-            ->type(FeedbackTelegramChannel::START)
-            ->shouldSeeReply(
-                'describe.title',
-                'describe.agreements'
-            )
-            ->shouldSeeChooseAction()
-        ;
+        yield 'hints' => [
+            'showHints' => true,
+        ];
     }
 }

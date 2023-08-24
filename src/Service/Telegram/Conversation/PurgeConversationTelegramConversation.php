@@ -15,7 +15,6 @@ class PurgeConversationTelegramConversation extends TelegramConversation impleme
 {
     public const STEP_CONFIRM_QUERIED = 10;
     public const STEP_CONFIRMED = 20;
-    public const STEP_CANCEL_PRESSED = 30;
 
     public function __construct(
         readonly TelegramAwareHelper $awareHelper,
@@ -28,19 +27,13 @@ class PurgeConversationTelegramConversation extends TelegramConversation impleme
 
     public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
     {
-        return match (true) {
-            $this->state->getStep() === null => $this->start($tg),
-
-            $tg->matchText(null) => $this->wrong($tg),
-            $tg->matchText($this->getCancelButton($tg)->getText()) => $this->gotCancel($tg, $conversation),
-
-            $this->state->getStep() === self::STEP_CONFIRM_QUERIED => $this->gotConfirm($tg, $conversation),
-
-            default => $this->wrong($tg)
+        return match ($this->state->getStep()) {
+            default => $this->start($tg),
+            self::STEP_CONFIRM_QUERIED => $this->gotConfirm($tg, $conversation),
         };
     }
 
-    public function start(TelegramAwareHelper $tg): null
+    public function start(TelegramAwareHelper $tg): ?string
     {
         $this->describe($tg);
 
@@ -59,6 +52,11 @@ class PurgeConversationTelegramConversation extends TelegramConversation impleme
                 'name',
                 'phone_number',
                 'email',
+                'country',
+                'locale',
+                'currency',
+                'timezone',
+                'settings',
             ],
         ]));
     }
@@ -67,55 +65,49 @@ class PurgeConversationTelegramConversation extends TelegramConversation impleme
     {
         $this->state->setStep(self::STEP_CONFIRM_QUERIED);
 
-        $keyboards = [];
+        $buttons = [];
 
-        $keyboards[] = $this->getConfirmButton($tg);
-        $keyboards[] = $this->getCancelButton($tg);
+        $buttons[] = $this->getConfirmYesButton($tg);
+        $buttons[] = $this->getConfirmNoButton($tg);
 
-        return $tg->reply($this->getConfirmQuery($tg), $tg->keyboard(...$keyboards))->null();
-    }
-
-    public function gotCancel(TelegramAwareHelper $tg, Conversation $conversation): null
-    {
-        $this->state->setStep(self::STEP_CANCEL_PRESSED);
-
-        $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.purge'));
-
-        return $this->chooseActionChatSender->sendActions($tg);
-    }
-
-    public function wrong(TelegramAwareHelper $tg): ?string
-    {
-        return $tg->replyWrong($tg->trans('reply.wrong'))->null();
+        return $tg->reply($this->getConfirmQuery($tg), $tg->keyboard(...$buttons))->null();
     }
 
     public function gotConfirm(TelegramAwareHelper $tg, Conversation $conversation): null
     {
-        if (!$tg->matchText($this->getConfirmButton($tg)->getText())) {
-            return $tg->replyWrong($tg->trans('reply.wrong'))->null();
+        if ($tg->matchText($this->getConfirmNoButton($tg)->getText())) {
+            return $this->chooseActionChatSender->sendActions($tg->stopConversation($conversation));
+        }
+        if (!$tg->matchText($this->getConfirmYesButton($tg)->getText())) {
+            return $this->queryConfirm($tg->replyWrong($tg->trans('reply.wrong')));
         }
 
         $this->state->setStep(self::STEP_CONFIRMED);
 
         $this->userDataPurger->purgeUserData($tg->getTelegram()->getMessengerUser()->getUser());
 
-        $tg->replyOk($tg->trans('reply.ok', domain: 'tg.domain'))->stopConversation($conversation);
-
-        return $this->chooseActionChatSender->sendActions($tg);
+        return $tg
+            ->replyOk(
+                $tg->trans('reply.ok', domain: 'tg.purge'),
+                keyboard: $this->chooseActionChatSender->getKeyboard($tg)
+            )
+            ->stopConversation($conversation)
+            ->null()
+        ;
     }
 
     public static function getConfirmQuery(TelegramAwareHelper $tg): string
     {
-        return $tg->trans('query.confirm', domain: 'tg.domain');
+        return $tg->trans('query.confirm', domain: 'tg.purge');
     }
 
-    public static function getConfirmButton(TelegramAwareHelper $tg): KeyboardButton
+    public static function getConfirmYesButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->trans('keyboard.confirm'));
+        return $tg->button($tg->trans('keyboard.yes'));
     }
 
-    public static function getCancelButton(TelegramAwareHelper $tg): KeyboardButton
+    public static function getConfirmNoButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->trans('keyboard.cancel'));
+        return $tg->button($tg->trans('keyboard.no'));
     }
 }

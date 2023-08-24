@@ -1,0 +1,7 @@
+App\Entity\Telegram\TelegramPaymentMethod:
+  telegram_payment_method_1:
+    __construct:
+      bot: '@telegram_bot_1'
+      name: <(\App\Enum\Telegram\TelegramPaymentMethodName::portmone)>
+      token: 'any'
+      currencyCodes: <(['USD', 'EUR', 'UAH'])>

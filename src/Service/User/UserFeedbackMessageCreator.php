@@ -26,6 +26,7 @@ class UserFeedbackMessageCreator
      */
     public function createUserFeedbackMessage(UserFeedbackMessageTransfer $userFeedbackMessageTransfer): UserFeedbackMessage
     {
+        // todo: add to activity log
         $this->validator->validate($userFeedbackMessageTransfer);
 
         $message = new UserFeedbackMessage(

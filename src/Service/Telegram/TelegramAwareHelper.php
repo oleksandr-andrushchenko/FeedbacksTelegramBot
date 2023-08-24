@@ -108,7 +108,8 @@ class TelegramAwareHelper
         Keyboard $keyboard = null,
         string $parseMode = 'HTML',
         bool $protectContent = null,
-        bool $disableWebPagePreview = true
+        bool $disableWebPagePreview = true,
+        bool $keepKeyboard = false
     ): static
     {
         $this->chatActionSender->sendChatAction(
@@ -123,7 +124,8 @@ class TelegramAwareHelper
             keyboard: $keyboard,
             parseMode: $parseMode,
             protectContent: $protectContent,
-            disableWebPagePreview: $disableWebPagePreview
+            disableWebPagePreview: $disableWebPagePreview,
+            keepKeyboard: $keepKeyboard
         );
 
         return $this;
@@ -142,7 +144,7 @@ class TelegramAwareHelper
         bool $disableWebPagePreview = true
     ): static
     {
-        $this->reply('🫡' . $text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
+        $this->reply('🫡 ' . $text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
 
         return $this;
     }
@@ -155,7 +157,7 @@ class TelegramAwareHelper
         bool $disableWebPagePreview = true
     ): static
     {
-        $this->reply('🤕' . $text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
+        $this->reply('🤕 ' . $text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
 
         return $this;
     }
@@ -165,10 +167,11 @@ class TelegramAwareHelper
         Keyboard $keyboard = null,
         string $parseMode = 'HTML',
         bool $protectContent = null,
-        bool $disableWebPagePreview = true
+        bool $disableWebPagePreview = true,
+        bool $keepKeyboard = false
     ): static
     {
-        $this->reply('🤔' . $text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
+        $this->reply('🤔 ' . $text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview, $keepKeyboard);
 
         return $this;
     }
@@ -181,7 +184,7 @@ class TelegramAwareHelper
         bool $disableWebPagePreview = true
     ): static
     {
-        $this->reply('😐' . $text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
+        $this->reply('😐 ' . $text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
 
         return $this;
     }

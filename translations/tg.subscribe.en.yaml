@@ -1,17 +1,18 @@
 describe:
-  title: Due to huge amount of user requests, our bot, by default, has next command limitations.
-  summary: Premium subscription plan allows you to use our bot without any limitations for specified period of time.
+  title: Due to huge amount of requests - limitations have been placed on the following commands.
+  summary: Premium subscription allows to use the bot without any limitations for specified period of time.
 query:
-  currency: Select a currency from the menu below please.
-  subscription_plan: Select a subscription plan from the menu below please.
-  payment_method: Select a payment method from the menu below please.
-  payment: Proceed with the payment instructions below please.
+  currency: Select a currency please.
+  subscription_plan: Select a subscription plan please.
+  payment_method: Select a payment method please.
+  payment: To complete the operation - click the "%pay_button%" button and follow the instructions.
+  pay_button: Pay %price%
   payment_invoice_title: Premium subscription "%plan%"
-  payment_invoice_description: No quantity limits on feedbacks creation and searching for %plan%
+  payment_invoice_description: '%plan% without limits (by the number of requests) for the following commands: %limited_commands%. Also, the following commands are available on %plan%: %hidden_commands%. The subscription covers the following bots: %bots%'
 keyboard:
   change_currency: Change currency
 reply:
-  payment_ok: Your payment for "%plan%" premium subscription has been received. Premium subscription will expire on %expire_at% GMT.
+  payment_ok: Your payment for "%plan%" premium subscription has been received. Premium subscription is valid till %expire_at%.
   already_have: "You have active premium subscription already:"
   invalid_currency: An error has occurred, "%currency%" currency is not acceptable right now, select another currency please.
   canceled: Getting premium dialog has been canceled.

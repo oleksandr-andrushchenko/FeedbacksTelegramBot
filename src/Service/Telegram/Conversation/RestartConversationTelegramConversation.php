@@ -16,7 +16,6 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
 {
     public const STEP_CONFIRM_QUERIED = 10;
     public const STEP_CONFIRMED = 20;
-    public const STEP_CANCEL_PRESSED = 30;
 
     public function __construct(
         readonly TelegramAwareHelper $awareHelper,
@@ -30,16 +29,13 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
 
     public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
     {
-        return match (true) {
-            $this->state->getStep() === null => $this->start($tg),
-            $tg->matchText(null) => $this->wrong($tg),
-            $tg->matchText($this->getCancelButton($tg)->getText()) => $this->gotCancel($tg, $conversation),
-            $this->state->getStep() === self::STEP_CONFIRM_QUERIED => $this->gotConfirm($tg, $conversation),
-            default => $this->wrong($tg)
+        return match ($this->state->getStep()) {
+            default => $this->start($tg),
+            self::STEP_CONFIRM_QUERIED => $this->gotConfirm($tg, $conversation),
         };
     }
 
-    public function start(TelegramAwareHelper $tg): null
+    public function start(TelegramAwareHelper $tg): ?string
     {
         $this->describe($tg);
 
@@ -55,31 +51,25 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
         $tg->reply($tg->view('describe_restart'));
     }
 
-    public function gotCancel(TelegramAwareHelper $tg, Conversation $conversation): null
-    {
-        $this->state->setStep(self::STEP_CANCEL_PRESSED);
-
-        $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.restart'));
-
-        return $this->chooseActionChatSender->sendActions($tg);
-    }
-
     public function queryConfirm(TelegramAwareHelper $tg): null
     {
         $this->state->setStep(self::STEP_CONFIRM_QUERIED);
 
-        $keyboards = [];
+        $buttons = [];
 
-        $keyboards[] = $this->getConfirmButton($tg);
-        $keyboards[] = $this->getCancelButton($tg);
+        $buttons[] = $this->getConfirmYesButton($tg);
+        $buttons[] = $this->getConfirmNoButton($tg);
 
-        return $tg->reply($this->getConfirmQuery($tg), $tg->keyboard(...$keyboards))->null();
+        return $tg->reply($this->getConfirmQuery($tg), $tg->keyboard(...$buttons))->null();
     }
 
     public function gotConfirm(TelegramAwareHelper $tg, Conversation $conversation): null
     {
-        if (!$tg->matchText($this->getConfirmButton($tg)->getText())) {
-            return $tg->replyWrong($tg->trans('reply.wrong'))->null();
+        if ($tg->matchText($this->getConfirmNoButton($tg)->getText())) {
+            return $this->chooseActionChatSender->sendActions($tg->stopConversation($conversation));
+        }
+        if (!$tg->matchText($this->getConfirmYesButton($tg)->getText())) {
+            return $this->queryConfirm($tg->replyWrong($tg->trans('reply.wrong')));
         }
 
         $this->state->setStep(self::STEP_CONFIRMED);
@@ -88,7 +78,7 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
         $country = $this->countryProvider->getCountry($countryCode);
 
         $tg->getTelegram()->getMessengerUser()
-            ?->setIsShowHints(false)
+            ?->setIsShowHints(true)
             ?->setIsShowExtendedKeyboard(false)
             ?->setLocaleCode($country->getLocaleCodes()[0] ?? null)
             ?->getUser()
@@ -110,18 +100,13 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
         return $tg->trans('query.confirm', domain: 'tg.restart');
     }
 
-    public static function getConfirmButton(TelegramAwareHelper $tg): KeyboardButton
+    public static function getConfirmYesButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->trans('keyboard.confirm'));
+        return $tg->button($tg->trans('keyboard.yes'));
     }
 
-    public static function getCancelButton(TelegramAwareHelper $tg): KeyboardButton
+    public static function getConfirmNoButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->trans('keyboard.cancel'));
-    }
-
-    public function wrong(TelegramAwareHelper $tg): ?string
-    {
-        return $tg->replyWrong($tg->trans('reply.wrong'))->null();
+        return $tg->button($tg->trans('keyboard.no'));
     }
 }

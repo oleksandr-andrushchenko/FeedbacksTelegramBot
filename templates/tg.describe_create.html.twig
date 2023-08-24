@@ -3,11 +3,9 @@
 
 ℹ️ {{ 'describe.limits'|trans }}
 {% for period,limit in limits %}
-    - <b>{{ limit }}</b> {{ 'tries_for'|trans({}, 'tg') }} <b>1 {{ period|trans({}, 'tg') }}</b>
+ - {{ 'command_limits.tries_for'|trans({'%count%': '<b>' ~ limit ~ '</b>', '%period%': '<b>1 ' ~ period|trans({}, 'tg') ~ '</b>'}, 'tg')|raw }}
 {% endfor %}
 
-{% if accept_payments %}
 ℹ️ {{ 'describe.subscribe'|trans({'%command%': include('tg.command.html.twig', {name: 'subscribe'})})|raw }}
 
-{% endif %}
 {% include 'tg.hints.html.twig' %}

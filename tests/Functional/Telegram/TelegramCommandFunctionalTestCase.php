@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Telegram;
 
-use App\Entity\Feedback\Feedback;
 use App\Entity\Messenger\MessengerUser;
-use App\Entity\Telegram\TelegramBot;
 use App\Entity\Telegram\TelegramConversation;
 use App\Entity\Telegram\TelegramConversationState;
-use App\Entity\User\User;
+use App\Entity\Telegram\TelegramPaymentMethod;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
+use App\Enum\Telegram\TelegramPaymentMethodName;
 use App\Object\Feedback\SearchTermTransfer;
 use App\Object\Messenger\MessengerUserTransfer;
 use App\Service\Telegram\Telegram;
@@ -44,7 +43,6 @@ use App\Tests\Traits\TranslatorProviderTrait;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\KeyboardButton;
 use Longman\TelegramBot\Entities\Update;
-use Longman\TelegramBot\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
@@ -73,10 +71,9 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
     use TelegramChatProviderTrait;
     use TelegramBotRepositoryMockProviderTrait;
 
-    protected Telegram $telegram;
-    protected TelegramAwareHelper $tg;
+    protected ?Telegram $telegram;
+    protected ?TelegramAwareHelper $tg;
     protected ?Update $update;
-    protected ?TelegramConversation $conversation;
     protected TranslatorInterface $translator;
     protected TelegramKeyboardFactory $keyboardFactory;
     protected TelegramUserProvider $userProvider;
@@ -86,43 +83,40 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
     {
         parent::setUp();
 
-        $this->tgUp();
-    }
-
-    public function tgUp(): void
-    {
-        $this->bootFixtures([
-            User::class,
-            MessengerUser::class,
-            TelegramBot::class,
-            TelegramConversation::class,
-            Feedback::class,
-        ]);
-
-        $this->telegram = $this->getTelegramRegistry()->getTelegram(Fixtures::BOT_USERNAME_1);
-        $this->tg = $this->getTelegramAwareHelper()->withTelegram($this->telegram);
-        $this->update = $this->getTelegramMessageUpdateFixture('any');
-        $this->conversation = null;
+        $this->telegram = null;
+        $this->tg = null;
+        $this->update = null;
         $this->translator = $this->getTranslator();
         $this->keyboardFactory = $this->getTelegramKeyboardFactory();
         $this->userProvider = $this->getTelegramUserProvider();
         $this->chatProvider = $this->getTelegramChatProvider();
     }
 
-    protected function fnd()
+    protected function getTelegram(): Telegram
     {
-        $this->databaseDown();
-        $this->databaseUp();
-        static::$fixtures = [];
+        if ($this->telegram === null) {
+            $this->telegram = $this->getTelegramRegistry()->getTelegram(Fixtures::BOT_USERNAME_1);
+        }
 
-        $this->bootFixtures([
-            TelegramBot::class,
-        ]);
+        return $this->telegram;
     }
 
-    protected function tg(): TelegramAwareHelper
+    protected function getTg(): TelegramAwareHelper
     {
+        if ($this->tg === null) {
+            $this->tg = $this->getTelegramAwareHelper()->withTelegram($this->getTelegram());
+        }
+
         return $this->tg;
+    }
+
+    protected function getUpdate(): Update
+    {
+        if ($this->update === null) {
+            $this->update = $this->getTelegramMessageUpdateFixture('any');
+        }
+
+        return $this->update;
     }
 
     public static function getContainer(): ContainerInterface
@@ -132,149 +126,103 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
 
     protected function getUpdateUserId(): ?int
     {
-        return $this->userProvider->getTelegramUserByUpdate($this->telegram->getUpdate() ?? $this->update)?->getId();
+        return $this->userProvider->getTelegramUserByUpdate($this->getTelegram()->getUpdate() ?? $this->getUpdate())?->getId();
     }
 
     protected function getUpdateChatId(): ?int
     {
-        return $this->chatProvider->getTelegramChatByUpdate($this->telegram->getUpdate() ?? $this->update)?->getId();
-    }
-
-    protected function getUpdateLanguageCode(): ?string
-    {
-        return $this->userProvider->getTelegramUserByUpdate($this->telegram->getUpdate() ?? $this->update)?->getLanguageCode();
+        return $this->chatProvider->getTelegramChatByUpdate($this->getTelegram()->getUpdate() ?? $this->getUpdate())?->getId();
     }
 
     protected function getUpdateMessengerUser(): ?MessengerUser
     {
-        return $this->telegram->getMessengerUser() ?? $this->getMessengerUserRepository()->findOneByMessengerAndIdentifier(Messenger::telegram, (string) $this->getUpdateUserId());
+        return $this->getTelegram()->getMessengerUser() ?? $this->getMessengerUserRepository()->findOneByMessengerAndIdentifier(Messenger::telegram, (string) $this->getUpdateUserId());
     }
 
-    protected function getConversation(): ?TelegramConversation
+    protected function createConversation(string $class, TelegramConversationState $state): TelegramConversation
     {
-        return $this->conversation ?? $this->getTelegramConversation();
+        $conversation = new TelegramConversation(
+            $this->getUpdateMessengerUser(),
+            $this->getUpdateChatId(),
+            $class,
+            $this->getTelegram()->getBot(),
+            true,
+            $this->getSerializer()->normalize($state)
+        );
+        $this->getEntityManager()->persist($conversation);
+        $this->getEntityManager()->flush();
+
+        return $conversation;
     }
 
-    protected function command(string $command): static
+    protected function createPaymentMethod(TelegramPaymentMethodName $name): TelegramPaymentMethod
     {
+        $paymentMethod = new TelegramPaymentMethod(
+            $this->getTelegram()->getBot(),
+            $name,
+            'any',
+            ['USD', 'EUR', 'UAH'],
+        );
+        $this->getEntityManager()->persist($paymentMethod);
+        $this->getEntityManager()->flush();
+
+        return $paymentMethod;
+    }
+
+    protected function type(string $command): static
+    {
+        $this->telegram = null;
+        $this->tg = null;
         $this->update = $this->getTelegramMessageUpdateFixture($command);
-        $this->telegram->setUpdate(null);
-        $this->telegram->setMessengerUser(null);
-        $this->conversation = null;
+        $this->getTelegram()->setUpdate(null);
+        $this->getTelegram()->setMessengerUser(null);
+        $this->handleTelegramUpdate($this->getTelegram(), $this->getUpdate());
 
         return $this;
     }
 
-    protected function conversation(string $class = null, TelegramConversationState $state = null): static
+    protected function shouldSeeActiveConversation(string $expectedClass, TelegramConversationState $expectedState): static
     {
-        if ($class !== null || $state !== null) {
-            $this->conversation = $this->getTelegramConversation();
+        return $this->shouldSeeConversation($expectedClass, $expectedState, true);
+    }
 
-            if ($class !== null) {
-                $this->conversation->setClass($class);
+    protected function shouldSeeNotActiveConversation(string $expectedClass = null, TelegramConversationState $expectedState = null): static
+    {
+        return $this->shouldSeeConversation($expectedClass, $expectedState, false);
+    }
+
+    protected function shouldSeeConversation(?string $expectedClass, ?TelegramConversationState $expectedState, bool $active): static
+    {
+        $conversation = $this->getTelegramConversationRepository()->findOneByMessengerUserAndChatId(
+            $this->getUpdateMessengerUser(),
+            $this->getUpdateChatId(),
+            $this->getTelegram()->getBot()
+        );
+
+        $checkEquals = true;
+
+        if ($active) {
+            $this->assertNotNull($conversation);
+            $this->assertTrue($conversation->active());
+        } else {
+            if ($conversation === null) {
+                $this->assertTrue(true);
+                $checkEquals = false;
+            } else {
+                $this->assertFalse($conversation->active());
             }
+        }
 
-            if ($state !== null) {
-                $this->conversation->setState($this->getSerializer()->normalize($state));
+        if ($checkEquals) {
+            if ($expectedClass !== null) {
+                $this->assertEquals($expectedClass, $conversation->getClass());
+            }
+            if ($expectedState !== null) {
+                $this->assertEquals($expectedState, $this->getSerializer()->denormalize($conversation->getState(), get_class($expectedState)));
             }
         }
 
         return $this;
-    }
-
-    protected function expectsReplyCalls(string ...$expectedReplyCalls): static
-    {
-        if ($count = count($expectedReplyCalls)) {
-            $this
-                ->getTelegramMessageSenderMock()
-                ->expects($this->exactly($count))
-                ->method('sendTelegramMessage')
-                ->withConsecutive(...array_map(
-                    fn ($expectedReplyCall) => [
-                        $this->telegram,
-                        $this->getUpdateChatId(),
-                        ...is_array($expectedReplyCall) ? $expectedReplyCall : [$expectedReplyCall],
-                    ],
-                    $expectedReplyCalls
-                ))
-                ->willReturn(...array_fill(0, $count, Request::emptyResponse()))
-            ;
-        }
-
-        return $this;
-    }
-
-    protected function invoke(): static
-    {
-        $this->handleTelegramUpdate($this->telegram, $this->update);
-
-        return $this;
-    }
-
-    protected function expectsState(TelegramConversationState $expectedState = null): static
-    {
-        if ($expectedState !== null) {
-            $this->assertTelegramCommandState($expectedState);
-        }
-
-        return $this;
-    }
-
-    protected function type(
-        string $command,
-        TelegramConversationState $state = null,
-        TelegramConversationState $expectedState = null,
-        array $expectedReplyCalls = [],
-        string $conversationClass = null
-    ): static
-    {
-        return $this
-            ->command($command)
-            ->conversation($conversationClass, $state)
-            ->expectsReplyCalls(...$expectedReplyCalls)
-            ->invoke()
-            ->expectsState($expectedState)
-        ;
-    }
-
-    protected function typeCancel(
-        TelegramConversationState $state,
-        TelegramConversationState $expectedState,
-        array $shouldSeeReply = [],
-        array $shouldSeeKeyboard = [],
-        string $conversationClass = null
-    ): void
-    {
-        $command = $this->tg->trans('keyboard.cancel');
-
-        $this
-            ->type($command, $state, conversationClass: $conversationClass)
-            ->shouldSeeReply(...$shouldSeeReply)
-            ->shouldSeeKeyboard(...$shouldSeeKeyboard)
-            ->shouldSeeChooseAction()
-        ;
-
-        $this->assertTelegramCommandState($expectedState);
-        $this->assertEquals(false, $this->getConversation()->active());
-    }
-
-    protected function typeConfirm(
-        TelegramConversationState $state,
-        array $shouldSeeReply = [],
-        array $shouldSeeKeyboard = [],
-        string $conversationClass = null
-    ): void
-    {
-        $command = $this->tg->trans('keyboard.confirm');
-
-        $this
-            ->type($command, $state, conversationClass: $conversationClass)
-            ->shouldSeeReply(...$shouldSeeReply)
-            ->shouldSeeKeyboard(...$shouldSeeKeyboard)
-            ->shouldSeeChooseAction()
-        ;
-
-        $this->assertEquals(false, $this->getConversation()->active());
     }
 
     protected function shouldSeeReply(string ...$expectedReplies): static
@@ -316,7 +264,7 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
         return $this;
     }
 
-    protected function shouldSeeKeyboard(...$expectedButtons): static
+    protected function shouldSeeButtons(...$expectedButtons): static
     {
         /** @var Keyboard[] $actualKeyboards */
         /** @var KeyboardButton[]|string[] $expectedButtons */
@@ -370,13 +318,13 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
         return $this;
     }
 
-    protected function shouldSeeChooseAction(): static
+    protected function shouldSeeChooseAction(string $text = null): static
     {
         return $this
             ->shouldSeeReply(
-                'query.action',
+                $text ?? 'query.action',
             )
-            ->shouldSeeKeyboard(
+            ->shouldSeeButtons(
                 'command.create',
                 'command.search',
                 'command.lookup',
@@ -389,28 +337,10 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
     {
         return $this
             ->shouldSeeChooseAction()
-            ->shouldSeeKeyboard(
+            ->shouldSeeButtons(
                 'keyboard.less',
             )
         ;
-    }
-
-    protected function getTelegramConversation(): TelegramConversation
-    {
-        return $this->getTelegramConversationRepository()->findOneByMessengerUserAndChatId(
-            $this->getUpdateMessengerUser(),
-            $this->getUpdateChatId(),
-            $this->telegram->getBot()
-        );
-    }
-
-    protected function assertTelegramCommandState(TelegramConversationState $expectedState): static
-    {
-        $state = $this->getSerializer()->denormalize($this->getConversation()->getState(), get_class($expectedState));
-
-        $this->assertEquals($expectedState, $state);
-
-        return $this;
     }
 
     /**
@@ -440,8 +370,8 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
         return (new SearchTermTransfer($url = $this->getMessengerUserProfileUrl($messengerUser)))
             ->setMessenger($messengerUser->getMessenger())
             ->setMessengerProfileUrl($url)
-            ->setMessengerUsername($messengerUser->getUsername())//            ->setMessengerUser($messengerUser->getMessenger() === Messenger::unknown ? null : $messengerUser)
-            ;
+            ->setMessengerUsername($messengerUser->getUsername())
+        ;
     }
 
     protected function getMessengerUsernameSearchTerm(MessengerUserTransfer $messengerUser): SearchTermTransfer
@@ -449,7 +379,7 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
         return (new SearchTermTransfer($messengerUser->getUsername()))
             ->setMessenger($messengerUser->getMessenger())
             ->setMessengerProfileUrl($messengerUser->getMessenger() === Messenger::unknown ? null : $this->getMessengerUserProfileUrl($messengerUser))
-            ->setMessengerUsername($messengerUser->getUsername())//            ->setMessengerUser($messengerUser->getMessenger() === Messenger::unknown ? null : $messengerUser)
-            ;
+            ->setMessengerUsername($messengerUser->getUsername())
+        ;
     }
 }

@@ -49,31 +49,23 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
 
     public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
     {
-        return match (true) {
-            $this->state->getStep() === null => $this->start($tg, $conversation),
-
-            $tg->matchText(null) => $this->wrong($tg),
-            $tg->matchText($this->getBackButton($tg)->getText()) => $this->gotBack($tg),
-            $tg->matchText($this->getCancelButton($tg)->getText()) => $this->gotCancel($tg, $conversation),
-
-            $this->state->getStep() === self::STEP_SEARCH_TERM_QUERIED => $this->gotSearchTerm($tg, $conversation),
-            $this->state->getStep() === self::STEP_SEARCH_TERM_TYPE_QUERIED => $this->gotSearchTermType($tg, $conversation),
-
-            default => $this->wrong($tg)
+        return match ($this->state->getStep()) {
+            default => $this->start($tg, $conversation),
+            self::STEP_SEARCH_TERM_QUERIED => $this->gotSearchTerm($tg, $conversation),
+            self::STEP_SEARCH_TERM_TYPE_QUERIED => $this->gotSearchTermType($tg, $conversation),
         };
     }
 
-    public function start(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function start(TelegramAwareHelper $tg, Conversation $conversation): ?string
     {
         $this->describe($tg);
-
-        // todo: remove
-        $this->replyCurrentSubscription($tg);
 
         if (!$this->subscriptionManager->hasActiveSubscription($tg->getTelegram()->getMessengerUser())) {
             $tg->stopConversation($conversation);
 
-            return $this->chooseActionChatSender->sendActions($tg);
+            return $this->chooseActionChatSender->sendActions($tg, text: $tg->trans('reply.no_active_subscription', [
+                'subscribe_command' => $tg->command('subscribe', html: true),
+            ], domain: 'tg.lookup'));
         }
 
         return $this->querySearchTerm($tg);
@@ -85,18 +77,7 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
             return;
         }
 
-        $tg->reply($tg->view('describe_lookup', [
-            'accept_payments' => $tg->getTelegram()->getBot()->acceptPayments(),
-        ]));
-    }
-
-    public function replyCurrentSubscription(TelegramAwareHelper $tg): void
-    {
-        if (!$this->subscriptionManager->hasActiveSubscription($tg->getTelegram()->getMessengerUser())) {
-            $tg->reply($tg->trans('reply.no_active_subscription', [
-                'subscribe_command' => $tg->command('subscribe', html: true),
-            ], domain: 'tg.lookup'));
-        }
+        $tg->reply($tg->view('describe_lookup'));
     }
 
     public function querySearchTerm(TelegramAwareHelper $tg): null
@@ -114,15 +95,6 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
         return null;
     }
 
-    public function gotBack(TelegramAwareHelper $tg): null
-    {
-        if ($this->state->getStep() === self::STEP_SEARCH_TERM_TYPE_QUERIED) {
-            return $this->querySearchTerm($tg);
-        }
-
-        return $this->wrong($tg);
-    }
-
     public function gotCancel(TelegramAwareHelper $tg, Conversation $conversation): null
     {
         $this->state->setStep(self::STEP_CANCEL_PRESSED);
@@ -132,13 +104,15 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
         return $this->chooseActionChatSender->sendActions($tg);
     }
 
-    public function wrong(TelegramAwareHelper $tg): ?string
-    {
-        return $tg->replyWrong($tg->trans('reply.wrong'))->null();
-    }
-
     public function gotSearchTerm(TelegramAwareHelper $tg, Conversation $conversation): null
     {
+        if ($tg->matchText(null)) {
+            return $this->querySearchTerm($tg->replyWrong($tg->trans('reply.wrong')));
+        }
+        if ($tg->matchText($this->getCancelButton($tg)->getText())) {
+            return $this->gotCancel($tg, $conversation);
+        }
+
         $searchTerm = new SearchTermTransfer($tg->getText());
 
         try {
@@ -195,12 +169,19 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
 
     public function gotSearchTermType(TelegramAwareHelper $tg, Conversation $conversation): null
     {
-        $type = $this->getSearchTermTypeByButton($tg->getText(), $tg);
-
+        if ($tg->matchText($this->getBackButton($tg)->getText())) {
+            return $this->querySearchTerm($tg);
+        }
+        if ($tg->matchText($this->getCancelButton($tg)->getText())) {
+            return $this->gotCancel($tg, $conversation);
+        }
+        if ($tg->matchText(null)) {
+            $type = null;
+        } else {
+            $type = $this->getSearchTermTypeByButton($tg->getText(), $tg);
+        }
         if ($type === null) {
-            $tg->replyWrong($tg->trans('reply.wrong'));
-
-            return $this->querySearchTermType($tg);
+            return $this->querySearchTermType($tg->replyWrong($tg->trans('reply.wrong')));
         }
 
         $searchTerm = $this->state->getSearchTerm();
