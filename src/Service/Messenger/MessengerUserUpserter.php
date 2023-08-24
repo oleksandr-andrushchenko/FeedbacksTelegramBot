@@ -37,7 +37,6 @@ class MessengerUserUpserter
 
         $messengerUser->setUsername($messengerUserTransfer->getUsername());
         $messengerUser->setName($messengerUserTransfer->getName());
-        $messengerUser->setLocaleCode($messengerUserTransfer->getLocaleCode());
 
         return $messengerUser;
     }

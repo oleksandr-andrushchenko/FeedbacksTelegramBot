@@ -2,7 +2,7 @@
 ℹ️ {{ 'describe.title'|trans }}
 
 {% for name,command in commands %}
-🔹{% include 'tg.command.html.twig' with {name: name} %}:
+🔹 {% include 'tg.command.html.twig' with {name: name} %}:
 {% if command.limits is iterable %}
 {% for period,limit in command.limits %}
  - {{ 'command_limits.tries_for'|trans({'%count%': '<b>' ~ limit ~ '</b>', '%period%': '<b>1 ' ~ period|trans({}, 'tg') ~ '</b>'}, 'tg')|raw }}

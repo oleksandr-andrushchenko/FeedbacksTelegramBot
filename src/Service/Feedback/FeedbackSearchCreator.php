@@ -62,7 +62,7 @@ class FeedbackSearchCreator
             $searchTermTransfer->getMessengerUsername(),
             $hasActiveSubscription,
             $messengerUser->getUser()->getCountryCode(),
-            $messengerUser->getLocaleCode()
+            $messengerUser->getUser()->getLocaleCode()
         );
         $this->entityManager->persist($feedbackSearch);
 

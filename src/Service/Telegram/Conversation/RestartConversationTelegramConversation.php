@@ -80,7 +80,6 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
         $tg->getTelegram()->getMessengerUser()
             ?->setIsShowHints(true)
             ?->setIsShowExtendedKeyboard(false)
-            ?->setLocaleCode($country->getLocaleCodes()[0] ?? null)
             ?->getUser()
             ?->setCountryCode($country->getCode())
             ?->setLocaleCode($country->getLocaleCodes()[0] ?? null)

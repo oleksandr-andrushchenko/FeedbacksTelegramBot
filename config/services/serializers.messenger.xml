@@ -5,9 +5,6 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.normalizer.messenger_user" class="App\Serializer\Messenger\MessengerUserNormalizer">
-            <tag name="serializer.normalizer" priority="-980"/>
-        </service>
         <service id="app.normalizer.messenger_user_transfer" class="App\Serializer\Messenger\MessengerUserTransferNormalizer">
             <tag name="serializer.normalizer" priority="-979"/>
         </service>

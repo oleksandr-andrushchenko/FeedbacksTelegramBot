@@ -31,11 +31,10 @@ class TelegramLocaleSwitcher
             $localeCode = $country->getLocaleCodes()[0] ?? null;
         }
 
-        $localeCode ??= $messengerUser?->getLocaleCode();
         $localeCode ??= $messengerUser?->getUser()?->getLocaleCode();
         $localeCode ??= $this->localeSwitcher->getLocale();
 
-        $messengerUser?->setLocaleCode($localeCode);
+        $messengerUser?->getUser()->setLocaleCode($localeCode);
         $this->setLocale($localeCode);
         $request->setLocale($this->localeSwitcher->getLocale());
     }

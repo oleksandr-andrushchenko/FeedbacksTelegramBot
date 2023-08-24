@@ -82,7 +82,7 @@ class FeedbackCreator
             $feedbackTransfer->getDescription(),
             $hasActiveSubscription,
             $messengerUser?->getUser()->getCountryCode(),
-            $messengerUser?->getLocaleCode()
+            $messengerUser?->getUser()->getLocaleCode()
         );
     }
 

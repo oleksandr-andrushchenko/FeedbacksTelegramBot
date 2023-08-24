@@ -175,7 +175,7 @@ class LocaleTelegramConversation extends TelegramConversation implements Telegra
         }
 
         if ($locale->getCode() !== $tg->getLocaleCode()) {
-            $tg->getTelegram()->getMessengerUser()
+            $tg->getTelegram()->getMessengerUser()->getUser()
                 ->setLocaleCode($locale->getCode())
             ;
             $this->localeSwitcher->switchLocale($locale);

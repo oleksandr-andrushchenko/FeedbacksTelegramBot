@@ -40,8 +40,8 @@ class UserUpserter
         if (empty($user->getCountryCode()) && !empty($messengerUserTransfer->getCountryCode())) {
             $user->setCountryCode($messengerUserTransfer->getCountryCode());
         }
-        if ($user->getLocaleCode() === null && $messengerUser->getLocaleCode() !== null) {
-            $user->setLocaleCode($messengerUser->getLocaleCode());
+        if ($user->getLocaleCode() === null && $messengerUserTransfer->getLocaleCode() !== null) {
+            $user->setLocaleCode($messengerUserTransfer->getLocaleCode());
         }
         if (empty($user->getCurrencyCode()) && !empty($messengerUserTransfer->getCurrencyCode())) {
             $user->setCurrencyCode($messengerUserTransfer->getCurrencyCode());

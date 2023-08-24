@@ -59,7 +59,7 @@ class TelegramAwareHelper
 
     public function getLocaleCode(): ?string
     {
-        return $this->getTelegram()->getMessengerUser()?->getLocaleCode();
+        return $this->getTelegram()->getMessengerUser()?->getUser()->getLocaleCode();
     }
 
     public function getCountryCode(): ?string

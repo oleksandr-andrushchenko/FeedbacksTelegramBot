@@ -25,7 +25,7 @@ class SearchTermByFeedbackProvider
                     $feedback->getSearchTermMessengerUser()->getUsername(),
                     $feedback->getSearchTermMessengerUser()->getName(),
                     $feedback->getSearchTermMessengerUser()->getUser()->getCountryCode(),
-                    $feedback->getSearchTermMessengerUser()->getLocaleCode(),
+                    $feedback->getSearchTermMessengerUser()->getUser()->getLocaleCode(),
                     $feedback->getSearchTermMessengerUser()->getUser()->getCurrencyCode()
                 )
             )
