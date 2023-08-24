@@ -34,45 +34,42 @@ class TelegramTextsUpdater
         $countryCode = $telegram->getBot()->getCountryCode();
         $country = $this->countryProvider->getCountry($countryCode);
 
-//        $localeCodes = [$bot->getLocaleCode()];
-        $localeCodes = $telegram->getOptions()->getLocaleCodes();
+        $transLocaleCode = $country->getLocaleCodes()[0] ?? null;
+        $localeCode = $transLocaleCode;
 
-        foreach ($localeCodes as $localeCode) {
-//            $transLocaleCode = $localeCode;
-//            $transLocaleCode = $bot->getLocaleCode();
-            $transLocaleCode = $country->getLocaleCodes()[0] ?? null;
-            $name = $this->translator->trans(sprintf('%s.name', $group), domain: $domain, locale: $transLocaleCode);
-            $telegram->setMyName([
-                'name' => $this->stage === 'prod' ? $name : sprintf('(%s, %s) %s', ucfirst($this->stage), $bot->getPrimaryBot() === null ? 'Primary' : 'Mirror', $name),
-                'language_code' => $localeCode,
-            ]);
-            $description = $this->twig->render('tg.description.html.twig', [
-                'locale' => $transLocaleCode,
-                'title' => $this->translator->trans(sprintf('%s.description', $group), domain: $domain, locale: $transLocaleCode),
-                'privacy_policy_link' => $this->siteUrlGenerator->generate(
-                    'app.site_privacy_policy',
-                    [
-                        '_locale' => $country->getCode(),
-                    ],
-                    referenceType: UrlGeneratorInterface::ABSOLUTE_URL
-                ),
-                'terms_of_use_link' => $this->siteUrlGenerator->generate(
-                    'app.site_terms_of_use',
-                    [
-                        '_locale' => $country->getCode(),
-                    ],
-                    referenceType: UrlGeneratorInterface::ABSOLUTE_URL
-                ),
-            ]);
-            $telegram->setMyDescription([
-                'description' => $description,
-                'language_code' => $localeCode,
-            ]);
-            $shortDescription = $this->translator->trans(sprintf('%s.short_description', $group), domain: $domain, locale: $transLocaleCode);
-            $telegram->setMyShortDescription([
-                'short_description' => $shortDescription,
-                'language_code' => $localeCode,
-            ]);
-        }
+        $name = $this->translator->trans(sprintf('%s.name', $group), domain: $domain, locale: $transLocaleCode);
+        $telegram->setMyName([
+            'name' => $this->stage === 'prod' ? $name : sprintf('(%s, %s) %s', ucfirst($this->stage), $bot->getPrimaryBot() === null ? 'Primary' : 'Mirror', $name),
+            'language_code' => $localeCode,
+        ]);
+
+        $description = $this->twig->render('tg.description.html.twig', [
+            'locale' => $transLocaleCode,
+            'title' => $this->translator->trans(sprintf('%s.description', $group), domain: $domain, locale: $transLocaleCode),
+            'privacy_policy_link' => $this->siteUrlGenerator->generate(
+                'app.site_privacy_policy',
+                [
+                    '_locale' => $country->getCode(),
+                ],
+                referenceType: UrlGeneratorInterface::ABSOLUTE_URL
+            ),
+            'terms_of_use_link' => $this->siteUrlGenerator->generate(
+                'app.site_terms_of_use',
+                [
+                    '_locale' => $country->getCode(),
+                ],
+                referenceType: UrlGeneratorInterface::ABSOLUTE_URL
+            ),
+        ]);
+        $telegram->setMyDescription([
+            'description' => $description,
+            'language_code' => $localeCode,
+        ]);
+
+        $shortDescription = $this->translator->trans(sprintf('%s.short_description', $group), domain: $domain, locale: $transLocaleCode);
+        $telegram->setMyShortDescription([
+            'short_description' => $shortDescription,
+            'language_code' => $localeCode,
+        ]);
     }
 }
