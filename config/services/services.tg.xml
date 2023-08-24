@@ -77,11 +77,6 @@
         </service>
         <service id="app.telegram_user_provider" class="App\Service\Telegram\TelegramUserProvider" lazy="true"/>
         <service id="app.telegram_chat_provider" class="App\Service\Telegram\TelegramChatProvider" lazy="true"/>
-        <service id="app.telegram_new_messenger_user_country_provider"
-                 class="App\Service\Telegram\TelegramNewMessengerUserCountryProvider" lazy="true">
-            <argument type="service" id="app.telegram_user_provider"/>
-            <argument type="service" id="app.intl_country_provider"/>
-        </service>
         <service id="app.telegram_messenger_user_upserter" class="App\Service\Telegram\TelegramMessengerUserUpserter"
                  lazy="true">
             <argument type="service" id="app.telegram_user_provider"/>

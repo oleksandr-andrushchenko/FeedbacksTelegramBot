@@ -6,10 +6,13 @@ namespace App\Tests\Functional\Telegram;
 
 use App\Entity\Telegram\TelegramBot;
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
+use App\Tests\Traits\Intl\CountryProviderTrait;
 use Generator;
 
 class StartTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestCase
 {
+    use CountryProviderTrait;
+
     /**
      * @param bool $showHints
      * @return void
@@ -35,7 +38,16 @@ class StartTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestCa
         ;
 
         $this->assertNotNull($this->getUpdateMessengerUser());
-        $this->assertNotNull($this->getUpdateMessengerUser()->getUser());
+        $user = $this->getUpdateMessengerUser()->getUser();
+        $this->assertNotNull($user);
+
+        $bot = $this->getTelegram()->getBot();
+        $botCountry = $this->getCountryProvider()->getCountry($bot->getCountryCode());
+
+        $this->assertEquals($botCountry->getCode(), $user->getCountryCode());
+        $this->assertEquals($botCountry->getCurrencyCode(), $user->getCurrencyCode());
+        $this->assertEquals($botCountry->getLocaleCodes()[0] ?? null, $user->getLocaleCode());
+        $this->assertEquals($botCountry->getTimezones()[0] ?? null, $user->getTimezone());
 
         $this->getUpdateMessengerUser()->setIsShowHints($showHints);
         $this
