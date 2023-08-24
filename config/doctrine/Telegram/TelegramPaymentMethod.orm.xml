@@ -23,5 +23,6 @@
         <field name="token" column="token" length="64"/>
         <field name="currencyCodes" column="currency_codes" type="simple_array"/>
         <field name="createdAt" column="created_at" type="datetime_immutable"/>
+        <field name="deletedAt" column="deleted_at" type="datetime_immutable" nullable="true"/>
     </entity>
 </doctrine-mapping>

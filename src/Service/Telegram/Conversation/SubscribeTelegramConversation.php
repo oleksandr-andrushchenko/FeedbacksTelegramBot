@@ -453,7 +453,7 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
      */
     public function getPaymentMethods(TelegramAwareHelper $tg): array
     {
-        return $this->paymentMethodRepository->findByBot($tg->getTelegram()->getBot());
+        return $this->paymentMethodRepository->findActiveByBot($tg->getTelegram()->getBot());
     }
 
     /**

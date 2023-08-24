@@ -6,6 +6,7 @@ namespace App\Repository\Telegram;
 
 use App\Entity\Telegram\TelegramBot;
 use App\Entity\Telegram\TelegramPaymentMethod;
+use App\Enum\Telegram\TelegramPaymentMethodName;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -46,10 +47,20 @@ class TelegramPaymentMethodRepository extends ServiceEntityRepository
      * @param TelegramBot $bot
      * @return TelegramPaymentMethod[]
      */
-    public function findByBot(TelegramBot $bot): array
+    public function findActiveByBot(TelegramBot $bot): array
     {
         return $this->findBy([
             'bot' => $bot,
+            'deletedAt' => null,
+        ]);
+    }
+
+    public function findOneActiveByBotAndName(TelegramBot $bot, TelegramPaymentMethodName $name): ?TelegramPaymentMethod
+    {
+        return $this->findOneBy([
+            'bot' => $bot,
+            'name' => $name,
+            'deletedAt' => null,
         ]);
     }
 }

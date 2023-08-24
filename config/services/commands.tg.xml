@@ -130,5 +130,13 @@
 
             <tag name="console.command" command="telegram:bot:payment-method:create"/>
         </service>
+        <service id="app.command.telegram_bot_payment_method_remove"
+                 class="App\Command\Telegram\TelegramBotPaymentMethodRemoveCommand" lazy="true">
+            <argument type="service" id="app.repository.telegram_bot"/>
+            <argument type="service" id="app.repository.telegram_payment_method"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+
+            <tag name="console.command" command="telegram:bot:payment-method:remove"/>
+        </service>
     </services>
 </container>

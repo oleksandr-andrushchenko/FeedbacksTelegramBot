@@ -18,8 +18,15 @@ class TelegramBotInfoProvider
 
     public function getTelegramBotInfo(TelegramBot $bot): array
     {
-        $paymentMethods = $this->paymentMethodRepository->findByBot($bot);
-        $paymentMethodNames = array_map(fn (TelegramPaymentMethod $paymentMethod) => ucwords($paymentMethod->getName()->name), $paymentMethods);
+        $paymentMethods = $this->paymentMethodRepository->findActiveByBot($bot);
+        $paymentMethodNames = array_map(
+            fn (TelegramPaymentMethod $paymentMethod) => sprintf(
+                '%s (%s)',
+                ucwords($paymentMethod->getName()->name),
+                join(', ', $paymentMethod->getCurrencyCodes())
+            ),
+            $paymentMethods
+        );
 
         return [
             'group' => $bot->getGroup()->name,
