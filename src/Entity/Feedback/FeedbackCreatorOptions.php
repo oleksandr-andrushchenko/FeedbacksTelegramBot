@@ -7,18 +7,12 @@ namespace App\Entity\Feedback;
 readonly class FeedbackCreatorOptions
 {
     public function __construct(
-        private bool $userTargetMessengerRequired,
         private int $userPerDayLimit,
         private int $userPerMonthLimit,
         private int $userPerYearLimit,
         private bool $logActivities,
     )
     {
-    }
-
-    public function userTargetMessengerRequired(): bool
-    {
-        return $this->userTargetMessengerRequired;
     }
 
     public function userPerDayLimit(): int

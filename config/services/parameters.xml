@@ -64,7 +64,6 @@
         </parameter>
 
         <parameter key="app.feedback_creator_options" type="collection">
-            <parameter key="user_target_messenger_required">%env(bool:FEEDBACK_CREATOR_USER_TARGET_MESSENGER_REQUIRED)%</parameter>
             <parameter key="user_per_day_limit">10</parameter>
             <parameter key="user_per_month_limit">200</parameter>
             <parameter key="user_per_year_limit">500</parameter>
