@@ -89,64 +89,6 @@ class LookupTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestC
     }
 
     /**
-     * @param string $command
-     * @param bool $showHints
-     * @return void
-     * @dataProvider startWithoutActiveSubscriptionSuccessDataProvider
-     */
-    public function testStartWithoutActiveSubscriptionSuccess(string $command, bool $showHints): void
-    {
-        $this->bootFixtures([
-            User::class,
-            MessengerUser::class,
-            TelegramBot::class,
-        ]);
-        $this->getUpdateMessengerUser()->getUser()->setSubscriptionExpireAt(new DateTimeImmutable('-1 month'));
-        $this->getUpdateMessengerUser()->setIsShowHints($showHints);
-
-        if ($showHints) {
-            $shouldReply = [
-                'describe.title',
-                'describe.limits',
-                'describe.subscribe',
-                'toggle_hints',
-            ];
-        } else {
-            $shouldReply = [];
-        }
-
-        $this
-            ->type($command)
-            ->shouldSeeNotActiveConversation()
-            ->shouldSeeReply(...$shouldReply)
-            ->shouldSeeChooseAction('reply.no_active_subscription')
-        ;
-    }
-
-    public function startWithoutActiveSubscriptionSuccessDataProvider(): Generator
-    {
-        yield 'button & no hints' => [
-            'command' => '🔒 command.lookup',
-            'showHints' => false,
-        ];
-
-        yield 'button & hints' => [
-            'command' => '🔒 command.lookup',
-            'showHints' => true,
-        ];
-
-        yield 'command & no hints' => [
-            'command' => FeedbackTelegramChannel::LOOKUP,
-            'showHints' => false,
-        ];
-
-        yield 'command & hints' => [
-            'command' => FeedbackTelegramChannel::LOOKUP,
-            'showHints' => true,
-        ];
-    }
-
-    /**
      * @param LookupTelegramConversationState $state
      * @param string $command
      * @param array $shouldSeeReplyFeedbackSearches
@@ -183,7 +125,7 @@ class LookupTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestC
 
         $this
             ->type($command)
-            ->shouldSeeNotActiveConversation()
+            ->shouldNotSeeActiveConversation()
             ->shouldSeeReply(...$shouldSeeReply)
             ->shouldSeeChooseAction()
         ;
@@ -257,7 +199,7 @@ class LookupTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestC
 
         $this
             ->type($command)
-            ->shouldSeeNotActiveConversation()
+            ->shouldNotSeeActiveConversation()
             ->shouldSeeReply(...$shouldSeeReply)
             ->shouldSeeChooseAction()
         ;
@@ -367,7 +309,7 @@ class LookupTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestC
 
         $this
             ->type('keyboard.cancel')
-            ->shouldSeeNotActiveConversation($conversation->getClass(), $expectedState)
+            ->shouldNotSeeActiveConversation($conversation->getClass(), $expectedState)
             ->shouldSeeReply('reply.canceled')
             ->shouldSeeChooseAction()
         ;

@@ -222,8 +222,9 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         $tg->stopConversations();
 
         $this->hintsChatSwitcher->toggleHints($tg);
+        $replyText = $tg->okText($this->hintsChatSwitcher->getReplyText($tg));
 
-        return $this->chooseActionChatSender->sendActions($tg);
+        return $this->chooseActionChatSender->sendActions($tg, $replyText);
     }
 
     public function purge(TelegramAwareHelper $tg): null

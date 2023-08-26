@@ -7,7 +7,7 @@ namespace App\Service\Telegram\Conversation;
 use App\Entity\Telegram\CreateFeedbackTelegramConversationState;
 use App\Enum\Feedback\Rating;
 use App\Enum\Feedback\SearchTermType;
-use App\Exception\Feedback\CreateFeedbackLimitExceeded;
+use App\Exception\CommandLimitExceeded;
 use App\Exception\Messenger\SameMessengerUserException;
 use App\Exception\ValidatorException;
 use App\Object\Feedback\FeedbackTransfer;
@@ -20,9 +20,10 @@ use App\Service\Telegram\TelegramAwareHelper;
 use App\Service\Util\Array\ArrayValueEraser;
 use App\Service\Validator;
 use Longman\TelegramBot\Entities\KeyboardButton;
-use App\Entity\Telegram\TelegramConversation as Conversation;
+use App\Entity\Telegram\TelegramConversation as Entity;
 
 /**
+ * /**
  * @property CreateFeedbackTelegramConversationState $state
  */
 class CreateFeedbackTelegramConversation extends TelegramConversation implements TelegramConversationInterface
@@ -35,7 +36,6 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
     public const STEP_CANCEL_PRESSED = 60;
 
     public function __construct(
-        readonly TelegramAwareHelper $awareHelper,
         private readonly Validator $validator,
         private readonly FeedbackCreator $creator,
         private readonly SearchTermParserOnlyInterface $searchTermParser,
@@ -44,24 +44,26 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         private readonly SearchTermTelegramViewProvider $searchTermViewProvider,
     )
     {
-        parent::__construct($awareHelper, new CreateFeedbackTelegramConversationState());
+        parent::__construct(new CreateFeedbackTelegramConversationState());
     }
 
-    public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function invoke(TelegramAwareHelper $tg, Entity $entity): null
     {
         return match ($this->state->getStep()) {
             default => $this->start($tg),
-            self::STEP_SEARCH_TERM_QUERIED => $this->gotSearchTerm($tg, $conversation),
-            self::STEP_SEARCH_TERM_TYPE_QUERIED => $this->gotSearchTermType($tg, $conversation),
-            self::STEP_RATING_QUERIED => $this->gotRating($tg, $conversation),
-            self::STEP_DESCRIPTION_QUERIED => $this->gotDescription($tg, $conversation),
-            self::STEP_CONFIRM_QUERIED => $this->gotConfirm($tg, $conversation),
+            self::STEP_SEARCH_TERM_QUERIED => $this->gotSearchTerm($tg, $entity),
+            self::STEP_SEARCH_TERM_TYPE_QUERIED => $this->gotSearchTermType($tg, $entity),
+            self::STEP_RATING_QUERIED => $this->gotRating($tg, $entity),
+            self::STEP_DESCRIPTION_QUERIED => $this->gotDescription($tg, $entity),
+            self::STEP_CONFIRM_QUERIED => $this->gotConfirm($tg, $entity),
         };
     }
 
     public function start(TelegramAwareHelper $tg): ?string
     {
         $this->describe($tg);
+
+        $this->state->setSearchTermStep(true);
 
         return $this->querySearchTerm($tg);
     }
@@ -72,60 +74,54 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
             return;
         }
 
-        $options = $this->creator->getOptions();
-
         $tg->reply($tg->view('describe_create', [
-            'accept_payments' => $tg->getTelegram()->getBot()->acceptPayments(),
-            'limits' => [
-                'day' => $options->userPerDayLimit(),
-                'month' => $options->userPerMonthLimit(),
-                'year' => $options->userPerYearLimit(),
-            ],
+            'limits' => $this->creator->getOptions()->getLimits(),
         ]));
     }
 
-    public function querySearchTerm(TelegramAwareHelper $tg, bool $change = null): null
+    public function querySearchTerm(TelegramAwareHelper $tg): null
     {
-        if ($change !== null) {
-            $this->state->setChange($change);
-        }
         $this->state->setStep(self::STEP_SEARCH_TERM_QUERIED);
 
         $buttons = [];
 
-        if ($change) {
+        if ($this->state->isChange()) {
             $buttons[] = $this->getLeaveAsButton(strip_tags($this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm())), $tg);
         }
 
         $buttons[] = $this->getCancelButton($tg);
 
         $tg->reply(
-            ($change ? '' : $this->getStep(1)) . $tg->trans('query.search_term', domain: 'tg.create'),
+            $this->getStep(1) . $tg->trans('query.search_term', domain: 'tg.create'),
             $tg->keyboard(...$buttons)
         );
 
         return null;
     }
 
-    public function gotCancel(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotCancel(TelegramAwareHelper $tg, Entity $entity): null
     {
         $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
-        $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.create'));
+        $tg->stopConversation($entity)->replyUpset($tg->trans('reply.canceled', domain: 'tg.create'));
 
         return $this->chooseActionChatSender->sendActions($tg);
     }
 
-    public function gotSearchTerm(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotSearchTerm(TelegramAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText(null)) {
-            return $this->querySearchTerm($tg->replyWrong($tg->trans('reply.wrong')));
+            $tg->replyWrong($tg->trans('reply.wrong'));
+
+            return $this->querySearchTerm($tg);
         }
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
-            return $this->gotCancel($tg, $conversation);
+            return $this->gotCancel($tg, $entity);
         }
         if ($this->state->isChange()) {
-            if ($tg->matchText($this->getLeaveAsButton(strip_tags($this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm())), $tg)->getText())) {
+            $searchTermText = $this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm());
+            $leaveAsButton = $this->getLeaveAsButton(strip_tags($searchTermText), $tg);
+            if ($tg->matchText($leaveAsButton->getText())) {
                 return $this->queryConfirm($tg);
             }
         }
@@ -200,16 +196,18 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         return null;
     }
 
-    public function gotSearchTermType(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotSearchTermType(TelegramAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText(null)) {
-            return $this->querySearchTermType($tg->replyWrong($tg->trans('reply.wrong')));
+            $tg->replyWrong($tg->trans('reply.wrong'));
+
+            return $this->querySearchTermType($tg);
         }
         if ($tg->matchText($this->getBackButton($tg)->getText())) {
             return $this->querySearchTerm($tg);
         }
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
-            return $this->gotCancel($tg, $conversation);
+            return $this->gotCancel($tg, $entity);
         }
 
         $type = $this->getSearchTermTypeByButton($tg->getText(), $tg);
@@ -239,15 +237,12 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         return $this->queryRating($tg);
     }
 
-    public function queryRating(TelegramAwareHelper $tg, bool $change = null): null
+    public function queryRating(TelegramAwareHelper $tg): null
     {
-        if ($change !== null) {
-            $this->state->setChange($change);
-        }
         $this->state->setStep(self::STEP_RATING_QUERIED);
 
         $tg->reply(
-            ($change ? '' : $this->getStep(2)) . $tg->trans(
+            $this->getStep(2) . $tg->trans(
                 'query.rating',
                 [
                     'search_term' => sprintf('<u>%s</u>', $this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm())),
@@ -264,10 +259,12 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         return null;
     }
 
-    public function gotRating(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotRating(TelegramAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText(null)) {
-            return $this->queryRating($tg->replyWrong($tg->trans('reply.wrong')));
+            $tg->replyWrong($tg->trans('reply.wrong'));
+
+            return $this->queryRating($tg);
         }
         if ($tg->matchText($this->getBackButton($tg)->getText())) {
             if ($this->state->getSearchTerm()->getPossibleTypes() === null) {
@@ -277,7 +274,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
             return $this->querySearchTermType($tg);
         }
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
-            return $this->gotCancel($tg, $conversation);
+            return $this->gotCancel($tg, $entity);
         }
 
         $rating = $this->getRatingByButton($tg->getText(), $tg);
@@ -303,11 +300,8 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         return $this->queryDescription($tg);
     }
 
-    public function queryDescription(TelegramAwareHelper $tg, bool $change = null): null
+    public function queryDescription(TelegramAwareHelper $tg): null
     {
-        if ($change !== null) {
-            $this->state->setChange($change);
-        }
         $this->state->setStep(self::STEP_DESCRIPTION_QUERIED);
 
         $buttons = [];
@@ -323,7 +317,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         $buttons[] = $this->getCancelButton($tg);
 
         $tg->reply(
-            ($change ? '' : $this->getStep(3)) . $tg->trans(
+            $this->getStep(3) . $tg->trans(
                 'query.description',
                 [
                     'search_term' => sprintf('<u>%s</u>', $this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm())),
@@ -336,16 +330,18 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         return null;
     }
 
-    public function gotDescription(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotDescription(TelegramAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText(null)) {
-            return $this->queryDescription($tg->replyWrong($tg->trans('reply.wrong')));
+            $tg->replyWrong($tg->trans('reply.wrong'));
+
+            return $this->queryDescription($tg);
         }
         if ($tg->matchText($this->getBackButton($tg)->getText())) {
             return $this->queryRating($tg);
         }
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
-            return $this->gotCancel($tg, $conversation);
+            return $this->gotCancel($tg, $entity);
         }
         if ($this->state->isChange() && $this->state->getDescription() !== null) {
             if ($tg->matchText($this->getLeaveAsButton($this->state->getDescription(), $tg)->getText())) {
@@ -411,25 +407,30 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         return null;
     }
 
-    public function gotConfirm(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotConfirm(TelegramAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText(null)) {
-            return $this->queryConfirm($tg->replyWrong($tg->trans('reply.wrong')));
+            $tg->replyWrong($tg->trans('reply.wrong'));
+
+            return $this->queryConfirm($tg);
         }
         if ($tg->matchText($this->getBackButton($tg)->getText())) {
             return $this->queryDescription($tg);
         }
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
-            return $this->gotCancel($tg, $conversation);
+            return $this->gotCancel($tg, $entity);
         }
         switch ($tg->getText()) {
             case $this->getChangeSearchTermButton($tg)->getText():
-                return $this->querySearchTerm($tg, true);
+                $this->state->setChange(true);
+                return $this->querySearchTerm($tg);
             case $this->getChangeRatingButton($tg)->getText():
-                return $this->queryRating($tg, true);
+                $this->state->setChange(true);
+                return $this->queryRating($tg);
             case $this->getAddDescriptionButton($tg)->getText():
             case $this->getChangeDescriptionButton($tg)->getText():
-                return $this->queryDescription($tg, true);
+                $this->state->setChange(true);
+                return $this->queryDescription($tg);
             case $this->getConfirmButton($tg)->getText():
                 // nothing, continue
                 break;
@@ -446,9 +447,9 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
             $this->creator->createFeedback($this->getFeedbackTransfer($tg));
 
             // todo: change text to something like: "want to add more?"
-            $tg->stopConversation($conversation)->replyOk($tg->trans('reply.ok', domain: 'tg.create'));
+            $tg->stopConversation($entity);
 
-            return $this->chooseActionChatSender->sendActions($tg);
+            return $this->chooseActionChatSender->sendActions($tg, $tg->okText($tg->trans('reply.ok', domain: 'tg.create')));
         } catch (ValidatorException $exception) {
             if ($exception->isFirstProperty('search_term') || $exception->isFirstProperty('type')) {
                 $tg->reply($exception->getFirstMessage());
@@ -468,18 +469,19 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
             return $this->queryConfirm($tg);
         } catch (SameMessengerUserException) {
-            $tg->replyFail($tg->trans('reply.fail.same_messenger_user', domain: 'tg.create'));
+            $tg->replyFail($tg->trans('reply.on_self_forbidden', domain: 'tg.create'));
 
             return $this->queryConfirm($tg);
-        } catch (CreateFeedbackLimitExceeded $exception) {
+        } catch (CommandLimitExceeded $exception) {
             $tg->replyFail(
-                $tg->trans('reply.fail.limit_exceeded.main', [
-                    'period' => sprintf('<b>%s</b>', $tg->trans($exception->getPeriodKey())),
-                    'limit' => sprintf('<b>%s</b>', $exception->getLimit()),
+                $tg->trans('reply.limit_exceeded', [
+                    'period' => sprintf('<b>1 %s</b>', $tg->trans($exception->getLimit()->getPeriod())),
+                    'count' => sprintf('<b>%s</b>', $exception->getLimit()->getCount()),
+                    'subscribe_command' => $tg->command('subscribe', html: true),
                 ], domain: 'tg.create')
             );
 
-            $tg->stopConversation($conversation);
+            $tg->stopConversation($entity);
 
             return $this->chooseActionChatSender->sendActions($tg);
         }
@@ -598,6 +600,19 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
     public function getStep(int $num): string
     {
-        return "[{$num}/3] ";
+        if ($this->state->isChange()) {
+            return '';
+        }
+
+        $total = 3;
+
+        if (!$this->state->isSearchTermStep()) {
+            if ($num > 1) {
+                $num--;
+            }
+            --$total;
+        }
+
+        return sprintf('[%d/%d] ', $num, $total);
     }
 }

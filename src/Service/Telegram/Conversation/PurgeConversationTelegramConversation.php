@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Service\Telegram\Conversation;
 
 use App\Entity\Telegram\TelegramConversationState;
+use App\Service\Intl\CountryProvider;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\TelegramAwareHelper;
-use App\Entity\Telegram\TelegramConversation as Conversation;
+use App\Entity\Telegram\TelegramConversation as Entity;
+use App\Service\Telegram\TelegramLocaleSwitcher;
 use App\Service\User\UserDataPurger;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
@@ -17,19 +19,20 @@ class PurgeConversationTelegramConversation extends TelegramConversation impleme
     public const STEP_CONFIRMED = 20;
 
     public function __construct(
-        readonly TelegramAwareHelper $awareHelper,
         private readonly UserDataPurger $userDataPurger,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
+        private readonly TelegramLocaleSwitcher $localeSwitcher,
+        private readonly CountryProvider $countryProvider,
     )
     {
-        parent::__construct($awareHelper, new TelegramConversationState());
+        parent::__construct(new TelegramConversationState());
     }
 
-    public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function invoke(TelegramAwareHelper $tg, Entity $entity): null
     {
         return match ($this->state->getStep()) {
             default => $this->start($tg),
-            self::STEP_CONFIRM_QUERIED => $this->gotConfirm($tg, $conversation),
+            self::STEP_CONFIRM_QUERIED => $this->gotConfirm($tg, $entity),
         };
     }
 
@@ -73,27 +76,34 @@ class PurgeConversationTelegramConversation extends TelegramConversation impleme
         return $tg->reply($this->getConfirmQuery($tg), $tg->keyboard(...$buttons))->null();
     }
 
-    public function gotConfirm(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotConfirm(TelegramAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText($this->getConfirmNoButton($tg)->getText())) {
-            return $this->chooseActionChatSender->sendActions($tg->stopConversation($conversation));
+            $tg->stopConversation($entity);
+
+            return $this->chooseActionChatSender->sendActions($tg);
         }
         if (!$tg->matchText($this->getConfirmYesButton($tg)->getText())) {
-            return $this->queryConfirm($tg->replyWrong($tg->trans('reply.wrong')));
+            $tg->replyWrong($tg->trans('reply.wrong'));
+
+            return $this->queryConfirm($tg);
         }
 
         $this->state->setStep(self::STEP_CONFIRMED);
 
-        $this->userDataPurger->purgeUserData($tg->getTelegram()->getMessengerUser()->getUser());
+        $user = $tg->getTelegram()->getMessengerUser()->getUser();
 
-        return $tg
-            ->replyOk(
-                $tg->trans('reply.ok', domain: 'tg.purge'),
-                keyboard: $this->chooseActionChatSender->getKeyboard($tg)
-            )
-            ->stopConversation($conversation)
-            ->null()
-        ;
+        $this->userDataPurger->purgeUserData($user);
+
+        // todo: implement default setting provider (by telegram object) and implement everywhere and here as well
+        $country = $this->countryProvider->getCountry($tg->getTelegram()->getBot()->getCountryCode());
+        $this->localeSwitcher->setLocale($user->getLocaleCode() ?? ($country->getLocaleCodes()[0] ?? null));
+
+        $replyText = $tg->okText($tg->trans('reply.ok', domain: 'tg.purge'));
+
+        $tg->stopConversation($entity);
+
+        return $this->chooseActionChatSender->sendActions($tg, $replyText);
     }
 
     public static function getConfirmQuery(TelegramAwareHelper $tg): string

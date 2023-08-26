@@ -20,6 +20,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class TelegramConversationManager
 {
     public function __construct(
+        private readonly TelegramAwareHelper $awareHelper,
         private readonly TelegramConversationRepository $conversationRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly NormalizerInterface $conversationStateNormalizer,
@@ -27,8 +28,6 @@ class TelegramConversationManager
         private readonly ArrayNullFilter $arrayNullFilter,
         private readonly TelegramChannelRegistry $channelRegistry,
         private readonly TelegramChatProvider $chatProvider,
-        private bool $invoked = false,
-        private array $callbacks = [],
     )
     {
     }
@@ -55,62 +54,59 @@ class TelegramConversationManager
         return null;
     }
 
-    public function startTelegramConversation(Telegram $telegram, string $conversationClass): void
+    public function startTelegramConversation(Telegram $telegram, string $class): void
     {
-        if ($this->invoked) {
-            $this->callbacks[] = func_get_args();
-            return;
-        }
+        $entity = $this->createTelegramConversation($telegram, $class);
 
-        $this->invoked = true;
+        $this->executeConversation($telegram, $entity, 'invoke');
+    }
 
-        $conversation = $this->createTelegramConversation($telegram, $conversationClass);
-
-        $dbConversation = new TelegramConversation(
+    public function createTelegramConversation(
+        Telegram $telegram,
+        string $class,
+        TelegramConversationState $state = null
+    ): TelegramConversation
+    {
+        $entity = new TelegramConversation(
             $telegram->getMessengerUser(),
             $telegram->getUpdate()->getMessage()->getChat()->getId(),
-            // conversations from container have container class
-            get_parent_class($conversation),
+            $class,
             $telegram->getBot(),
-            true
+            true,
+            $state === null ? null : $this->normalizeState($state)
         );
-        $this->entityManager->persist($dbConversation);
+        $this->entityManager->persist($entity);
 
-        $conversation->invokeConversation($telegram, $dbConversation);
-
-        $state = $this->normalizeTelegramConversationState($conversation->getState());
-        $dbConversation->setState($state);
-
-        $this->invoked = false;
-
-        if (count($this->callbacks) !== 0) {
-            $callback = array_shift($this->callbacks);
-            $this->startTelegramConversation(...$callback);
-        }
+        return $entity;
     }
 
-    public function continueTelegramConversation(Telegram $telegram, TelegramConversation $dbConversation): void
+    public function executeTelegramConversation(
+        Telegram $telegram,
+        string $class,
+        TelegramConversationState $state,
+        string $method
+    ): void
     {
-        $conversation = $this->createTelegramConversation($telegram, $dbConversation->getClass());
+        $entity = $this->createTelegramConversation($telegram, $class, $state);
 
-        $state = $this->denormalizeTelegramConversationState($dbConversation->getState(), get_class($conversation->getState()));
-        $conversation->setState($state);
-
-        $conversation->invokeConversation($telegram, $dbConversation);
-
-        $state = $this->normalizeTelegramConversationState($conversation->getState());
-        $dbConversation->setState($state)->setUpdatedAt(new DateTimeImmutable());
+        $this->executeConversation($telegram, $entity, $method);
     }
 
-    public function denormalizeTelegramConversationState(array $state, string $class): TelegramConversationState
+    public function continueTelegramConversation(Telegram $telegram, TelegramConversation $entity): void
+    {
+        $this->executeConversation($telegram, $entity, 'invoke');
+    }
+
+    public function denormalizeState(array $state, string $class): TelegramConversationState
     {
         return $this->conversationStateDenormalizer->denormalize($state, $class);
     }
 
-    public function normalizeTelegramConversationState(TelegramConversationState $state): array
+    public function normalizeState(TelegramConversationState $state): array
     {
-        $normalizedState = $this->conversationStateNormalizer->normalize($state);
-        return $this->arrayNullFilter->filterNulls($normalizedState);
+        $normalized = $this->conversationStateNormalizer->normalize($state);
+
+        return $this->arrayNullFilter->filterNulls($normalized);
     }
 
     public function stopTelegramConversations(Telegram $telegram): void
@@ -122,20 +118,38 @@ class TelegramConversationManager
         }
     }
 
-    public function stopTelegramConversation(TelegramConversation $conversation): void
+    public function stopTelegramConversation(TelegramConversation $entity): void
     {
-        $conversation
-            ->setIsActive(false)
-            ->setUpdatedAt(new DateTimeImmutable())
-        ;
+        $entity->setIsActive(false);
+        $entity->setUpdatedAt(new DateTimeImmutable());
 
-        $this->entityManager->remove($conversation);
+        $this->entityManager->remove($entity);
     }
 
-    public function createTelegramConversation(Telegram $telegram, string $conversationClass): TelegramConversationInterface
+    public function executeConversation(
+        Telegram $telegram,
+        TelegramConversation $entity,
+        string $method
+    ): TelegramConversationInterface
     {
         $channel = $this->channelRegistry->getTelegramChannel($telegram->getBot()->getGroup());
         // todo: throw not found exception
-        return $channel->getTelegramConversationFactory()->createTelegramConversation($conversationClass);
+        $conversation = $channel->getTelegramConversationFactory()->createTelegramConversation($entity->getClass());
+
+        if ($entity->getState() !== null) {
+            $state = $this->denormalizeState($entity->getState(), get_class($conversation->getState()));
+            $conversation->setState($state);
+        }
+
+        $tg = $this->awareHelper->withTelegram($telegram);
+
+        $conversation->$method($tg, $entity);
+
+        $state = $this->normalizeState($conversation->getState());
+
+        $entity->setState($state);
+        $entity->setUpdatedAt(new DateTimeImmutable());
+
+        return $conversation;
     }
 }

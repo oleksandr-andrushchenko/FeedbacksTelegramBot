@@ -22,6 +22,7 @@ class FeedbackSearchSearch
         private readonly ?MessengerUser $searchTermMessengerUser,
         private readonly ?Messenger $searchTermMessenger,
         private readonly ?string $searchTermMessengerUsername,
+        private readonly bool $hasActiveSubscription,
         private readonly ?string $countryCode = null,
         private readonly ?string $localeCode = null,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
@@ -73,6 +74,11 @@ class FeedbackSearchSearch
     public function getSearchTermMessengerUsername(): ?string
     {
         return $this->searchTermMessengerUsername;
+    }
+
+    public function hasActiveSubscription(): bool
+    {
+        return $this->hasActiveSubscription;
     }
 
     public function getCountryCode(): ?string

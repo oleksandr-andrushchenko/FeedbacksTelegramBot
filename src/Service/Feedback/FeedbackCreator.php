@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Service\Feedback;
 
+use App\Entity\CommandOptions;
 use App\Entity\Feedback\Feedback;
-use App\Entity\Feedback\FeedbackCreatorOptions;
-use App\Exception\Feedback\CreateFeedbackLimitExceeded;
+use App\Exception\CommandLimitExceeded;
 use App\Exception\Messenger\SameMessengerUserException;
 use App\Exception\ValidatorException;
 use App\Object\Feedback\FeedbackTransfer;
+use App\Service\Command\CommandLimitsChecker;
+use App\Service\Command\CommandStatisticsProviderInterface;
 use App\Service\Logger\ActivityLogger;
 use App\Service\Validator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,17 +19,18 @@ use Doctrine\ORM\EntityManagerInterface;
 class FeedbackCreator
 {
     public function __construct(
-        private readonly FeedbackCreatorOptions $options,
+        private readonly CommandOptions $options,
         private readonly EntityManagerInterface $entityManager,
         private readonly Validator $validator,
-        private readonly UserCreateFeedbackStatisticsProvider $userStatisticsProvider,
+        private readonly CommandStatisticsProviderInterface $statisticsProvider,
+        private readonly CommandLimitsChecker $limitsChecker,
         private readonly FeedbackSubscriptionManager $subscriptionManager,
         private readonly ActivityLogger $activityLogger,
     )
     {
     }
 
-    public function getOptions(): FeedbackCreatorOptions
+    public function getOptions(): CommandOptions
     {
         return $this->options;
     }
@@ -35,7 +38,7 @@ class FeedbackCreator
     /**
      * @param FeedbackTransfer $feedbackTransfer
      * @return Feedback
-     * @throws CreateFeedbackLimitExceeded
+     * @throws CommandLimitExceeded
      * @throws SameMessengerUserException
      * @throws ValidatorException
      */
@@ -49,14 +52,14 @@ class FeedbackCreator
         $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($messengerUser);
 
         if (!$hasActiveSubscription) {
-            $this->checkLimits($feedbackTransfer);
+            $this->limitsChecker->checkCommandLimits($messengerUser->getUser(), $this->statisticsProvider);
         }
 
         $feedback = $this->constructFeedback($feedbackTransfer);
 
         $this->entityManager->persist($feedback);
 
-        if ($this->options->logActivities()) {
+        if ($this->options->shouldLogActivities()) {
             $this->activityLogger->logActivity($feedback);
         }
 
@@ -81,8 +84,8 @@ class FeedbackCreator
             $feedbackTransfer->getRating(),
             $feedbackTransfer->getDescription(),
             $hasActiveSubscription,
-            $messengerUser?->getUser()->getCountryCode(),
-            $messengerUser?->getUser()->getLocaleCode()
+            $messengerUser->getUser()->getCountryCode(),
+            $messengerUser->getUser()->getLocaleCode()
         );
     }
 
@@ -101,31 +104,9 @@ class FeedbackCreator
             && $messengerUser?->getMessenger() !== null
             && $searchTermTransfer?->getMessengerUsername() !== null
             && strcasecmp($messengerUser->getUsername(), $searchTermTransfer->getMessengerUsername()) === 0
-            && $messengerUser->getMessenger() === $searchTermTransfer?->getMessenger()
+            && $messengerUser->getMessenger() === $searchTermTransfer->getMessenger()
         ) {
             throw new SameMessengerUserException($messengerUser);
-        }
-    }
-
-    /**
-     * @param FeedbackTransfer $feedbackTransfer
-     * @return void
-     * @throws CreateFeedbackLimitExceeded
-     */
-    private function checkLimits(FeedbackTransfer $feedbackTransfer): void
-    {
-        $user = $feedbackTransfer->getMessengerUser()->getUser();
-        $periodLimits = [
-            'day' => $this->options->userPerDayLimit(),
-            'month' => $this->options->userPerMonthLimit(),
-            'year' => $this->options->userPerYearLimit(),
-        ];
-        $periodCounts = $this->userStatisticsProvider->getUserCreateFeedbackStatistics(array_keys($periodLimits), $user);
-
-        foreach ($periodCounts as $periodKey => $periodCount) {
-            if ($periodCount >= $periodLimits[$periodKey]) {
-                throw new CreateFeedbackLimitExceeded($periodKey, $periodLimits[$periodKey]);
-            }
         }
     }
 }

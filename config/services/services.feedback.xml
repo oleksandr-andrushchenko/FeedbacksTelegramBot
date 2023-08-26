@@ -5,46 +5,32 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.feedback_creator_options_factory" class="App\Service\Feedback\FeedbackCreatorOptionsFactory"/>
-        <service id="app.feedback_creator_options" class="App\Entity\Feedback\FeedbackCreatorOptions">
-            <factory service="app.feedback_creator_options_factory" method="createFeedbackCreatorOptions"/>
-            <argument>%app.feedback_creator_options%</argument>
-        </service>
-        <service id="app.feedback_search_creator_options_factory"
-                 class="App\Service\Feedback\FeedbackSearchCreatorOptionsFactory" lazy="true"/>
-        <service id="app.feedback_search_creator_options" class="App\Entity\Feedback\FeedbackSearchCreatorOptions">
-            <factory service="app.feedback_search_creator_options_factory" method="createFeedbackSearchCreatorOptions"/>
-            <argument>%app.feedback_search_creator_options%</argument>
-        </service>
-        <service id="app.feedback_search_search_creator_options_factory"
-                 class="App\Service\Feedback\FeedbackSearchSearchCreatorOptionsFactory" lazy="true"/>
-        <service id="app.feedback_search_search_creator_options"
-                 class="App\Entity\Feedback\FeedbackSearchSearchCreatorOptions">
-            <factory service="app.feedback_search_search_creator_options_factory"
-                     method="createFeedbackSearchSearchCreatorOptions"/>
-            <argument>%app.feedback_search_search_creator_options%</argument>
-        </service>
         <service id="app.feedback_creator" class="App\Service\Feedback\FeedbackCreator" lazy="true">
-            <argument type="service" id="app.feedback_creator_options"/>
+            <argument type="service" id="app.create_command_options"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.validator"/>
-            <argument type="service" id="app.feedback_user_create_feedback_statistics"/>
+            <argument type="service" id="app.feedback_statistics_provider"/>
+            <argument type="service" id="app.command_limits_checker"/>
             <argument type="service" id="app.feedback_subscription_manager"/>
             <argument type="service" id="app.logger_activity"/>
         </service>
         <service id="app.feedback_search_creator" class="App\Service\Feedback\FeedbackSearchCreator" lazy="true">
-            <argument type="service" id="app.feedback_search_creator_options"/>
+            <argument type="service" id="app.create_command_options"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.validator"/>
-            <argument type="service" id="app.feedback_user_create_feedback_search_statistics"/>
+            <argument type="service" id="app.feedback_search_statistics_provider"/>
+            <argument type="service" id="app.command_limits_checker"/>
             <argument type="service" id="app.feedback_subscription_manager"/>
             <argument type="service" id="app.logger_activity"/>
         </service>
         <service id="app.feedback_search_search_creator" class="App\Service\Feedback\FeedbackSearchSearchCreator"
                  lazy="true">
-            <argument type="service" id="app.feedback_search_search_creator_options"/>
+            <argument type="service" id="app.lookup_command_options"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.validator"/>
+            <argument type="service" id="app.feedback_search_search_statistics_provider"/>
+            <argument type="service" id="app.command_limits_checker"/>
+            <argument type="service" id="app.feedback_subscription_manager"/>
             <argument type="service" id="app.logger_activity"/>
         </service>
         <service id="app.feedback_searcher" class="App\Service\Feedback\FeedbackSearcher" lazy="true">
@@ -122,9 +108,10 @@
                  class="App\Service\Feedback\FeedbackSubscriptionPlanProvider" lazy="true">
             <argument>%app.feedback_subscription_plans%</argument>
         </service>
-        <service id="app.feedback_user_create_feedback_statistics"
-                 class="App\Service\Feedback\UserCreateFeedbackStatisticsProvider" lazy="true">
+        <service id="app.feedback_statistics_provider" class="App\Service\Feedback\FeedbackStatisticsProvider" lazy="true">
+            <argument type="service" id="app.create_command_options"/>
             <argument type="service" id="app.repository.feedback"/>
+            <tag name="app.command_statistics_provider"/>
         </service>
         <service id="app.feedback_subscription_manager"
                  class="App\Service\Feedback\FeedbackSubscriptionManager" lazy="true">
@@ -132,9 +119,15 @@
             <argument type="service" id="app.repository.feedback_user_subscription"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
-        <service id="app.feedback_user_create_feedback_search_statistics"
-                 class="App\Service\Feedback\UserCreateFeedbackSearchStatisticsProvider" lazy="true">
+        <service id="app.feedback_search_statistics_provider" class="App\Service\Feedback\FeedbackSearchStatisticsProvider" lazy="true">
+            <argument type="service" id="app.search_command_options"/>
             <argument type="service" id="app.repository.feedback_search"/>
+            <tag name="app.command_statistics_provider"/>
+        </service>
+        <service id="app.feedback_search_search_statistics_provider" class="App\Service\Feedback\FeedbackSearchSearchStatisticsProvider" lazy="true">
+            <argument type="service" id="app.lookup_command_options"/>
+            <argument type="service" id="app.repository.feedback_search_search"/>
+            <tag name="app.command_statistics_provider"/>
         </service>
         <service id="app.search_term_by_feedback_provider"
                  class="App\Service\Feedback\SearchTerm\SearchTermByFeedbackProvider" lazy="true"/>
@@ -166,6 +159,18 @@
             <argument type="service" id="app.intl_time_provider"/>
             <argument type="service" id="app.intl_currency_provider"/>
             <argument type="service" id="app.money_formatter"/>
+        </service>
+        <service id="app.create_command_options" class="App\Entity\CommandOptions">
+            <factory service="app.command_options_factory" method="createCommandOptions"/>
+            <argument>%app.create_command_options%</argument>
+        </service>
+        <service id="app.search_command_options" class="App\Entity\CommandOptions">
+            <factory service="app.command_options_factory" method="createCommandOptions"/>
+            <argument>%app.search_command_options%</argument>
+        </service>
+        <service id="app.lookup_command_options" class="App\Entity\CommandOptions">
+            <factory service="app.command_options_factory" method="createCommandOptions"/>
+            <argument>%app.lookup_command_options%</argument>
         </service>
     </services>
 </container>

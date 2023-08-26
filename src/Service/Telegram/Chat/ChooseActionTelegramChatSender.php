@@ -83,9 +83,7 @@ class ChooseActionTelegramChatSender
 
     public function getLookupButton(TelegramAwareHelper $tg): KeyboardButton
     {
-        $locked = !$this->subscriptionManager->hasActiveSubscription($tg->getTelegram()->getMessengerUser());
-
-        return $tg->button($tg->command('lookup', $locked));
+        return $tg->button($tg->command('lookup'));
     }
 
     public static function getSubscribeButton(TelegramAwareHelper $tg): KeyboardButton

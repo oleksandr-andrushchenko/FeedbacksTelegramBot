@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Telegram\Conversation;
 
 use App\Entity\Telegram\CreateFeedbackTelegramConversationState;
-use App\Entity\Telegram\TelegramConversation as Conversation;
+use App\Entity\Telegram\TelegramConversation as Entity;
 use App\Enum\Telegram\TelegramGroup;
 use App\Exception\ValidatorException;
 use App\Object\User\UserFeedbackMessageTransfer;
@@ -23,22 +23,21 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
     public const STEP_CANCEL_PRESSED = 30;
 
     public function __construct(
-        readonly TelegramAwareHelper $awareHelper,
         private readonly UserFeedbackMessageCreator $messageCreator,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly ContactOptionsFactory $contactOptionsFactory,
         private readonly CountryProvider $countryProvider,
     )
     {
-        parent::__construct($awareHelper, new CreateFeedbackTelegramConversationState());
+        parent::__construct(new CreateFeedbackTelegramConversationState());
     }
 
-    public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function invoke(TelegramAwareHelper $tg, Entity $entity): null
     {
         return match ($this->state->getStep()) {
             default => $this->start($tg),
-            self::STEP_LEFT_MESSAGE_CONFIRM_QUERIED => $this->gotLeftMessageConfirm($tg, $conversation),
-            self::STEP_MESSAGE_QUERIED => $this->gotMessage($tg, $conversation),
+            self::STEP_LEFT_MESSAGE_CONFIRM_QUERIED => $this->gotLeftMessageConfirm($tg, $entity),
+            self::STEP_MESSAGE_QUERIED => $this->gotMessage($tg, $entity),
         };
     }
 
@@ -85,14 +84,18 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
         )->null();
     }
 
-    public function gotLeftMessageConfirm(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotLeftMessageConfirm(TelegramAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText($this->getLeftMessageConfirmNoButton($tg)->getText())) {
-            return $this->chooseActionChatSender->sendActions($tg->stopConversation($conversation));
+            $tg->stopConversation($entity);
+
+            return $this->chooseActionChatSender->sendActions($tg);
         }
 
         if (!$tg->matchText($this->getLeftMessageConfirmYesButton($tg)->getText())) {
-            return $this->queryLeftMessageConfirm($tg->replyWrong($tg->trans('reply.wrong')));
+            $tg->replyWrong($tg->trans('reply.wrong'));
+
+            return $this->queryLeftMessageConfirm($tg);
         }
 
         return $this->queryMessage($tg);
@@ -108,37 +111,40 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
         )->null();
     }
 
-    public function gotCancel(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotCancel(TelegramAwareHelper $tg, Entity $entity): null
     {
         $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
-        $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.contact'));
+        $tg->stopConversation($entity)->replyUpset($tg->trans('reply.canceled', domain: 'tg.contact'));
 
         return $this->chooseActionChatSender->sendActions($tg);
     }
 
-    public function gotMessage(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotMessage(TelegramAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText(null)) {
-            return $this->queryMessage($tg->replyWrong($tg->trans('reply.wrong')));
+            $tg->replyWrong($tg->trans('reply.wrong'));
+
+            return $this->queryMessage($tg);
         }
 
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
-            return $this->gotCancel($tg, $conversation);
+            return $this->gotCancel($tg, $entity);
         }
 
         try {
             $this->messageCreator->createUserFeedbackMessage(
                 new UserFeedbackMessageTransfer(
-                    $conversation->getMessengerUser(),
-                    $conversation->getMessengerUser()->getUser(),
+                    $entity->getMessengerUser(),
+                    $entity->getMessengerUser()->getUser(),
                     $tg->getText()
                 )
             );
 
-            $tg->stopConversation($conversation)->replyOk($tg->trans('reply.ok', domain: 'tg.contact'));
+            $tg->stopConversation($entity);
+            $replyText = $tg->okText($tg->trans('reply.ok', domain: 'tg.contact'));
 
-            return $this->chooseActionChatSender->sendActions($tg);
+            return $this->chooseActionChatSender->sendActions($tg, $replyText);
         } catch (ValidatorException $exception) {
             $tg->reply($exception->getFirstMessage());
 

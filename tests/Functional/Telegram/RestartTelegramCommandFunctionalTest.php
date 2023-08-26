@@ -93,7 +93,7 @@ class RestartTelegramCommandFunctionalTest extends TelegramCommandFunctionalTest
         );
         $this
             ->type('keyboard.yes')
-            ->shouldSeeNotActiveConversation()
+            ->shouldNotSeeActiveConversation()
             ->shouldSeeReply(
                 'reply.ok',
             )

@@ -55,10 +55,10 @@ class SubscribeTelegramConversationStateNormalizer implements NormalizerInterfac
 
         $object
             ->setCurrency(isset($data['currency']) ? $this->currencyProvider->getCurrency($data['currency']) : null)
-            ->setIsCurrencyStep($data['currency_step'] ?? null)
+            ->setCurrencyStep($data['currency_step'] ?? null)
             ->setSubscriptionPlan(isset($data['subscription_plan']) ? $this->subscriptionPlanDenormalizer->denormalize($data['subscription_plan'], FeedbackSubscriptionPlan::class, $format, $context) : null)
             ->setPaymentMethod(isset($data['payment_method']) ? $this->paymentMethodRepository->find($data['payment_method']) : null)
-            ->setIsPaymentMethodStep($data['payment_method_step'] ?? null)
+            ->setPaymentMethodStep($data['payment_method_step'] ?? null)
         ;
 
         return $object;

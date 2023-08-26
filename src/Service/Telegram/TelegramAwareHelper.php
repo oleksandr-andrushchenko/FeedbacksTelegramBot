@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Telegram;
 
 use App\Entity\Telegram\TelegramConversation;
+use App\Entity\Telegram\TelegramConversationState;
 use App\Service\Telegram\Api\TelegramChatActionSenderInterface;
 use App\Service\Telegram\Api\TelegramMessageSenderInterface;
 use Longman\TelegramBot\ChatAction;
@@ -77,9 +78,16 @@ class TelegramAwareHelper
         return $this->getTelegram()->getMessengerUser()?->getUser()->getTimezone();
     }
 
-    public function startConversation(string $conversationClass): static
+    public function startConversation(string $class, TelegramConversationState $state = null): static
     {
-        $this->conversationManager->startTelegramConversation($this->getTelegram(), $conversationClass);
+        $this->conversationManager->startTelegramConversation($this->getTelegram(), $class, $state);
+
+        return $this;
+    }
+
+    public function executeConversation(string $class, TelegramConversationState $state, string $method): static
+    {
+        $this->conversationManager->executeTelegramConversation($this->getTelegram(), $class, $state, $method);
 
         return $this;
     }
@@ -144,9 +152,14 @@ class TelegramAwareHelper
         bool $disableWebPagePreview = true
     ): static
     {
-        $this->reply('🫡 ' . $text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
+        $this->reply($this->okText($text), $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
 
         return $this;
+    }
+
+    public function okText(string $text): string
+    {
+        return '🫡 ' . $text;
     }
 
     public function replyFail(
@@ -157,9 +170,14 @@ class TelegramAwareHelper
         bool $disableWebPagePreview = true
     ): static
     {
-        $this->reply('🤕 ' . $text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
+        $this->reply($this->failText($text), $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
 
         return $this;
+    }
+
+    public function failText(string $text): string
+    {
+        return '🤕 ' . $text;
     }
 
     public function replyWrong(
@@ -171,9 +189,14 @@ class TelegramAwareHelper
         bool $keepKeyboard = false
     ): static
     {
-        $this->reply('🤔 ' . $text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview, $keepKeyboard);
+        $this->reply($this->wrongText($text), $keyboard, $parseMode, $protectContent, $disableWebPagePreview, $keepKeyboard);
 
         return $this;
+    }
+
+    public function wrongText(string $text): string
+    {
+        return '🤔 ' . $text;
     }
 
     public function replyUpset(
@@ -184,9 +207,14 @@ class TelegramAwareHelper
         bool $disableWebPagePreview = true
     ): static
     {
-        $this->reply('😐 ' . $text, $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
+        $this->reply($this->upsetText($text), $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
 
         return $this;
+    }
+
+    public function upsetText(string $text): string
+    {
+        return '😐 ' . $text;
     }
 
     public function keyboard(...$buttons): Keyboard

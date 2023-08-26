@@ -186,7 +186,7 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
         return $this->shouldSeeConversation($expectedClass, $expectedState, true);
     }
 
-    protected function shouldSeeNotActiveConversation(string $expectedClass = null, TelegramConversationState $expectedState = null): static
+    protected function shouldNotSeeActiveConversation(string $expectedClass = null, TelegramConversationState $expectedState = null): static
     {
         return $this->shouldSeeConversation($expectedClass, $expectedState, false);
     }

@@ -6,18 +6,18 @@ namespace App\Service\Telegram\Conversation;
 
 use App\Entity\Telegram\LookupTelegramConversationState;
 use App\Enum\Feedback\SearchTermType;
+use App\Exception\CommandLimitExceeded;
 use App\Exception\ValidatorException;
 use App\Object\Feedback\FeedbackSearchSearchTransfer;
 use App\Object\Feedback\SearchTermTransfer;
 use App\Service\Feedback\FeedbackSearchSearchCreator;
 use App\Service\Feedback\FeedbackSearchSearcher;
-use App\Service\Feedback\FeedbackSubscriptionManager;
 use App\Service\Feedback\SearchTerm\SearchTermParserOnlyInterface;
 use App\Service\Feedback\View\FeedbackSearchTelegramViewProvider;
 use App\Service\Feedback\View\SearchTermTelegramViewProvider;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\TelegramAwareHelper;
-use App\Entity\Telegram\TelegramConversation as Conversation;
+use App\Entity\Telegram\TelegramConversation as Entity;
 use App\Service\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Entities\KeyboardButton;
@@ -32,41 +32,31 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
     public const STEP_CANCEL_PRESSED = 30;
 
     public function __construct(
-        readonly TelegramAwareHelper $awareHelper,
         private readonly Validator $validator,
         private readonly FeedbackSearchSearchCreator $creator,
         private readonly FeedbackSearchSearcher $searcher,
         private readonly SearchTermParserOnlyInterface $searchTermParser,
         private readonly EntityManagerInterface $entityManager,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
-        private readonly FeedbackSubscriptionManager $subscriptionManager,
         private readonly SearchTermTelegramViewProvider $searchTermViewProvider,
         private readonly FeedbackSearchTelegramViewProvider $feedbackSearchViewProvider,
     )
     {
-        parent::__construct($awareHelper, new LookupTelegramConversationState());
+        parent::__construct(new LookupTelegramConversationState());
     }
 
-    public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function invoke(TelegramAwareHelper $tg, Entity $entity): null
     {
         return match ($this->state->getStep()) {
-            default => $this->start($tg, $conversation),
-            self::STEP_SEARCH_TERM_QUERIED => $this->gotSearchTerm($tg, $conversation),
-            self::STEP_SEARCH_TERM_TYPE_QUERIED => $this->gotSearchTermType($tg, $conversation),
+            default => $this->start($tg),
+            self::STEP_SEARCH_TERM_QUERIED => $this->gotSearchTerm($tg, $entity),
+            self::STEP_SEARCH_TERM_TYPE_QUERIED => $this->gotSearchTermType($tg, $entity),
         };
     }
 
-    public function start(TelegramAwareHelper $tg, Conversation $conversation): ?string
+    public function start(TelegramAwareHelper $tg): ?string
     {
         $this->describe($tg);
-
-        if (!$this->subscriptionManager->hasActiveSubscription($tg->getTelegram()->getMessengerUser())) {
-            $tg->stopConversation($conversation);
-
-            return $this->chooseActionChatSender->sendActions($tg, text: $tg->trans('reply.no_active_subscription', [
-                'subscribe_command' => $tg->command('subscribe', html: true),
-            ], domain: 'tg.lookup'));
-        }
 
         return $this->querySearchTerm($tg);
     }
@@ -77,7 +67,9 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
             return;
         }
 
-        $tg->reply($tg->view('describe_lookup'));
+        $tg->reply($tg->view('describe_lookup', [
+            'limits' => $this->creator->getOptions()->getLimits(),
+        ]));
     }
 
     public function querySearchTerm(TelegramAwareHelper $tg): null
@@ -95,22 +87,24 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
         return null;
     }
 
-    public function gotCancel(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotCancel(TelegramAwareHelper $tg, Entity $entity): null
     {
         $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
-        $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.lookup'));
+        $tg->stopConversation($entity)->replyUpset($tg->trans('reply.canceled', domain: 'tg.lookup'));
 
         return $this->chooseActionChatSender->sendActions($tg);
     }
 
-    public function gotSearchTerm(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotSearchTerm(TelegramAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText(null)) {
-            return $this->querySearchTerm($tg->replyWrong($tg->trans('reply.wrong')));
+            $tg->replyWrong($tg->trans('reply.wrong'));
+
+            return $this->querySearchTerm($tg);
         }
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
-            return $this->gotCancel($tg, $conversation);
+            return $this->gotCancel($tg, $entity);
         }
 
         $searchTerm = new SearchTermTransfer($tg->getText());
@@ -142,10 +136,13 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
                 return $this->querySearchTerm($tg);
             }
 
+            $searchTerm->setType(SearchTermType::unknown);
+            return $this->searchFeedbackSearches($tg, $entity);
+
             return $this->querySearchTermType($tg);
         }
 
-        return $this->searchFeedbackSearches($tg, $conversation);
+        return $this->searchFeedbackSearches($tg, $entity);
     }
 
     public function querySearchTermType(TelegramAwareHelper $tg): null
@@ -167,13 +164,13 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
         return null;
     }
 
-    public function gotSearchTermType(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotSearchTermType(TelegramAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText($this->getBackButton($tg)->getText())) {
             return $this->querySearchTerm($tg);
         }
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
-            return $this->gotCancel($tg, $conversation);
+            return $this->gotCancel($tg, $entity);
         }
         if ($tg->matchText(null)) {
             $type = null;
@@ -181,7 +178,9 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
             $type = $this->getSearchTermTypeByButton($tg->getText(), $tg);
         }
         if ($type === null) {
-            return $this->querySearchTermType($tg->replyWrong($tg->trans('reply.wrong')));
+            $tg->replyWrong($tg->trans('reply.wrong'));
+
+            return $this->querySearchTermType($tg);
         }
 
         $searchTerm = $this->state->getSearchTerm();
@@ -196,10 +195,10 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
             return $this->querySearchTerm($tg);
         }
 
-        return $this->searchFeedbackSearches($tg, $conversation);
+        return $this->searchFeedbackSearches($tg, $entity);
     }
 
-    public function searchFeedbackSearches(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function searchFeedbackSearches(TelegramAwareHelper $tg, Entity $entity): null
     {
         try {
             $this->validator->validate($this->state->getSearchTerm());
@@ -207,7 +206,7 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
 
             $feedbackSearchSearch = $this->creator->createFeedbackSearchSearch(
                 new FeedbackSearchSearchTransfer(
-                    $conversation->getMessengerUser(),
+                    $entity->getMessengerUser(),
                     $this->state->getSearchTerm()
                 )
             );
@@ -219,7 +218,7 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
             $searchTermText = $this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm());
 
             if ($count === 0) {
-                $tg->stopConversation($conversation)
+                $tg->stopConversation($entity)
                     ->replyUpset($tg->trans('reply.empty_list', ['search_term' => sprintf('<u>%s</u>', $searchTermText)], domain: 'tg.lookup'))
                 ;
 
@@ -235,7 +234,7 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
                 );
             }
 
-            $tg->stopConversation($conversation);
+            $tg->stopConversation($entity);
 
             return $this->chooseActionChatSender->sendActions($tg);
         } catch (ValidatorException $exception) {
@@ -246,6 +245,18 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
             }
 
             return $tg->replyFail($tg->trans('reply.fail.unknown'))->null();
+        } catch (CommandLimitExceeded $exception) {
+            $tg->replyFail(
+                $tg->trans('reply.limit_exceeded', [
+                    'period' => sprintf('<b>1 %s</b>', $tg->trans($exception->getLimit()->getPeriod())),
+                    'count' => sprintf('<b>%s</b>', $exception->getLimit()->getCount()),
+                    'subscribe_command' => $tg->command('subscribe', html: true),
+                ], domain: 'tg.lookup')
+            );
+
+            $tg->stopConversation($entity);
+
+            return $this->chooseActionChatSender->sendActions($tg);
         }
     }
 

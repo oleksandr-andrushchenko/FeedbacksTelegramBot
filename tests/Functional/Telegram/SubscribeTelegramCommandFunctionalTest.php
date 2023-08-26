@@ -64,7 +64,6 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
                 [
                     'describe.title',
                     'command_limits.tries_for',
-                    'command_limits.no_free_tries',
                     'describe.summary',
                     'toggle_hints',
                 ],
@@ -139,8 +138,8 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
                 'showHints' => $showHints,
                 'paymentMethodNames' => $paymentMethodNames,
                 'expectedState' => (new SubscribeTelegramConversationState())
-                    ->setIsCurrencyStep(false)
-                    ->setIsPaymentMethodStep($expectedPaymentMethodStep)
+                    ->setCurrencyStep(false)
+                    ->setPaymentMethodStep($expectedPaymentMethodStep)
                     ->setStep(SubscribeTelegramConversation::STEP_SUBSCRIPTION_PLAN_QUERIED),
                 'shouldSeeReply' => [
                     'query.subscription_plan',
@@ -219,8 +218,8 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
             yield $key => [
                 'command' => '🇺🇸 USD',
                 'state' => $state = (new SubscribeTelegramConversationState())
-                    ->setIsCurrencyStep($currencyStep)
-                    ->setIsPaymentMethodStep($paymentMethodStep)
+                    ->setCurrencyStep($currencyStep)
+                    ->setPaymentMethodStep($paymentMethodStep)
                     ->setStep(SubscribeTelegramConversation::STEP_CURRENCY_QUERIED),
                 'expectedState' => (clone $state)
                     ->setCurrency($this->getCurrencyProvider()->getCurrency('USD'))
@@ -288,8 +287,8 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
             yield $key => [
                 'command' => 'subscription_plan.one_year - $20,00',
                 'state' => $state = (new SubscribeTelegramConversationState())
-                    ->setIsCurrencyStep($currencyStep)
-                    ->setIsPaymentMethodStep(true)
+                    ->setCurrencyStep($currencyStep)
+                    ->setPaymentMethodStep(true)
                     ->setCurrency($this->getCurrencyProvider()->getCurrency('USD'))
                     ->setStep(SubscribeTelegramConversation::STEP_SUBSCRIPTION_PLAN_QUERIED),
                 'expectedState' => (clone $state)
@@ -334,7 +333,7 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
 
         $this
             ->type($command)
-            ->shouldSeeNotActiveConversation($conversation->getClass(), $expectedState)
+            ->shouldNotSeeActiveConversation($conversation->getClass(), $expectedState)
             ->shouldSeeChooseAction('query.payment')
         ;
 
@@ -357,8 +356,8 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
             yield $key => [
                 'command' => 'payment_method.portmone',
                 'state' => $state = (new SubscribeTelegramConversationState())
-                    ->setIsCurrencyStep($currencyStep)
-                    ->setIsPaymentMethodStep(true)
+                    ->setCurrencyStep($currencyStep)
+                    ->setPaymentMethodStep(true)
                     ->setCurrency($this->getCurrencyProvider()->getCurrency('USD'))
                     ->setSubscriptionPlan($this->getFeedbackSubscriptionPlanProvider()->getSubscriptionPlan(FeedbackSubscriptionPlanName::one_year))
                     ->setStep(SubscribeTelegramConversation::STEP_PAYMENT_METHOD_QUERIED),

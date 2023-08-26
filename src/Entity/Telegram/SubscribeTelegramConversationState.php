@@ -50,7 +50,7 @@ class SubscribeTelegramConversationState extends TelegramConversationState
         return $this->paymentMethodStep;
     }
 
-    public function setIsPaymentMethodStep(?bool $paymentMethodStep): static
+    public function setPaymentMethodStep(?bool $paymentMethodStep): static
     {
         $this->paymentMethodStep = $paymentMethodStep;
 
@@ -62,7 +62,7 @@ class SubscribeTelegramConversationState extends TelegramConversationState
         return $this->currencyStep;
     }
 
-    public function setIsCurrencyStep(?bool $currencyStep): static
+    public function setCurrencyStep(?bool $currencyStep): static
     {
         $this->currencyStep = $currencyStep;
 

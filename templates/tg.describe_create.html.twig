@@ -2,8 +2,8 @@
 ℹ️ {{ 'describe.title'|trans }}
 
 ℹ️ {{ 'describe.limits'|trans }}
-{% for period,limit in limits %}
- - {{ 'command_limits.tries_for'|trans({'%count%': '<b>' ~ limit ~ '</b>', '%period%': '<b>1 ' ~ period|trans({}, 'tg') ~ '</b>'}, 'tg')|raw }}
+{% for limit in limits %}
+ - {{ 'command_limits.tries_for'|trans({'%count%': '<b>' ~ limit.count ~ '</b>', '%period%': '<b>1 ' ~ limit.period|trans({}, 'tg') ~ '</b>'}, 'tg')|raw }}
 {% endfor %}
 
 ℹ️ {{ 'describe.subscribe'|trans({'%command%': include('tg.command.html.twig', {name: 'subscribe'})})|raw }}

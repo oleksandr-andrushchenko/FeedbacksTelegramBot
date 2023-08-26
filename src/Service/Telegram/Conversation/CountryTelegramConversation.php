@@ -9,7 +9,7 @@ use App\Entity\Telegram\TelegramConversationState;
 use App\Service\Intl\CountryProvider;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\TelegramAwareHelper;
-use App\Entity\Telegram\TelegramConversation as Conversation;
+use App\Entity\Telegram\TelegramConversation as Entity;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
 class CountryTelegramConversation extends TelegramConversation implements TelegramConversationInterface
@@ -21,22 +21,21 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
     public const STEP_CANCEL_PRESSED = 40;
 
     public function __construct(
-        readonly TelegramAwareHelper $awareHelper,
         private readonly CountryProvider $provider,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
     )
     {
-        parent::__construct($awareHelper, new TelegramConversationState());
+        parent::__construct(new TelegramConversationState());
     }
 
-    public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function invoke(TelegramAwareHelper $tg, Entity $entity): null
     {
         return match ($this->state->getStep()) {
             default => $this->start($tg),
-            self::STEP_CHANGE_CONFIRM_QUERIED => $this->gotChangeConfirm($tg, $conversation),
-            self::STEP_GUESS_COUNTRY_QUERIED => $this->gotCountry($tg, $conversation, true),
-            self::STEP_COUNTRY_QUERIED => $this->gotCountry($tg, $conversation, false),
-            self::STEP_TIMEZONE_QUERIED => $this->gotTimezone($tg, $conversation),
+            self::STEP_CHANGE_CONFIRM_QUERIED => $this->gotChangeConfirm($tg, $entity),
+            self::STEP_GUESS_COUNTRY_QUERIED => $this->gotCountry($tg, $entity, true),
+            self::STEP_COUNTRY_QUERIED => $this->gotCountry($tg, $entity, false),
+            self::STEP_TIMEZONE_QUERIED => $this->gotTimezone($tg, $entity),
         };
     }
 
@@ -66,11 +65,11 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         $tg->reply($tg->view('describe_country'));
     }
 
-    public function gotCancel(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotCancel(TelegramAwareHelper $tg, Entity $entity): null
     {
         $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
-        $tg->stopConversation($conversation)->replyUpset($tg->trans('reply.canceled', domain: 'tg.country'));
+        $tg->stopConversation($entity)->replyUpset($tg->trans('reply.canceled', domain: 'tg.country'));
 
         return $this->chooseActionChatSender->sendActions($tg);
     }
@@ -118,13 +117,17 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         )->null();
     }
 
-    public function gotChangeConfirm(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotChangeConfirm(TelegramAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText($this->getChangeConfirmNoButton($tg)->getText())) {
-            return $this->chooseActionChatSender->sendActions($tg->stopConversation($conversation));
+            $tg->stopConversation($entity);
+
+            return $this->chooseActionChatSender->sendActions($tg);
         }
         if (!$tg->matchText($this->getChangeConfirmYesButton($tg)->getText())) {
-            return $this->queryChangeConfirm($tg->replyWrong($tg->trans('reply.wrong')));
+            $tg->replyWrong($tg->trans('reply.wrong'));
+
+            return $this->queryChangeConfirm($tg);
         }
 
         $countries = $this->getGuessCountries($tg);
@@ -157,10 +160,10 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         return $tg->reply($this->getCountryQuery($tg), $tg->keyboard(...$buttons))->null();
     }
 
-    public function gotCountry(TelegramAwareHelper $tg, Conversation $conversation, bool $guess): null
+    public function gotCountry(TelegramAwareHelper $tg, Entity $entity, bool $guess): null
     {
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
-            return $this->gotCancel($tg, $conversation);
+            return $this->gotCancel($tg, $entity);
         }
         if ($guess && $tg->matchText($this->getOtherCountryButton($tg)->getText())) {
             return $this->queryCountry($tg);
@@ -193,20 +196,20 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
 
         $tg->getTelegram()->getMessengerUser()?->getUser()->setTimezone($timezones[0] ?? null);
 
-        return $this->replyAndClose($tg, $conversation);
+        return $this->replyAndClose($tg, $entity);
     }
 
-    private function replyAndClose(TelegramAwareHelper $tg, Conversation $conversation): null
+    private function replyAndClose(TelegramAwareHelper $tg, Entity $entity): null
     {
-        $tg->replyOk(join(' ', [
+        $tg->stopConversation($entity);
+
+        $replyText = $tg->okText(join(' ', [
             $tg->trans('reply.ok', domain: 'tg.country'),
             $this->getCurrentCountryReply($tg),
             $this->getCurrentTimezoneReply($tg),
         ]));
 
-        $tg->stopConversation($conversation);
-
-        return $this->chooseActionChatSender->sendActions($tg);
+        return $this->chooseActionChatSender->sendActions($tg, $replyText);
     }
 
     public function queryTimezone(TelegramAwareHelper $tg): null
@@ -219,10 +222,10 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         return $tg->reply($this->getTimezoneQuery($tg), $tg->keyboard(...$buttons))->null();
     }
 
-    public function gotTimezone(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotTimezone(TelegramAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText($this->getCancelButton($tg)->getText())) {
-            return $this->gotCancel($tg, $conversation);
+            return $this->gotCancel($tg, $entity);
         }
 
         if ($tg->matchText(null)) {
@@ -239,7 +242,7 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
 
         $tg->getTelegram()->getMessengerUser()?->getUser()->setTimezone($timezone);
 
-        return $this->replyAndClose($tg, $conversation);
+        return $this->replyAndClose($tg, $entity);
     }
 
     public static function getChangeConfirmQuery(TelegramAwareHelper $tg): string

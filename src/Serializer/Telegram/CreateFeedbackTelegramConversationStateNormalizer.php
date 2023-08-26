@@ -37,6 +37,7 @@ class CreateFeedbackTelegramConversationStateNormalizer implements NormalizerInt
             'rating' => $object->getRating()?->value,
             'description' => $object->getDescription(),
             'change' => $object->isChange(),
+            'search_term_step' => $object->isSearchTermStep(),
         ]);
     }
 
@@ -55,6 +56,7 @@ class CreateFeedbackTelegramConversationStateNormalizer implements NormalizerInt
             ->setRating(isset($data['rating']) ? Rating::from($data['rating']) : null)
             ->setDescription($data['description'] ?? null)
             ->setChange($data['change'] ?? null)
+            ->setSearchTermStep($data['search_term_step'] ?? null)
         ;
 
         return $object;

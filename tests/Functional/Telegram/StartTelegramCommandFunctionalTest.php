@@ -51,7 +51,7 @@ class StartTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestCa
 
         $this->getUpdateMessengerUser()->setIsShowHints($showHints);
         $this
-            ->shouldSeeNotActiveConversation()
+            ->shouldNotSeeActiveConversation()
             ->shouldSeeReply(...$shouldReply)
             ->shouldSeeChooseAction()
         ;

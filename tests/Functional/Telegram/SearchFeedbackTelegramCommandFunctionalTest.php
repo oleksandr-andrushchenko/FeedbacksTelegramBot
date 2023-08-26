@@ -6,6 +6,7 @@ namespace App\Tests\Functional\Telegram;
 
 use App\Entity\Feedback\Feedback;
 use App\Entity\Messenger\MessengerUser;
+use App\Entity\Telegram\CreateFeedbackTelegramConversationState;
 use App\Entity\Telegram\SearchFeedbackTelegramConversationState;
 use App\Entity\Telegram\TelegramBot;
 use App\Entity\Telegram\TelegramConversationState;
@@ -15,6 +16,7 @@ use App\Enum\Messenger\Messenger;
 use App\Object\Feedback\SearchTermTransfer;
 use App\Object\Messenger\MessengerUserTransfer;
 use App\Service\Telegram\Channel\FeedbackTelegramChannel;
+use App\Service\Telegram\Conversation\CreateFeedbackTelegramConversation;
 use App\Service\Telegram\Conversation\SearchFeedbackTelegramConversation;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Tests\Fixtures;
@@ -180,11 +182,47 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                 'shouldSeeButtons' => $this->getShouldSeeKeyboardOnConfirmQueried(),
             ],
         ];
-
-        yield from $this->gotUnknownSearchTermSuccessDataProvider('search_term_step', $state);
     }
 
-    public function gotUnknownSearchTermSuccessDataProvider(string $key, SearchFeedbackTelegramConversationState $state): Generator
+    /**
+     * @param callable $fn
+     * @return void
+     * @dataProvider gotSearchTermWithUnknownTypeSuccessDataProvider
+     * @deprecated search term type step skipped
+     */
+    public function _testGotSearchTermWithUnknownTypeSuccess(callable $fn): void
+    {
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+        ]);
+
+        extract($fn($this->getTg()));
+
+        $state->setStep(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED);
+        $conversation = $this->createConversation(SearchFeedbackTelegramConversation::class, $state);
+
+        $mocks && $mocks();
+
+        $this
+            ->type($command)
+            ->shouldSeeActiveConversation($conversation->getClass(), $expectedState)
+            ->shouldSeeReply(...$shouldSeeReply)
+            ->shouldSeeButtons(...$shouldSeeButtons)
+        ;
+    }
+
+    public function gotSearchTermWithUnknownTypeSuccessDataProvider(): Generator
+    {
+        $state = (new SearchFeedbackTelegramConversationState())
+            ->setStep(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
+        ;
+
+        yield from $this->gotUnknownSearchTermSuccessDataProvider('', $state);
+    }
+
+    public function gotUnknownSearchTermSuccessDataProvider(string $key, TelegramConversationState $state): Generator
     {
         /** @var MessengerUserTransfer $messengerUser */
 
@@ -390,7 +428,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 
         // network messenger profile urls
         foreach (Fixtures::getNetworkMessengerUserProfileUrls() as $commandKey => [$messengerUser, $expectedSearchTermType, $mocks]) {
-            yield sprintf('change_search_term_step_as_%s', $commandKey) => [
+            yield sprintf('change & %s', $commandKey) => [
                 fn ($tg) => [
                     'command' => $this->getMessengerUserProfileUrl($messengerUser),
                     'mocks' => $mocks,
@@ -411,7 +449,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 
         // non-network messenger profile urls
         foreach (Fixtures::getNonNetworkMessengerUserProfileUrls() as $commandKey => [$messengerUser, $expectedSearchTermType]) {
-            yield sprintf('change_search_term_step_as_%s', $commandKey) => [
+            yield sprintf('change & %s', $commandKey) => [
                 fn ($tg) => [
                     'command' => $this->getMessengerUserProfileUrl($messengerUser),
                     'mocks' => null,
@@ -430,8 +468,50 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                 ],
             ];
         }
+    }
 
-        yield from $this->gotUnknownSearchTermSuccessDataProvider('change_search_term_step', $state);
+    /**
+     * @param callable $fn
+     * @return void
+     * @dataProvider gotSearchTermChangeWithUnknownTypeSuccessDataProvider
+     * @deprecated search term type step skipped
+     */
+    public function _testGotSearchTermWithUnknownTypeChangeSuccess(callable $fn): void
+    {
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+        ]);
+
+        extract($fn($this->getTg()));
+
+        $state
+            ->setStep(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
+            ->setChange(true)
+        ;
+
+        $conversation = $this->createConversation(SearchFeedbackTelegramConversation::class, $state);
+
+        $mocks && $mocks($this);
+
+        $this
+            ->type($command)
+            ->shouldSeeActiveConversation($conversation->getClass(), $expectedState)
+            ->shouldSeeReply(...$shouldSeeReply)
+            ->shouldSeeButtons(...$shouldSeeButtons)
+        ;
+    }
+
+    public function gotSearchTermChangeWithUnknownTypeSuccessDataProvider(): Generator
+    {
+        $state = (new SearchFeedbackTelegramConversationState())
+            ->setStep(SearchFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
+            ->setChange(true)
+            ->setSearchTerm(new SearchTermTransfer('any'))
+        ;
+
+        yield from $this->gotUnknownSearchTermSuccessDataProvider('change', $state);
     }
 
     /**
@@ -766,7 +846,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 
         $this
             ->type('keyboard.cancel')
-            ->shouldSeeNotActiveConversation($conversation->getClass(), $expectedState)
+            ->shouldNotSeeActiveConversation($conversation->getClass(), $expectedState)
             ->shouldSeeReply('reply.canceled')
             ->shouldSeeChooseAction()
         ;
@@ -799,11 +879,69 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 
     /**
      * @param SearchFeedbackTelegramConversationState $state
+     * @return void
+     * @dataProvider gotConfirmWithEmptyListSuccessDataProvider
+     */
+    public function testGotConfirmWithEmptyListSuccess(
+        SearchFeedbackTelegramConversationState $state
+    ): void
+    {
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+        ]);
+
+        $conversation = $this->createConversation(SearchFeedbackTelegramConversation::class, $state);
+
+        $feedbackSearchRepository = $this->getFeedbackSearchRepository();
+        $previousFeedbackSearchCount = $feedbackSearchRepository->count([]);
+
+        $this
+            ->type('keyboard.confirm')
+            ->shouldSeeReply('reply.empty_list query.create_confirm')
+            ->shouldSeeButtons(
+                'keyboard.yes',
+                'keyboard.no'
+            )
+        ;
+
+        $this->assertTrue($conversation->active());
+
+        $this->assertEquals($previousFeedbackSearchCount + 1, $feedbackSearchRepository->count([]));
+
+        $feedbackSearch = $feedbackSearchRepository->findOneBy([
+            'messengerUser' => $this->getUpdateMessengerUser(),
+            'searchTermText' => $state->getSearchTerm()->getText(),
+            'searchTermType' => $state->getSearchTerm()->getType(),
+        ]);
+
+        $this->assertNotNull($feedbackSearch);
+    }
+
+    public function gotConfirmWithEmptyListSuccessDataProvider(): Generator
+    {
+        $generalState = (new SearchFeedbackTelegramConversationState())
+            ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
+        ;
+
+        yield 'unknown' => [
+            'state' => (clone $generalState)
+                ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
+                ->setSearchTerm(
+                    (new SearchTermTransfer('any'))
+                        ->setType(SearchTermType::unknown)
+                ),
+        ];
+    }
+
+    /**
+     * @param SearchFeedbackTelegramConversationState $state
      * @param array $shouldSeeReplyFeedbacks
      * @return void
-     * @dataProvider gotConfirmSuccessDataProvider
+     * @dataProvider gotConfirmWithNonEmptyListSuccessDataProvider
      */
-    public function testGotConfirmSuccess(
+    public function testGotConfirmWithNonEmptyListSuccess(
         SearchFeedbackTelegramConversationState $state,
         array $shouldSeeReplyFeedbacks
     ): void
@@ -816,18 +954,13 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         ]);
 
         $conversation = $this->createConversation(SearchFeedbackTelegramConversation::class, $state);
-        $shouldSeeReply = [];
-
-        $count = count($shouldSeeReplyFeedbacks);
-        if ($count === 0) {
-            $shouldSeeReply[] = 'reply.empty_list';
-        } else {
-            $shouldSeeReply[] = 'reply.title';
-            $shouldSeeReply = array_merge($shouldSeeReply, array_fill(0, count($shouldSeeReplyFeedbacks), 'somebody_from'));
-        }
 
         $feedbackSearchRepository = $this->getFeedbackSearchRepository();
         $previousFeedbackSearchCount = $feedbackSearchRepository->count([]);
+
+        $shouldSeeReply = [];
+        $shouldSeeReply[] = 'reply.title';
+        $shouldSeeReply = array_merge($shouldSeeReply, array_fill(0, count($shouldSeeReplyFeedbacks), 'somebody_from'));
 
         $this
             ->type('keyboard.confirm')
@@ -848,23 +981,13 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         $this->assertNotNull($feedbackSearch);
     }
 
-    public function gotConfirmSuccessDataProvider(): Generator
+    public function gotConfirmWithNonEmptyListSuccessDataProvider(): Generator
     {
         $generalState = (new SearchFeedbackTelegramConversationState())
             ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
         ;
 
-        yield 'unknown & empty' => [
-            'state' => (clone $generalState)
-                ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
-                ->setSearchTerm(
-                    (new SearchTermTransfer('any'))
-                        ->setType(SearchTermType::unknown)
-                ),
-            'shouldSeeReplyFeedbacks' => [],
-        ];
-
-        yield 'instagram username & not empty' => [
+        yield 'instagram username' => [
             'state' => (clone $generalState)
                 ->setStep(SearchFeedbackTelegramConversation::STEP_CONFIRM_QUERIED)
                 ->setSearchTerm(
@@ -872,6 +995,96 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                         ->setType(SearchTermType::instagram_username)
                 ),
             'shouldSeeReplyFeedbacks' => [1, 2],
+        ];
+    }
+
+    /**
+     * @param SearchFeedbackTelegramConversationState $state
+     * @return void
+     * @dataProvider gotCreateConfirmWithYesSuccessDataProvider
+     */
+    public function testGotCreateConfirmWithYesSuccess(
+        SearchFeedbackTelegramConversationState $state
+    ): void
+    {
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+        ]);
+
+        $conversation = $this->createConversation(SearchFeedbackTelegramConversation::class, $state);
+
+        $this
+            ->type('keyboard.yes')
+            ->shouldSeeReply('query.rating')
+            ->shouldSeeActiveConversation(
+                CreateFeedbackTelegramConversation::class,
+                (new CreateFeedbackTelegramConversationState())
+                    ->setSearchTermStep(false)
+                    ->setStep(CreateFeedbackTelegramConversation::STEP_RATING_QUERIED)
+                    ->setSearchTerm($state->getSearchTerm())
+            )
+        ;
+
+        $this->assertFalse($conversation->active());
+    }
+
+    public function gotCreateConfirmWithYesSuccessDataProvider(): Generator
+    {
+        $generalState = (new SearchFeedbackTelegramConversationState())
+            ->setStep(SearchFeedbackTelegramConversation::STEP_CREATE_CONFIRM_QUERIED)
+        ;
+
+        yield 'instagram username' => [
+            'state' => (clone $generalState)
+                ->setStep(SearchFeedbackTelegramConversation::STEP_CREATE_CONFIRM_QUERIED)
+                ->setSearchTerm(
+                    $this->getMessengerUsernameSearchTerm(Fixtures::getInstagramMessengerUserTransferFixture(3))
+                        ->setType(SearchTermType::instagram_username)
+                ),
+        ];
+    }
+
+    /**
+     * @param SearchFeedbackTelegramConversationState $state
+     * @return void
+     * @dataProvider gotCreateConfirmWithNoSuccessDataProvider
+     */
+    public function testGotCreateConfirmWithNoSuccess(
+        SearchFeedbackTelegramConversationState $state
+    ): void
+    {
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+        ]);
+
+        $conversation = $this->createConversation(SearchFeedbackTelegramConversation::class, $state);
+
+        $this
+            ->type('keyboard.no')
+            ->shouldSeeChooseAction('reply.will_notify')
+            ->shouldNotSeeActiveConversation($conversation->getClass())
+        ;
+
+        $this->assertFalse($conversation->active());
+    }
+
+    public function gotCreateConfirmWithNoSuccessDataProvider(): Generator
+    {
+        $generalState = (new SearchFeedbackTelegramConversationState())
+            ->setStep(SearchFeedbackTelegramConversation::STEP_CREATE_CONFIRM_QUERIED)
+        ;
+
+        yield 'instagram username' => [
+            'state' => (clone $generalState)
+                ->setStep(SearchFeedbackTelegramConversation::STEP_CREATE_CONFIRM_QUERIED)
+                ->setSearchTerm(
+                    $this->getMessengerUsernameSearchTerm(Fixtures::getInstagramMessengerUserTransferFixture(3))
+                        ->setType(SearchTermType::instagram_username)
+                ),
         ];
     }
 

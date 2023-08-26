@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Service\Feedback;
 
+use App\Entity\CommandOptions;
 use App\Entity\Feedback\FeedbackSearchSearch;
-use App\Entity\Feedback\FeedbackSearchSearchCreatorOptions;
+use App\Exception\CommandLimitExceeded;
 use App\Exception\ValidatorException;
 use App\Object\Feedback\FeedbackSearchSearchTransfer;
+use App\Service\Command\CommandLimitsChecker;
+use App\Service\Command\CommandStatisticsProviderInterface;
 use App\Service\Logger\ActivityLogger;
 use App\Service\Validator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,17 +18,26 @@ use Doctrine\ORM\EntityManagerInterface;
 class FeedbackSearchSearchCreator
 {
     public function __construct(
-        private readonly FeedbackSearchSearchCreatorOptions $options,
+        private readonly CommandOptions $options,
         private readonly EntityManagerInterface $entityManager,
         private readonly Validator $validator,
+        private readonly CommandStatisticsProviderInterface $statisticsProvider,
+        private readonly CommandLimitsChecker $limitsChecker,
+        private readonly FeedbackSubscriptionManager $subscriptionManager,
         private readonly ActivityLogger $activityLogger,
     )
     {
     }
 
+    public function getOptions(): CommandOptions
+    {
+        return $this->options;
+    }
+
     /**
      * @param FeedbackSearchSearchTransfer $feedbackSearchLookupTransfer
      * @return FeedbackSearchSearch
+     * @throws CommandLimitExceeded
      * @throws ValidatorException
      */
     public function createFeedbackSearchSearch(FeedbackSearchSearchTransfer $feedbackSearchLookupTransfer): FeedbackSearchSearch
@@ -33,10 +45,16 @@ class FeedbackSearchSearchCreator
         $this->validator->validate($feedbackSearchLookupTransfer);
 
         $messengerUser = $feedbackSearchLookupTransfer->getMessengerUser();
+        $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($messengerUser);
+
+        if (!$hasActiveSubscription) {
+            $this->limitsChecker->checkCommandLimits($messengerUser->getUser(), $this->statisticsProvider);
+        }
+
         $searchTermTransfer = $feedbackSearchLookupTransfer->getSearchTerm();
         $searchTermMessengerUser = null;
 
-        $feedbackSearchLookup = new FeedbackSearchSearch(
+        $feedbackSearchSearch = new FeedbackSearchSearch(
             $messengerUser->getUser(),
             $messengerUser,
             $searchTermTransfer->getText(),
@@ -45,15 +63,16 @@ class FeedbackSearchSearchCreator
             $searchTermMessengerUser,
             $searchTermTransfer->getMessenger(),
             $searchTermTransfer->getMessengerUsername(),
+            $hasActiveSubscription,
             $messengerUser->getUser()->getCountryCode(),
             $messengerUser->getUser()->getLocaleCode()
         );
-        $this->entityManager->persist($feedbackSearchLookup);
+        $this->entityManager->persist($feedbackSearchSearch);
 
-        if ($this->options->logActivities()) {
-            $this->activityLogger->logActivity($feedbackSearchLookup);
+        if ($this->options->shouldLogActivities()) {
+            $this->activityLogger->logActivity($feedbackSearchSearch);
         }
 
-        return $feedbackSearchLookup;
+        return $feedbackSearchSearch;
     }
 }

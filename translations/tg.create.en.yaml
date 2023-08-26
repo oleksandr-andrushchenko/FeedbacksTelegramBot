@@ -16,7 +16,5 @@ keyboard:
 reply:
   canceled: Feedback adding dialog has been canceled.
   ok: Feedback has been successfully added.
-  fail:
-    same_messenger_user: Feedbacks on yourself is not allowed.
-    limit_exceeded:
-      main: "You have reached feedback creation limit (%limit%) for the next period: %period%. Try again later or buy premium subscription %command% please."
+  on_self_forbidden: Feedbacks on yourself is not allowed.
+  limit_exceeded: 'You have reached feedback creation limit (%count%) for the next period: %period%. Try again later or buy premium subscription %subscribe_command% please.'

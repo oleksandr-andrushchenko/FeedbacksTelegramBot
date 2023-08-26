@@ -24,7 +24,7 @@
 * generate badge (picture) with username/rating to post in messengers
 * "list my feedbacks" command
 * "list feedbacks on me" command
-* -> 3) "subscribe on mine/somebodies feedbacks" command (or, for beginning, - just say smth like "we gonna notify you when smbd left smth")
+* implement notifications on subscription matches
 * after country selection - link to che channel
 * add command: how many times user X were been searched for (top command, usually - it gonna be current account - search for itself, but how many times somebody were searching me)
 * manual payments
@@ -34,4 +34,8 @@
 * log new user activity
 * allow to buy subscription even if already have one
 * ask about custom message before propose typing in contact command
-* -> 1) finalize Portmone requirements and send
+
+* Simplify country selection
+* Create & implement experienced mode for user: no hints, no press menu button text, less texts, shorter texts etc. (mode enabled automatically after activity checks with/without user confirmation)
+* Remove confirmation steps for premium-users
+* Check other channels and put emojis as much as possible + html

@@ -57,6 +57,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             ->shouldSeeActiveConversation(
                 CreateFeedbackTelegramConversation::class,
                 (new CreateFeedbackTelegramConversationState())
+                    ->setSearchTermStep(true)
                     ->setStep(CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
             )
             ->shouldSeeReply(
@@ -180,8 +181,42 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                 'shouldSeeButtons' => $this->getShouldSeeKeyboardOnRatingQueried($tg),
             ],
         ];
+    }
 
-        yield from $this->gotUnknownSearchTermSuccessDataProvider('search_term_step', $state);
+    /**
+     * @param callable $fn
+     * @dataProvider gotSearchTermWithUnknownTypeSuccessDataProvider
+     */
+    public function testGotSearchTermWithUnknownTypeSuccess(callable $fn): void
+    {
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+        ]);
+
+        extract($fn($this->getTg()));
+
+        $state->setStep(CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED);
+        $conversation = $this->createConversation(CreateFeedbackTelegramConversation::class, $state);
+
+        $mocks && $mocks();
+
+        $this
+            ->type($command)
+            ->shouldSeeActiveConversation($conversation->getClass(), $expectedState)
+            ->shouldSeeReply(...$shouldSeeReply)
+            ->shouldSeeButtons(...$shouldSeeButtons)
+        ;
+    }
+
+    public function gotSearchTermWithUnknownTypeSuccessDataProvider(): Generator
+    {
+        $state = (new CreateFeedbackTelegramConversationState())
+            ->setStep(CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
+        ;
+
+        yield from $this->gotUnknownSearchTermSuccessDataProvider('', $state);
     }
 
     public function gotUnknownSearchTermSuccessDataProvider(string $key, CreateFeedbackTelegramConversationState $state): Generator
@@ -432,8 +467,51 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
                 ],
             ];
         }
+    }
 
-        yield from $this->gotUnknownSearchTermSuccessDataProvider('change_search_term_step', $state);
+    /**
+     * @param callable $fn
+     * @return void
+     * @dataProvider gotSearchTermChangeWithUnknownTypeSuccessDataProvider
+     */
+    public function testGotSearchTermChangeWithUnknownTypeSuccess(callable $fn): void
+    {
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+        ]);
+
+        extract($fn($this->getTg()));
+
+        $state
+            ->setStep(CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
+            ->setChange(true)
+        ;
+
+        $conversation = $this->createConversation(CreateFeedbackTelegramConversation::class, $state);
+
+        $mocks && $mocks($this);
+
+        $this
+            ->type($command)
+            ->shouldSeeActiveConversation($conversation->getClass(), $expectedState)
+            ->shouldSeeReply(...$shouldSeeReply)
+            ->shouldSeeButtons(...$shouldSeeButtons)
+        ;
+    }
+
+    public function gotSearchTermChangeWithUnknownTypeSuccessDataProvider(): Generator
+    {
+        $state = (new CreateFeedbackTelegramConversationState())
+            ->setStep(CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
+            ->setChange(true)
+            ->setSearchTerm(new SearchTermTransfer('any'))
+            ->setRating(Rating::random())
+            ->setDescription(mt_rand(0, 1) === 0 ? null : 'any')
+        ;
+
+        yield from $this->gotUnknownSearchTermSuccessDataProvider('change', $state);
     }
 
     /**
@@ -1187,7 +1265,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 
         $this
             ->type('keyboard.cancel')
-            ->shouldSeeNotActiveConversation($conversation->getClass(), $expectedState)
+            ->shouldNotSeeActiveConversation($conversation->getClass(), $expectedState)
             ->shouldSeeReply('reply.canceled')
             ->shouldSeeChooseAction()
         ;
@@ -1255,9 +1333,8 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 
         $this
             ->type('keyboard.confirm')
-            ->shouldSeeNotActiveConversation()
-            ->shouldSeeReply('reply.ok')
-            ->shouldSeeChooseAction()
+            ->shouldNotSeeActiveConversation()
+            ->shouldSeeChooseAction('reply.ok')
         ;
 
         $this->assertEquals($previousFeedbackCount + 1, $feedbackRepository->count([]));

@@ -15,6 +15,7 @@ class CreateFeedbackTelegramConversationState extends TelegramConversationState
         private ?Rating $rating = null,
         private ?string $description = null,
         private ?bool $change = null,
+        private ?bool $searchTermStep = null,
     )
     {
         parent::__construct($step);
@@ -64,6 +65,18 @@ class CreateFeedbackTelegramConversationState extends TelegramConversationState
     public function setChange(?bool $change): static
     {
         $this->change = $change;
+
+        return $this;
+    }
+
+    public function isSearchTermStep(): ?bool
+    {
+        return $this->searchTermStep;
+    }
+
+    public function setSearchTermStep(?bool $searchTermStep): static
+    {
+        $this->searchTermStep = $searchTermStep;
 
         return $this;
     }

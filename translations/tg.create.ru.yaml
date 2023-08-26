@@ -7,7 +7,7 @@ query:
   search_term_type: Кем или чем является "%search_term%"?
   rating: Оцените ваш опыт с "%search_term%".
   description: Добавьте любую информацию и/или опишите ваш опыт с "%search_term%".
-  confirm: Подтвердить создание отзыва обо "%search_term%"? %feedback%
+  confirm: Подтвердить создание отзыва о "%search_term%"? %feedback%
 keyboard:
   change_search_term: Изменить поисковый запрос
   change_rating: Изменить оценку
@@ -16,7 +16,5 @@ keyboard:
 reply:
   canceled: Диалог добавления отзыва отменен.
   ok: Отзыв успешно добавлен.
-  fail:
-    same_messenger_user: Отзывы о себе запрещены.
-    limit_exceeded:
-      main: "Вы достигли лимита создания отзывов (%limit%) на следующий период: %period%. Пожалуйста, повторите попытку позже или купите премиум-подписку %command%."
+  on_self_forbidden: Отзывы о себе запрещены.
+  limit_exceeded: 'Вы достигли лимита (%count%) создания отзывов на следующий период: %period%. Пожалуйста, повторите попытку позже или купите премиум-подписку %subscribe_command%.'

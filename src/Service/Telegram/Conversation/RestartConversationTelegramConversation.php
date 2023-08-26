@@ -9,7 +9,7 @@ use App\Service\Intl\CountryProvider;
 use App\Service\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\Chat\StartTelegramCommandHandler;
 use App\Service\Telegram\TelegramAwareHelper;
-use App\Entity\Telegram\TelegramConversation as Conversation;
+use App\Entity\Telegram\TelegramConversation as Entity;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
 class RestartConversationTelegramConversation extends TelegramConversation implements TelegramConversationInterface
@@ -18,20 +18,19 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
     public const STEP_CONFIRMED = 20;
 
     public function __construct(
-        readonly TelegramAwareHelper $awareHelper,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly StartTelegramCommandHandler $startHandler,
         private readonly CountryProvider $countryProvider,
     )
     {
-        parent::__construct($awareHelper, new TelegramConversationState());
+        parent::__construct(new TelegramConversationState());
     }
 
-    public function invoke(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function invoke(TelegramAwareHelper $tg, Entity $entity): null
     {
         return match ($this->state->getStep()) {
             default => $this->start($tg),
-            self::STEP_CONFIRM_QUERIED => $this->gotConfirm($tg, $conversation),
+            self::STEP_CONFIRM_QUERIED => $this->gotConfirm($tg, $entity),
         };
     }
 
@@ -63,16 +62,18 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
         return $tg->reply($this->getConfirmQuery($tg), $tg->keyboard(...$buttons))->null();
     }
 
-    public function gotConfirm(TelegramAwareHelper $tg, Conversation $conversation): null
+    public function gotConfirm(TelegramAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText($this->getConfirmNoButton($tg)->getText())) {
-            return $this->chooseActionChatSender->sendActions($tg->stopConversation($conversation));
+            $tg->stopConversation($entity);
+
+            return $this->chooseActionChatSender->sendActions($tg);
         }
         if (!$tg->matchText($this->getConfirmYesButton($tg)->getText())) {
-            return $this->queryConfirm($tg->replyWrong($tg->trans('reply.wrong')));
-        }
+            $tg->replyWrong($tg->trans('reply.wrong'));
 
-        $this->state->setStep(self::STEP_CONFIRMED);
+            return $this->queryConfirm($tg);
+        }
 
         $countryCode = $tg->getTelegram()->getBot()->getCountryCode();
         $country = $this->countryProvider->getCountry($countryCode);
@@ -87,7 +88,7 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
             ?->setTimezone($country->getTimezones()[0] ?? null)
         ;
 
-        $tg->stopConversation($conversation)->stopConversations();
+        $tg->stopConversation($entity)->stopConversations();
 
         $tg->replyOk($tg->trans('reply.ok', domain: 'tg.restart'));
 
