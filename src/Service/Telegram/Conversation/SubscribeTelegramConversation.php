@@ -24,6 +24,7 @@ use App\Service\Telegram\Payment\TelegramPaymentManager;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Service\Validator;
 use Longman\TelegramBot\Entities\KeyboardButton;
+use Psr\Log\LoggerInterface;
 
 /**
  * @property SubscribeTelegramConversationState $state
@@ -46,6 +47,7 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
         private readonly CurrencyProvider $currencyProvider,
         private readonly MoneyFormatter $moneyFormatter,
         private readonly TelegramBotRepository $botRepository,
+        private readonly LoggerInterface $logger,
     )
     {
         parent::__construct(new SubscribeTelegramConversationState());
@@ -284,6 +286,8 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
                 $price
             );
         } catch (InvalidCurrencyTelegramException $exception) {
+            $this->logger->error($exception);
+
             $tg->replyFail(
                 $tg->trans(
                     'reply.invalid_currency',

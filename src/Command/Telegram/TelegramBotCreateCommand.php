@@ -41,7 +41,6 @@ class TelegramBotCreateCommand extends Command
             ->addArgument('username', InputArgument::REQUIRED, 'Telegram bot username')
             ->addArgument('token', InputArgument::REQUIRED, 'Telegram bot Token')
             ->addArgument('country', InputArgument::REQUIRED, 'Telegram bot Country code')
-            ->addArgument('locale', InputArgument::REQUIRED, 'Telegram bot Locale code')
             ->addArgument('primary-username', InputArgument::OPTIONAL, 'Telegram Primary bot username')
             ->setDescription('Create telegram bot')
         ;
@@ -76,7 +75,6 @@ class TelegramBotCreateCommand extends Command
                 $input->getArgument('username'),
                 $input->getArgument('token'),
                 $input->getArgument('country'),
-                $input->getArgument('locale'),
                 $group,
                 $primaryBot,
             );

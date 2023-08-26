@@ -14,7 +14,6 @@ readonly class TelegramBotTransfer
         private string $username,
         private string $token,
         private string $countryCode,
-        private string $localeCode,
         private TelegramGroup $group,
         private ?TelegramBot $primaryBot = null,
     )
@@ -34,11 +33,6 @@ readonly class TelegramBotTransfer
     public function getCountryCode(): string
     {
         return $this->countryCode;
-    }
-
-    public function getLocaleCode(): string
-    {
-        return $this->localeCode;
     }
 
     public function getGroup(): TelegramGroup

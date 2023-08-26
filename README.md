@@ -38,4 +38,4 @@
 * Simplify country selection
 * Create & implement experienced mode for user: no hints, no press menu button text, less texts, shorter texts etc. (mode enabled automatically after activity checks with/without user confirmation)
 * Remove confirmation steps for premium-users
-* Check other channels and put emojis as much as possible + html
+* -> Check other channels and put emojis & description as much as possible + html
