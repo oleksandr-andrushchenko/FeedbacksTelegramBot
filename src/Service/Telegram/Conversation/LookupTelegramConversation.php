@@ -218,11 +218,13 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
             $searchTermText = $this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm());
 
             if ($count === 0) {
-                $tg->stopConversation($entity)
-                    ->replyUpset($tg->trans('reply.empty_list', ['search_term' => sprintf('<u>%s</u>', $searchTermText)], domain: 'tg.lookup'))
-                ;
+                $tg->stopConversation($entity);
+                $replyText = join(' ', [
+                    $tg->upsetText($tg->trans('reply.empty_list', ['search_term' => sprintf('<u>%s</u>', $searchTermText)], domain: 'tg.lookup')),
+                    $tg->okText($tg->trans('reply.will_notify', ['search_term' => sprintf('<u>%s</u>', $this->state->getSearchTerm()->getText())], domain: 'tg.lookup'))
+                ]);
 
-                return $this->chooseActionChatSender->sendActions($tg);
+                return $this->chooseActionChatSender->sendActions($tg, $replyText);
             }
 
             $tg->reply($tg->trans('reply.title', ['search_term' => sprintf('<u>%s</u>', $searchTermText), 'count' => $count], domain: 'tg.lookup'));

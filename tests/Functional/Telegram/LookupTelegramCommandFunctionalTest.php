@@ -91,11 +91,62 @@ class LookupTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestC
     /**
      * @param LookupTelegramConversationState $state
      * @param string $command
+     * @return void
+     * @dataProvider gotSearchTermTypeEmptyListSuccessDataProvider
+     */
+    public function testGotSearchTermTypeEmptyListSuccess(
+        LookupTelegramConversationState $state,
+        string $command
+    ): void
+    {
+        $this->bootFixtures([
+            User::class,
+            MessengerUser::class,
+            TelegramBot::class,
+        ]);
+
+        $this->createConversation(LookupTelegramConversation::class, $state);
+
+        $feedbackSearchSearchRepository = $this->getFeedbackSearchSearchRepository();
+        $previousFeedbackSearchSearchCount = $feedbackSearchSearchRepository->count([]);
+
+        $this
+            ->type($command)
+            ->shouldNotSeeActiveConversation()
+            ->shouldSeeReply(
+                'reply.empty_list',
+                'reply.will_notify'
+            )
+            ->shouldSeeChooseAction('reply.empty_list')
+        ;
+
+        $this->assertEquals($previousFeedbackSearchSearchCount + 1, $feedbackSearchSearchRepository->count([]));
+
+        $feedbackSearchSearch = $feedbackSearchSearchRepository->findOneBy([
+            'messengerUser' => $this->getUpdateMessengerUser(),
+        ]);
+
+        $this->assertNotNull($feedbackSearchSearch);
+    }
+
+    public function gotSearchTermTypeEmptyListSuccessDataProvider(): Generator
+    {
+        yield 'unknown' => [
+            'state' => (new LookupTelegramConversationState())
+                ->setStep(LookupTelegramConversation::STEP_SEARCH_TERM_TYPE_QUERIED)
+                ->setSearchTerm(new SearchTermTransfer('any')),
+            'command' => 'search_term_type.unknown',
+        ];
+    }
+
+    /**
+     * @param LookupTelegramConversationState $state
+     * @param string $command
      * @param array $shouldSeeReplyFeedbackSearches
      * @return void
-     * @dataProvider gotSearchTermWithKnownTypeSuccessDataProvider
+     * @dataProvider gotSearchTermTypeNotEmptyListSuccessDataProvider
      */
-    public function testGotSearchTermWithKnownTypeSuccess(
+    public function testGotSearchTermTypeNotEmptyListSuccess(
         LookupTelegramConversationState $state,
         string $command,
         array $shouldSeeReplyFeedbackSearches
@@ -111,14 +162,8 @@ class LookupTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestC
         $this->createConversation(LookupTelegramConversation::class, $state);
 
         $shouldSeeReply = [];
-
-        $count = count($shouldSeeReplyFeedbackSearches);
-        if ($count === 0) {
-            $shouldSeeReply[] = 'reply.empty_list';
-        } else {
-            $shouldSeeReply[] = 'reply.title';
-            $shouldSeeReply = array_merge($shouldSeeReply, array_fill(0, count($shouldSeeReplyFeedbackSearches), $this->getFeedbackSearchReply()));
-        }
+        $shouldSeeReply[] = 'reply.title';
+        $shouldSeeReply = array_merge($shouldSeeReply, array_fill(0, count($shouldSeeReplyFeedbackSearches), $this->getFeedbackSearchReply()));
 
         $feedbackSearchSearchRepository = $this->getFeedbackSearchSearchRepository();
         $previousFeedbackSearchSearchCount = $feedbackSearchSearchRepository->count([]);
@@ -139,17 +184,9 @@ class LookupTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestC
         $this->assertNotNull($feedbackSearchSearch);
     }
 
-    public function gotSearchTermWithKnownTypeSuccessDataProvider(): Generator
+    public function gotSearchTermTypeNotEmptyListSuccessDataProvider(): Generator
     {
-        yield 'unknown & empty' => [
-            'state' => (new LookupTelegramConversationState())
-                ->setStep(LookupTelegramConversation::STEP_SEARCH_TERM_TYPE_QUERIED)
-                ->setSearchTerm(new SearchTermTransfer('any')),
-            'command' => 'search_term_type.unknown',
-            'shouldSeeReplyFeedbacks' => [],
-        ];
-
-        yield 'instagram username & not empty' => [
+        yield 'instagram username' => [
             'state' => (new LookupTelegramConversationState())
                 ->setStep(LookupTelegramConversation::STEP_SEARCH_TERM_QUERIED),
             'command' => $this->getMessengerUserProfileUrl(Fixtures::getInstagramMessengerUserTransferFixture(3)),
@@ -189,9 +226,12 @@ class LookupTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestC
         $count = count($shouldSeeReplyFeedbackSearches);
         if ($count === 0) {
             $shouldSeeReply[] = 'reply.empty_list';
+            $shouldSeeReply[] = 'reply.will_notify';
+            $shouldSeeQuery = 'reply.will_notify';
         } else {
             $shouldSeeReply[] = 'reply.title';
             $shouldSeeReply = array_merge($shouldSeeReply, array_fill(0, count($shouldSeeReplyFeedbackSearches), $this->getFeedbackSearchReply()));
+            $shouldSeeQuery = null;
         }
 
         $feedbackSearchSearchRepository = $this->getFeedbackSearchSearchRepository();
@@ -201,7 +241,7 @@ class LookupTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestC
             ->type($command)
             ->shouldNotSeeActiveConversation()
             ->shouldSeeReply(...$shouldSeeReply)
-            ->shouldSeeChooseAction()
+            ->shouldSeeChooseAction($shouldSeeQuery)
         ;
 
         $this->assertEquals($previousFeedbackSearchSearchCount + 1, $feedbackSearchSearchRepository->count([]));

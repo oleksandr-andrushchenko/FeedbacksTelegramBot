@@ -8,5 +8,6 @@ query:
 reply:
   canceled: Діалог пошуку запитів скасовано.
   empty_list: Не знайдено запитів про "%search_term%".
+  will_notify: Ми повідомимо Вам, коли щось з'явиться про %search_term%.
   title: '%count% запит(-ів) успішно знайдено про "%search_term%":'
   limit_exceeded: 'Ви досягли ліміту (%count%) пошуку запитів на наступний період: %period%. Спробуйте пізніше або придбайте преміум-підписку %subscribe_command%.'

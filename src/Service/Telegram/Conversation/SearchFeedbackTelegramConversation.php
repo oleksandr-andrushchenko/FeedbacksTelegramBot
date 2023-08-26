@@ -384,7 +384,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
         if ($tg->matchText($this->getCreateConfirmNoButton($tg)->getText())) {
             $tg->stopConversation($entity);
             $searchTermText = $this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm());
-            $replyText = $tg->trans('reply.will_notify', ['search_term' => sprintf('<u>%s</u>', $searchTermText)], domain: 'tg.search');
+            $replyText = $tg->okText($tg->trans('reply.will_notify', ['search_term' => sprintf('<u>%s</u>', $searchTermText)], domain: 'tg.search'));
 
             return $this->chooseActionChatSender->sendActions($tg, $replyText);
         }

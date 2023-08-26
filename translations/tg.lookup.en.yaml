@@ -8,5 +8,6 @@ query:
 reply:
   canceled: Lookup search dialog has been canceled.
   empty_list: No lookups were found by "%search_term%".
+  will_notify: We'll let you know when something pops up about %search_term%.
   title: 'There are %count% lookup(-s) have been successfully found by "%search_term%":'
   limit_exceeded: 'You have reached feedback searching limit (%count%) for the next period: %period%. Try again later or buy premium subscription %subscribe_command% please.'
