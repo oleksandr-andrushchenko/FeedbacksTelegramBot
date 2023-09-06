@@ -37,7 +37,7 @@ class ContactOptionsFactory
             $this->translator->trans('tax', domain: $domain, locale: $localeCode),
             $primary->getUsername(),
             // todo: fix
-            $this->translator->trans(sprintf('%s.name', $group->name), domain: 'feedbacks.tg.texts', locale: $localeCode),
+            $this->translator->trans(sprintf('%s.name', $group->name), domain: 'tg.texts', locale: $localeCode),
             sprintf('https://t.me/%s', $primary->getUsername()),
             $options['website'],
             $this->translator->trans('phone', domain: $domain, locale: $localeCode),
