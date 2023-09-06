@@ -311,7 +311,6 @@
             <argument type="service" id="app.user_feedback_message_creator"/>
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
             <argument type="service" id="app.contact_options_factory"/>
-            <argument type="service" id="app.intl_country_provider"/>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.telegram_conversation_restart"

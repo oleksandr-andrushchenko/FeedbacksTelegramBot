@@ -2,7 +2,7 @@
 ℹ️ {{ 'items'|trans }}
 
 {% for name,limits in commands %}
-{% include 'feedbacks.tg.command.html.twig' with {name: name} %}:
+▪️ {% include 'feedbacks.tg.command.html.twig' with {name: name} %}:
 {% for limit in limits %}
 ▫️ {{ 'tries_for'|trans({'%tries%': '<b>' ~ limit.count ~ '</b> ' ~ 'tries'|trans, '%period%': '<b>1 ' ~ limit.period|trans ~ '</b>'})|raw }}
 {% endfor %}

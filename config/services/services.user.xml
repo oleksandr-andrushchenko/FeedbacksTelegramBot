@@ -18,6 +18,7 @@
         <service id="app.user_feedback_message_creator" class="App\Service\User\UserFeedbackMessageCreator">
             <argument type="service" id="app.validator"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.logger_activity"/>
         </service>
     </services>
 </container>

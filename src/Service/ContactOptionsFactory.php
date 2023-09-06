@@ -21,6 +21,12 @@ class ContactOptionsFactory
     {
     }
 
+    /**
+     * @param TelegramGroup $group
+     * @param string $localeCode
+     * @return ContactOptions
+     * @throws ContactOptionsNotFoundException
+     */
     public function createContactOptions(TelegramGroup $group, string $localeCode): ContactOptions
     {
         if (!array_key_exists($group->name, $this->options)) {

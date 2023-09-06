@@ -11,7 +11,6 @@ use App\Exception\ValidatorException;
 use App\Object\User\UserFeedbackMessageTransfer;
 use App\Service\ContactOptionsFactory;
 use App\Service\Feedback\Telegram\Chat\ChooseActionTelegramChatSender;
-use App\Service\Intl\CountryProvider;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Service\Telegram\TelegramConversation;
 use App\Service\Telegram\TelegramConversationInterface;
@@ -27,7 +26,6 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
         private readonly UserFeedbackMessageCreator $messageCreator,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly ContactOptionsFactory $contactOptionsFactory,
-        private readonly CountryProvider $countryProvider,
     )
     {
         parent::__construct(new CreateFeedbackTelegramConversationState());
@@ -44,10 +42,7 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
 
     public function start(TelegramAwareHelper $tg): ?string
     {
-        $country = $this->countryProvider->getCountry($tg->getCountryCode());
-        $localeCode = $country->getLocaleCodes()[0] ?? null;
-
-        $contacts = $this->contactOptionsFactory->createContactOptions(TelegramGroup::feedbacks, $localeCode);
+        $contacts = $this->contactOptionsFactory->createContactOptions(TelegramGroup::feedbacks, $tg->getLocaleCode());
 
         $message = $tg->view('contact_query', [
             'contacts' => $contacts,
