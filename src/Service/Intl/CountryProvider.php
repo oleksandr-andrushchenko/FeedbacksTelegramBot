@@ -14,7 +14,6 @@ class CountryProvider
         private readonly TranslatorInterface $translator,
         private readonly string $dataPath,
         private DenormalizerInterface $denormalizer,
-        private ?array $data = null,
     )
     {
     }
@@ -56,28 +55,28 @@ class CountryProvider
         return '🌎';
     }
 
-    public function getCountryName(Country $country, string $locale = null): string
+    public function getCountryName(Country $country, string $localeCode = null): string
     {
-        return $this->translator->trans($country->getCode(), domain: 'countries', locale: $locale);
+        return $this->translator->trans($country->getCode(), domain: 'country', locale: $localeCode);
     }
 
-    public function getUnknownCountryName(string $locale = null): string
+    public function getUnknownCountryName(string $localeCode = null): string
     {
-        return $this->translator->trans('zz', domain: 'countries', locale: $locale);
+        return $this->translator->trans('zz', domain: 'country', locale: $localeCode);
     }
 
-    public function getComposeCountryName(Country $country = null, string $locale = null): string
+    public function getCountryComposeName(Country $country = null, string $localeCode = null): string
     {
         if ($country === null) {
             return join(' ', [
                 $this->getUnknownCountryIcon(),
-                $this->getUnknownCountryName($locale),
+                $this->getUnknownCountryName($localeCode),
             ]);
         }
 
         return join(' ', [
             $this->getCountryIcon($country),
-            $this->getCountryName($country, $locale),
+            $this->getCountryName($country, $localeCode),
         ]);
     }
 
@@ -103,11 +102,13 @@ class CountryProvider
 
     private function getData(): array
     {
-        if ($this->data === null) {
+        static $data = null;
+
+        if ($data === null) {
             $content = file_get_contents($this->dataPath);
-            $this->data = json_decode($content, true);
+            $data = json_decode($content, true);
         }
 
-        return $this->data;
+        return $data;
     }
 }

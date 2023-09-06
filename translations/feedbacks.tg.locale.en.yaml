@@ -1,0 +1,7 @@
+query:
+  change_confirm: Would you like to change it?
+  locale: Select your language please.
+reply:
+  current_locale: Your current language - %locale%.
+  canceled: Language selection dialog has been canceled.
+  ok: Successfully updated.

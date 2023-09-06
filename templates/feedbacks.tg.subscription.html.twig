@@ -1,0 +1,6 @@
+{% trans_default_domain 'feedbacks.tg.subscription' %}
+{% if number %}
+{{ 'icon.number'|trans({}, 'feedbacks.tg') ~ number }}:
+{% endif %}
+{{ period }} {{ is_subscription_active ? '🟢' : '⚪️' }} {{ (is_subscription_active ? 'active' : 'inactive')|trans|lower }}
+{{ subscription_plan ~ ' - ' ~ price }}

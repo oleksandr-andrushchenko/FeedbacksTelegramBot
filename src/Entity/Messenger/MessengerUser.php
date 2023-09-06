@@ -17,7 +17,6 @@ class MessengerUser
         private ?string $username = null,
         private ?string $name = null,
         private ?User $user = null,
-        private bool $isShowHints = true,
         private bool $isShowExtendedKeyboard = false,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
@@ -80,18 +79,6 @@ class MessengerUser
     public function setUsername(?string $username): self
     {
         $this->username = $username;
-
-        return $this;
-    }
-
-    public function showHints(): bool
-    {
-        return $this->isShowHints;
-    }
-
-    public function setIsShowHints(bool $isShowHints): self
-    {
-        $this->isShowHints = $isShowHints;
 
         return $this;
     }

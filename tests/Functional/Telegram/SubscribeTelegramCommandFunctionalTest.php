@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Telegram;
 
+use App\Entity\Feedback\Telegram\SubscribeTelegramConversationState;
 use App\Entity\Messenger\MessengerUser;
-use App\Entity\Telegram\SubscribeTelegramConversationState;
 use App\Entity\Telegram\TelegramBot;
 use App\Entity\Telegram\TelegramPaymentMethod;
 use App\Entity\User\User;
 use App\Enum\Feedback\FeedbackSubscriptionPlanName;
 use App\Enum\Telegram\TelegramPaymentMethodName;
-use App\Service\Telegram\Channel\FeedbackTelegramChannel;
-use App\Service\Telegram\Conversation\SubscribeTelegramConversation;
+use App\Service\Feedback\Telegram\Conversation\SubscribeTelegramConversation;
+use App\Service\Feedback\Telegram\FeedbackTelegramChannel;
 use App\Tests\Traits\Feedback\FeedbackSearchSearchRepositoryProviderTrait;
 use App\Tests\Traits\Feedback\FeedbackSubscriptionPlanProviderTrait;
 use App\Tests\Traits\Intl\CurrencyProviderTrait;
@@ -32,7 +32,6 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
 
     /**
      * @param string $command
-     * @param bool $showHints
      * @param TelegramPaymentMethodName[] $paymentMethodNames
      * @param SubscribeTelegramConversationState $expectedState
      * @param array $shouldSeeReply
@@ -42,7 +41,6 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
      */
     public function testStartSuccess(
         string $command,
-        bool $showHints,
         array $paymentMethodNames,
         SubscribeTelegramConversationState $expectedState,
         array $shouldSeeReply,
@@ -56,20 +54,7 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
         ]);
 
         $this->getTelegram()->getBot()->setIsAcceptPayments(true);
-        $this->getUpdateMessengerUser()->setIsShowHints($showHints);
         array_map(fn (TelegramPaymentMethodName $name) => $this->createPaymentMethod($name), $paymentMethodNames);
-
-        if ($showHints) {
-            $shouldSeeReply = array_merge(
-                [
-                    'describe.title',
-                    'command_limits.tries_for',
-                    'describe.summary',
-                    'toggle_hints',
-                ],
-                $shouldSeeReply
-            );
-        }
 
         $this
             ->type($command)
@@ -82,60 +67,31 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
     public function startSuccessDataProvider(): Generator
     {
         $commands = [
-            'button & no hints & one payment method' => [
-                'icon.subscribe command.subscribe',
-                false,
+            'button & one payment method' => [
+                $this->command('subscribe'),
                 [TelegramPaymentMethodName::portmone],
                 false,
             ],
-            'button & hints & one payment method' => [
-                'icon.subscribe command.subscribe',
-                true,
-                [TelegramPaymentMethodName::portmone],
-                false,
-            ],
-            'button & no hints & two payment methods' => [
-                'icon.subscribe command.subscribe',
-                false,
+            'button & two payment methods' => [
+                $this->command('subscribe'),
                 [TelegramPaymentMethodName::portmone, TelegramPaymentMethodName::liqpay],
                 true,
             ],
-            'button & hints & two payment methods' => [
-                'icon.subscribe command.subscribe',
-                true,
-                [TelegramPaymentMethodName::portmone, TelegramPaymentMethodName::liqpay],
-                true,
-            ],
-            'command & no hints & one payment method' => [
+            'command & one payment method' => [
                 FeedbackTelegramChannel::SUBSCRIBE,
-                false,
                 [TelegramPaymentMethodName::portmone],
                 false,
             ],
-            'command & hints & one payment method' => [
+            'command & two payment methods' => [
                 FeedbackTelegramChannel::SUBSCRIBE,
-                true,
-                [TelegramPaymentMethodName::portmone],
-                false,
-            ],
-            'command & no hints & two payment methods' => [
-                FeedbackTelegramChannel::SUBSCRIBE,
-                false,
-                [TelegramPaymentMethodName::portmone, TelegramPaymentMethodName::liqpay],
-                true,
-            ],
-            'command & hints & two payment methods' => [
-                FeedbackTelegramChannel::SUBSCRIBE,
-                true,
                 [TelegramPaymentMethodName::portmone, TelegramPaymentMethodName::liqpay],
                 true,
             ],
         ];
 
-        foreach ($commands as $key => [$command, $showHints, $paymentMethodNames, $expectedPaymentMethodStep]) {
+        foreach ($commands as $key => [$command, $paymentMethodNames, $expectedPaymentMethodStep]) {
             yield $key => [
                 'command' => $command,
-                'showHints' => $showHints,
                 'paymentMethodNames' => $paymentMethodNames,
                 'expectedState' => (new SubscribeTelegramConversationState())
                     ->setCurrencyStep(false)
@@ -146,11 +102,12 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
                 ],
                 'shouldSeeButtons' => [
                     ...array_map(
-                        fn (FeedbackSubscriptionPlanName $plan) => sprintf('subscription_plan.%s', $plan->name),
+                        fn (FeedbackSubscriptionPlanName $plan) => $plan->name,
                         FeedbackSubscriptionPlanName::cases()
                     ),
                     'keyboard.change_currency',
-                    'keyboard.cancel',
+                    $this->helpButton(),
+                    $this->cancelButton(),
                 ],
             ];
         }
@@ -179,6 +136,7 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
             TelegramBot::class,
             TelegramPaymentMethod::class,
         ]);
+
         $conversation = $this->createConversation(SubscribeTelegramConversation::class, $state);
 
         $this
@@ -205,12 +163,12 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
             'currency step & payment method step' => [
                 true,
                 true,
-                'keyboard.back',
+                $this->backButton(),
             ],
             'currency step & no payment method step' => [
                 true,
                 false,
-                'keyboard.back',
+                $this->backButton(),
             ],
         ];
 
@@ -229,11 +187,12 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
                 ],
                 'shouldSeeButtons' => [
                     ...array_map(
-                        fn (FeedbackSubscriptionPlanName $plan) => sprintf('subscription_plan.%s', $plan->name),
+                        fn (FeedbackSubscriptionPlanName $plan) => $plan->name,
                         FeedbackSubscriptionPlanName::cases()
                     ),
                     $shouldSeeButton,
-                    'keyboard.cancel',
+                    $this->helpButton(),
+                    $this->cancelButton(),
                 ],
             ];
         }
@@ -262,6 +221,7 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
             TelegramBot::class,
             TelegramPaymentMethod::class,
         ]);
+
         $conversation = $this->createConversation(SubscribeTelegramConversation::class, $state);
 
         $this
@@ -285,7 +245,7 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
 
         foreach ($commands as $key => [$currencyStep]) {
             yield $key => [
-                'command' => 'subscription_plan.one_year - $20,00',
+                'command' => 'one_year - $20,00',
                 'state' => $state = (new SubscribeTelegramConversationState())
                     ->setCurrencyStep($currencyStep)
                     ->setPaymentMethodStep(true)
@@ -299,8 +259,9 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
                 ],
                 'shouldSeeButtons' => [
                     'payment_method.portmone',
-                    'keyboard.back',
-                    'keyboard.cancel',
+                    $this->backButton(),
+                    $this->helpButton(),
+                    $this->cancelButton(),
                 ],
             ];
         }
@@ -326,6 +287,7 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
             TelegramBot::class,
             TelegramPaymentMethod::class,
         ]);
+
         $conversation = $this->createConversation(SubscribeTelegramConversation::class, $state);
 
         $paymentRepository = $this->getTelegramPaymentRepository();

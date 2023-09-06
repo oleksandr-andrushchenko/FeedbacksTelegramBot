@@ -59,6 +59,7 @@ class Telegram
         $this->update = null;
         $this->messengerUser = null;
     }
+
     public function getBot(): TelegramBot
     {
         return $this->bot;

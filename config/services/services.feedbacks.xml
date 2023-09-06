@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.feedback_creator" class="App\Service\Feedback\FeedbackCreator" lazy="true">
+            <argument type="service" id="app.create_command_options"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.validator"/>
+            <argument type="service" id="app.feedback_statistic_provider"/>
+            <argument type="service" id="app.command_limits_checker"/>
+            <argument type="service" id="app.feedback_subscription_manager"/>
+            <argument type="service" id="app.logger_activity"/>
+        </service>
+        <service id="app.feedback_search_creator" class="App\Service\Feedback\FeedbackSearchCreator" lazy="true">
+            <argument type="service" id="app.create_command_options"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.validator"/>
+            <argument type="service" id="app.feedback_search_statistic_provider"/>
+            <argument type="service" id="app.command_limits_checker"/>
+            <argument type="service" id="app.feedback_subscription_manager"/>
+            <argument type="service" id="app.logger_activity"/>
+        </service>
+        <service id="app.feedback_search_search_creator" class="App\Service\Feedback\FeedbackSearchSearchCreator"
+                 lazy="true">
+            <argument type="service" id="app.lookup_command_options"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.validator"/>
+            <argument type="service" id="app.feedback_search_search_statistic_provider"/>
+            <argument type="service" id="app.command_limits_checker"/>
+            <argument type="service" id="app.feedback_subscription_manager"/>
+            <argument type="service" id="app.logger_activity"/>
+        </service>
+        <service id="app.feedback_searcher" class="App\Service\Feedback\FeedbackSearcher" lazy="true">
+            <argument type="service" id="app.repository.feedback"/>
+        </service>
+        <service id="app.feedback_search_searcher" class="App\Service\Feedback\FeedbackSearchSearcher" lazy="true">
+            <argument type="service" id="app.repository.feedback_search"/>
+        </service>
+
+        <service id="app.feedback_search_term_parser_instagram"
+                 class="App\Service\Feedback\SearchTerm\InstagramSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_facebook"
+                 class="App\Service\Feedback\SearchTerm\FacebookSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_telegram"
+                 class="App\Service\Feedback\SearchTerm\TelegramSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_twitter"
+                 class="App\Service\Feedback\SearchTerm\TwitterSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_tiktok"
+                 class="App\Service\Feedback\SearchTerm\TiktokSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_youtube"
+                 class="App\Service\Feedback\SearchTerm\YoutubeSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_onlyfans"
+                 class="App\Service\Feedback\SearchTerm\OnlyfansSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_reddit"
+                 class="App\Service\Feedback\SearchTerm\RedditSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_email"
+                 class="App\Service\Feedback\SearchTerm\EmailSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_name"
+                 class="App\Service\Feedback\SearchTerm\NameSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_parser_phone_number"
+                 class="App\Service\Feedback\SearchTerm\PhoneNumberSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_unknown_messenger"
+                 class="App\Service\Feedback\SearchTerm\UnknownMessengerSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_url"
+                 class="App\Service\Feedback\SearchTerm\UrlSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_unknown"
+                 class="App\Service\Feedback\SearchTerm\UnknownSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_factory"
+                 class="App\Service\Feedback\SearchTerm\SearchTermParserFactory" lazy="true">
+            <argument type="tagged_locator" tag="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser" class="App\Service\Feedback\SearchTerm\SearchTermParser"
+                 lazy="true">
+            <argument type="service" id="app.feedback_search_term_parser_factory"/>
+        </service>
+        <service id="app.feedback_subscription_plan_provider"
+                 class="App\Service\Feedback\Subscription\FeedbackSubscriptionPlanProvider" lazy="true">
+            <argument>%app.feedback_subscription_plans%</argument>
+            <argument type="service" id="translator"/>
+        </service>
+        <service id="app.feedback_statistic_provider" class="App\Service\Feedback\Statistic\FeedbackStatisticProvider"
+                 lazy="true">
+            <argument type="service" id="app.create_command_options"/>
+            <argument type="service" id="app.repository.feedback"/>
+            <tag name="app.command_statistic_provider"/>
+        </service>
+        <service id="app.feedback_subscription_manager"
+                 class="App\Service\Feedback\Subscription\FeedbackSubscriptionManager" lazy="true">
+            <argument type="service" id="app.feedback_subscription_plan_provider"/>
+            <argument type="service" id="app.repository.feedback_user_subscription"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
+        <service id="app.feedback_search_statistic_provider"
+                 class="App\Service\Feedback\Statistic\FeedbackSearchStatisticProvider" lazy="true">
+            <argument type="service" id="app.search_command_options"/>
+            <argument type="service" id="app.repository.feedback_search"/>
+            <tag name="app.command_statistic_provider"/>
+        </service>
+        <service id="app.feedback_search_search_statistic_provider"
+                 class="App\Service\Feedback\Statistic\FeedbackSearchSearchStatisticProvider" lazy="true">
+            <argument type="service" id="app.lookup_command_options"/>
+            <argument type="service" id="app.repository.feedback_search_search"/>
+            <tag name="app.command_statistic_provider"/>
+        </service>
+        <service id="app.search_term_by_feedback_provider"
+                 class="App\Service\Feedback\SearchTerm\SearchTermByFeedbackProvider" lazy="true"/>
+        <service id="app.search_term_by_feedback_search_provider"
+                 class="App\Service\Feedback\SearchTerm\SearchTermByFeedbackSearchProvider" lazy="true"/>
+        <service id="app.feedback_search_telegram_view_provider"
+                 class="App\Service\Feedback\Telegram\View\FeedbackSearchTelegramViewProvider" lazy="true">
+            <argument type="service" id="app.search_term_by_feedback_search_provider"/>
+            <argument type="service" id="app.search_term_telegram_view_provider"/>
+            <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="app.intl_time_provider"/>
+        </service>
+        <service id="app.feedback_telegram_view_provider"
+                 class="App\Service\Feedback\Telegram\View\FeedbackTelegramViewProvider" lazy="true">
+            <argument type="service" id="app.search_term_by_feedback_provider"/>
+            <argument type="service" id="app.search_term_telegram_view_provider"/>
+            <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="app.intl_time_provider"/>
+            <argument type="service" id="app.feedback_rating_provider"/>
+        </service>
+        <service id="app.search_term_telegram_view_provider"
+                 class="App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider" lazy="true">
+            <argument type="service" id="twig"/>
+        </service>
+        <service id="app.subscription_telegram_view_provider"
+                 class="App\Service\Feedback\Telegram\View\SubscriptionTelegramViewProvider" lazy="true">
+            <argument type="service" id="app.intl_time_provider"/>
+            <argument type="service" id="app.intl_currency_provider"/>
+            <argument type="service" id="app.money_formatter"/>
+            <argument type="service" id="app.feedback_subscription_plan_provider"/>
+            <argument type="service" id="app.feedback_subscription_manager"/>
+        </service>
+        <service id="app.create_command_options" class="App\Entity\CommandOptions">
+            <factory service="app.command_options_factory"/>
+            <argument>%app.create_command_options%</argument>
+        </service>
+        <service id="app.search_command_options" class="App\Entity\CommandOptions">
+            <factory service="app.command_options_factory"/>
+            <argument>%app.search_command_options%</argument>
+        </service>
+        <service id="app.lookup_command_options" class="App\Entity\CommandOptions">
+            <factory service="app.command_options_factory"/>
+            <argument>%app.lookup_command_options%</argument>
+        </service>
+        <service id="app.feedback_search_term_type_provider"
+                 class="App\Service\Feedback\SearchTerm\FeedbackSearchTermTypeProvider" lazy="true">
+            <argument type="service" id="translator"/>
+        </service>
+        <service id="app.feedback_rating_provider" class="App\Service\Feedback\Rating\FeedbackRatingProvider"
+                 lazy="true">
+            <argument type="service" id="app.translator"/>
+        </service>
+        <service id="app.subscriptions_telegram_chat_sender"
+                 class="App\Service\Feedback\Telegram\Chat\SubscriptionsTelegramChatSender" lazy="true">
+            <argument type="service" id="app.feedback_subscription_manager"/>
+            <argument type="service" id="app.subscription_telegram_view_provider"/>
+        </service>
+        <service id="app.choose_action_telegram_chat_sender"
+                 class="App\Service\Feedback\Telegram\Chat\ChooseActionTelegramChatSender" lazy="true">
+            <argument type="service" id="app.feedback_subscription_manager"/>
+            <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="app.intl_locale_provider"/>
+        </service>
+        <service id="app.telegram_conversation_factory_feedbacks"
+                 class="App\Service\Telegram\TelegramConversationFactory" lazy="true">
+            <argument type="tagged_locator" tag="app.telegram_conversation_feedbacks"/>
+        </service>
+        <service id="app.start_telegram_command_handler"
+                 class="App\Service\Feedback\Telegram\Chat\StartTelegramCommandHandler" lazy="true">
+            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
+            <argument type="service" id="app.site_url_generator"/>
+        </service>
+        <service id="app.telegram_channel_feedbacks"
+                 class="App\Service\Feedback\Telegram\FeedbackTelegramChannel" lazy="true">
+            <argument type="service" id="app.telegram_aware_helper"/>
+            <argument type="service" id="app.telegram_conversation_factory_feedbacks"/>
+            <argument type="service" id="app.feedback_subscription_manager"/>
+            <argument type="service" id="app.subscriptions_telegram_chat_sender"/>
+            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
+            <argument type="service" id="app.start_telegram_command_handler"/>
+            <argument type="service" id="app.subscription_telegram_view_provider"/>
+            <argument type="service" id="app.intl_time_provider"/>
+            <argument type="service" id="app.feedback_subscription_plan_provider"/>
+            <tag name="app.telegram_channel" channel="feedbacks"/>
+        </service>
+        <service id="app.telegram_conversation_country"
+                 class="App\Service\Feedback\Telegram\Conversation\CountryTelegramConversation" lazy="true">
+            <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
+            <tag name="app.telegram_conversation_feedbacks"/>
+        </service>
+        <service id="app.telegram_conversation_locale"
+                 class="App\Service\Feedback\Telegram\Conversation\LocaleTelegramConversation" lazy="true">
+            <argument type="service" id="app.intl_locale_provider"/>
+            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
+            <argument type="service" id="app.telegram_locale_switcher"/>
+            <tag name="app.telegram_conversation_feedbacks"/>
+        </service>
+        <service id="app.telegram_conversation_create_feedback"
+                 class="App\Service\Feedback\Telegram\Conversation\CreateFeedbackTelegramConversation" lazy="true">
+            <argument type="service" id="app.validator"/>
+            <argument type="service" id="app.feedback_search_term_parser"/>
+            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
+            <argument type="service" id="app.search_term_telegram_view_provider"/>
+            <argument type="service" id="app.feedback_search_term_type_provider"/>
+            <argument type="service" id="app.feedback_creator"/>
+            <argument type="service" id="app.array_value_eraser"/>
+            <argument type="service" id="app.feedback_rating_provider"/>
+            <argument>%app.create.search_term_type_step%</argument>
+            <argument>%app.create.description_step%</argument>
+            <argument>%app.create.change_search_term_button%</argument>
+            <argument>%app.create.change_rating_button%</argument>
+            <argument>%app.create.change_description_button%</argument>
+            <argument>%app.create.confirm_step%</argument>
+            <tag name="app.telegram_conversation_feedbacks"/>
+        </service>
+        <service id="app.telegram_conversation_search_feedback"
+                 class="App\Service\Feedback\Telegram\Conversation\SearchFeedbackTelegramConversation" lazy="true">
+            <argument type="service" id="app.validator"/>
+            <argument type="service" id="app.feedback_search_term_parser"/>
+            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
+            <argument type="service" id="app.search_term_telegram_view_provider"/>
+            <argument type="service" id="app.feedback_search_term_type_provider"/>
+            <argument type="service" id="app.feedback_search_creator"/>
+            <argument type="service" id="app.feedback_searcher"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.feedback_telegram_view_provider"/>
+            <argument>%app.search.search_term_type_step%</argument>
+            <argument>%app.search.change_search_term_button%</argument>
+            <argument>%app.search.confirm_step%</argument>
+            <tag name="app.telegram_conversation_feedbacks"/>
+        </service>
+        <service id="app.telegram_conversation_lookup"
+                 class="App\Service\Feedback\Telegram\Conversation\LookupTelegramConversation" lazy="true">
+            <argument type="service" id="app.validator"/>
+            <argument type="service" id="app.feedback_search_term_parser"/>
+            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
+            <argument type="service" id="app.search_term_telegram_view_provider"/>
+            <argument type="service" id="app.feedback_search_term_type_provider"/>
+            <argument type="service" id="app.feedback_search_search_creator"/>
+            <argument type="service" id="app.feedback_search_searcher"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.feedback_search_telegram_view_provider"/>
+            <argument>%app.lookup.search_term_type_step%</argument>
+            <argument>%app.lookup.change_search_term_button%</argument>
+            <argument>%app.lookup.confirm_step%</argument>
+            <tag name="app.telegram_conversation_feedbacks"/>
+        </service>
+        <service id="app.telegram_conversation_subscribe"
+                 class="App\Service\Feedback\Telegram\Conversation\SubscribeTelegramConversation" lazy="true">
+            <argument type="service" id="app.validator"/>
+            <argument type="service" id="app.feedback_subscription_plan_provider"/>
+            <argument type="service" id="app.repository.telegram_payment_method"/>
+            <argument type="service" id="app.telegram_payment_manager"/>
+            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
+            <argument type="service" id="app.intl_currency_provider"/>
+            <argument type="service" id="app.money_formatter"/>
+            <argument type="service" id="app.repository.telegram_bot"/>
+            <argument type="service" id="app.feedback_subscription_plan_provider"/>
+            <argument type="service" id="app.telegram_user_provider"/>
+            <argument type="service" id="logger"/>
+            <tag name="app.telegram_conversation_feedbacks"/>
+        </service>
+        <service id="app.telegram_conversation_purge"
+                 class="App\Service\Feedback\Telegram\Conversation\PurgeConversationTelegramConversation" lazy="true">
+            <argument type="service" id="app.user_data_purger"/>
+            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
+            <argument type="service" id="app.telegram_locale_switcher"/>
+            <argument type="service" id="app.intl_country_provider"/>
+            <tag name="app.telegram_conversation_feedbacks"/>
+        </service>
+        <service id="app.telegram_conversation_contact"
+                 class="App\Service\Feedback\Telegram\Conversation\ContactTelegramConversation" lazy="true">
+            <argument type="service" id="app.user_feedback_message_creator"/>
+            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
+            <argument type="service" id="app.contact_options_factory"/>
+            <argument type="service" id="app.intl_country_provider"/>
+            <tag name="app.telegram_conversation_feedbacks"/>
+        </service>
+        <service id="app.telegram_conversation_restart"
+                 class="App\Service\Feedback\Telegram\Conversation\RestartConversationTelegramConversation" lazy="true">
+            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
+            <argument type="service" id="app.start_telegram_command_handler"/>
+            <argument type="service" id="app.intl_country_provider"/>
+            <tag name="app.telegram_conversation_feedbacks"/>
+        </service>
+    </services>
+</container>

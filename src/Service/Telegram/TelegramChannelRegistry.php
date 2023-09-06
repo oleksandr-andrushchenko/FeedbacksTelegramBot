@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service\Telegram;
 
 use App\Enum\Telegram\TelegramGroup;
-use App\Service\Telegram\Channel\TelegramChannelInterface;
 use WeakMap;
 
 class TelegramChannelRegistry

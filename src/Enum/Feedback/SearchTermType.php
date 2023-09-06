@@ -20,14 +20,22 @@ enum SearchTermType: int
 
     case messenger_profile_url = 10;
     case url = 30;
-
     case email = 40;
-
     case phone_number = 50;
-
     case person_name = 60;
     case organization_name = 70;
     case place_name = 80;
+
+    public const BASE = [
+        self::messenger_profile_url,
+        self::messenger_username,
+        self::person_name,
+        self::url,
+        self::email,
+        self::place_name,
+        self::phone_number,
+        self::organization_name,
+    ];
 
     public static function sort(array $items): array
     {

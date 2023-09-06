@@ -99,7 +99,7 @@ class CountriesUpdateCommand extends Command
 
             $yaml = '';
             foreach ($data as $country => $translation) {
-                $yaml .= sprintf("%s: %s\r\n", $country, $translation);
+                $yaml .= sprintf("%s: %s\n", $country, $translation);
             }
 
             $written = file_put_contents(str_replace('{locale}', $locale, $this->translationTargetFile), $yaml);

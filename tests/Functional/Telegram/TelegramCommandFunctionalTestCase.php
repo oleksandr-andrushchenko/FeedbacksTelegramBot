@@ -325,9 +325,9 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
                 $text ?? 'query.action',
             )
             ->shouldSeeButtons(
-                'command.create',
-                'command.search',
-                'command.lookup',
+                'create create',
+                'search search',
+                'lookup lookup',
                 'keyboard.more',
             )
         ;
@@ -381,5 +381,45 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
             ->setMessengerProfileUrl($messengerUser->getMessenger() === Messenger::unknown ? null : $this->getMessengerUserProfileUrl($messengerUser))
             ->setMessengerUsername($messengerUser->getUsername())
         ;
+    }
+
+    protected function confirmButton(): string
+    {
+        return '👌 keyboard.confirm';
+    }
+
+    protected function backButton(): string
+    {
+        return '⬅️ keyboard.back';
+    }
+
+    protected function helpButton(): string
+    {
+        return '🚨 keyboard.help';
+    }
+
+    protected function cancelButton(): string
+    {
+        return '❌ keyboard.cancel';
+    }
+
+    protected function leaveAsButton(): string
+    {
+        return 'keyboard.leave_as';
+    }
+
+    protected function yesButton(): string
+    {
+        return 'keyboard.yes';
+    }
+
+    protected function noButton(): string
+    {
+        return 'keyboard.no';
+    }
+
+    protected function command(string $name): string
+    {
+        return $name . ' ' . $name;
     }
 }

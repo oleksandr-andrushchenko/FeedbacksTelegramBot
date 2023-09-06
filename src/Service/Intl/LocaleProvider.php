@@ -36,10 +36,6 @@ class LocaleProvider
     {
         $country = $this->countryProvider->getCountry($locale->getFlag());
 
-        if ($country === null) {
-            var_dump($locale->getFlag());die;
-        }
-
         return $this->countryProvider->getCountryIcon($country);
     }
 
@@ -48,28 +44,28 @@ class LocaleProvider
         return $this->countryProvider->getUnknownCountryIcon();
     }
 
-    public function getLocaleName(Locale $localeObj, string $locale = null): string
+    public function getLocaleName(Locale $localeObj, string $localeCode = null): string
     {
-        return $this->translator->trans($localeObj->getCode(), domain: 'locales', locale: $locale);
+        return $this->translator->trans($localeObj->getCode(), domain: 'locale', locale: $localeCode);
     }
 
     public function getUnknownLocaleName(string $locale = null): string
     {
-        return $this->translator->trans('zz', domain: 'locales', locale: $locale);
+        return $this->translator->trans('zz', domain: 'locale', locale: $locale);
     }
 
-    public function getComposeLocaleName(Locale $localeObj = null, string $locale = null): string
+    public function getLocaleComposeName(Locale $localeObj = null, string $localeCode = null): string
     {
         if ($localeObj === null) {
             return join(' ', [
                 $this->getUnknownLocaleIcon(),
-                $this->getUnknownLocaleName($locale),
+                $this->getUnknownLocaleName($localeCode),
             ]);
         }
 
         return join(' ', [
             $this->getLocaleIcon($localeObj),
-            $this->getLocaleName($localeObj, $locale),
+            $this->getLocaleName($localeObj, $localeCode),
         ]);
     }
 

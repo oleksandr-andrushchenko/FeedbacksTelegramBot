@@ -15,7 +15,6 @@ class CurrencyProvider
         private DenormalizerInterface $denormalizer,
         private readonly TranslatorInterface $translator,
         private readonly CountryProvider $countryProvider,
-        private ?array $data = null,
     )
     {
     }
@@ -54,28 +53,28 @@ class CurrencyProvider
         return $this->countryProvider->getUnknownCountryIcon();
     }
 
-    public function getCurrencyName(Currency $currency, string $locale = null): string
+    public function getCurrencyName(Currency $currency, string $localeCode = null): string
     {
-        return $this->translator->trans($currency->getCode(), domain: 'currencies', locale: $locale);
+        return $this->translator->trans($currency->getCode(), domain: 'currency', locale: $localeCode);
     }
 
-    public function getUnknownCurrencyName(string $locale = null): string
+    public function getUnknownCurrencyName(string $localeCode = null): string
     {
-        return $this->translator->trans('ZZZ', domain: 'currencies', locale: $locale);
+        return $this->translator->trans('ZZZ', domain: 'currency', locale: $localeCode);
     }
 
-    public function getComposeCurrencyName(Currency $currency = null, string $locale = null): string
+    public function getCurrencyComposeName(Currency $currency = null, string $localeCode = null): string
     {
         if ($currency === null) {
             return join(' ', [
                 $this->getUnknownCurrencyIcon(),
-                $this->getUnknownCurrencyName($locale),
+                $this->getUnknownCurrencyName($localeCode),
             ]);
         }
 
         return join(' ', [
             $this->getCurrencyIcon($currency),
-            $this->getCurrencyName($currency, $locale),
+            $this->getCurrencyName($currency, $localeCode),
         ]);
     }
 
@@ -101,11 +100,13 @@ class CurrencyProvider
 
     private function getData(): array
     {
-        if ($this->data === null) {
+        static $data = null;
+
+        if ($data === null) {
             $content = file_get_contents($this->dataPath);
-            $this->data = json_decode($content, true);
+            $data = json_decode($content, true);
         }
 
-        return $this->data;
+        return $data;
     }
 }

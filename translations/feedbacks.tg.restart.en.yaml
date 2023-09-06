@@ -1,0 +1,4 @@
+query:
+  confirm: Confirm bot restart?
+reply:
+  ok: Restart has been successfully made.

@@ -1,0 +1,10 @@
+query:
+  change_confirm: Желаете изменить настройки?
+  country: Выберите Вашу страну.
+  timezone: Выберите Ваш часовой пояс.
+reply:
+  current_country: Ваша текущая страна - %country%.
+  current_timezone: Ваш текущий часовой пояс - %timezone%.
+  unknown_timezone: Неизвестно
+  canceled: Диалог выбора страны отменен.
+  ok: Успешно обновлено.

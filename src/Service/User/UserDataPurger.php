@@ -36,7 +36,6 @@ class UserDataPurger
             $messengerUser
                 ->setUsername(null)
                 ->setName(null)
-                ->setIsShowHints(true)
                 ->setIsShowExtendedKeyboard(false)
             ;
         }

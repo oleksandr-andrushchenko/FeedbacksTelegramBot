@@ -1,0 +1,13 @@
+{% trans_default_domain 'feedbacks.tg.create_help' %}
+{% extends 'tg.help.html.twig' %}
+
+{% block title %}
+{{ 'title'|trans }}
+{% endblock %}
+
+{% block description %}
+⚠️ {{ 'rating'|trans({'%search_term%': '<u>' ~ search_term ~ '</u>'})|raw }}
+
+{% endblock %}
+
+{% set help_use_keyboard = true %}

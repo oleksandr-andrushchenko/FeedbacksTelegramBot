@@ -32,20 +32,10 @@
         <parameter key="app.telegram_errors_channel">%app.telegram_admin_id%</parameter>
 
         <parameter key="app.log_activities">%env(bool:LOG_ACTIVITIES)%</parameter>
-
-        <parameter key="app.log_activities_create_feedback">%app.log_activities%</parameter>
-        <parameter key="app.log_activities_search_feedback">%app.log_activities%</parameter>
-        <parameter key="app.log_activities_lookup">%app.log_activities%</parameter>
         <parameter key="app.log_activities_telegram_payment_manager">%app.log_activities%</parameter>
 
         <parameter key="app.contact_options" type="collection">
-            <parameter key="feedbacks" type="collection">
-                <parameter key="website">%app.site_base_url%</parameter>
-                <parameter key="telegram">https://t.me/wild_snowgirl</parameter>
-                <parameter key="instagram">https://www.instagram.com/wild.snowgirl/</parameter>
-                <parameter key="github">https://github.com/oleksandr-andrushchenko</parameter>
-                <parameter key="linkedin">https://www.linkedin.com/in/oleksandr-andrushchenko-26ab3078/</parameter>
-            </parameter>
+            <parameter key="feedbacks">%app.feedbacks_contact_options%</parameter>
         </parameter>
 
         <parameter key="app.telegram_payment_manager_options" type="collection">
@@ -53,75 +43,7 @@
         </parameter>
 
         <parameter key="app.telegram_options" type="collection">
-            <parameter key="feedbacks" type="collection">
-                <parameter key="admin_id">%app.telegram_admin_id%</parameter>
-                <parameter key="locales">%app.supported_locales%</parameter>
-            </parameter>
-        </parameter>
-
-        <parameter key="app.create_command_options" type="collection">
-            <parameter key="limits" type="collection">
-                <parameter key="day">10</parameter>
-                <parameter key="month">200</parameter>
-                <parameter key="year">500</parameter>
-            </parameter>
-            <parameter key="log_activities">%app.log_activities_create_feedback%</parameter>
-        </parameter>
-
-        <parameter key="app.search_command_options" type="collection">
-            <parameter key="limits" type="collection">
-                <parameter key="day">5</parameter>
-                <parameter key="month">50</parameter>
-                <parameter key="year">300</parameter>
-            </parameter>
-            <parameter key="log_activities">%app.log_activities_search_feedback%</parameter>
-        </parameter>
-
-        <parameter key="app.lookup_command_options" type="collection">
-            <parameter key="limits" type="collection">
-                <parameter key="day">1</parameter>
-                <parameter key="month">1</parameter>
-                <parameter key="year">12</parameter>
-            </parameter>
-            <parameter key="log_activities">%app.log_activities_lookup%</parameter>
-        </parameter>
-
-        <parameter key="app.feedback_subscription_plans" type="collection">
-            <parameter key="one_day" type="collection">
-                <parameter key="duration">+1 day</parameter>
-                <parameter key="default_price">1.99</parameter>
-                <parameter key="prices" type="collection">
-                    <parameter key="ua">0.99</parameter>
-                </parameter>
-            </parameter>
-            <parameter key="three_days" type="collection">
-                <parameter key="duration">+3 days</parameter>
-                <parameter key="default_price">2.99</parameter>
-                <parameter key="prices" type="collection">
-                    <parameter key="ua">1.99</parameter>
-                </parameter>
-            </parameter>
-            <parameter key="one_month" type="collection">
-                <parameter key="duration">+1 month</parameter>
-                <parameter key="default_price">4.99</parameter>
-                <parameter key="prices" type="collection">
-                    <parameter key="ua">3.99</parameter>
-                </parameter>
-            </parameter>
-            <parameter key="six_months" type="collection">
-                <parameter key="duration">+6 months</parameter>
-                <parameter key="default_price">19.99</parameter>
-                <parameter key="prices" type="collection">
-                    <parameter key="ua">14.99</parameter>
-                </parameter>
-            </parameter>
-            <parameter key="one_year" type="collection">
-                <parameter key="duration">+1 year</parameter>
-                <parameter key="default_price">29.99</parameter>
-                <parameter key="prices" type="collection">
-                    <parameter key="ua">19.99</parameter>
-                </parameter>
-            </parameter>
+            <parameter key="feedbacks">%app.feedbacks_telegram_options%</parameter>
         </parameter>
     </parameters>
 </container>

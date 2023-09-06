@@ -1,0 +1,7 @@
+title: 'Due to big amount of requests, this command, has next limitations:'
+tries_for: '%tries% per %period%'
+subscribe: Premium subscription allows to use this and other commands without any limitations, %command%.
+tries: try(-ies)
+day: Day
+month: Month
+year: Year

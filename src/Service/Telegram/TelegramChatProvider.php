@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Service\Telegram;
 
 use Longman\TelegramBot\Entities\Chat;
-use Longman\TelegramBot\Entities\Entity;
 use Longman\TelegramBot\Entities\Update;
 
 class TelegramChatProvider
 {
-    public function getTelegramChatHolderByUpdate(Update $update): ?Entity
+    public function getTelegramChatByUpdate(Update $update): ?Chat
     {
+        if ($update->getCallbackQuery() !== null) {
+            return $update->getCallbackQuery()->getMessage()?->getChat();
+        }
+
         $updateMethods = [
             'getMessage',
             'getEditedMessage',
@@ -28,15 +31,9 @@ class TelegramChatProvider
                 continue;
             }
 
-            return $object;
+            return $object?->getChat();
         }
 
         return null;
-    }
-
-    public function getTelegramChatByUpdate(Update $update): ?Chat
-    {
-        return $this->getTelegramChatHolderByUpdate($update)?->getChat();
-
     }
 }

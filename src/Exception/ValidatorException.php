@@ -16,7 +16,7 @@ class ValidatorException extends Exception
         ?Throwable $previous = null
     )
     {
-        parent::__construct(implode("\r\n", iterator_to_array($this->getMessages())), $code, $previous);
+        parent::__construct(implode("\n", iterator_to_array($this->getMessages())), $code, $previous);
     }
 
     public function getViolations(): ConstraintViolationListInterface

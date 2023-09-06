@@ -1,0 +1,16 @@
+query:
+  search_term: О ком или о чем вы хотите оставить отзыв?
+  search_term_type: Кем или чем является %search_term%?
+  rating: Оцените ваш опыт с %search_term%.
+  description: Желаете оставить комментарий о %search_term%?
+  confirm: Подтвердить создание отзыва о %search_term%? %feedback%
+keyboard:
+  change_search_term: Изменить поисковый запрос
+  change_rating: Изменить оценку
+  add_description: Добавить детали
+  change_description: Изменить детали
+reply:
+  canceled: Диалог добавления отзыва отменен.
+  ok: Отзыв успешно добавлен.
+  on_self_forbidden: Отзывы о себе запрещены.
+  limit_exceeded: 'Вы достигли лимита создания отзывов: %tries_for%. Пожалуйста, повторите попытку позже или купите премиум-подписку.'

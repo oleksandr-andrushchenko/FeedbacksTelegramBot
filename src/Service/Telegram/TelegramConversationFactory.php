@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram;
 
-use App\Service\Telegram\Conversation\TelegramConversationInterface;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
 class TelegramConversationFactory

@@ -9,8 +9,8 @@ use Throwable;
 
 class LocaleNotFoundException extends Exception
 {
-    public function __construct(string $locale, int $code = 0, ?Throwable $previous = null)
+    public function __construct(string $localeCode, int $code = 0, ?Throwable $previous = null)
     {
-        parent::__construct(sprintf('"%s" locale has not been found', $locale), $code, $previous);
+        parent::__construct(sprintf('"%s" locale has not been found', $localeCode), $code, $previous);
     }
 }

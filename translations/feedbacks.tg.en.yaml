@@ -1,0 +1,29 @@
+icon:
+  number: '#'
+
+help:
+  use_input: Use the input field below.
+  use_keyboard: Use the keyboard below.
+
+query:
+  action: Select an action please.
+
+keyboard:
+  yes: Yes
+  no: No
+  confirm: Confirm
+  back: Get back
+  cancel: Cancel
+  leave_as: Leave as "%text%"
+  make_empty: Make empty
+  leave_empty: Skip
+  other: Other
+  absent: Not in the list
+  more: Show more
+  less: Show less
+  help: Need help
+
+reply:
+  fail: "Unknown error has occurred,\n1) Make sure everything was properly organized and repeat; or\n2) Use 'Contact Us' command; or\n3) Try again later please."
+  not_accept_payments: We do not accept payments now. Try again later please.
+  wrong: I don't understand you.

@@ -23,6 +23,7 @@ class TelegramControllerTest extends DatabaseTestCase
         $this->bootFixtures([
             TelegramBot::class,
         ]);
+
         $client = $this->getWebClient();
 
         $this->getTelegramUpdateHandlerMock();
@@ -40,6 +41,7 @@ class TelegramControllerTest extends DatabaseTestCase
         $this->bootFixtures([
             TelegramBot::class,
         ]);
+
         $client = $this->getWebClient();
 
         $this->getTelegramUpdateHandlerMock()

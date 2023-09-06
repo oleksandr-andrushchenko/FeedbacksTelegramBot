@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Traits\Feedback;
 
-use App\Service\Feedback\FeedbackSubscriptionPlanProvider;
+use App\Service\Feedback\Subscription\FeedbackSubscriptionPlanProvider;
 
 trait FeedbackSubscriptionPlanProviderTrait
 {

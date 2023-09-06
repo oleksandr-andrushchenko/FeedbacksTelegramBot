@@ -1,0 +1,13 @@
+query:
+  search_term: Кто или что вас интересует?
+  search_term_type: Кем или чем является %search_term%?
+  confirm: Подтвердить поиск отзывов по %search_term%?
+  create_confirm: Хотите оставить отзыв?
+keyboard:
+  change_search_term: Изменить поисковый запрос
+reply:
+  canceled: Диалог поиска отзывов отменен.
+  empty_list: По запросу %search_term% отзывов не найдено.
+  will_notify: Мы сообщим Вам, когда что-нибудь появится о %search_term%.
+  title: '%count% отзыв(-ов) были успешно найдены о %search_term%:'
+  limit_exceeded: 'Вы достигли лимита поиска отзывов: %tries_for%. Повторите попытку позже или купите премиум-подписку.'

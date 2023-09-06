@@ -1,6 +1,7 @@
 date: '%month% %day%, %year%'
 datetime: '%date% %hour%:%minute%'
-short_date: '%short_month%. %day%, %year%'
+short_date: '%short_month% %day%, %year%'
+short_date_interval_same_year: '%short_month1% %day1% - %short_month2% %day2%, %year%'
 short_datetime: '%short_date% at %hour%:%minute%'
 month:
   1: January

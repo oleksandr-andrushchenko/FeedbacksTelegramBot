@@ -1,5 +1,0 @@
-{% trans_default_domain 'tg.feedback_search' %}
-{% if number %}
-    {{ 'icon.number'|trans({}, 'tg') ~ number }}:
-{% endif %}
-{{ created_at }}, {{ 'somebody_from'|trans }} <u>{{ country }}</u> {{ 'searched_for'|trans }} "<u>{{ search_term }}</u>"

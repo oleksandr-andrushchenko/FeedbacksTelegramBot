@@ -25,8 +25,6 @@
             <argument>app.telegram_webhook</argument>
             <argument type="service" id="Symfony\Component\Routing\Generator\UrlGeneratorInterface"/>
         </service>
-        <service id="app.telegram_feedback_search_post_factory"
-                 class="App\Service\Telegram\TelegramFeedbackSearchPostFactory" lazy="true"/>
         <service id="app.telegram_client_factory" class="App\Service\Telegram\TelegramClientFactory" lazy="true"/>
         <service id="app.telegram_channel_factory" class="App\Service\Telegram\TelegramChannelFactory">
             <argument type="tagged_locator" tag="app.telegram_channel" index-by="channel"/>
@@ -34,10 +32,6 @@
         <service id="app.telegram_conversation_factory_default" class="App\Service\Telegram\TelegramConversationFactory"
                  lazy="true">
             <argument type="tagged_locator" tag="app.telegram_conversation_default"/>
-        </service>
-        <service id="app.telegram_conversation_factory_feedbacks"
-                 class="App\Service\Telegram\TelegramConversationFactory" lazy="true">
-            <argument type="tagged_locator" tag="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.telegram_options_factory" class="App\Service\Telegram\TelegramOptionsFactory" lazy="true"/>
         <service id="app.telegram_factory" class="App\Service\Telegram\TelegramFactory" lazy="true">
@@ -78,6 +72,7 @@
         </service>
         <service id="app.telegram_user_provider" class="App\Service\Telegram\TelegramUserProvider" lazy="true"/>
         <service id="app.telegram_chat_provider" class="App\Service\Telegram\TelegramChatProvider" lazy="true"/>
+        <service id="app.telegram_input_provider" class="App\Service\Telegram\TelegramInputProvider" lazy="true"/>
         <service id="app.telegram_messenger_user_upserter" class="App\Service\Telegram\TelegramMessengerUserUpserter"
                  lazy="true">
             <argument type="service" id="app.telegram_user_provider"/>
@@ -119,6 +114,7 @@
             <argument type="service" id="app.telegram_command_finder"/>
             <argument type="service" id="app.telegram_payment_manager"/>
             <argument type="service" id="app.telegram_locale_switcher"/>
+            <argument type="service" id="app.telegram_input_provider"/>
             <argument type="service" id="logger"/>
         </service>
         <service id="app.telegram_keyboard_factory" class="App\Service\Telegram\TelegramKeyboardFactory" lazy="true"/>
@@ -154,8 +150,7 @@
         <service id="app.telegram_payment_manager_options_factory"
                  class="App\Service\Telegram\TelegramPaymentManagerOptionsFactory" lazy="true"/>
         <service id="app.telegram_payment_manager_options" class="App\Entity\Telegram\TelegramPaymentManagerOptions">
-            <factory service="app.telegram_payment_manager_options_factory"
-                     method="createTelegramPaymentManagerOptions"/>
+            <factory service="app.telegram_payment_manager_options_factory"/>
             <argument>%app.telegram_payment_manager_options%</argument>
         </service>
         <service id="app.telegram_payment_manager" class="App\Service\Telegram\Payment\TelegramPaymentManager"
@@ -177,20 +172,6 @@
             <argument type="service" id="app.telegram_conversation_factory_default"/>
             <tag name="app.telegram_channel" channel="default"/>
         </service>
-        <service id="app.telegram_channel_feedbacks" class="App\Service\Telegram\Channel\FeedbackTelegramChannel"
-                 lazy="true">
-            <argument type="service" id="app.telegram_aware_helper"/>
-            <argument type="service" id="app.telegram_conversation_factory_feedbacks"/>
-            <argument type="service" id="app.feedback_subscription_manager"/>
-            <argument type="service" id="app.subscriptions_telegram_chat_sender"/>
-            <argument type="service" id="app.hints_telegram_chat_switcher"/>
-            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
-            <argument type="service" id="app.subscribe_describe_telegram_chat_sender"/>
-            <argument type="service" id="app.start_telegram_command_handler"/>
-            <argument type="service" id="app.subscription_telegram_view_provider"/>
-            <argument type="service" id="app.intl_time_provider"/>
-            <tag name="app.telegram_channel" channel="feedbacks"/>
-        </service>
         <service id="app.telegram_aware_helper" class="App\Service\Telegram\TelegramAwareHelper" lazy="true">
             <argument type="service" id="app.telegram_keyboard_factory"/>
             <argument type="service" id="app.telegram_message_sender"/>
@@ -198,117 +179,10 @@
             <argument type="service" id="app.telegram_conversation_manager"/>
             <argument type="service" id="app.telegram_chat_action_sender"/>
             <argument type="service" id="app.telegram_chat_provider"/>
+            <argument type="service" id="app.telegram_input_provider"/>
             <argument type="service" id="twig"/>
         </service>
         <service id="app.telegram_invoice_sender" class="App\Service\Telegram\Api\TelegramInvoiceSender" lazy="true"/>
-        <service id="app.subscriptions_telegram_chat_sender"
-                 class="App\Service\Telegram\Chat\SubscriptionsTelegramChatSender" lazy="true">
-            <argument type="service" id="app.feedback_subscription_manager"/>
-            <argument type="service" id="app.subscription_telegram_view_provider"/>
-        </service>
-        <service id="app.hints_telegram_chat_switcher"
-                 class="App\Service\Telegram\Chat\HintsTelegramChatSwitcher" lazy="true"/>
-        <service id="app.choose_action_telegram_chat_sender"
-                 class="App\Service\Telegram\Chat\ChooseActionTelegramChatSender" lazy="true">
-            <argument type="service" id="app.feedback_subscription_manager"/>
-            <argument type="service" id="app.intl_country_provider"/>
-            <argument type="service" id="app.intl_locale_provider"/>
-        </service>
-        <service id="app.subscribe_describe_telegram_chat_sender"
-                 class="App\Service\Telegram\Chat\SubscribeDescribeTelegramChatSender" lazy="true">
-            <argument type="service" id="app.create_command_options"/>
-            <argument type="service" id="app.search_command_options"/>
-            <argument type="service" id="app.lookup_command_options"/>
-        </service>
-        <service id="app.start_telegram_command_handler"
-                 class="App\Service\Telegram\Chat\StartTelegramCommandHandler" lazy="true">
-            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
-            <argument type="service" id="app.site_url_generator"/>
-        </service>
-        <service id="app.telegram_conversation_country"
-                 class="App\Service\Telegram\Conversation\CountryTelegramConversation" lazy="true">
-            <argument type="service" id="app.intl_country_provider"/>
-            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
-            <tag name="app.telegram_conversation_feedbacks"/>
-        </service>
-        <service id="app.telegram_conversation_locale"
-                 class="App\Service\Telegram\Conversation\LocaleTelegramConversation" lazy="true">
-            <argument type="service" id="app.intl_locale_provider"/>
-            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
-            <argument type="service" id="app.telegram_locale_switcher"/>
-            <tag name="app.telegram_conversation_feedbacks"/>
-        </service>
-        <service id="app.telegram_conversation_create_feedback"
-                 class="App\Service\Telegram\Conversation\CreateFeedbackTelegramConversation" lazy="true">
-            <argument type="service" id="app.validator"/>
-            <argument type="service" id="app.feedback_creator"/>
-            <argument type="service" id="app.feedback_search_term_parser"/>
-            <argument type="service" id="app.array_value_eraser"/>
-            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
-            <argument type="service" id="app.search_term_telegram_view_provider"/>
-            <tag name="app.telegram_conversation_feedbacks"/>
-        </service>
-        <service id="app.telegram_conversation_search_feedback"
-                 class="App\Service\Telegram\Conversation\SearchFeedbackTelegramConversation" lazy="true">
-            <argument type="service" id="app.validator"/>
-            <argument type="service" id="app.feedback_search_creator"/>
-            <argument type="service" id="app.feedback_searcher"/>
-            <argument type="service" id="app.feedback_search_term_parser"/>
-            <argument type="service" id="doctrine.orm.entity_manager"/>
-            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
-            <argument type="service" id="app.search_term_telegram_view_provider"/>
-            <argument type="service" id="app.feedback_telegram_view_provider"/>
-            <tag name="app.telegram_conversation_feedbacks"/>
-        </service>
-        <service id="app.telegram_conversation_lookup"
-                 class="App\Service\Telegram\Conversation\LookupTelegramConversation" lazy="true">
-            <argument type="service" id="app.validator"/>
-            <argument type="service" id="app.feedback_search_search_creator"/>
-            <argument type="service" id="app.feedback_search_searcher"/>
-            <argument type="service" id="app.feedback_search_term_parser"/>
-            <argument type="service" id="doctrine.orm.entity_manager"/>
-            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
-            <argument type="service" id="app.search_term_telegram_view_provider"/>
-            <argument type="service" id="app.feedback_search_telegram_view_provider"/>
-            <tag name="app.telegram_conversation_feedbacks"/>
-        </service>
-        <service id="app.telegram_conversation_subscribe"
-                 class="App\Service\Telegram\Conversation\SubscribeTelegramConversation" lazy="true">
-            <argument type="service" id="app.validator"/>
-            <argument type="service" id="app.feedback_subscription_plan_provider"/>
-            <argument type="service" id="app.repository.telegram_payment_method"/>
-            <argument type="service" id="app.telegram_payment_manager"/>
-            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
-            <argument type="service" id="app.subscribe_describe_telegram_chat_sender"/>
-            <argument type="service" id="app.intl_currency_provider"/>
-            <argument type="service" id="app.money_formatter"/>
-            <argument type="service" id="app.repository.telegram_bot"/>
-            <argument type="service" id="logger"/>
-            <tag name="app.telegram_conversation_feedbacks"/>
-        </service>
-        <service id="app.telegram_conversation_purge"
-                 class="App\Service\Telegram\Conversation\PurgeConversationTelegramConversation" lazy="true">
-            <argument type="service" id="app.user_data_purger"/>
-            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
-            <argument type="service" id="app.telegram_locale_switcher"/>
-            <argument type="service" id="app.intl_country_provider"/>
-            <tag name="app.telegram_conversation_feedbacks"/>
-        </service>
-        <service id="app.telegram_conversation_contact"
-                 class="App\Service\Telegram\Conversation\ContactTelegramConversation" lazy="true">
-            <argument type="service" id="app.user_feedback_message_creator"/>
-            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
-            <argument type="service" id="app.contact_options_factory"/>
-            <argument type="service" id="app.intl_country_provider"/>
-            <tag name="app.telegram_conversation_feedbacks"/>
-        </service>
-        <service id="app.telegram_conversation_restart"
-                 class="App\Service\Telegram\Conversation\RestartConversationTelegramConversation" lazy="true">
-            <argument type="service" id="app.choose_action_telegram_chat_sender"/>
-            <argument type="service" id="app.start_telegram_command_handler"/>
-            <argument type="service" id="app.intl_country_provider"/>
-            <tag name="app.telegram_conversation_feedbacks"/>
-        </service>
         <service id="app.telegram_payment_method_creator"
                  class="App\Service\Telegram\Payment\TelegramPaymentMethodCreator" lazy="true">
             <argument type="service" id="app.intl_currency_provider"/>
@@ -316,5 +190,9 @@
         </service>
         <service id="app.telegram_payment_method_info_provider"
                  class="App\Service\Telegram\Payment\TelegramPaymentMethodInfoProvider" lazy="true"/>
+        <service id="app.telegram_payment_method_provider"
+                 class="App\Service\Telegram\Payment\TelegramPaymentMethodProvider" lazy="true">
+            <argument type="service" id="translator"/>
+        </service>
     </services>
 </container>

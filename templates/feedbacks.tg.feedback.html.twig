@@ -1,0 +1,6 @@
+{% trans_default_domain 'feedbacks.tg.feedback' %}
+{% if number %}
+{{ 'icon.number'|trans({}, 'feedbacks.tg') ~ number }}:
+{% endif %}
+{{ created_at }}, {{ 'somebody_from'|trans }} <u>{{ country }}</u> {{ 'wrote_about'|trans }} "<u>{{ search_term }}</u>":
+"<b><tg-spoiler>{{ description ?? ('(' ~ 'no_details'|trans ~ ')') }}</tg-spoiler> {{ rating }}</b>"

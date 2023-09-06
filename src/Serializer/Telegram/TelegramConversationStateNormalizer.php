@@ -20,6 +20,7 @@ class TelegramConversationStateNormalizer implements NormalizerInterface, Denorm
     {
         return [
             'step' => $object->getStep(),
+            'skip_help_buttons' => $object->getSkipHelpButtons(),
         ];
     }
 
@@ -35,6 +36,7 @@ class TelegramConversationStateNormalizer implements NormalizerInterface, Denorm
 
         $object
             ->setStep($data['step'] ?? null)
+            ->setSkipHelpButtons($data['skip_help_buttons'] ?? null)
         ;
 
         return $object;

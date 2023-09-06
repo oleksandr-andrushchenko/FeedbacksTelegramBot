@@ -26,6 +26,7 @@ class TelegramUpdateHandler
         private readonly TelegramCommandFinder $commandFinder,
         private readonly TelegramPaymentManager $paymentManager,
         private readonly TelegramLocaleSwitcher $localeSwitcher,
+        private readonly TelegramInputProvider $inputProvider,
         private readonly LoggerInterface $logger,
     )
     {
@@ -76,7 +77,7 @@ class TelegramUpdateHandler
                 return;
             }
 
-            $text = $telegram->getUpdate()?->getMessage()?->getText();
+            $text = $this->inputProvider->getTelegramInputByUpdate($telegram->getUpdate());
             $commands = $channel->getTelegramCommands($telegram);
 
             if ($beforeConversationCommand = $this->commandFinder->findBeforeConversationCommand($text, $commands)) {

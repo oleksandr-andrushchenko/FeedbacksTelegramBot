@@ -1,0 +1,12 @@
+query:
+  search_term: Кто или что вас интересует?
+  search_term_type: Кем или чем является %search_term%?
+  confirm: Подтвердить поиск запросов по %search_term%?
+keyboard:
+  change_search_term: Изменить поисковый запрос
+reply:
+  canceled: Диалог поиска запросов отменен.
+  empty_list: По запросу %search_term% не найдено ни одного запроса.
+  will_notify: Мы сообщим Вам, когда кто-нибудь будет искать о %search_term%.
+  title: '%count% запрос(-ов) были успешно найдены о %search_term%:'
+  limit_exceeded: 'Вы достигли лимита поиска запросов: %tries_for%. Повторите попытку позже или купите премиум-подписку.'

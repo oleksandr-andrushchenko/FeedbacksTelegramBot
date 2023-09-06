@@ -39,3 +39,15 @@
 * Create & implement experienced mode for user: no hints, no press menu button text, less texts, shorter texts etc. (mode enabled automatically after activity checks with/without user confirmation)
 * Remove confirmation steps for premium-users
 * -> Check other channels and put emojis & description as much as possible + html
+
+* Everything should be extremely easy, simple and clear to understand!!!
+* Add leave as on back button click
+* Fix limits reply (counts miss-matches)
+* Keep feedbacks, feedback searches and feedback lookups even if Limtis exceeded (notify user when found something - maybe as kfor payment before)
+* Protect against multi-account (if search term is popular - ask for money even if limits not exceeded)
+* MOve all render logic into views
+* Inject service locator in telegram channel for commands (coz many dependencies loadings)
+* Add limits command
+* Remove content protection ? (for PR)
+* Add car number as search term type
+* Custom search term types for each country (hide non-popular - show by demand)

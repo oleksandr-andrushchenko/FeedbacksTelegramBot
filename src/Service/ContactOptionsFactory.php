@@ -29,14 +29,15 @@ class ContactOptionsFactory
 
         $options = $this->options[$group->name];
         $primary = $this->telegramBotRepository->findPrimaryByGroup($group);
-        $domain = sprintf('%s.contacts', $group->name);
+        $domain = sprintf('%s.contact', $group->name);
 
         return new ContactOptions(
             $this->translator->trans('company', domain: $domain, locale: $localeCode),
             $this->translator->trans('address', domain: $domain, locale: $localeCode),
             $this->translator->trans('tax', domain: $domain, locale: $localeCode),
             $primary->getUsername(),
-            $this->translator->trans(sprintf('%s.name', $group->name), domain: 'tg.texts', locale: $localeCode),
+            // todo: fix
+            $this->translator->trans(sprintf('%s.name', $group->name), domain: 'feedbacks.tg.texts', locale: $localeCode),
             sprintf('https://t.me/%s', $primary->getUsername()),
             $options['website'],
             $this->translator->trans('phone', domain: $domain, locale: $localeCode),

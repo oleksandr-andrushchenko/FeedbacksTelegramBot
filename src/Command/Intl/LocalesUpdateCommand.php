@@ -69,7 +69,7 @@ class LocalesUpdateCommand extends Command
 
             $yaml = '';
             foreach ($data as $language => $translation) {
-                $yaml .= sprintf("%s: %s\r\n", $language, $translation);
+                $yaml .= sprintf("%s: %s\n", $language, $translation);
             }
 
             $written = file_put_contents(str_replace('{locale}', $locale, $this->translationTargetFile), $yaml);

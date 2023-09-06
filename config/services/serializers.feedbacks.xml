@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.normalizer.feedback_search_term_transfer"
+                 class="App\Serializer\Feedback\SearchTermTransferNormalizer"
+                 lazy="true">
+            <argument type="service" id="app.normalizer.messenger_user_transfer"/>
+            <argument type="service" id="app.normalizer.messenger_user_transfer"/>
+            <tag name="serializer.normalizer" priority="-988"/>
+        </service>
+        <service id="app.normalizer.feedback_subscription_plan"
+                 class="App\Serializer\Feedback\FeedbackSubscriptionPlanNormalizer" lazy="true">
+            <tag name="serializer.normalizer" priority="-987"/>
+        </service>
+        <service id="app.normalizer.feedback" class="App\Serializer\Feedback\FeedbackNormalizer" lazy="true">
+            <tag name="serializer.normalizer" priority="-986"/>
+        </service>
+        <service id="app.normalizer.feedback" class="App\Serializer\Feedback\FeedbackSearchNormalizer" lazy="true">
+            <tag name="serializer.normalizer" priority="-985"/>
+        </service>
+        <service id="app.normalizer.telegram_conversation_state_search_feedback"
+                 class="App\Serializer\Feedback\Telegram\SearchFeedbackTelegramConversationStateNormalizer" lazy="true">
+            <argument type="service" id="app.normalizer.telegram_conversation_state"/>
+            <argument type="service" id="app.normalizer.telegram_conversation_state"/>
+            <argument type="service" id="app.normalizer.feedback_search_term_transfer"/>
+            <argument type="service" id="app.normalizer.feedback_search_term_transfer"/>
+            <tag name="serializer.normalizer" priority="-969"/>
+        </service>
+        <service id="app.normalizer.telegram_conversation_state_lookup"
+                 class="App\Serializer\Feedback\Telegram\LookupTelegramConversationStateNormalizer" lazy="true">
+            <argument type="service" id="app.normalizer.telegram_conversation_state_search_feedback"/>
+            <argument type="service" id="app.normalizer.telegram_conversation_state_search_feedback"/>
+            <tag name="serializer.normalizer" priority="-968"/>
+        </service>
+        <service id="app.normalizer.telegram_conversation_state_create_feedback"
+                 class="App\Serializer\Feedback\Telegram\CreateFeedbackTelegramConversationStateNormalizer" lazy="true">
+            <argument type="service" id="app.normalizer.telegram_conversation_state_search_feedback"/>
+            <argument type="service" id="app.normalizer.telegram_conversation_state_search_feedback"/>
+            <tag name="serializer.normalizer" priority="-967"/>
+        </service>
+        <service id="app.normalizer.telegram_conversation_state_subscribe"
+                 class="App\Serializer\Feedback\Telegram\SubscribeTelegramConversationStateNormalizer" lazy="true">
+            <argument type="service" id="app.normalizer.telegram_conversation_state"/>
+            <argument type="service" id="app.normalizer.telegram_conversation_state"/>
+            <argument type="service" id="app.normalizer.feedback_subscription_plan"/>
+            <argument type="service" id="app.normalizer.feedback_subscription_plan"/>
+            <argument type="service" id="app.repository.telegram_payment_method"/>
+            <argument type="service" id="app.intl_currency_provider"/>
+            <tag name="serializer.normalizer" priority="-966"/>
+        </service>
+    </services>
+</container>

@@ -7,7 +7,6 @@ namespace App\Service\Telegram;
 use App\Entity\Telegram\TelegramConversation;
 use App\Entity\Telegram\TelegramConversationState;
 use App\Repository\Telegram\TelegramConversationRepository;
-use App\Service\Telegram\Conversation\TelegramConversationInterface;
 use App\Service\Util\Array\ArrayNullFilter;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -67,9 +66,11 @@ class TelegramConversationManager
         TelegramConversationState $state = null
     ): TelegramConversation
     {
+        $chatId = $this->chatProvider->getTelegramChatByUpdate($telegram->getUpdate())?->getId();
+
         $entity = new TelegramConversation(
             $telegram->getMessengerUser(),
-            $telegram->getUpdate()->getMessage()->getChat()->getId(),
+            $chatId,
             $class,
             $telegram->getBot(),
             true,
@@ -97,8 +98,12 @@ class TelegramConversationManager
         $this->executeConversation($telegram, $entity, 'invoke');
     }
 
-    public function denormalizeState(array $state, string $class): TelegramConversationState
+    public function denormalizeState(?array $state, string $class): TelegramConversationState
     {
+        if ($state === null) {
+            return new $class();
+        }
+
         return $this->conversationStateDenormalizer->denormalize($state, $class);
     }
 
@@ -136,10 +141,8 @@ class TelegramConversationManager
         // todo: throw not found exception
         $conversation = $channel->getTelegramConversationFactory()->createTelegramConversation($entity->getClass());
 
-        if ($entity->getState() !== null) {
-            $state = $this->denormalizeState($entity->getState(), get_class($conversation->getState()));
-            $conversation->setState($state);
-        }
+        $state = $this->denormalizeState($entity->getState(), get_class($conversation->getState()));
+        $conversation->setState($state);
 
         $tg = $this->awareHelper->withTelegram($telegram);
 

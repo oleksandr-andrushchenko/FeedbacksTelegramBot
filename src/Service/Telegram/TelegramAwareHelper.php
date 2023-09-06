@@ -9,6 +9,8 @@ use App\Entity\Telegram\TelegramConversationState;
 use App\Service\Telegram\Api\TelegramChatActionSenderInterface;
 use App\Service\Telegram\Api\TelegramMessageSenderInterface;
 use Longman\TelegramBot\ChatAction;
+use Longman\TelegramBot\Entities\InlineKeyboard;
+use Longman\TelegramBot\Entities\InlineKeyboardButton;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\KeyboardButton;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -25,6 +27,7 @@ class TelegramAwareHelper
         private readonly TelegramConversationManager $conversationManager,
         private readonly TelegramChatActionSenderInterface $chatActionSender,
         private readonly TelegramChatProvider $chatProvider,
+        private readonly TelegramInputProvider $inputProvider,
         private readonly Environment $twig,
     )
     {
@@ -45,7 +48,7 @@ class TelegramAwareHelper
 
     public function getText(): ?string
     {
-        return $this->getTelegram()?->getUpdate()?->getMessage()?->getText();
+        return $this->inputProvider->getTelegramInputByUpdate($this->getTelegram()->getUpdate());
     }
 
     public function matchText(?string $text): bool
@@ -108,7 +111,9 @@ class TelegramAwareHelper
 
     public function view(string $template, array $context = []): string
     {
-        return $this->twig->render('tg.' . $template . '.html.twig', $context);
+        $group = $this->getTelegram()->getBot()->getGroup()->name;
+
+        return $this->twig->render(sprintf('%s.tg.%s.html.twig', $group, $template), $context);
     }
 
     public function reply(
@@ -139,22 +144,13 @@ class TelegramAwareHelper
         return $this;
     }
 
-    public function trans(string $id, array $parameters = [], ?string $domain = 'tg'): string
+    public function trans(string $id, array $parameters = [], ?string $domain = null, string $locale = null): string
     {
-        return $this->translator->trans($id, $parameters, $domain, $this->getLocaleCode());
-    }
+        $group = $this->getTelegram()->getBot()->getGroup()->name;
+        $prefix = $group . '.tg';
+        $domain = $domain === null ? $prefix : ($prefix . '.' . $domain);
 
-    public function replyOk(
-        string $text,
-        Keyboard $keyboard = null,
-        string $parseMode = 'HTML',
-        bool $protectContent = null,
-        bool $disableWebPagePreview = true
-    ): static
-    {
-        $this->reply($this->okText($text), $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
-
-        return $this;
+        return $this->translator->trans($id, $parameters, $domain, $locale ?? $this->getLocaleCode());
     }
 
     public function okText(string $text): string
@@ -162,36 +158,14 @@ class TelegramAwareHelper
         return '🫡 ' . $text;
     }
 
-    public function replyFail(
-        string $text,
-        Keyboard $keyboard = null,
-        string $parseMode = 'HTML',
-        bool $protectContent = null,
-        bool $disableWebPagePreview = true
-    ): static
-    {
-        $this->reply($this->failText($text), $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
-
-        return $this;
-    }
-
     public function failText(string $text): string
     {
         return '🤕 ' . $text;
     }
 
-    public function replyWrong(
-        string $text,
-        Keyboard $keyboard = null,
-        string $parseMode = 'HTML',
-        bool $protectContent = null,
-        bool $disableWebPagePreview = true,
-        bool $keepKeyboard = false
-    ): static
+    public function attentionText(string $text): string
     {
-        $this->reply($this->wrongText($text), $keyboard, $parseMode, $protectContent, $disableWebPagePreview, $keepKeyboard);
-
-        return $this;
+        return '‼️ ' . $text;
     }
 
     public function wrongText(string $text): string
@@ -199,22 +173,14 @@ class TelegramAwareHelper
         return '🤔 ' . $text;
     }
 
-    public function replyUpset(
-        string $text,
-        Keyboard $keyboard = null,
-        string $parseMode = 'HTML',
-        bool $protectContent = null,
-        bool $disableWebPagePreview = true
-    ): static
-    {
-        $this->reply($this->upsetText($text), $keyboard, $parseMode, $protectContent, $disableWebPagePreview);
-
-        return $this;
-    }
-
     public function upsetText(string $text): string
     {
         return '😐 ' . $text;
+    }
+
+    public function infoText(string $text): string
+    {
+        return 'ℹ️ ' . $text;
     }
 
     public function keyboard(...$buttons): Keyboard
@@ -227,6 +193,51 @@ class TelegramAwareHelper
         return $this->keyboardFactory->createTelegramButton($text);
     }
 
+    public function inlineKeyboard(...$buttons): InlineKeyboard
+    {
+        return $this->keyboardFactory->createTelegramInlineKeyboard(...$buttons);
+    }
+
+    public function inlineButton(string $text): InlineKeyboardButton
+    {
+        return $this->keyboardFactory->createTelegramInlineButton($text);
+    }
+
+    public function yesButton(): KeyboardButton
+    {
+        return $this->button($this->trans('keyboard.yes'));
+    }
+
+    public function noButton(): KeyboardButton
+    {
+        return $this->button($this->trans('keyboard.no'));
+    }
+
+    public function confirmButton(): KeyboardButton
+    {
+        return $this->button('👌 ' . $this->trans('keyboard.confirm'));
+    }
+
+    public function backButton(): KeyboardButton
+    {
+        return $this->button('⬅️ ' . $this->trans('keyboard.back'));
+    }
+
+    public function helpButton(): KeyboardButton
+    {
+        return $this->button('🚨 ' . $this->trans('keyboard.help'));
+    }
+
+    public function leaveAsButton(string $text): KeyboardButton
+    {
+        return $this->button($this->trans('keyboard.leave_as', ['text' => $text]));
+    }
+
+    public function cancelButton(): KeyboardButton
+    {
+        return $this->button('❌ ' . $this->trans('keyboard.cancel'));
+    }
+
     public function command(string $name, bool $locked = false, bool $html = false): string
     {
         if ($html) {
@@ -235,11 +246,9 @@ class TelegramAwareHelper
             ]);
         }
 
-        $domain = 'tg.' . $this->getTelegram()->getBot()->getGroup()->name;
-
         return join(' ', [
-            $locked ? '🔒' : $this->trans('icon.' . $name, domain: $domain),
-            $this->trans('command.' . $name, domain: $domain),
+            $locked ? '🔒' : $this->trans($name, domain: 'command_icon'),
+            $this->trans($name, domain: 'command'),
         ]);
     }
 

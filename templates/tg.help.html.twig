@@ -1,0 +1,6 @@
+{% block title_icon %}ℹ️{% endblock %} {% block title %}{% endblock %}
+
+{% block query_icon %}‼️{% endblock %} <u><b>{{ query|raw }}</b></u>
+
+{% block description %}{% endblock %}
+{% block use_icon %}↘️{% endblock %} {{ ('help.use_' ~ (help_use_keyboard ? 'keyboard' : 'input'))|trans({}, 'feedbacks.tg') }}

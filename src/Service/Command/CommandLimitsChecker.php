@@ -9,16 +9,26 @@ use App\Exception\CommandLimitExceeded;
 
 class CommandLimitsChecker
 {
+    public function __construct(
+        private readonly bool $checkLimits,
+    )
+    {
+    }
+
     /**
      * @param User $user
-     * @param CommandStatisticsProviderInterface $statisticsProvider
+     * @param CommandStatisticProviderInterface $statisticProvider
      * @return void
      * @throws CommandLimitExceeded
      */
-    public function checkCommandLimits(User $user, CommandStatisticsProviderInterface $statisticsProvider): void
+    public function checkCommandLimits(User $user, CommandStatisticProviderInterface $statisticProvider): void
     {
-        $statistics = $statisticsProvider->getStatistics($user);
-        $limits = $statisticsProvider->getLimits();
+        if (!$this->checkLimits) {
+            return;
+        }
+
+        $statistics = $statisticProvider->getStatistics($user);
+        $limits = $statisticProvider->getLimits();
 
         foreach ($statistics as $period => $current) {
             $count = null;

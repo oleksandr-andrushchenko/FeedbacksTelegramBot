@@ -6,9 +6,11 @@
 
     <services>
         <service id="app.command_options_factory" class="App\Service\Command\CommandOptionsFactory" lazy="true"/>
-        <service id="app.command_statistics_provider_factory" class="App\Service\Command\CommandStatisticsProviderFactory" lazy="true">
-            <argument type="tagged_locator" tag="app.command_statistics_provider"/>
+        <service id="app.command_statistic_provider_factory" class="App\Service\Command\CommandStatisticProviderFactory" lazy="true">
+            <argument type="tagged_locator" tag="app.command_statistic_provider"/>
         </service>
-        <service id="app.command_limits_checker" class="App\Service\Command\CommandLimitsChecker" lazy="true"/>
+        <service id="app.command_limits_checker" class="App\Service\Command\CommandLimitsChecker" lazy="true">
+            <argument>%app.check_feedbacks_limits%</argument>
+        </service>
     </services>
 </container>

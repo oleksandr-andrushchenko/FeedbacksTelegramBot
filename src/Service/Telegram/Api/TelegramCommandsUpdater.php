@@ -66,11 +66,11 @@ class TelegramCommandsUpdater
         TelegramMyCommands $myCommands
     ): string
     {
-        $domain = sprintf('tg.%s', $telegram->getBot()->getGroup()->name);
+        $domain = sprintf('%s.tg.command', $telegram->getBot()->getGroup()->name);
         $locale = $myCommands->getLocaleCode();
 
-        $icon = $this->translator->trans(sprintf('icon.%s', $command->getKey()), domain: $domain, locale: $locale);
-        $name = $this->translator->trans(sprintf('command.%s', $command->getKey()), domain: $domain, locale: $locale);
+        $icon = $this->translator->trans($command->getKey(), domain: $domain, locale: $locale);
+        $name = $this->translator->trans($command->getKey(), domain: $domain, locale: $locale);
 
         return sprintf('%s %s', $icon, $name);
     }

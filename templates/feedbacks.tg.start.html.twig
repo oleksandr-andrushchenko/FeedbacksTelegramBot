@@ -1,0 +1,4 @@
+{% trans_default_domain 'feedbacks.tg.start' %}
+ℹ️ {{ 'describe.title'|trans }}
+
+‼️ {{ 'describe.agreements'|trans({'%privacy_policy%': '<a href="' ~ privacy_policy_link ~ '">' ~ 'describe.privacy_policy'|trans ~ '</a>', '%terms_of_use%': '<a href="' ~ terms_of_use_link ~ '">' ~ 'describe.terms_of_use'|trans ~ '</a>'})|raw }}

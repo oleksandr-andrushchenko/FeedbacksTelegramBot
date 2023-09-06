@@ -1,5 +1,0 @@
-{% trans_default_domain 'tg.commands' %}
-{% for name,command in constant('App\\Service\\Telegram\\Channel\\FeedbackTelegramChannel::SUPPORTS') %}
-🔹{% include 'tg.command.html.twig' with {name: name} %}:
-{{ name|trans }}
-{% endfor %}

@@ -9,7 +9,7 @@ use App\Entity\CommandOptions;
 
 class CommandOptionsFactory
 {
-    public static function createCommandOptions(array $options): CommandOptions
+    public function __invoke(array $options): CommandOptions
     {
         $limits = [];
         foreach ($options['limits'] as $period => $count) {

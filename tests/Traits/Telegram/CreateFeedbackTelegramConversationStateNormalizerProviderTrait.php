@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Traits\Telegram;
 
-use App\Serializer\Telegram\CreateFeedbackTelegramConversationStateNormalizer;
+use App\Serializer\Feedback\Telegram\CreateFeedbackTelegramConversationStateNormalizer;
 
 trait CreateFeedbackTelegramConversationStateNormalizerProviderTrait
 {

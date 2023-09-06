@@ -22,11 +22,6 @@
         <field name="identifier" column="identifier"/>
         <field name="username" column="username" nullable="true"/>
         <many-to-one field="user" target-entity="App\Entity\User\User"/>
-        <field name="isShowHints" column="is_show_hints" type="boolean">
-            <options>
-                <option name="default">1</option>
-            </options>
-        </field>
         <field name="isShowExtendedKeyboard" column="is_show_extended_keyboard" type="boolean">
             <options>
                 <option name="default">0</option>

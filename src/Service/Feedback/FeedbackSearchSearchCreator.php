@@ -10,7 +10,8 @@ use App\Exception\CommandLimitExceeded;
 use App\Exception\ValidatorException;
 use App\Object\Feedback\FeedbackSearchSearchTransfer;
 use App\Service\Command\CommandLimitsChecker;
-use App\Service\Command\CommandStatisticsProviderInterface;
+use App\Service\Command\CommandStatisticProviderInterface;
+use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\Logger\ActivityLogger;
 use App\Service\Validator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,7 +22,7 @@ class FeedbackSearchSearchCreator
         private readonly CommandOptions $options,
         private readonly EntityManagerInterface $entityManager,
         private readonly Validator $validator,
-        private readonly CommandStatisticsProviderInterface $statisticsProvider,
+        private readonly CommandStatisticProviderInterface $statisticProvider,
         private readonly CommandLimitsChecker $limitsChecker,
         private readonly FeedbackSubscriptionManager $subscriptionManager,
         private readonly ActivityLogger $activityLogger,
@@ -48,7 +49,7 @@ class FeedbackSearchSearchCreator
         $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($messengerUser);
 
         if (!$hasActiveSubscription) {
-            $this->limitsChecker->checkCommandLimits($messengerUser->getUser(), $this->statisticsProvider);
+            $this->limitsChecker->checkCommandLimits($messengerUser->getUser(), $this->statisticProvider);
         }
 
         $searchTermTransfer = $feedbackSearchLookupTransfer->getSearchTerm();
