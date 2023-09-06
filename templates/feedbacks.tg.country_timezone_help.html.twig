@@ -1,8 +1,2 @@
-{% trans_default_domain 'feedbacks.tg.country_help' %}
-{% extends 'tg.help.html.twig' %}
-
-{% block title %}
-{{ 'title'|trans }}
-{% endblock %}
-
-{% set help_use_keyboard = true %}
+{% extends 'feedbacks.tg.country_help.html.twig' %}
+{% set timezone_selection = true %}

@@ -2,7 +2,7 @@ query:
   search_term: Про кого чи про що ви хочете залишити відгук?
   search_term_type: Ким або чим є %search_term%?
   rating: Оцініть ваш досвід з %search_term%.
-  description: Бажаєте залишити коментарій про %search_term%
+  description: Бажаєте залишити коментар про %search_term%
   confirm: Підтвердити створення відгуку про %search_term%? %feedback%
 keyboard:
   change_search_term: Змінити пошуковий термін

@@ -1,1 +1,4 @@
-title: Bot use your language to determinate search scope, translate content etc.
+title: This command allows to change locale.
+items: 'This information is used for:'
+search_scope: Search scope
+locale: Interface language

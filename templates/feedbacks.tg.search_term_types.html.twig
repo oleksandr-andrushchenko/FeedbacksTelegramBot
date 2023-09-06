@@ -1,6 +1,5 @@
 {% trans_default_domain 'feedbacks.tg.search_term_types' %}
-ℹ️ {{ 'title'|trans }}
-
+⚠️ {{ 'title'|trans }}
 {% for type in constant('App\\Enum\\Feedback\\SearchTermType::BASE') %}
- - {{ type.name|trans({}, 'feedbacks.search_term_type_icon') }} {{ type.name|trans({}, 'feedbacks.search_term_type') }}
+▫️ {{ type.name|trans({}, 'feedbacks.search_term_type_icon') }} {{ type.name|trans({}, 'feedbacks.search_term_type') }}
 {% endfor %}

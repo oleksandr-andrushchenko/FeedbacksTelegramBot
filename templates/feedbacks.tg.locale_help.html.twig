@@ -1,18 +1,17 @@
-{% trans_default_domain 'feedbacks.tg.purge_help' %}
+{% trans_default_domain 'feedbacks.tg.locale_help' %}
 {% extends 'tg.help.html.twig' %}
-{% set items = {username: '🙂', name: '🚹', country: '🌎', timezone: '📅', locale: '㊗️', currency: '💱', phone: '☎️', email: '📩', settings: '⚙️'} %}
 
 {% block title %}
 {{ 'title'|trans }}
 {% endblock %}
+
+{% set items = {search_scope: '🔍', locale: '㊗️'} %}
 
 {% block description %}
 ⚠️ {{ 'items'|trans }}
 {% for item,icon in items %}
 ▫️ {{ icon }} {{ item|trans }}
 {% endfor %}
-
-⚠️ {{ 'summary'|trans }}
 
 {% endblock %}
 

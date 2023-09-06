@@ -1,7 +1,9 @@
 title: 'Due to big amount of requests, this command, has next limitations:'
 tries_for: '%tries% per %period%'
-subscribe: Premium subscription allows to use this and other commands without any limitations, %command%.
+subscribe: Premium subscription allows to use this and other commands without any limitations %command%.
 tries: try(-ies)
 day: Day
 month: Month
 year: Year
+items: Due to huge amount of requests - limitations have been placed on the following commands.
+summary: Premium subscription allows to use the bot without any limitations for specified period of time %command%.

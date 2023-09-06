@@ -1,9 +1,11 @@
 {% trans_default_domain 'feedbacks.tg.limits' %}
-‼️ {{ 'reply.limit_exceeded'|trans({'%tries_for%': 'tries_for'|trans({'%tries%': '<b>' ~ count ~ ' ' ~ 'tries'|trans ~ '</b>', '%period%': '<b>1 ' ~ period|trans ~ '</b>'})|raw}, 'feedbacks.tg.' ~ command)|raw }}
+ℹ️ {{ 'items'|trans }}
 
-🔒 {{ 'title'|trans }}
+{% for name,limits in commands %}
+{% include 'feedbacks.tg.command.html.twig' with {name: name} %}:
 {% for limit in limits %}
- - {{ 'tries_for'|trans({'%tries%': '<b>' ~ limit.count ~ ' ' ~ 'tries'|trans ~ '</b>', '%period%': '<b>1 ' ~ limit.period|trans ~ '</b>'})|raw }}
+▫️ {{ 'tries_for'|trans({'%tries%': '<b>' ~ limit.count ~ '</b> ' ~ 'tries'|trans, '%period%': '<b>1 ' ~ limit.period|trans ~ '</b>'})|raw }}
 {% endfor %}
 
-⭐️ {{ 'subscribe'|trans({'%command%': include('feedbacks.tg.command.html.twig', {name: 'subscribe'})})|raw }}
+{% endfor %}
+⭐️ {{ 'summary'|trans({'%command%': include('feedbacks.tg.command.html.twig', {name: 'subscribe'})})|raw }}

@@ -1,5 +1,9 @@
 {% trans_default_domain 'feedbacks.tg.commands' %}
+ℹ️ {{ 'items'|trans }}
+
 {% for name,command in constant('App\\Service\\Feedback\\Telegram\\FeedbackTelegramChannel::SUPPORTS') %}
-🔹{% include 'feedbacks.tg.command.html.twig' with {name: name} %}:
+▫️ {% include 'feedbacks.tg.command.html.twig' with {name: name} %}:
 {{ name|trans }}
 {% endfor %}
+
+⚠️ {{ 'summary'|trans({'%button_icon%': '🎛️'}) }}

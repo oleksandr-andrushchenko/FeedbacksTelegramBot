@@ -619,7 +619,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
     public function getLimitExceededReply(TelegramAwareHelper $tg, CommandLimit $limit): string
     {
-        return $tg->view('limits', [
+        return $tg->view('command_limit_exceeded', [
             'command' => 'create',
             'period' => $limit->getPeriod(),
             'count' => $limit->getCount(),

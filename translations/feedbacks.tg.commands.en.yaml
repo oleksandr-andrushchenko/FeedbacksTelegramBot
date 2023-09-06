@@ -1,3 +1,4 @@
+items: 'Available commands:'
 create: Create feedback (report, complain or gratitude) on user, organization or place.
 search: Search for feedbacks (report, check, verify) on user, organization or place.
 lookup: Search for lookups on interested user, organization or place.
@@ -5,7 +6,9 @@ subscribe: Buy premium subscription to stay unlimited.
 subscriptions: List your premium subscriptions.
 country: Choose your country.
 locale: Choose your language.
+limits: Command limit lits.
 purge: Remove stored user data.
 contact: Contact info, ask a question of left a feedback message.
 commands: Available command list.
 restart: Restore default settings and restart the bot.
+summary: These commands available in the menu below (if not visible - press %button_icon% button, just next to the input field)

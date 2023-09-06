@@ -382,7 +382,7 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
         $message = $tg->upsetText($message);
         $message2 = $tg->trans('reply.will_notify', $parameters, domain: 'lookup');
         $message2 = $tg->okText($message2);
-        $message .= ' ';
+        $message .= "\n\n";
         $message .= $message2;
 
         return $message;
@@ -401,7 +401,7 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
 
     public function getLimitExceededReply(TelegramAwareHelper $tg, CommandLimit $limit): string
     {
-        return $tg->view('limits', [
+        return $tg->view('command_limit_exceeded', [
             'command' => 'lookup',
             'period' => $limit->getPeriod(),
             'count' => $limit->getCount(),
@@ -441,7 +441,7 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
             foreach ($feedbackSearches as $index => $feedbackSearch) {
                 $message = $this->feedbackSearchViewProvider->getFeedbackSearchTelegramView($tg, $feedbackSearch, $index + 1);
 
-                $tg->reply($message, protectContent: true);
+                $tg->reply($message);
             }
 
             $tg->stopConversation($entity);

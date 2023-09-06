@@ -318,28 +318,36 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
         return $this;
     }
 
-    protected function shouldSeeChooseAction(string $text = null): static
+    protected function shouldSeeChooseAction(
+        string $text = null,
+        bool $extended = false,
+        bool $subscribe = true
+    ): static
     {
-        return $this
-            ->shouldSeeReply(
-                $text ?? 'query.action',
-            )
-            ->shouldSeeButtons(
-                'create create',
-                'search search',
-                'lookup lookup',
-                'keyboard.more',
-            )
-        ;
-    }
-
-    protected function shouldSeeExtendedChooseAction(): static
-    {
-        return $this
-            ->shouldSeeChooseAction()
-            ->shouldSeeButtons(
+        $buttons = [
+            $this->command('create'),
+            $this->command('search'),
+            $this->command('lookup'),
+        ];
+        if ($extended) {
+            $buttons = array_merge($buttons, [
+                $subscribe ? $this->command('subscribe') : $this->command('subscriptions'),
+                $this->command('country'),
+                $this->command('locale'),
+                $this->command('purge'),
+                $this->command('contact'),
+                $this->command('commands'),
+                $this->command('limits'),
+                $this->command('restart'),
                 'keyboard.less',
-            )
+            ]);
+        } else {
+            $buttons[] = 'keyboard.more';
+        }
+
+        return $this
+            ->shouldSeeReply($text ?? 'query.action')
+            ->shouldSeeButtons(...$buttons)
         ;
     }
 

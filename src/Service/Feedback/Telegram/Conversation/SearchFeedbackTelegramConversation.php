@@ -398,7 +398,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
 
     public function getLimitExceededReply(TelegramAwareHelper $tg, CommandLimit $limit): string
     {
-        return $tg->view('limits', [
+        return $tg->view('command_limit_exceeded', [
             'command' => 'search',
             'period' => $limit->getPeriod(),
             'count' => $limit->getCount(),
@@ -434,7 +434,7 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
             foreach ($feedbacks as $index => $feedback) {
                 $message = $this->feedbackViewProvider->getFeedbackTelegramView($tg, $feedback, $index + 1);
 
-                $tg->reply($message, protectContent: true);
+                $tg->reply($message);
             }
 
             $tg->stopConversation($entity);

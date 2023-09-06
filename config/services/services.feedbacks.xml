@@ -15,7 +15,7 @@
             <argument type="service" id="app.logger_activity"/>
         </service>
         <service id="app.feedback_search_creator" class="App\Service\Feedback\FeedbackSearchCreator" lazy="true">
-            <argument type="service" id="app.create_command_options"/>
+            <argument type="service" id="app.search_command_options"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.validator"/>
             <argument type="service" id="app.feedback_search_statistic_provider"/>
@@ -215,6 +215,9 @@
             <argument type="service" id="app.subscription_telegram_view_provider"/>
             <argument type="service" id="app.intl_time_provider"/>
             <argument type="service" id="app.feedback_subscription_plan_provider"/>
+            <argument type="service" id="app.create_command_options"/>
+            <argument type="service" id="app.search_command_options"/>
+            <argument type="service" id="app.lookup_command_options"/>
             <tag name="app.telegram_channel" channel="feedbacks"/>
         </service>
         <service id="app.telegram_conversation_country"

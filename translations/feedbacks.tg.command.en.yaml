@@ -4,8 +4,9 @@ lookup: Find Lookups
 subscribe: Get Premium
 subscriptions: My Premium
 country: My Country
-locale: My Language
+locale: My Locale
+limits: Limits
 purge: Purge Data
-contact: Contacts
+contact: About Us
 commands: Commands
 restart: Restart

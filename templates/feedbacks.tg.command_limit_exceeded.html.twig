@@ -1,0 +1,9 @@
+{% trans_default_domain 'feedbacks.tg.limits' %}
+⚠️ {{ 'reply.limit_exceeded'|trans({'%tries_for%': 'tries_for'|trans({'%tries%': '<b>' ~ count ~ '</b> ' ~ 'tries'|trans, '%period%': '<b>1 ' ~ period|trans ~ '</b>'})|raw}, 'feedbacks.tg.' ~ command)|raw }}
+
+🔒 {{ 'title'|trans }}
+{% for limit in limits %}
+▫️ {{ 'tries_for'|trans({'%tries%': '<b>' ~ limit.count ~ '</b> ' ~ 'tries'|trans, '%period%': '<b>1 ' ~ limit.period|trans ~ '</b>'})|raw }}
+{% endfor %}
+
+⭐️ {{ 'subscribe'|trans({'%command%': include('feedbacks.tg.command.html.twig', {name: 'subscribe'})})|raw }}

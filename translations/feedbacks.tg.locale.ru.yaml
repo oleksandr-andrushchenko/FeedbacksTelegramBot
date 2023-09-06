@@ -1,6 +1,6 @@
 query:
   change_confirm: Желаете изменить настройки?
-  locale: Выберите свой язык.
+  locale: Выберите свою локаль.
 reply:
   current_locale: Ваш текущий язык - %locale%.
   canceled: Диалог выбора языка отменен.

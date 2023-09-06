@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Feedback\Telegram;
 
+use App\Entity\CommandLimit;
+use App\Entity\CommandOptions;
 use App\Entity\Telegram\TelegramPayment;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionPlanProvider;
@@ -39,7 +41,8 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     public const SUBSCRIBE = '/subscribe';
     public const SUBSCRIPTIONS = '/subscriptions';
     public const COUNTRY = '/country';
-    public const LOCALE = '/language';
+    public const LOCALE = '/locale';
+    public const LIMITS = '/limits';
     public const PURGE = '/purge';
     public const CONTACT = '/contact';
     public const COMMANDS = '/commands';
@@ -53,6 +56,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         'subscriptions' => self::SUBSCRIPTIONS,
         'country' => self::COUNTRY,
         'locale' => self::LOCALE,
+        'limits' => self::LIMITS,
         'purge' => self::PURGE,
         'contact' => self::CONTACT,
         'commands' => self::COMMANDS,
@@ -69,6 +73,9 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         private readonly SubscriptionTelegramViewProvider $subscriptionViewProvider,
         private readonly TimeProvider $timeProvider,
         private readonly FeedbackSubscriptionPlanProvider $subscriptionPlanProvider,
+        private readonly CommandOptions $createOptions,
+        private readonly CommandOptions $searchOptions,
+        private readonly CommandOptions $lookupOptions,
     )
     {
         parent::__construct($awareHelper, $conversationFactory);
@@ -84,6 +91,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         yield new TelegramCommand(self::SUBSCRIPTIONS, fn () => $this->subscriptions($tg), menu: true, key: 'subscriptions', beforeConversations: true);
         yield new TelegramCommand(self::COUNTRY, fn () => $this->country($tg), menu: true, key: 'country', beforeConversations: true);
         yield new TelegramCommand(self::LOCALE, fn () => $this->locale($tg), menu: true, key: 'locale', beforeConversations: true);
+        yield new TelegramCommand(self::LIMITS, fn () => $this->limits($tg), menu: true, key: 'locale', beforeConversations: true);
         yield new TelegramCommand(self::PURGE, fn () => $this->purge($tg), menu: true, key: 'purge', beforeConversations: true);
         yield new TelegramCommand(self::CONTACT, fn () => $this->contact($tg), menu: true, key: 'contact', beforeConversations: true);
         yield new TelegramCommand(self::COMMANDS, fn () => $this->commands($tg), menu: true, key: 'commands', beforeConversations: true);
@@ -103,6 +111,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
             $this->chooseActionChatSender->getSubscriptionsButton($tg)->getText() => $this->subscriptions($tg),
             $this->chooseActionChatSender->getCountryButton($tg)->getText() => $this->country($tg),
             $this->chooseActionChatSender->getLocaleButton($tg)->getText() => $this->locale($tg),
+            $this->chooseActionChatSender->getLimitsButton($tg)->getText() => $this->limits($tg),
             $this->chooseActionChatSender->getPurgeButton($tg)->getText() => $this->purge($tg),
             $this->chooseActionChatSender->getContactButton($tg)->getText() => $this->contact($tg),
             $this->chooseActionChatSender->getCommandsButton($tg)->getText() => $this->commands($tg),
@@ -115,7 +124,9 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
 
     public function exception(TelegramAwareHelper $tg): null
     {
-        $message = $tg->trans('reply.fail');
+        $message = $tg->trans('reply.fail', [
+            'contact_command' => sprintf('<u>%s</u>', $tg->command('contact', true)),
+        ]);
         $message = $tg->failText($message);
 
         $tg->reply($message);
@@ -215,6 +226,23 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     public function locale(TelegramAwareHelper $tg): null
     {
         return $tg->stopConversations()->startConversation(LocaleTelegramConversation::class)->null();
+    }
+
+    public function limits(TelegramAwareHelper $tg): null
+    {
+        $tg->stopConversations();
+
+        $message = $tg->view('limits', [
+            'commands' => [
+                'create' => $this->createOptions->getLimits(),
+                'search' => $this->searchOptions->getLimits(),
+                'lookup' => $this->lookupOptions->getLimits(),
+            ],
+        ]);
+
+        $tg->reply($message);
+
+        return $this->chooseActionChatSender->sendActions($tg);
     }
 
     public function purge(TelegramAwareHelper $tg): null

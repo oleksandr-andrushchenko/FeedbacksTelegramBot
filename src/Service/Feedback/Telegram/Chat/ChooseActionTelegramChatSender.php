@@ -66,6 +66,7 @@ class ChooseActionTelegramChatSender
             $buttons[] = $this->getPurgeButton($tg);
             $buttons[] = $this->getContactButton($tg);
             $buttons[] = $this->getCommandsButton($tg);
+            $buttons[] = $this->getLimitsButton($tg);
             $buttons[] = $this->getRestartButton($tg);
             $buttons[] = $this->getShowLessButton($tg);
         } else {
@@ -105,12 +106,11 @@ class ChooseActionTelegramChatSender
         $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($tg->getTelegram()->getMessengerUser());
         $key = 'subscriptions';
 
-        return $tg->button(
-            join(' ', [
-                $tg->trans($hasActiveSubscription ? $key : 'subscribe', domain: 'command_icon'),
-                $tg->trans($key, domain: 'command'),
-            ])
-        );
+        $text = $tg->trans($hasActiveSubscription ? $key : 'subscribe', domain: 'command_icon');
+        $text .= ' ';
+        $text .= $tg->trans($key, domain: 'command');
+
+        return $tg->button($text);
     }
 
     public function getCountryButton(TelegramAwareHelper $tg): KeyboardButton
@@ -122,14 +122,11 @@ class ChooseActionTelegramChatSender
             return $tg->button($tg->command('country'));
         }
 
-        $group = $tg->getTelegram()->getBot()->getGroup()->name;
+        $text = $this->countryProvider->getCountryIcon($country);
+        $text .= ' ';
+        $text .= $tg->trans('country', domain: 'command');
 
-        return $tg->button(
-            join(' ', [
-                $this->countryProvider->getCountryIcon($country),
-                $tg->trans('country', domain: 'command'),
-            ])
-        );
+        return $tg->button($text);
     }
 
     public function getLocaleButton(TelegramAwareHelper $tg): KeyboardButton
@@ -141,14 +138,16 @@ class ChooseActionTelegramChatSender
             return $tg->button($tg->command('locale'));
         }
 
-        $group = $tg->getTelegram()->getBot()->getGroup()->name;
+        $text = $this->localeProvider->getLocaleIcon($locale);
+        $text .= ' ';
+        $text .= $tg->trans('locale', domain: 'command');
 
-        return $tg->button(
-            join(' ', [
-                $this->localeProvider->getLocaleIcon($locale),
-                $tg->trans('locale', domain: 'command'),
-            ])
-        );
+        return $tg->button($text);
+    }
+
+    public function getLimitsButton(TelegramAwareHelper $tg): KeyboardButton
+    {
+        return $tg->button($tg->command('limits'));
     }
 
     public function getPurgeButton(TelegramAwareHelper $tg): KeyboardButton

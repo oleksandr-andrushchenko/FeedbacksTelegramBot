@@ -26,7 +26,6 @@
 * "list feedbacks on me" command
 * implement notifications on subscription matches
 * after country selection - link to che channel
-* add command: how many times user X were been searched for (top command, usually - it gonna be current account - search for itself, but how many times somebody were searching me)
 * manual payments
 * ban users
 * mirrors should redirect users to primary bot
@@ -36,7 +35,7 @@
 * ask about custom message before propose typing in contact command
 
 * Simplify country selection
-* Create & implement experienced mode for user: no hints, no press menu button text, less texts, shorter texts etc. (mode enabled automatically after activity checks with/without user confirmation)
+* Create & implement experienced mode for user: no press menu button text, less texts, shorter texts etc. (mode enabled automatically after activity checks with/without user confirmation)
 * Remove confirmation steps for premium-users
 * -> Check other channels and put emojis & description as much as possible + html
 
@@ -47,7 +46,5 @@
 * Protect against multi-account (if search term is popular - ask for money even if limits not exceeded)
 * MOve all render logic into views
 * Inject service locator in telegram channel for commands (coz many dependencies loadings)
-* Add limits command
-* Remove content protection ? (for PR)
 * Add car number as search term type
-* Custom search term types for each country (hide non-popular - show by demand)
+* Custom search term types for each country (hide non-popular - show on demand)
