@@ -9,7 +9,7 @@ use App\Repository\Telegram\TelegramBotRepository;
 use App\Service\Telegram\Api\TelegramCommandsUpdater;
 use App\Service\Telegram\TelegramRegistry;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Console\Command\Command;
+use App\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -43,7 +43,7 @@ class TelegramBotCommandsUpdateCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function invoke(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
