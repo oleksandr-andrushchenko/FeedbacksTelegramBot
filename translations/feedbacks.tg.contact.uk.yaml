@@ -1,13 +1,16 @@
+about_items: 'Про нас:'
+company: Організація
+address: Адреса
+tax: Індивідуальний податковий номер
+contact_items: 'Контакти:'
+telegram: Телеграм
+instagram: Інстаграм
+github: Гітхаб
+linkedin: Лінкедін
+email: Електронна пошта
+phone: Телефон
+
 query:
-  company: Організація
-  address: Адреса
-  tax: Індивідуальний податковий номер
-  telegram: Телеграм
-  instagram: Інстаграм
-  github: Гітхаб
-  linkedin: Лінкедін
-  email: Електронна пошта
-  phone: Телефон
   left_message_confirm: Бажаєте залишити повідомлення?
   message: Введіть Ваше повідомлення.
 reply:

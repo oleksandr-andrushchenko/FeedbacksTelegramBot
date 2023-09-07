@@ -61,6 +61,8 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
         $message = $tg->trans('reply.canceled', domain: 'country');
+        $message .= "\n\n";
+        $message .= $this->getCurrentReply($tg);
         $message = $tg->upsetText($message);
 
         $tg->stopConversation($entity)->reply($message);
@@ -261,16 +263,23 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         return $this->replyAndClose($tg, $entity);
     }
 
-    private function replyAndClose(TelegramAwareHelper $tg, Entity $entity): null
+    public function getCurrentReply(TelegramAwareHelper $tg): string
+    {
+        $message = $this->getCurrentCountryReply($tg);
+        $message .= "\n";
+        $message .= $this->getCurrentTimezoneReply($tg);
+
+        return $message;
+    }
+
+    public function replyAndClose(TelegramAwareHelper $tg, Entity $entity): null
     {
         $tg->stopConversation($entity);
 
         $message = $tg->trans('reply.ok', domain: 'country');
         $message = $tg->okText($message);
         $message .= "\n\n";
-        $message .= $this->getCurrentCountryReply($tg);
-        $message .= "\n";
-        $message .= $this->getCurrentTimezoneReply($tg);
+        $message .= $this->getCurrentReply($tg);
 
         return $this->chooseActionChatSender->sendActions($tg, $message);
     }
@@ -312,6 +321,10 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
             return $this->queryTimezone($tg, true);
         }
         if ($tg->matchText($tg->cancelButton()->getText())) {
+            $user = $tg->getTelegram()->getMessengerUser()?->getUser();
+            $country = $this->provider->getCountry($user->getCountryCode());
+            $user->setTimezone($country?->getTimezones()[0] ?? null);
+
             return $this->gotCancel($tg, $entity);
         }
 

@@ -44,7 +44,7 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
     {
         $contacts = $this->contactOptionsFactory->createContactOptions(TelegramGroup::feedbacks, $tg->getLocaleCode());
 
-        $message = $tg->view('contact_query', [
+        $message = $tg->view('contact', [
             'contacts' => $contacts,
         ]);
 

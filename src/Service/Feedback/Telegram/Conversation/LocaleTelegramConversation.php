@@ -68,6 +68,8 @@ class LocaleTelegramConversation extends TelegramConversation implements Telegra
         $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
         $message = $tg->trans('reply.canceled', domain: 'locale');
+        $message .= "\n\n";
+        $message .= $this->getCurrentLocaleReply($tg);
         $message = $tg->upsetText($message);
 
         $tg->stopConversation($entity)->reply($message);

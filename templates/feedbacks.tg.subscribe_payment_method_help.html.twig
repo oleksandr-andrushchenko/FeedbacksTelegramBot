@@ -1,8 +1,8 @@
 {% trans_default_domain 'feedbacks.tg.subscribe_help' %}
-{% extends 'tg.help.html.twig' %}
 
-{% block title %}
-{{ 'title'|trans }}
+{% extends 'feedbacks.tg.subscribe_help.html.twig' %}
+
+{% block description %}
+ℹ️ {{ 'payment_method'|trans }}
+
 {% endblock %}
-
-{% set help_use_keyboard = true %}
