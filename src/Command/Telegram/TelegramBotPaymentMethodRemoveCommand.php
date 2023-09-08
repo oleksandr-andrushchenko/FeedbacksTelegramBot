@@ -12,8 +12,8 @@ use App\Repository\Telegram\TelegramPaymentMethodRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -36,8 +36,8 @@ class TelegramBotPaymentMethodRemoveCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('username', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot username')
-            ->addOption('name', mode: InputOption::VALUE_REQUIRED, description: 'Payment Method Name')
+            ->addArgument('username', InputArgument::REQUIRED, 'Telegram bot username')
+            ->addArgument('name', InputArgument::REQUIRED, 'Payment Method Name')
             ->setDescription('Remove telegram bot payment method')
         ;
     }
@@ -50,13 +50,13 @@ class TelegramBotPaymentMethodRemoveCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $username = $input->getOption('username');
+            $username = $input->getArgument('username');
             $bot = $this->botRepository->findOneByUsername($username);
             if ($bot === null) {
                 throw new TelegramNotFoundException($username);
             }
 
-            $methodName = $input->getOption('name');
+            $methodName = $input->getArgument('name');
             $name = TelegramPaymentMethodName::fromName($methodName);
             if ($name === null) {
                 throw new TelegramPaymentMethodNotFoundException($methodName);

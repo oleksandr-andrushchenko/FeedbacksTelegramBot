@@ -10,8 +10,8 @@ use App\Service\Telegram\Api\TelegramWebhookRemover;
 use App\Service\Telegram\TelegramRegistry;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -35,7 +35,7 @@ class TelegramBotWebhookRemoveCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('username', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot username')
+            ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot username')
             ->setDescription('Remove telegram bot webhook')
         ;
     }
@@ -48,7 +48,7 @@ class TelegramBotWebhookRemoveCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $username = $input->getOption('username');
+            $username = $input->getArgument('name');
             $bot = $this->repository->findOneByUsername($username);
             if ($bot === null) {
                 throw new TelegramNotFoundException($username);

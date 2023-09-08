@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace App\Command\Telegram;
 
 use App\Enum\Telegram\TelegramPaymentMethodName;
+use App\Exception\Intl\CurrencyNotFoundException;
 use App\Exception\Telegram\Payment\TelegramPaymentMethodNotFoundException;
 use App\Exception\Telegram\TelegramNotFoundException;
 use App\Object\Telegram\Payment\TelegramPaymentMethodTransfer;
 use App\Repository\Telegram\TelegramBotRepository;
+use App\Service\Intl\CurrencyProvider;
 use App\Service\Telegram\Payment\TelegramPaymentMethodCreator;
 use App\Service\Telegram\Payment\TelegramPaymentMethodInfoProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
@@ -37,10 +39,10 @@ class TelegramBotPaymentMethodCreateCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('username', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot username')
-            ->addOption('name', mode: InputOption::VALUE_REQUIRED, description: 'Payment Method Name')
-            ->addOption('token', mode: InputOption::VALUE_REQUIRED, description: 'Payment method Token')
-            ->addOption('currencies', mode: InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, description: 'Currencies')
+            ->addArgument('username', InputArgument::REQUIRED, 'Telegram bot username')
+            ->addArgument('name', InputArgument::REQUIRED, 'Payment Method Name')
+            ->addArgument('token', InputArgument::REQUIRED, 'Payment method Token')
+            ->addArgument('currencies', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Currencies')
             ->setDescription('Create telegram bot payment method')
         ;
     }
@@ -53,13 +55,13 @@ class TelegramBotPaymentMethodCreateCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $username = $input->getOption('username');
+            $username = $input->getArgument('username');
             $bot = $this->botRepository->findOneByUsername($username);
             if ($bot === null) {
                 throw new TelegramNotFoundException($username);
             }
 
-            $methodName = $input->getOption('name');
+            $methodName = $input->getArgument('name');
             $name = TelegramPaymentMethodName::fromName($methodName);
             if ($name === null) {
                 throw new TelegramPaymentMethodNotFoundException($methodName);
@@ -68,8 +70,8 @@ class TelegramBotPaymentMethodCreateCommand extends Command
             $paymentMethodTransfer = new TelegramPaymentMethodTransfer(
                 $bot,
                 $name,
-                $input->getOption('token'),
-                $input->getOption('currencies')
+                $input->getArgument('token'),
+                $input->getArgument('currencies')
             );
 
             $paymentMethod = $this->creator->createTelegramPaymentMethod($paymentMethodTransfer);

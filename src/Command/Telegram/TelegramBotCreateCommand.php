@@ -13,8 +13,8 @@ use App\Service\Telegram\TelegramBotCreator;
 use App\Service\Telegram\TelegramBotInfoProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
@@ -37,11 +37,11 @@ class TelegramBotCreateCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('group', mode: InputOption::VALUE_REQUIRED, description: 'Telegram Group name')
-            ->addOption('username', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot username')
-            ->addOption('token', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Token')
-            ->addOption('country', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Country code')
-            ->addOption('primary-username', mode: InputOption::VALUE_OPTIONAL, description: 'Telegram Primary bot username')
+            ->addArgument('group', InputArgument::REQUIRED, 'Telegram Group name')
+            ->addArgument('username', InputArgument::REQUIRED, 'Telegram bot username')
+            ->addArgument('token', InputArgument::REQUIRED, 'Telegram bot Token')
+            ->addArgument('country', InputArgument::REQUIRED, 'Telegram bot Country code')
+            ->addArgument('primary-username', InputArgument::OPTIONAL, 'Telegram Primary bot username')
             ->setDescription('Create telegram bot')
         ;
     }
@@ -54,13 +54,13 @@ class TelegramBotCreateCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $groupName = $input->getOption('group');
+            $groupName = $input->getArgument('group');
             $group = TelegramGroup::fromName($groupName);
             if ($group === null) {
                 throw new TelegramGroupNotFoundException($groupName);
             }
 
-            $primaryUsername = $input->getOption('primary-username');
+            $primaryUsername = $input->getArgument('primary-username');
             if ($primaryUsername === null) {
                 $primaryBot = null;
             } else {
@@ -72,9 +72,9 @@ class TelegramBotCreateCommand extends Command
             }
 
             $botTransfer = new TelegramBotTransfer(
-                $input->getOption('username'),
-                $input->getOption('token'),
-                $input->getOption('country'),
+                $input->getArgument('username'),
+                $input->getArgument('token'),
+                $input->getArgument('country'),
                 $group,
                 $primaryBot,
             );
