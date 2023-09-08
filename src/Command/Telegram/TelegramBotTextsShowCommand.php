@@ -30,7 +30,7 @@ class TelegramBotTextsShowCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot username')
+            ->addArgument('username', InputArgument::REQUIRED, 'Telegram bot username')
             ->setDescription('Show telegram bot name, short and long descriptions')
         ;
     }
@@ -43,7 +43,7 @@ class TelegramBotTextsShowCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $username = $input->getArgument('name');
+            $username = $input->getArgument('username');
             $bot = $this->repository->findOneByUsername($username);
             if ($bot === null) {
                 throw new TelegramNotFoundException($username);
