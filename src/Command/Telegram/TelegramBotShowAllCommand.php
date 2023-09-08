@@ -6,7 +6,7 @@ namespace App\Command\Telegram;
 
 use App\Repository\Telegram\TelegramBotRepository;
 use App\Service\Telegram\TelegramBotInfoProvider;
-use App\Command\Command;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -35,7 +35,7 @@ class TelegramBotShowAllCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function invoke(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 

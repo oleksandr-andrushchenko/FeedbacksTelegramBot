@@ -11,7 +11,7 @@ use App\Repository\Telegram\TelegramBotRepository;
 use App\Repository\Telegram\TelegramPaymentMethodRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Command\Command;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -45,7 +45,7 @@ class TelegramBotPaymentMethodRemoveCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function invoke(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
