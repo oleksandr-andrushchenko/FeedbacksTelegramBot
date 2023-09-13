@@ -1333,7 +1333,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         $this
             ->type($this->confirmButton())
             ->shouldNotSeeActiveConversation()
-            ->shouldSeeChooseAction('reply.ok')
+            ->shouldSeeChooseAction('reply.created')
         ;
 
         $this->assertEquals($previousFeedbackCount + 1, $feedbackRepository->count([]));

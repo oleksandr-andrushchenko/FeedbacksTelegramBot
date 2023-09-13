@@ -49,6 +49,7 @@ class TelegramBotCommandsRemoveCommand extends Command
         try {
             $username = $input->getArgument('username');
             $bot = $this->repository->findOneByUsername($username);
+
             if ($bot === null) {
                 throw new TelegramNotFoundException($username);
             }
@@ -56,7 +57,7 @@ class TelegramBotCommandsRemoveCommand extends Command
             $telegram = $this->registry->getTelegram($bot->getUsername());
 
             $this->remover->removeTelegramCommands($telegram);
-            $bot->setIsCommandsSet(false);
+            $bot->setCommandsSet(false);
 
             $this->entityManager->flush();
         } catch (Throwable $exception) {
@@ -91,7 +92,7 @@ class TelegramBotCommandsRemoveCommand extends Command
         ;
 
         $io->newLine();
-        $io->success('Telegram bot commands have been removed');
+        $io->success(sprintf('"%s" Telegram bot\'s commands have been removed', $bot->getUsername()));
 
         return Command::SUCCESS;
     }

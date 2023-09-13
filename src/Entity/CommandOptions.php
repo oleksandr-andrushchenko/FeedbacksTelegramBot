@@ -8,7 +8,7 @@ readonly class CommandOptions
 {
     public function __construct(
         private array $limits,
-        private bool $shouldLogActivities
+        private bool $shouldLogActivities,
     )
     {
     }

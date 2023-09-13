@@ -10,10 +10,12 @@ App\Entity\Feedback\Feedback:
       searchTermMessenger: <(\App\Enum\Messenger\Messenger::instagram)>
       searchTermMessengerUsername: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
       rating: <(\App\Enum\Feedback\Rating::neutral)>
-      description: 'neutral'
+      description: neutral
       hasActiveSubscription: false
-      countryCode: 'ua'
-      localeCode: 'uk'
+      countryCode: ua
+      localeCode: uk
+      channelMessageId: null
+      telegramBot: null
   feedback_23_telegram_instagram_username:
     __construct:
       user: '@user_2'
@@ -25,7 +27,9 @@ App\Entity\Feedback\Feedback:
       searchTermMessenger: <(\App\Enum\Messenger\Messenger::instagram)>
       searchTermMessengerUsername: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
       rating: <(\App\Enum\Feedback\Rating::extremely_satisfied)>
-      description: 'awesome'
+      description: awesome
       hasActiveSubscription: false
-      countryCode: 'ua'
-      localeCode: 'uk'
+      countryCode: ua
+      localeCode: uk
+      channelMessageId: null
+      telegramBot: null

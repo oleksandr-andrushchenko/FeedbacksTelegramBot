@@ -3,7 +3,8 @@ query:
   search_term_type: Who or what %search_term% is?
   rating: Rate your experience with %search_term%.
   description: Would you like to add a comment about %search_term%?
-  confirm: Confirm feedback creation on %search_term%? %feedback%
+  confirm: Confirm feedback creation on %search_term%?
+  send_to_channel_confirm: Would you like to post your feedback anonymously on %channel% channel?
 keyboard:
   change_search_term: Change search term
   change_rating: Change rate
@@ -11,6 +12,7 @@ keyboard:
   change_description: Change details
 reply:
   canceled: Feedback adding dialog has been canceled.
-  ok: Feedback has been successfully added.
+  created: Feedback has been successfully added.
+  sent_to_channel: Feedback has been successfully published.
   on_self_forbidden: Feedbacks on yourself is not allowed.
   limit_exceeded: 'You have reached feedback creation limit: %tries_for%. Try again later or buy premium subscription please.'

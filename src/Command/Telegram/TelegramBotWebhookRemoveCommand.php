@@ -50,6 +50,7 @@ class TelegramBotWebhookRemoveCommand extends Command
         try {
             $username = $input->getArgument('username');
             $bot = $this->repository->findOneByUsername($username);
+
             if ($bot === null) {
                 throw new TelegramNotFoundException($username);
             }
@@ -83,7 +84,7 @@ class TelegramBotWebhookRemoveCommand extends Command
             $telegram = $this->registry->getTelegram($bot->getUsername());
 
             $this->remover->removeTelegramWebhook($telegram);
-            $bot->setIsWebhookSet(false);
+            $bot->setWebhookSet(false);
 
             $this->entityManager->flush();
         } catch (Throwable $exception) {

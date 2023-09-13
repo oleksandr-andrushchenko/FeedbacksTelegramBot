@@ -34,7 +34,7 @@ class FeedbackRatingProvider
     {
         $name = $this->translator->trans($rating->name, domain: 'feedbacks.rating', locale: $localeCode);
 
-        return ($rating->value > 0 ? '+' : '') . $rating->value . ' | ' . $name;
+        return ($rating->value > 0 ? '+' : '') . $rating->value . ' (' . $name . ')';
     }
 
     public function getRatingIcon(Rating $rating): ?string

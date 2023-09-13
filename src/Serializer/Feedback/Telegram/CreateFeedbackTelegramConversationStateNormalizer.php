@@ -32,6 +32,7 @@ class CreateFeedbackTelegramConversationStateNormalizer implements NormalizerInt
         return array_merge($this->searchConversationStateNormalizer->normalize($object, $format, $context), [
             'rating' => $object->getRating()?->value,
             'description' => $object->getDescription(),
+            'feedback_id' => $object->getFeedbackId(),
         ]);
     }
 
@@ -48,6 +49,7 @@ class CreateFeedbackTelegramConversationStateNormalizer implements NormalizerInt
         $object
             ->setRating(isset($data['rating']) ? Rating::from($data['rating']) : null)
             ->setDescription($data['description'] ?? null)
+            ->setFeedbackId($data['feedback_id'] ?? null)
         ;
 
         return $object;

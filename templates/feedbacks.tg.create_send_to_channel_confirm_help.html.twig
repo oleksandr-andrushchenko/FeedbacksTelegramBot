@@ -1,0 +1,9 @@
+{% trans_default_domain 'feedbacks.tg.create_help' %}
+{% extends 'feedbacks.tg.create_help.html.twig' %}
+
+{% block description %}
+⚠️ {{ 'send_to_channel_confirm'|trans({'%channel%': channel})|raw }}
+
+"<i>{{ feedback|raw }}</i>"
+
+{% endblock %}

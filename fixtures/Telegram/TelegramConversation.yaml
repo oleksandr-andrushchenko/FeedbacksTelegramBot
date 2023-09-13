@@ -5,5 +5,5 @@ App\Entity\Telegram\TelegramConversation:
       chatId: <(\App\Tests\Fixtures::TELEGRAM_CHAT_ID_1)>
       class: <(\App\Service\Telegram\Conversation\CreateFeedbackTelegramConversation::class)>
       bot: '@telegram_bot_1'
-      isActive: true
+      active: true
       state: <(['step'=>\App\Service\Telegram\Conversation\CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED])>

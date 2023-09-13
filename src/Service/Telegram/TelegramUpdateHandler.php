@@ -77,6 +77,10 @@ class TelegramUpdateHandler
                 return;
             }
 
+            if (!$channel->supportsTelegramUpdate($telegram)) {
+                return;
+            }
+
             $text = $this->inputProvider->getTelegramInputByUpdate($telegram->getUpdate());
             $commands = $channel->getTelegramCommands($telegram);
 

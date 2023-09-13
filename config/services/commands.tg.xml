@@ -65,12 +65,21 @@
             <tag name="console.command" command="telegram:bot:texts:show"/>
         </service>
         <service id="app.command.telegram_bot_create" class="App\Command\Telegram\TelegramBotCreateCommand" lazy="true">
-            <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_bot_creator"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.telegram_bot_info_provider"/>
-
+            <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="app.intl_locale_provider"/>
             <tag name="console.command" command="telegram:bot:create"/>
+        </service>
+        <service id="app.command.telegram_bot_update" class="App\Command\Telegram\TelegramBotUpdateCommand" lazy="true">
+            <argument type="service" id="app.repository.telegram_bot"/>
+            <argument type="service" id="app.telegram_bot_updater"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.telegram_bot_info_provider"/>
+            <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="app.intl_locale_provider"/>
+            <tag name="console.command" command="telegram:bot:update"/>
         </service>
         <service id="app.command.telegram_bot_show_all" class="App\Command\Telegram\TelegramBotShowAllCommand"
                  lazy="true">
@@ -86,34 +95,6 @@
             <argument type="service" id="doctrine.orm.entity_manager"/>
 
             <tag name="console.command" command="telegram:bot:remove"/>
-        </service>
-        <service id="app.command.telegram_bot_toggle_admin_only"
-                 class="App\Command\Telegram\TelegramBotToggleAdminOnlyCommand" lazy="true">
-            <argument type="service" id="app.repository.telegram_bot"/>
-            <argument type="service" id="doctrine.orm.entity_manager"/>
-
-            <tag name="console.command" command="telegram:bot:toggle-admin-only"/>
-        </service>
-        <service id="app.command.telegram_bot_toggle_check_updates"
-                 class="App\Command\Telegram\TelegramBotToggleCheckUpdatesCommand" lazy="true">
-            <argument type="service" id="app.repository.telegram_bot"/>
-            <argument type="service" id="doctrine.orm.entity_manager"/>
-
-            <tag name="console.command" command="telegram:bot:toggle-check-updates"/>
-        </service>
-        <service id="app.command.telegram_bot_toggle_check_requests"
-                 class="App\Command\Telegram\TelegramBotToggleCheckRequestsCommand" lazy="true">
-            <argument type="service" id="app.repository.telegram_bot"/>
-            <argument type="service" id="doctrine.orm.entity_manager"/>
-
-            <tag name="console.command" command="telegram:bot:toggle-check-requests"/>
-        </service>
-        <service id="app.command.telegram_bot_toggle_accept_payments"
-                 class="App\Command\Telegram\TelegramBotToggleAcceptPaymentsCommand" lazy="true">
-            <argument type="service" id="app.repository.telegram_bot"/>
-            <argument type="service" id="doctrine.orm.entity_manager"/>
-
-            <tag name="console.command" command="telegram:bot:toggle-accept-payments"/>
         </service>
         <service id="app.command.telegram_bot_info" class="App\Command\Telegram\TelegramBotShowCommand" lazy="true">
             <argument type="service" id="app.repository.telegram_bot"/>

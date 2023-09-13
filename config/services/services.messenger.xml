@@ -5,10 +5,13 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.messenger_connection_link_maker" class="App\Service\Messenger\MessengerConnectionLinkMaker"/>
-        <service id="app.messenger_user_upserter" class="App\Service\Messenger\MessengerUserUpserter">
+        <service id="app.messenger_connection_link_maker" class="App\Service\Messenger\MessengerConnectionLinkMaker"
+                 lazy="true"/>
+        <service id="app.messenger_user_upserter" class="App\Service\Messenger\MessengerUserUpserter" lazy="true">
             <argument type="service" id="app.repository.messenger_user"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
+        <service id="app.messenger_user_profile_url_provider"
+                 class="App\Service\Messenger\MessengerUserProfileUrlProvider" lazy="true"/>
     </services>
 </container>

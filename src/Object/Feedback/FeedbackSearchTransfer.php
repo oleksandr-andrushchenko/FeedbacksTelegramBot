@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Object\Feedback;
 
 use App\Entity\Messenger\MessengerUser;
+use App\Entity\Telegram\TelegramBot;
 
 readonly class FeedbackSearchTransfer
 {
     public function __construct(
         private ?MessengerUser $messengerUser,
         private ?SearchTermTransfer $searchTerm,
+        private ?TelegramBot $telegramBot,
     )
     {
     }
@@ -23,5 +25,10 @@ readonly class FeedbackSearchTransfer
     public function getSearchTerm(): ?SearchTermTransfer
     {
         return $this->searchTerm;
+    }
+
+    public function getTelegramBot(): ?TelegramBot
+    {
+        return $this->telegramBot;
     }
 }

@@ -5,9 +5,7 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.telegram_bot_remover" class="App\Service\Telegram\TelegramBotRemover" lazy="true">
-            <argument type="service" id="doctrine.orm.entity_manager"/>
-        </service>
+        <service id="app.telegram_bot_remover" class="App\Service\Telegram\TelegramBotRemover" lazy="true"/>
         <service id="app.telegram_bot_info_provider" class="App\Service\Telegram\TelegramBotInfoProvider" lazy="true">
             <argument type="service" id="app.repository.telegram_payment_method"/>
         </service>
@@ -15,9 +13,18 @@
                  lazy="true">
             <argument type="service" id="app.telegram_registry"/>
         </service>
-        <service id="app.telegram_bot_creator" class="App\Service\Telegram\TelegramBotCreator" lazy="true">
+        <service id="app.telegram_link_provider" class="App\Service\Telegram\TelegramLinkProvider" lazy="true"/>
+        <service id="app.telegram_bot_validator" class="App\Service\Telegram\TelegramBotValidator" lazy="true">
+            <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.intl_country_provider"/>
+        </service>
+        <service id="app.telegram_bot_creator" class="App\Service\Telegram\TelegramBotCreator" lazy="true">
             <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.telegram_bot_validator"/>
+        </service>
+        <service id="app.telegram_bot_updater" class="App\Service\Telegram\TelegramBotUpdater" lazy="true">
+            <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="app.telegram_bot_validator"/>
         </service>
         <service id="app.telegram_webhook_url_generator" class="App\Service\Telegram\TelegramWebhookUrlGenerator"
                  lazy="true">
@@ -33,10 +40,7 @@
                  lazy="true">
             <argument type="tagged_locator" tag="app.telegram_conversation_default"/>
         </service>
-        <service id="app.telegram_options_factory" class="App\Service\Telegram\TelegramOptionsFactory" lazy="true"/>
         <service id="app.telegram_factory" class="App\Service\Telegram\TelegramFactory" lazy="true">
-            <argument>%app.telegram_options%</argument>
-            <argument type="service" id="app.telegram_options_factory"/>
             <argument type="service" id="app.telegram_client_registry"/>
             <argument type="service" id="app.telegram_request_checker"/>
             <argument type="service" id="app.repository.telegram_bot"/>
@@ -131,7 +135,6 @@
                  lazy="true">
             <argument>%app.stage%</argument>
             <argument type="service" id="app.telegram_registry"/>
-            <argument type="service" id="app.translator"/>
             <argument type="service" id="app.site_url_generator"/>
             <argument type="service" id="twig"/>
             <argument type="service" id="app.intl_country_provider"/>

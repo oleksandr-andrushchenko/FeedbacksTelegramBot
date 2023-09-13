@@ -6,7 +6,7 @@ App\Entity\Messenger\MessengerUser:
       username: <(\App\Tests\Fixtures::TELEGRAM_USERNAME_1)>
       name: Tg 1 First Last
       user: '@user_1'
-      isShowExtendedKeyboard: false
+      showExtendedKeyboard: false
   messenger_user_1_instagram:
     __construct:
       messenger: <(\App\Enum\Messenger\Messenger::instagram)>
@@ -14,7 +14,7 @@ App\Entity\Messenger\MessengerUser:
       username: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_1)>
       name: Inst 1 First Last
       user: '@user_1'
-      isShowExtendedKeyboard: false
+      showExtendedKeyboard: false
   messenger_user_2_telegram:
     __construct:
       messenger: <(\App\Enum\Messenger\Messenger::telegram)>
@@ -22,7 +22,7 @@ App\Entity\Messenger\MessengerUser:
       username: <(\App\Tests\Fixtures::TELEGRAM_USERNAME_2)>
       name: Tg 2 First Last
       user: '@user_2'
-      isShowExtendedKeyboard: false
+      showExtendedKeyboard: false
   messenger_user_2_instagram:
     __construct:
       messenger: <(\App\Enum\Messenger\Messenger::instagram)>
@@ -30,7 +30,7 @@ App\Entity\Messenger\MessengerUser:
       username: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_2)>
       name: Inst 2 First Last
       user: '@user_2'
-      isShowExtendedKeyboard: false
+      showExtendedKeyboard: false
   messenger_user_3_telegram:
     __construct:
       messenger: <(\App\Enum\Messenger\Messenger::telegram)>
@@ -38,7 +38,7 @@ App\Entity\Messenger\MessengerUser:
       username: <(\App\Tests\Fixtures::TELEGRAM_USERNAME_3)>
       name: Tg 3 First Last
       user: '@user_3'
-      isShowExtendedKeyboard: false
+      showExtendedKeyboard: false
   messenger_user_3_instagram:
     __construct:
       messenger: <(\App\Enum\Messenger\Messenger::instagram)>
@@ -46,4 +46,4 @@ App\Entity\Messenger\MessengerUser:
       username: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
       name: Inst 3 First Last
       user: '@user_3'
-      isShowExtendedKeyboard: false
+      showExtendedKeyboard: false

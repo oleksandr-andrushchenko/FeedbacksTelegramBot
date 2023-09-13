@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controller\Telegram;
 
 use App\Exception\Telegram\TelegramNotFoundException;
-use App\Exception\Telegram\TelegramOptionsNotFoundException;
 use App\Service\Telegram\TelegramRegistry;
 use App\Service\Telegram\TelegramUpdateHandler;
 use Doctrine\ORM\EntityManagerInterface;
@@ -35,7 +34,7 @@ class TelegramController
             $this->entityManager->flush();
 
             return new Response('ok');
-        } catch (TelegramNotFoundException|TelegramOptionsNotFoundException $exception) {
+        } catch (TelegramNotFoundException $exception) {
             $this->logger->error($exception);
 
             return new Response('failed', Response::HTTP_NOT_FOUND);

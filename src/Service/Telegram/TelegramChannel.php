@@ -25,23 +25,32 @@ abstract class TelegramChannel implements TelegramChannelInterface
      * @param Telegram $telegram
      * @return array|TelegramCommandInterface[]
      */
-    public function getTelegramCommands(Telegram $telegram): array
+    final public function getTelegramCommands(Telegram $telegram): array
     {
         $tg = $this->awareHelper->withTelegram($telegram);
 
         return iterator_to_array($this->getCommands($tg));
     }
 
-    public function getTelegramConversationFactory(): TelegramConversationFactory
+    final public function getTelegramConversationFactory(): TelegramConversationFactory
     {
         return $this->conversationFactory;
     }
 
     abstract protected function acceptPayment(TelegramPayment $payment, TelegramAwareHelper $tg): void;
 
-    public function acceptTelegramPayment(Telegram $telegram, TelegramPayment $payment): void
+    final public function acceptTelegramPayment(Telegram $telegram, TelegramPayment $payment): void
     {
         $tg = $this->awareHelper->withTelegram($telegram);
         $this->acceptPayment($payment, $tg);
+    }
+
+    abstract protected function supportsUpdate(TelegramAwareHelper $tg): bool;
+
+    final public function supportsTelegramUpdate(Telegram $telegram): bool
+    {
+        $tg = $this->awareHelper->withTelegram($telegram);
+
+        return $this->supportsUpdate($tg);
     }
 }

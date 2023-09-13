@@ -28,8 +28,7 @@
 * after country selection - link to che channel
 * manual payments
 * ban users
-* mirrors should redirect users to primary bot
-* each primary bot should have country(and/or locale) and if user is out of this country/locale - propose to go to native bot
+* if users country/locale is out of bots country/locale - propose to go to native bot
 * log new user activity
 * allow to buy subscription even if already have one
 * ask about custom message before propose typing in contact command
@@ -48,3 +47,12 @@
 * Inject service locator in telegram channel for commands (coz many dependencies loadings)
 * Add car number as search term type
 * Custom search term types for each country (hide non-popular - show on demand)
+
+* groups: -1001645239372 (dev), -1001673132934 (local)
+* admins: 409525390
+* add Locale to bot, in this case eash locale will have their own localized group
+* add bot id/country to payments/subscriptions
+* on country/locale change - and if such bot exists - propose user to switch onto it
+* switch from groups to channels
+* soft deletes mode (flag) for telegram conversations (will be useful for initial tracks)
+* Twitter search term parse update

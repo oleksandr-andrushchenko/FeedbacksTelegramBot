@@ -124,7 +124,8 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
     {
         $searchTermView = $this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm());
 
-        return sprintf('<u>%s</u>', $searchTermView);
+//        return sprintf('<u>%s</u>', $searchTermView);
+        return $searchTermView;
     }
 
     public function gotSearchTerm(TelegramAwareHelper $tg, Entity $entity): null
@@ -418,7 +419,8 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
             $feedbackSearchSearch = $this->creator->createFeedbackSearchSearch(
                 new FeedbackSearchSearchTransfer(
                     $entity->getMessengerUser(),
-                    $this->state->getSearchTerm()
+                    $this->state->getSearchTerm(),
+                    $entity->getBot()
                 )
             );
             $this->entityManager->flush();
@@ -439,7 +441,11 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
             $tg->reply($message);
 
             foreach ($feedbackSearches as $index => $feedbackSearch) {
-                $message = $this->feedbackSearchViewProvider->getFeedbackSearchTelegramView($tg, $feedbackSearch, $index + 1);
+                $message = $this->feedbackSearchViewProvider->getFeedbackSearchTelegramView(
+                    $tg->getTelegram(),
+                    $feedbackSearch,
+                    $index + 1
+                );
 
                 $tg->reply($message);
             }

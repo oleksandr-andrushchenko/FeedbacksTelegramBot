@@ -60,9 +60,8 @@ class FeedbackCreator
 
         $this->entityManager->persist($feedback);
 
-        if ($this->options->shouldLogActivities()) {
-            $this->activityLogger->logActivity($feedback);
-        }
+        // todo: dispatch event and send in the background
+        $this->logActivity($feedback);
 
         return $feedback;
     }
@@ -86,7 +85,8 @@ class FeedbackCreator
             $feedbackTransfer->getDescription(),
             $hasActiveSubscription,
             $messengerUser->getUser()->getCountryCode(),
-            $messengerUser->getUser()->getLocaleCode()
+            $messengerUser->getUser()->getLocaleCode(),
+            telegramBot: $feedbackTransfer->getTelegramBot()
         );
     }
 
@@ -109,5 +109,14 @@ class FeedbackCreator
         ) {
             throw new SameMessengerUserException($messengerUser);
         }
+    }
+
+    private function logActivity(Feedback $feedback): void
+    {
+        if (!$this->options->shouldLogActivities()) {
+            return;
+        }
+
+        $this->activityLogger->logActivity($feedback);
     }
 }

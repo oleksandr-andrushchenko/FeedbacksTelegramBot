@@ -15,7 +15,7 @@ class TelegramConversation
         private readonly int $chatId,
         private string $class,
         private readonly TelegramBot $bot,
-        private bool $isActive = true,
+        private bool $active = true,
         private ?array $state = null,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
@@ -46,12 +46,12 @@ class TelegramConversation
 
     public function active(): bool
     {
-        return $this->isActive;
+        return $this->active;
     }
 
-    public function setIsActive(bool $isActive): self
+    public function setActive(bool $active): self
     {
-        $this->isActive = $isActive;
+        $this->active = $active;
 
         return $this;
     }

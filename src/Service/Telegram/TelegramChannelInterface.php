@@ -16,4 +16,6 @@ interface TelegramChannelInterface
     public function getTelegramConversationFactory(): TelegramConversationFactory;
 
     public function acceptTelegramPayment(Telegram $telegram, TelegramPayment $payment): void;
+
+    public function supportsTelegramUpdate(Telegram $telegram): bool;
 }

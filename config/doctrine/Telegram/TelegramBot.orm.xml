@@ -15,49 +15,54 @@
             </options>
         </id>
         <field name="username" column="username" length="32" unique="true"/>
+        <field name="name" column="name" length="1024"/>
         <field name="token" column="token" length="46"/>
         <field name="countryCode" column="country_code" length="2"/>
-        <field name="group" column="group_name" type="smallint" enum-type="App\Enum\Telegram\TelegramGroup">
+        <field name="localeCode" column="locale_code" length="2"/>
+        <field name="group" column="bot_group_name" type="smallint" enum-type="App\Enum\Telegram\TelegramGroup">
             <options>
                 <option name="unsigned">true</option>
             </options>
         </field>
-        <many-to-one field="primaryBot" target-entity="App\Entity\Telegram\TelegramBot"/>
-        <field name="isCheckUpdates" column="is_check_updates" type="boolean">
+        <field name="channelUsername" column="channel_username" length="32" nullable="true"/>
+        <field name="groupUsername" column="group_username" length="32" nullable="true"/>
+        <field name="checkUpdates" column="check_updates" type="boolean">
             <options>
                 <option name="default">1</option>
             </options>
         </field>
-        <field name="isCheckRequests" column="is_check_requests" type="boolean">
+        <field name="checkRequests" column="check_requests" type="boolean">
             <options>
                 <option name="default">1</option>
             </options>
         </field>
-        <field name="isAcceptPayments" column="is_accept_payments" type="boolean">
+        <field name="acceptPayments" column="accept_payments" type="boolean">
             <options>
                 <option name="default">0</option>
             </options>
         </field>
-        <field name="isAdminOnly" column="is_admin_only" type="boolean">
+        <field name="adminIds" column="admin_ids" type="simple_array" nullable="true"/>
+        <field name="adminOnly" column="admin_only" type="boolean">
             <options>
                 <option name="default">1</option>
             </options>
         </field>
-        <field name="isTextsSet" column="is_texts_set" type="boolean">
+        <field name="textsSet" column="texts_set" type="boolean">
             <options>
                 <option name="default">0</option>
             </options>
         </field>
-        <field name="isWebhookSet" column="is_webhook_set" type="boolean">
+        <field name="webhookSet" column="webhook_set" type="boolean">
             <options>
                 <option name="default">0</option>
             </options>
         </field>
-        <field name="isCommandsSet" column="is_commands_set" type="boolean">
+        <field name="commandsSet" column="commands_set" type="boolean">
             <options>
                 <option name="default">0</option>
             </options>
         </field>
         <field name="createdAt" column="created_at" type="datetime_immutable"/>
+        <field name="deletedAt" column="deleted_at" type="datetime_immutable" nullable="true"/>
     </entity>
 </doctrine-mapping>

@@ -4,32 +4,25 @@ declare(strict_types=1);
 
 namespace App\Service\Feedback\SearchTerm;
 
-use App\Entity\Feedback\Feedback;
 use App\Entity\Feedback\FeedbackSearch;
 use App\Object\Feedback\SearchTermTransfer;
-use App\Object\Messenger\MessengerUserTransfer;
 
 class SearchTermByFeedbackSearchProvider
 {
+    public function __construct(
+        private readonly SearchTermProvider $searchTermProvider,
+    )
+    {
+    }
+
     public function getSearchTermByFeedbackSearch(FeedbackSearch $feedbackSearch): SearchTermTransfer
     {
-        return (new SearchTermTransfer($feedbackSearch->getSearchTermText()))
-            ->setType($feedbackSearch->getSearchTermType())
-            ->setMessenger($feedbackSearch->getSearchTermMessenger())
-            // todo:
-            ->setMessengerProfileUrl(null)
-            ->setMessengerUsername($feedbackSearch->getSearchTermMessengerUsername())
-            ->setMessengerUser(
-                $feedbackSearch->getSearchTermMessengerUser() === null ? null : new MessengerUserTransfer(
-                    $feedbackSearch->getSearchTermMessengerUser()->getMessenger(),
-                    $feedbackSearch->getSearchTermMessengerUser()->getIdentifier(),
-                    $feedbackSearch->getSearchTermMessengerUser()->getUsername(),
-                    $feedbackSearch->getSearchTermMessengerUser()->getName(),
-                    $feedbackSearch->getSearchTermMessengerUser()->getUser()->getCountryCode(),
-                    $feedbackSearch->getSearchTermMessengerUser()->getUser()->getLocaleCode(),
-                    $feedbackSearch->getSearchTermMessengerUser()->getUser()->getCurrencyCode()
-                )
-            )
-        ;
+        return $this->searchTermProvider->getSearchTerm(
+            $feedbackSearch->getSearchTermText(),
+            $feedbackSearch->getSearchTermType(),
+            $feedbackSearch->getSearchTermMessenger(),
+            $feedbackSearch->getSearchTermMessengerUsername(),
+            $feedbackSearch->getSearchTermMessengerUser()
+        );
     }
 }

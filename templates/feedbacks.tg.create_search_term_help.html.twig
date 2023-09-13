@@ -1,9 +1,5 @@
 {% trans_default_domain 'feedbacks.tg.create_help' %}
-{% extends 'tg.help.html.twig' %}
-
-{% block title %}
-{{ 'title'|trans }}
-{% endblock %}
+{% extends 'feedbacks.tg.create_help.html.twig' %}
 
 {% block description %}
 {{ include('feedbacks.tg.search_term_types.html.twig') }}

@@ -9,8 +9,8 @@ use Throwable;
 
 class CountryNotFoundException extends Exception
 {
-    public function __construct(string $country, int $code = 0, ?Throwable $previous = null)
+    public function __construct(string $countryCode, int $code = 0, ?Throwable $previous = null)
     {
-        parent::__construct(sprintf('"%s" country has not been found', $country), $code, $previous);
+        parent::__construct(sprintf('"%s" country has not been found', $countryCode), $code, $previous);
     }
 }

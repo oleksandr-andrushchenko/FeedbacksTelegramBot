@@ -39,7 +39,7 @@ class TelegramMessengerUserUpserter
             username: $user->getUsername(),
             name: trim($user->getFirstName() . ' ' . $user->getLastName()),
             countryCode: $country->getCode(),
-            localeCode: $country->getLocaleCodes()[0] ?? null,
+            localeCode: $telegram->getBot()->getLocaleCode(),
             currencyCode: $country->getCurrencyCode(),
             timezone: $country->getTimezones()[0] ?? null
         );

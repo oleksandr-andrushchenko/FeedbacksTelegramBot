@@ -49,12 +49,13 @@ class TelegramBotWebhookUpdateCommand extends Command
         try {
             $username = $input->getArgument('username');
             $bot = $this->repository->findOneByUsername($username);
+
             if ($bot === null) {
                 throw new TelegramNotFoundException($username);
             }
 
             $this->updater->updateTelegramWebhook($bot);
-            $bot->setIsWebhookSet(true);
+            $bot->setWebhookSet(true);
 
             $this->entityManager->flush();
         } catch (Throwable $exception) {

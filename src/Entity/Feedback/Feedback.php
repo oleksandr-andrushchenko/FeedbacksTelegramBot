@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity\Feedback;
 
 use App\Entity\Messenger\MessengerUser;
+use App\Entity\Telegram\TelegramBot;
 use App\Entity\User\User;
 use App\Enum\Feedback\Rating;
 use App\Enum\Feedback\SearchTermType;
@@ -28,6 +29,8 @@ class Feedback
         private readonly bool $hasActiveSubscription,
         private readonly ?string $countryCode = null,
         private readonly ?string $localeCode = null,
+        private ?int $channelMessageId = null,
+        private readonly ?TelegramBot $telegramBot = null,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?int $id = null,
     )
@@ -102,6 +105,18 @@ class Feedback
     public function getLocaleCode(): ?string
     {
         return $this->localeCode;
+    }
+
+    public function getChannelMessageId(): ?int
+    {
+        return $this->channelMessageId;
+    }
+
+    public function setChannelMessageId(?int $channelMessageId): self
+    {
+        $this->channelMessageId = $channelMessageId;
+
+        return $this;
     }
 
     public function getCreatedAt(): DateTimeInterface

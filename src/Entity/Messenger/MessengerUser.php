@@ -17,7 +17,7 @@ class MessengerUser
         private ?string $username = null,
         private ?string $name = null,
         private ?User $user = null,
-        private bool $isShowExtendedKeyboard = false,
+        private bool $showExtendedKeyboard = false,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
         private ?int $id = null,
@@ -85,12 +85,12 @@ class MessengerUser
 
     public function showExtendedKeyboard(): bool
     {
-        return $this->isShowExtendedKeyboard;
+        return $this->showExtendedKeyboard;
     }
 
-    public function setIsShowExtendedKeyboard(bool $isShowExtendedKeyboard): self
+    public function setShowExtendedKeyboard(bool $showExtendedKeyboard): self
     {
-        $this->isShowExtendedKeyboard = $isShowExtendedKeyboard;
+        $this->showExtendedKeyboard = $showExtendedKeyboard;
 
         return $this;
     }

@@ -49,12 +49,13 @@ class TelegramBotTextsUpdateCommand extends Command
         try {
             $username = $input->getArgument('username');
             $bot = $this->repository->findOneByUsername($username);
+
             if ($bot === null) {
                 throw new TelegramNotFoundException($username);
             }
 
             $this->updater->updateTelegramDescriptions($bot);
-            $bot->setIsTextsSet(true);
+            $bot->setTextsSet(true);
 
             $this->entityManager->flush();
         } catch (Throwable $exception) {

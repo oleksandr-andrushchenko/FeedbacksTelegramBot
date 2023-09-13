@@ -11,7 +11,7 @@ class TelegramRequest
 {
     public function __construct(
         private readonly string $method,
-        private readonly ?int $chatId,
+        private readonly null|int|string $chatId,
         private readonly ?int $inlineMessageId,
         private readonly array $data,
         private readonly TelegramBot $bot,
@@ -32,7 +32,7 @@ class TelegramRequest
         return $this->method;
     }
 
-    public function getChatId(): int
+    public function getChatId(): null|int|string
     {
         return $this->chatId;
     }

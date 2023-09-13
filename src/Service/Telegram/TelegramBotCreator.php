@@ -5,16 +5,14 @@ declare(strict_types=1);
 namespace App\Service\Telegram;
 
 use App\Entity\Telegram\TelegramBot;
-use App\Exception\Intl\CountryNotFoundException;
 use App\Object\Telegram\TelegramBotTransfer;
-use App\Service\Intl\CountryProvider;
 use Doctrine\ORM\EntityManagerInterface;
 
 class TelegramBotCreator
 {
     public function __construct(
-        private readonly CountryProvider $countryProvider,
         private readonly EntityManagerInterface $entityManager,
+        private readonly TelegramBotValidator $validator,
     )
     {
     }
@@ -22,22 +20,27 @@ class TelegramBotCreator
     /**
      * @param TelegramBotTransfer $botTransfer
      * @return TelegramBot
-     * @throws CountryNotFoundException
      */
     public function createTelegramBot(TelegramBotTransfer $botTransfer): TelegramBot
     {
-        $countryCode = $botTransfer->getCountryCode();
-        if (!$this->countryProvider->hasCountry($countryCode)) {
-            throw new CountryNotFoundException($countryCode);
-        }
-
         $bot = new TelegramBot(
             $botTransfer->getUsername(),
-            $botTransfer->getToken(),
-            $countryCode,
             $botTransfer->getGroup(),
-            $botTransfer->getPrimaryBot()
+            $botTransfer->getName(),
+            $botTransfer->getToken(),
+            $botTransfer->getCountry()->getCode(),
+            $botTransfer->localePassed() ? $botTransfer->getLocale()->getCode() : $botTransfer->getCountry()->getLocaleCodes()[0],
+            channelUsername: $botTransfer->getChannelUsername(),
+            groupUsername: $botTransfer->getGroupUsername(),
+            checkUpdates: $botTransfer->checkUpdates(),
+            checkRequests: $botTransfer->checkRequests(),
+            acceptPayments: $botTransfer->acceptPayments(),
+            adminIds: $botTransfer->getAdminIds(),
+            adminOnly: $botTransfer->adminOnly(),
         );
+
+        $this->validator->validateTelegramBot($bot);
+
         $this->entityManager->persist($bot);
 
         return $bot;

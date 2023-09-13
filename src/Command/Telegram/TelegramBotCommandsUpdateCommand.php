@@ -49,6 +49,7 @@ class TelegramBotCommandsUpdateCommand extends Command
         try {
             $username = $input->getArgument('username');
             $bot = $this->repository->findOneByUsername($username);
+
             if ($bot === null) {
                 throw new TelegramNotFoundException($username);
             }
@@ -56,7 +57,7 @@ class TelegramBotCommandsUpdateCommand extends Command
             $telegram = $this->registry->getTelegram($bot->getUsername());
 
             $this->updater->updateTelegramCommands($telegram);
-            $bot->setIsCommandsSet(true);
+            $bot->setCommandsSet(true);
 
             $this->entityManager->flush();
         } catch (Throwable $exception) {
@@ -91,7 +92,7 @@ class TelegramBotCommandsUpdateCommand extends Command
         ;
 
         $io->newLine();
-        $io->success('Commands have been updated');
+        $io->success(sprintf('"%s" Telegram bot\'s commands have been updated', $bot->getUsername()));
 
         return Command::SUCCESS;
     }

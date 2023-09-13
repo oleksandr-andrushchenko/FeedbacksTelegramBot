@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity\Feedback;
 
 use App\Entity\Messenger\MessengerUser;
+use App\Entity\Telegram\TelegramBot;
 use App\Entity\User\User;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
@@ -25,6 +26,7 @@ class FeedbackSearch
         private readonly bool $hasActiveSubscription,
         private readonly ?string $countryCode = null,
         private readonly ?string $localeCode = null,
+        private readonly ?TelegramBot $telegramBot = null,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?int $id = null,
     )

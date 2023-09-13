@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Object\Feedback;
 
 use App\Entity\Messenger\MessengerUser;
+use App\Entity\Telegram\TelegramBot;
 use App\Enum\Feedback\Rating;
 
 readonly class FeedbackTransfer
@@ -14,6 +15,7 @@ readonly class FeedbackTransfer
         private ?SearchTermTransfer $searchTerm,
         private ?Rating $rating,
         private ?string $description,
+        private ?TelegramBot $telegramBot = null,
     )
     {
     }
@@ -36,5 +38,10 @@ readonly class FeedbackTransfer
     public function getDescription(): ?string
     {
         return $this->description;
+    }
+
+    public function getTelegramBot(): ?TelegramBot
+    {
+        return $this->telegramBot;
     }
 }

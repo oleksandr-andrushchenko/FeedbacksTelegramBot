@@ -357,7 +357,8 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
     public function getPaymentInvoiceParameters(TelegramAwareHelper $tg): array
     {
         $commandNames = array_map(fn ($command) => $tg->command($command), ['create', 'search', 'lookup']);
-        $bots = $this->botRepository->findByGroup($tg->getTelegram()->getBot()->getGroup());
+        $bot = $tg->getTelegram()->getBot();
+        $bots = $this->botRepository->findByGroupAndCountry($bot->getGroup(), $bot->getCountryCode());
         $botNames = array_map(fn (TelegramBot $bot) => '@' . $bot->getUsername(), $bots);
 
         return [

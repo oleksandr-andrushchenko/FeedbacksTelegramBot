@@ -52,17 +52,20 @@ class TelegramBotPaymentMethodRemoveCommand extends Command
         try {
             $username = $input->getArgument('username');
             $bot = $this->botRepository->findOneByUsername($username);
+
             if ($bot === null) {
                 throw new TelegramNotFoundException($username);
             }
 
             $methodName = $input->getArgument('username');
             $name = TelegramPaymentMethodName::fromName($methodName);
+
             if ($name === null) {
                 throw new TelegramPaymentMethodNotFoundException($methodName);
             }
 
             $paymentMethod = $this->repository->findOneActiveByBotAndName($bot, $name);
+
             if ($paymentMethod === null) {
                 throw new TelegramPaymentMethodNotFoundException($methodName);
             }

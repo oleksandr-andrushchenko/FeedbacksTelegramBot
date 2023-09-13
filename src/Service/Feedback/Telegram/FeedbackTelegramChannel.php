@@ -122,6 +122,13 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         };
     }
 
+    public function supportsUpdate(TelegramAwareHelper $tg): bool
+    {
+        $update = $tg->getTelegram()->getUpdate();
+
+        return $update->getMessage()?->getChat()->getType() === 'private';
+    }
+
     public function exception(TelegramAwareHelper $tg): null
     {
         $message = $tg->trans('reply.fail', [
@@ -273,14 +280,14 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
 
     public function more(TelegramAwareHelper $tg): null
     {
-        $tg->getTelegram()->getMessengerUser()->setIsShowExtendedKeyboard(true);
+        $tg->getTelegram()->getMessengerUser()->setShowExtendedKeyboard(true);
 
         return $this->chooseActionChatSender->sendActions($tg);
     }
 
     public function less(TelegramAwareHelper $tg): null
     {
-        $tg->getTelegram()->getMessengerUser()->setIsShowExtendedKeyboard(false);
+        $tg->getTelegram()->getMessengerUser()->setShowExtendedKeyboard(false);
 
         return $this->chooseActionChatSender->sendActions($tg);
     }

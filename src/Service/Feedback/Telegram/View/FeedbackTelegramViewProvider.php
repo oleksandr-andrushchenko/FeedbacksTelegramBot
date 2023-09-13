@@ -9,7 +9,8 @@ use App\Service\Feedback\Rating\FeedbackRatingProvider;
 use App\Service\Feedback\SearchTerm\SearchTermByFeedbackProvider;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\TimeProvider;
-use App\Service\Telegram\TelegramAwareHelper;
+use App\Service\Telegram\Telegram;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FeedbackTelegramViewProvider
 {
@@ -19,30 +20,83 @@ class FeedbackTelegramViewProvider
         private readonly CountryProvider $countryProvider,
         private readonly TimeProvider $timeProvider,
         private readonly FeedbackRatingProvider $ratingProvider,
+        private readonly TranslatorInterface $translator,
+        private readonly FeedbackTelegramReplySignViewProvider $signViewProvider,
     )
     {
     }
 
-    public function getFeedbackTelegramView(TelegramAwareHelper $tg, Feedback $feedback, int $number = null): string
+    public function getFeedbackTelegramView(
+        Telegram $telegram,
+        Feedback $feedback,
+        int $number = null,
+        string $localeCode = null,
+        bool $showSign = true,
+        bool $showTime = true
+    ): string
     {
         $searchTerm = $this->searchTermProvider->getSearchTermByFeedback($feedback);
 
         $country = null;
+
         if ($feedback->getCountryCode() !== null) {
             $country = $this->countryProvider->getCountry($feedback->getCountryCode());
         }
 
-        return $tg->view('feedback', [
-            'number' => $number,
-            'search_term' => $this->searchTermViewProvider->getSearchTermTelegramView($searchTerm),
-            'rating' => $this->ratingProvider->getRatingComposeName($feedback->getRating()),
-            'description' => $feedback->getDescription(),
-            'country' => $this->countryProvider->getCountryComposeName($country),
-            'created_at' => $this->timeProvider->getShortDate(
+        $user = $feedback->getMessengerUser()?->getUser();
+        $localeCode = $localeCode ?? $user->getLocaleCode();
+
+        $message = '';
+
+        if ($number !== null) {
+            $message .= $this->translator->trans('icon.number', domain: 'feedbacks.tg', locale: $localeCode);
+            $message .= $number;
+            $message .= "\n";
+        }
+
+        if ($showTime) {
+            $createdAt = $this->timeProvider->getDate(
                 $feedback->getCreatedAt(),
-                timezone: $tg->getTimezone(),
-                localeCode: $tg->getLocaleCode()
-            ),
-        ]);
+                timezone: $user->getTimezone(),
+                localeCode: $localeCode
+            );
+            $message .= $createdAt;
+            $message .= ', ';
+        }
+
+        $message .= $this->translator->trans('somebody_from', domain: 'feedbacks.tg.feedback', locale: $localeCode);
+        $message .= ' ';
+        $country = $this->countryProvider->getCountryComposeName($country, localeCode: $localeCode);
+//        $message .= sprintf('<u>%s</u>', $country);
+        $message .= $country;
+        $message .= ' ';
+        $message .= $this->translator->trans('wrote_about', domain: 'feedbacks.tg.feedback', locale: $localeCode);
+        $message .= ' ';
+        $searchTerm = $this->searchTermViewProvider->getSearchTermTelegramView($searchTerm, localeCode: $localeCode);
+//        $message .= sprintf('<u>%s</u>', $searchTerm);
+        $message .= $searchTerm;
+        $message .= ':';
+
+        $message .= "\n\n";
+
+        if ($feedback->getDescription() !== null) {
+            $message .= '<tg-spoiler>';
+            $message .= $feedback->getDescription();
+            $message .= '</tg-spoiler>';
+        }
+
+        $message .= ' ';
+        $message .= '<b>';
+        $rating = $this->ratingProvider->getRatingComposeName($feedback->getRating(), localeCode: $localeCode);
+        $message .= $rating;
+        $message .= '</b>';
+
+        if ($showSign) {
+            $message .= "\n\n";
+
+            $message .= $this->signViewProvider->getFeedbackTelegramReplySignView($telegram);
+        }
+
+        return $message;
     }
 }

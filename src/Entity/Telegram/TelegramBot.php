@@ -12,24 +12,29 @@ class TelegramBot
 {
     public function __construct(
         private readonly string $username,
-        private readonly string $token,
-        private readonly string $countryCode,
-        private readonly TelegramGroup $group,
-        private readonly ?TelegramBot $primaryBot = null,
-        private bool $isCheckUpdates = true,
-        private bool $isCheckRequests = true,
-        private bool $isAcceptPayments = false,
-        private bool $isAdminOnly = true,
-        private bool $isTextsSet = false,
-        private bool $isWebhookSet = false,
-        private bool $isCommandsSet = false,
+        private TelegramGroup $group,
+        private string $name,
+        private string $token,
+        private string $countryCode,
+        private string $localeCode,
+        private ?string $channelUsername = null,
+        private ?string $groupUsername = null,
+        private bool $checkUpdates = true,
+        private bool $checkRequests = true,
+        private bool $acceptPayments = false,
+        private array $adminIds = [],
+        private bool $adminOnly = true,
+        private bool $textsSet = false,
+        private bool $webhookSet = false,
+        private bool $commandsSet = false,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
+        private ?DateTimeInterface $deletedAt = null,
         private ?int $id = null,
     )
     {
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -39,9 +44,28 @@ class TelegramBot
         return $this->username;
     }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
     public function getToken(): string
     {
         return $this->token;
+    }
+
+    public function setToken(string $token): self
+    {
+        $this->token = $token;
+
+        return $this;
     }
 
     public function getCountryCode(): string
@@ -49,96 +73,163 @@ class TelegramBot
         return $this->countryCode;
     }
 
+    public function setCountryCode(string $countryCode): self
+    {
+        $this->countryCode = $countryCode;
+
+        return $this;
+    }
+
+    public function getLocaleCode(): string
+    {
+        return $this->localeCode;
+    }
+
+    public function setLocaleCode(string $localeCode): self
+    {
+        $this->localeCode = $localeCode;
+
+        return $this;
+    }
+
     public function getGroup(): TelegramGroup
     {
         return $this->group;
     }
 
-    public function getPrimaryBot(): ?TelegramBot
+    public function setGroup(TelegramGroup $group): self
     {
-        return $this->primaryBot;
+        $this->group = $group;
+
+        return $this;
+    }
+
+    public function getChannelUsername(): ?string
+    {
+        return $this->channelUsername;
+    }
+
+    public function setChannelUsername(?string $channelUsername): self
+    {
+        $this->channelUsername = $channelUsername;
+
+        return $this;
+    }
+
+    public function getGroupUsername(): ?string
+    {
+        return $this->groupUsername;
+    }
+
+    public function setGroupUsername(?string $groupUsername): self
+    {
+        $this->groupUsername = $groupUsername;
+
+        return $this;
     }
 
     public function checkUpdates(): bool
     {
-        return $this->isCheckUpdates;
+        return $this->checkUpdates;
     }
 
-    public function setIsCheckUpdates(bool $isCheckUpdates): self
+    public function setCheckUpdates(bool $checkUpdates): self
     {
-        $this->isCheckUpdates = $isCheckUpdates;
+        $this->checkUpdates = $checkUpdates;
 
         return $this;
     }
 
     public function checkRequests(): bool
     {
-        return $this->isCheckRequests;
+        return $this->checkRequests;
     }
 
-    public function setIsCheckRequests(bool $isCheckRequests): self
+    public function setCheckRequests(bool $checkRequests): self
     {
-        $this->isCheckRequests = $isCheckRequests;
+        $this->checkRequests = $checkRequests;
 
         return $this;
     }
 
     public function acceptPayments(): bool
     {
-        return $this->isAcceptPayments;
+        return $this->acceptPayments;
     }
 
-    public function setIsAcceptPayments(bool $isAcceptPayments): self
+    public function setAcceptPayments(bool $acceptPayments): self
     {
-        $this->isAcceptPayments = $isAcceptPayments;
+        $this->acceptPayments = $acceptPayments;
+
+        return $this;
+    }
+
+    public function getAdminIds(): array
+    {
+        return array_map(fn ($adminId) => (int) $adminId, $this->adminIds);
+    }
+
+    public function setAdminIds(array $adminIds): self
+    {
+        foreach ($adminIds as $adminId) {
+            $this->addAdminId($adminId);
+        }
+
+        return $this;
+    }
+
+    public function addAdminId(string|int $adminId): self
+    {
+        $this->adminIds[] = (int) $adminId;
+        $this->adminIds = array_filter(array_unique($this->adminIds));
 
         return $this;
     }
 
     public function adminOnly(): bool
     {
-        return $this->isAdminOnly;
+        return $this->adminOnly;
     }
 
-    public function setIsAdminOnly(bool $isAdminOnly): self
+    public function setAdminOnly(bool $adminOnly): self
     {
-        $this->isAdminOnly = $isAdminOnly;
+        $this->adminOnly = $adminOnly;
 
         return $this;
     }
 
     public function textsSet(): bool
     {
-        return $this->isTextsSet;
+        return $this->textsSet;
     }
 
-    public function setIsTextsSet(bool $isTextsSet): self
+    public function setTextsSet(bool $textsSet): self
     {
-        $this->isTextsSet = $isTextsSet;
+        $this->textsSet = $textsSet;
 
         return $this;
     }
 
     public function webhookSet(): bool
     {
-        return $this->isWebhookSet;
+        return $this->webhookSet;
     }
 
-    public function setIsWebhookSet(bool $isWebhookSet): self
+    public function setWebhookSet(bool $webhookSet): self
     {
-        $this->isWebhookSet = $isWebhookSet;
+        $this->webhookSet = $webhookSet;
 
         return $this;
     }
 
     public function commandsSet(): bool
     {
-        return $this->isCommandsSet;
+        return $this->commandsSet;
     }
 
-    public function setIsCommandsSet(bool $isCommandsSet): self
+    public function setCommandsSet(bool $commandsSet): self
     {
-        $this->isCommandsSet = $isCommandsSet;
+        $this->commandsSet = $commandsSet;
 
         return $this;
     }
@@ -146,5 +237,17 @@ class TelegramBot
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function getDeletedAt(): ?DateTimeInterface
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?DateTimeInterface $deletedAt): self
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
     }
 }

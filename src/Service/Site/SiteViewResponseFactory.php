@@ -69,7 +69,11 @@ class SiteViewResponseFactory
         return new Response($this->twig->render($template, [
             'pages' => array_diff(array_map(fn ($page) => $page->value, SitePage::cases()), [SitePage::INDEX->value]),
             'page' => $page->value,
-            'contacts' => $this->contactOptionsFactory->createContactOptions(TelegramGroup::feedbacks, $locale->getCode()),
+            'contacts' => $this->contactOptionsFactory->createContactOptions(
+                TelegramGroup::feedbacks,
+                isset($country) ? $country->getCode() : $locale->getCode(),
+                $locale->getCode()
+            ),
             'locales' => array_map($localMap, $supportedLocales),
             'locale' => $localMap($locale),
         ]));

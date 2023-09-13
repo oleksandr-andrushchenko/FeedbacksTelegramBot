@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Service\Telegram;
 
 use App\Exception\Telegram\TelegramNotFoundException;
-use App\Exception\Telegram\TelegramOptionsNotFoundException;
 
 class TelegramRegistry
 {
     public function __construct(
         private readonly TelegramFactory $telegramFactory,
+        /**
+         * @var Telegram[]|null
+         */
         private ?array $cache = null,
     )
     {
@@ -21,7 +23,6 @@ class TelegramRegistry
      * @param string $username
      * @return Telegram
      * @throws TelegramNotFoundException
-     * @throws TelegramOptionsNotFoundException
      */
     public function getTelegram(string $username): Telegram
     {

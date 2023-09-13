@@ -66,7 +66,7 @@ class TelegramConversationRepository extends ServiceEntityRepository
     {
         return $this->findBy([
             'messengerUser' => $messengerUser,
-            'isActive' => true,
+            'active' => true,
             'bot' => $bot,
         ]);
     }

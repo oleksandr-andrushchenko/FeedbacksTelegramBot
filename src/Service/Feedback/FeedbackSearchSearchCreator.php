@@ -66,7 +66,8 @@ class FeedbackSearchSearchCreator
             $searchTermTransfer->getMessengerUsername(),
             $hasActiveSubscription,
             $messengerUser->getUser()->getCountryCode(),
-            $messengerUser->getUser()->getLocaleCode()
+            $messengerUser->getUser()->getLocaleCode(),
+            telegramBot: $feedbackSearchLookupTransfer->getTelegramBot()
         );
         $this->entityManager->persist($feedbackSearchSearch);
 

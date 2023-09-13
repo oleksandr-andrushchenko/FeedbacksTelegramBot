@@ -3,7 +3,8 @@ query:
   search_term_type: Кем или чем является %search_term%?
   rating: Оцените ваш опыт с %search_term%.
   description: Желаете оставить комментарий о %search_term%?
-  confirm: Подтвердить создание отзыва о %search_term%? %feedback%
+  confirm: Подтвердить создание отзыва о %search_term%?
+  send_to_channel_confirm: Хотите анонимно опубликовать ваш отзыв на канале %channel%?
 keyboard:
   change_search_term: Изменить поисковый запрос
   change_rating: Изменить оценку
@@ -11,6 +12,7 @@ keyboard:
   change_description: Изменить детали
 reply:
   canceled: Диалог добавления отзыва отменен.
-  ok: Отзыв успешно добавлен.
+  created: Отзыв успешно добавлен.
+  sent_to_channel: Отзыв успешно опубликован.
   on_self_forbidden: Отзывы о себе запрещены.
   limit_exceeded: 'Вы достигли лимита создания отзывов: %tries_for%. Пожалуйста, повторите попытку позже или купите премиум-подписку.'

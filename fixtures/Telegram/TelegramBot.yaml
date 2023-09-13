@@ -2,14 +2,18 @@ App\Entity\Telegram\TelegramBot:
   telegram_bot_1:
     __construct:
       username: any_bot
+      group: <(\App\Enum\Telegram\TelegramGroup::feedbacks)>
+      name: Any Bot
       token: 0:any
       countryCode: ua
-      group: <(\App\Enum\Telegram\TelegramGroup::feedbacks)>
-      primaryBot: null
-      isCheckUpdates: true
-      isCheckRequests: true
-      isAcceptPayments: false
-      isAdminOnly: false
-      isTextsSet: false
-      isWebhookSet: false
-      isCommandsSet: false
+      localeCode: uk
+      channelUsername: null
+      groupUsername: null
+      checkUpdates: true
+      checkRequests: true
+      acceptPayments: false
+      adminIds: <([])>
+      adminOnly: false
+      textsSet: false
+      webhookSet: false
+      commandsSet: false

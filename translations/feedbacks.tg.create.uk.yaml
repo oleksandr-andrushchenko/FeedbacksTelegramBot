@@ -2,8 +2,9 @@ query:
   search_term: Про кого чи про що ви хочете залишити відгук?
   search_term_type: Ким або чим є %search_term%?
   rating: Оцініть ваш досвід з %search_term%.
-  description: Бажаєте залишити коментар про %search_term%
-  confirm: Підтвердити створення відгуку про %search_term%? %feedback%
+  description: Бажаєте залишити коментар про %search_term%?
+  confirm: Підтвердити створення відгуку про %search_term%?
+  send_to_channel_confirm: Бажаєте анонімно опубліківати Ваш відгук на каналі %channel%?
 keyboard:
   change_search_term: Змінити пошуковий термін
   change_rating: Змінити оцінку
@@ -11,6 +12,7 @@ keyboard:
   change_description: Змінити подробиці
 reply:
   canceled: Діалог додавання відгуку скасовано.
-  ok: Відгук успішно додано.
+  created: Відгук успішно додано.
+  sent_to_channel: Відгук успішно опубліковано.
   on_self_forbidden: Відгуки на себе заборонені.
   limit_exceeded: 'Ви досягли ліміту створення відгуків: %tries_for%. Будь ласка, спробуйте пізніше або придбайте преміум-підписку.'

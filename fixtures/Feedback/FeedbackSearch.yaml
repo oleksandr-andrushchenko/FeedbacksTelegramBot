@@ -10,8 +10,9 @@ App\Entity\Feedback\FeedbackSearch:
       searchTermMessenger: <(\App\Enum\Messenger\Messenger::instagram)>
       searchTermMessengerUsername: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
       hasActiveSubscription: false
-      countryCode: 'ua'
-      localeCode: 'uk'
+      countryCode: ua
+      localeCode: uk
+      telegramBot: null
   feedback_search_23_telegram_instagram_username:
     __construct:
       user: '@user_2'
@@ -23,5 +24,6 @@ App\Entity\Feedback\FeedbackSearch:
       searchTermMessenger: <(\App\Enum\Messenger\Messenger::instagram)>
       searchTermMessengerUsername: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
       hasActiveSubscription: false
-      countryCode: 'ua'
-      localeCode: 'uk'
+      countryCode: ua
+      localeCode: uk
+      telegramBot: null

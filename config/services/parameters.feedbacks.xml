@@ -19,11 +19,6 @@
             <parameter key="linkedin">https://www.linkedin.com/in/oleksandr-andrushchenko-26ab3078/</parameter>
         </parameter>
 
-        <parameter key="app.feedbacks_telegram_options" type="collection">
-            <parameter key="admin_id">%app.telegram_admin_id%</parameter>
-            <parameter key="locales">%app.supported_locales%</parameter>
-        </parameter>
-
         <parameter key="app.create_command_options" type="collection">
             <parameter key="limits" type="collection">
                 <parameter key="day">10</parameter>

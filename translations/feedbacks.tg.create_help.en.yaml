@@ -3,3 +3,4 @@ search_term_type: '%search_term% can have more than one meaning, help other user
 rating: 'Help other users understand your attitude to %search_term%.'
 description: Add any information and/or describe your experience with %search_term%.
 confirm: Make sure the request is correct. In addition, the number of requests is limited - use wisely.
+send_to_channel_confirm: 'Upon confirmation, your feedback will be published anonymously on the %channel% channel, in this form:'

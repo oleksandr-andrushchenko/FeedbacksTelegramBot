@@ -19,12 +19,12 @@ class TelegramBotTextsInfoProvider
         $telegram = $this->registry->getTelegram($bot->getUsername());
 
         $row = [];
-        foreach ($telegram->getOptions()->getLocaleCodes() as $localeCode) {
-            $params = ['language_code' => $localeCode];
-            $row['name_' . $localeCode] = $telegram->getMyName($params)->getResult()->getName();
-            $row['short_description_' . $localeCode] = $telegram->getMyShortDescription($params)->getResult()->getShortDescription();
-            $row['description_' . $localeCode] = $telegram->getMyDescription($params)->getResult()->getDescription();
-        }
+        $localeCode = $bot->getLocaleCode();
+        $params = ['language_code' => $localeCode];
+
+        $row['name'] = $telegram->getMyName($params)->getResult()->getName();
+        $row['short_description'] = $telegram->getMyShortDescription($params)->getResult()->getShortDescription();
+        $row['description'] = $telegram->getMyDescription($params)->getResult()->getDescription();
 
         return $row;
     }

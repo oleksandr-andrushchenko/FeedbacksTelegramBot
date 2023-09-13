@@ -9,8 +9,8 @@ use App\Repository\Telegram\TelegramBotRepository;
 use App\Service\Telegram\Api\TelegramMessageSender;
 use App\Service\Telegram\TelegramRegistry;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
@@ -32,9 +32,9 @@ class TelegramBotMessageSendCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('username', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot username')
-            ->addOption('chat', mode: InputOption::VALUE_REQUIRED, description: 'Target telegram chat id')
-            ->addOption('text', mode: InputOption::VALUE_REQUIRED, description: 'Message to send')
+            ->addArgument('username', InputArgument::REQUIRED, 'Telegram bot username')
+            ->addArgument('chat', InputArgument::REQUIRED, 'Target telegram chat id')
+            ->addArgument('text', InputArgument::REQUIRED, 'Message to send')
             ->setDescription('Send message to chat from Telegram bot')
         ;
     }
@@ -47,16 +47,18 @@ class TelegramBotMessageSendCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $username = $input->getOption('username');
+            $username = $input->getArgument('username');
             $bot = $this->repository->findOneByUsername($username);
+
             if ($bot === null) {
                 throw new TelegramNotFoundException($username);
             }
 
             $telegram = $this->registry->getTelegram($bot->getUsername());
 
-            $chatId = (int) $input->getOption('chat');
-            $text = $input->getOption('text');
+            $chatId = $input->getArgument('chat');
+            $chatId = is_numeric($chatId) ? $chatId : ('@' . $chatId);
+            $text = $input->getArgument('text');
 
             $this->sender->sendTelegramMessage($telegram, $chatId, $text);
         } catch (Throwable $exception) {

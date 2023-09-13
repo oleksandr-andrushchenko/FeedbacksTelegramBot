@@ -7,7 +7,6 @@ namespace App\Service\Feedback\Telegram\Conversation;
 use App\Entity\Telegram\TelegramConversation as Entity;
 use App\Entity\Telegram\TelegramConversationState;
 use App\Service\Feedback\Telegram\Chat\ChooseActionTelegramChatSender;
-use App\Service\Intl\CountryProvider;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Service\Telegram\TelegramConversation;
 use App\Service\Telegram\TelegramConversationInterface;
@@ -23,7 +22,6 @@ class PurgeConversationTelegramConversation extends TelegramConversation impleme
         private readonly UserDataPurger $userDataPurger,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly TelegramLocaleSwitcher $localeSwitcher,
-        private readonly CountryProvider $countryProvider,
     )
     {
         parent::__construct(new TelegramConversationState());
@@ -95,8 +93,7 @@ class PurgeConversationTelegramConversation extends TelegramConversation impleme
         $this->userDataPurger->purgeUserData($user);
 
         // todo: implement default setting provider (by telegram object) and implement everywhere and here as well
-        $country = $this->countryProvider->getCountry($tg->getTelegram()->getBot()->getCountryCode());
-        $this->localeSwitcher->setLocale($user->getLocaleCode() ?? ($country->getLocaleCodes()[0] ?? null));
+        $this->localeSwitcher->setLocale($user->getLocaleCode() ?? $tg->getTelegram()->getBot()->getLocaleCode());
 
         $message = $tg->trans('reply.ok', domain: 'purge');
         $message = $tg->okText($message);

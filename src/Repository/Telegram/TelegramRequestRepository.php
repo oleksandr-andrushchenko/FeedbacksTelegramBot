@@ -43,7 +43,7 @@ class TelegramRequestRepository extends ServiceEntityRepository
         }
     }
 
-    public function getLimits(?int $chatId, ?int $inlineMessageId): ?TelegramRequestLimits
+    public function getLimits(null|int|string $chatId, ?int $inlineMessageId): ?TelegramRequestLimits
     {
         $perSecondAll = $this
             ->createQueryBuilder('tr')
@@ -87,29 +87,4 @@ class TelegramRequestRepository extends ServiceEntityRepository
             (int) $perMinute
         );
     }
-
-//    /**
-//     * @return TelegramRequest[] Returns an array of TelegramRequest objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('t.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?TelegramRequest
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

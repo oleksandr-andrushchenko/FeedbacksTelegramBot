@@ -16,6 +16,7 @@ class CreateFeedbackTelegramConversationState extends SearchTermAwareTelegramCon
         ?bool $change = null,
         private ?Rating $rating = null,
         private ?string $description = null,
+        private ?int $feedbackId = null,
     )
     {
         parent::__construct($step, $skipHelpButtons, $searchTerm, $change);
@@ -26,7 +27,7 @@ class CreateFeedbackTelegramConversationState extends SearchTermAwareTelegramCon
         return $this->rating;
     }
 
-    public function setRating(?Rating $rating): static
+    public function setRating(?Rating $rating): self
     {
         $this->rating = $rating;
 
@@ -38,9 +39,21 @@ class CreateFeedbackTelegramConversationState extends SearchTermAwareTelegramCon
         return $this->description;
     }
 
-    public function setDescription(?string $description): static
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getFeedbackId(): ?int
+    {
+        return $this->feedbackId;
+    }
+
+    public function setFeedbackId(?int $feedbackId): self
+    {
+        $this->feedbackId = $feedbackId;
 
         return $this;
     }

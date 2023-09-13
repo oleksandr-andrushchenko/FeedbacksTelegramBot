@@ -89,10 +89,10 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
         $country = $this->countryProvider->getCountry($countryCode);
 
         $tg->getTelegram()->getMessengerUser()
-            ?->setIsShowExtendedKeyboard(false)
+            ?->setShowExtendedKeyboard(false)
             ?->getUser()
             ?->setCountryCode($country->getCode())
-            ?->setLocaleCode($country->getLocaleCodes()[0] ?? null)
+            ?->setLocaleCode($tg->getTelegram()->getBot()->getLocaleCode())
             ?->setCurrencyCode($country->getCurrencyCode())
             ?->setTimezone($country->getTimezones()[0] ?? null)
         ;

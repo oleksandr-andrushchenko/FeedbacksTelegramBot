@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Command\Telegram;
 
+use App\Enum\Telegram\TelegramGroup;
+use App\Exception\Telegram\TelegramGroupNotFoundException;
 use App\Repository\Telegram\TelegramBotRepository;
 use App\Service\Telegram\TelegramBotInfoProvider;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
@@ -28,6 +31,7 @@ class TelegramBotShowAllCommand extends Command
     protected function configure(): void
     {
         $this
+            ->addOption('group', mode: InputOption::VALUE_REQUIRED, description: 'Telegram Group name')
             ->setDescription('Show all telegram bots info')
         ;
     }
@@ -40,16 +44,35 @@ class TelegramBotShowAllCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
+            $groupName = $input->getOption('group');
+            $group = null;
+
+            if ($groupName !== null) {
+                $group = TelegramGroup::fromName($groupName);
+
+                if ($group === null) {
+                    throw new TelegramGroupNotFoundException($groupName);
+                }
+            }
+
             $bots = $this->repository->findAll();
 
             $table = [];
-            foreach ($bots as $index => $bot) {
+            $index = 0;
+
+            foreach ($bots as $bot) {
+                if ($group !== null && $bot->getGroup() !== $group) {
+                    continue;
+                }
+
                 $table[] = array_merge(
                     [
-                        'index' => $index + 1,
+                        '#' => $index + 1,
                     ],
                     $this->infoProvider->getTelegramBotInfo($bot)
                 );
+
+                $index++;
             }
         } catch (Throwable $exception) {
             $io->error($exception->getMessage());

@@ -47,6 +47,7 @@ class TelegramBotRemoveCommand extends Command
         try {
             $username = $input->getArgument('username');
             $bot = $this->repository->findOneByUsername($username);
+
             if ($bot === null) {
                 throw new TelegramNotFoundException($username);
             }
@@ -60,7 +61,7 @@ class TelegramBotRemoveCommand extends Command
         }
 
         $io->newLine();
-        $io->success('Telegram bot has been removed');
+        $io->success(sprintf('"%s" Telegram bot has been removed', $bot->getUsername()));
 
         return Command::SUCCESS;
     }

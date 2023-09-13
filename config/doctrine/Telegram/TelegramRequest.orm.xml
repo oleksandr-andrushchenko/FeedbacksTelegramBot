@@ -19,7 +19,7 @@
             </options>
         </id>
         <field name="method" column="method" length="32"/>
-        <field name="chatId" column="chat_id" type="bigint" nullable="true"/>
+        <field name="chatId" column="chat_id" length="32" nullable="true"/>
         <field name="inlineMessageId" column="inline_message_id" type="bigint" nullable="true"/>
         <field name="data" column="data" type="json"/>
         <many-to-one field="bot" target-entity="App\Entity\Telegram\TelegramBot"/>

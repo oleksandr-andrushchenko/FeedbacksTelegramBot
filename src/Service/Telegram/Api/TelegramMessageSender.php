@@ -12,7 +12,7 @@ class TelegramMessageSender implements TelegramMessageSenderInterface
 {
     public function sendTelegramMessage(
         Telegram $telegram,
-        int $chatId,
+        string|int $chatId,
         string $text,
         Keyboard $keyboard = null,
         string $parseMode = 'HTML',

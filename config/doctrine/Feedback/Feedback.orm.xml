@@ -38,6 +38,12 @@
         <field name="hasActiveSubscription" column="has_active_subscription" type="boolean"/>
         <field name="countryCode" column="country_code" length="2" nullable="true"/>
         <field name="localeCode" column="locale_code" length="2" nullable="true"/>
+        <field name="channelMessageId" column="channel_message_id" type="integer" nullable="true">
+            <options>
+                <option name="unsigned">true</option>
+            </options>
+        </field>
+        <many-to-one field="telegramBot" target-entity="App\Entity\Telegram\TelegramBot"/>
         <field name="createdAt" column="created_at" type="datetime_immutable"/>
     </entity>
 </doctrine-mapping>

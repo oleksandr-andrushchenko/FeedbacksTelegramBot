@@ -42,7 +42,7 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
 
     public function start(TelegramAwareHelper $tg): ?string
     {
-        $contacts = $this->contactOptionsFactory->createContactOptions(TelegramGroup::feedbacks, $tg->getLocaleCode());
+        $contacts = $this->contactOptionsFactory->createContactOptionsByTelegramBot($tg->getTelegram()->getBot());
 
         $message = $tg->view('contact', [
             'contacts' => $contacts,

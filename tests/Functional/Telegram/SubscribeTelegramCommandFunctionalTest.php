@@ -53,7 +53,7 @@ class SubscribeTelegramCommandFunctionalTest extends TelegramCommandFunctionalTe
             TelegramBot::class,
         ]);
 
-        $this->getTelegram()->getBot()->setIsAcceptPayments(true);
+        $this->getTelegram()->getBot()->setAcceptPayments(true);
         array_map(fn (TelegramPaymentMethodName $name) => $this->createPaymentMethod($name), $paymentMethodNames);
 
         $this

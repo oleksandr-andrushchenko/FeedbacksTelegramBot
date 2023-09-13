@@ -57,12 +57,14 @@ class TelegramBotPaymentMethodCreateCommand extends Command
         try {
             $username = $input->getArgument('username');
             $bot = $this->botRepository->findOneByUsername($username);
+
             if ($bot === null) {
                 throw new TelegramNotFoundException($username);
             }
 
             $methodName = $input->getArgument('username');
             $name = TelegramPaymentMethodName::fromName($methodName);
+
             if ($name === null) {
                 throw new TelegramPaymentMethodNotFoundException($methodName);
             }
@@ -75,6 +77,7 @@ class TelegramBotPaymentMethodCreateCommand extends Command
             );
 
             $paymentMethod = $this->creator->createTelegramPaymentMethod($paymentMethodTransfer);
+
             $this->entityManager->flush();
         } catch (Throwable $exception) {
             $io->error($exception->getMessage());
@@ -92,7 +95,13 @@ class TelegramBotPaymentMethodCreateCommand extends Command
         ;
 
         $io->newLine();
-        $io->success('Telegram bot payment method has been created');
+        $io->success(
+            sprintf(
+                '"%s" Telegram bot\'s payment method has been added for "%s" Telegram bot',
+                $paymentMethod->getName()->name,
+                $bot->getUsername()
+            )
+        );
 
         return Command::SUCCESS;
     }

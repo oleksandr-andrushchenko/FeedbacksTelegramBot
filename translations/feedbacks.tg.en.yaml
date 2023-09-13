@@ -23,6 +23,10 @@ keyboard:
   less: Show less
   help: Need help
 
+sign:
+  bot: Create anonymous reviews
+  channel: SUBSCRIBE
+
 reply:
   fail: "Unknown error has occurred,\n1) Make sure everything properly filled and repeat; or\n2) Try %contact_command% command; or\n3) Try again later please."
   not_accept_payments: We do not accept payments now. Try again later please.

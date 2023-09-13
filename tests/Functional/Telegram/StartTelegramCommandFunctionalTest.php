@@ -31,7 +31,7 @@ class StartTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestCa
 
         $this->assertEquals($botCountry->getCode(), $user->getCountryCode());
         $this->assertEquals($botCountry->getCurrencyCode(), $user->getCurrencyCode());
-        $this->assertEquals($botCountry->getLocaleCodes()[0] ?? null, $user->getLocaleCode());
+        $this->assertEquals($bot->getLocaleCode(), $user->getLocaleCode());
         $this->assertEquals($botCountry->getTimezones()[0] ?? null, $user->getTimezone());
 
         $this

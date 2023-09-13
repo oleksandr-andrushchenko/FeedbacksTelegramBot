@@ -125,7 +125,7 @@ class TelegramConversationManager
 
     public function stopTelegramConversation(TelegramConversation $entity): void
     {
-        $entity->setIsActive(false);
+        $entity->setActive(false);
         $entity->setUpdatedAt(new DateTimeImmutable());
 
         $this->entityManager->remove($entity);

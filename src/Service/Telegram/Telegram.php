@@ -6,7 +6,6 @@ namespace App\Service\Telegram;
 
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBot;
-use App\Entity\Telegram\TelegramOptions;
 use App\Exception\Telegram\TelegramException;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Entities\Update;
@@ -50,7 +49,6 @@ class Telegram
 
     public function __construct(
         private readonly TelegramBot $bot,
-        private readonly TelegramOptions $options,
         private readonly TelegramClientRegistry $clientRegistry,
         private readonly TelegramRequestChecker $requestChecker,
         private readonly LoggerInterface $logger,
@@ -63,11 +61,6 @@ class Telegram
     public function getBot(): TelegramBot
     {
         return $this->bot;
-    }
-
-    public function getOptions(): TelegramOptions
-    {
-        return $this->options;
     }
 
     public function getUpdate(): ?Update

@@ -1,10 +1,8 @@
-{% trans_default_domain 'feedbacks.tg.description' %}
-ℹ️ {{ title }}
+{% trans_default_domain 'tg.description' %}
+ℹ️ {{ 'agreement'|trans({}, 'tg.description', localeCode) }}
 
-{{ 'agreement'|trans({}, 'tg.description', locale) }}
-
-🔹{{ 'primary_policy'|trans({}, 'tg.description', locale)|capitalize }}:
+🔹{{ 'privacy_policy'|trans({}, 'tg.description', localeCode)|capitalize }}:
 {{ privacy_policy_link }}
 
-🔹{{ 'terms_of_use'|trans({}, 'tg.description', locale)|capitalize }}:
+🔹{{ 'terms_of_use'|trans({}, 'tg.description', localeCode)|capitalize }}:
 {{ terms_of_use_link }}
