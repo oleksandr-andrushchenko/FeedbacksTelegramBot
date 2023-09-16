@@ -218,7 +218,7 @@
             <argument type="service" id="app.intl_locale_provider"/>
         </service>
         <service id="app.telegram_conversation_factory_feedbacks"
-                 class="App\Service\Telegram\TelegramConversationFactory" lazy="true">
+                 class="App\Service\Telegram\Conversation\TelegramConversationFactory" lazy="true">
             <argument type="tagged_locator" tag="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.start_telegram_command_handler"

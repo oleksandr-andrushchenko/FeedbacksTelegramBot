@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram\Api;
 
+use App\Service\Telegram\Command\TelegramCommand;
 use App\Service\Telegram\Telegram;
-use App\Service\Telegram\TelegramCommand;
 use App\Service\Telegram\TelegramMyCommands;
 use App\Service\Telegram\TelegramMyCommandsProvider;
 use Symfony\Contracts\Translation\TranslatorInterface;

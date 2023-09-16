@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service\Feedback\Telegram;
 
-use App\Entity\CommandLimit;
 use App\Entity\CommandOptions;
 use App\Entity\Telegram\TelegramPayment;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
@@ -23,13 +22,13 @@ use App\Service\Feedback\Telegram\Conversation\SearchFeedbackTelegramConversatio
 use App\Service\Feedback\Telegram\Conversation\SubscribeTelegramConversation;
 use App\Service\Feedback\Telegram\View\SubscriptionTelegramViewProvider;
 use App\Service\Intl\TimeProvider;
-use App\Service\Telegram\ErrorTelegramCommand;
-use App\Service\Telegram\FallbackTelegramCommand;
+use App\Service\Telegram\Channel\TelegramChannel;
+use App\Service\Telegram\Channel\TelegramChannelInterface;
+use App\Service\Telegram\Command\TelegramErrorCommand;
+use App\Service\Telegram\Command\TelegramFallbackCommand;
+use App\Service\Telegram\Command\TelegramCommand;
+use App\Service\Telegram\Conversation\TelegramConversationFactory;
 use App\Service\Telegram\TelegramAwareHelper;
-use App\Service\Telegram\TelegramChannel;
-use App\Service\Telegram\TelegramChannelInterface;
-use App\Service\Telegram\TelegramCommand;
-use App\Service\Telegram\TelegramConversationFactory;
 use Throwable;
 
 class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannelInterface
@@ -97,8 +96,8 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
         yield new TelegramCommand(self::COMMANDS, fn () => $this->commands($tg), menu: true, key: 'commands', beforeConversations: true);
         yield new TelegramCommand(self::RESTART, fn () => $this->restart($tg), menu: true, key: 'restart', beforeConversations: true);
 
-        yield new FallbackTelegramCommand(fn () => $this->fallback($tg));
-        yield new ErrorTelegramCommand(fn (Throwable $exception) => $this->exception($tg));
+        yield new TelegramFallbackCommand(fn () => $this->fallback($tg));
+        yield new TelegramErrorCommand(fn (Throwable $exception) => $this->exception($tg));
     }
 
     public function fallback(TelegramAwareHelper $tg): null

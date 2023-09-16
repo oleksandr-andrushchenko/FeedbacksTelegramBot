@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Telegram;
+namespace App\Service\Telegram\Command;
 
 class TelegramCommandFinder
 {
@@ -62,12 +62,12 @@ class TelegramCommandFinder
 
     /**
      * @param TelegramCommandInterface[] $commands
-     * @return FallbackTelegramCommand|null
+     * @return TelegramFallbackCommand|null
      */
-    public function findFallbackCommand(array $commands): ?FallbackTelegramCommand
+    public function findFallbackCommand(array $commands): ?TelegramFallbackCommand
     {
         foreach ($commands as $command) {
-            if ($command instanceof FallbackTelegramCommand) {
+            if ($command instanceof TelegramFallbackCommand) {
                 return $command;
             }
         }
@@ -77,12 +77,12 @@ class TelegramCommandFinder
 
     /**
      * @param TelegramCommandInterface[] $commands
-     * @return ErrorTelegramCommand|null
+     * @return TelegramErrorCommand|null
      */
-    public function findErrorCommand(array $commands): ?ErrorTelegramCommand
+    public function findErrorCommand(array $commands): ?TelegramErrorCommand
     {
         foreach ($commands as $command) {
-            if ($command instanceof ErrorTelegramCommand) {
+            if ($command instanceof TelegramErrorCommand) {
                 return $command;
             }
         }

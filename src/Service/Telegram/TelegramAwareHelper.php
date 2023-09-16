@@ -8,6 +8,7 @@ use App\Entity\Telegram\TelegramConversation;
 use App\Entity\Telegram\TelegramConversationState;
 use App\Service\Telegram\Api\TelegramChatActionSenderInterface;
 use App\Service\Telegram\Api\TelegramMessageSenderInterface;
+use App\Service\Telegram\Conversation\TelegramConversationManager;
 use Longman\TelegramBot\ChatAction;
 use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Entities\InlineKeyboardButton;

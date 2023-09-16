@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Traits\Telegram;
 
-use App\Service\Telegram\TelegramConversationManager;
+use App\Service\Telegram\Conversation\TelegramConversationManager;
 
 trait TelegramConversationManagerProviderTrait
 {

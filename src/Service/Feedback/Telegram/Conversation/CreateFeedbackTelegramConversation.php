@@ -23,14 +23,13 @@ use App\Service\Feedback\Telegram\Activity\FeedbackActivityTelegramChatSender;
 use App\Service\Feedback\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Feedback\Telegram\View\FeedbackTelegramViewProvider;
 use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
+use App\Service\Telegram\Conversation\TelegramConversation;
+use App\Service\Telegram\Conversation\TelegramConversationInterface;
 use App\Service\Telegram\TelegramAwareHelper;
-use App\Service\Telegram\TelegramConversation;
-use App\Service\Telegram\TelegramConversationInterface;
 use App\Service\Util\Array\ArrayValueEraser;
 use App\Service\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Entities\KeyboardButton;
-use Throwable;
 
 /**
  * /**

@@ -6,14 +6,13 @@ namespace App\Service\Feedback\Telegram\Conversation;
 
 use App\Entity\Feedback\Telegram\CreateFeedbackTelegramConversationState;
 use App\Entity\Telegram\TelegramConversation as Entity;
-use App\Enum\Telegram\TelegramGroup;
 use App\Exception\ValidatorException;
 use App\Object\User\UserFeedbackMessageTransfer;
 use App\Service\ContactOptionsFactory;
 use App\Service\Feedback\Telegram\Chat\ChooseActionTelegramChatSender;
+use App\Service\Telegram\Conversation\TelegramConversation;
+use App\Service\Telegram\Conversation\TelegramConversationInterface;
 use App\Service\Telegram\TelegramAwareHelper;
-use App\Service\Telegram\TelegramConversation;
-use App\Service\Telegram\TelegramConversationInterface;
 use App\Service\User\UserFeedbackMessageCreator;
 
 class ContactTelegramConversation extends TelegramConversation implements TelegramConversationInterface

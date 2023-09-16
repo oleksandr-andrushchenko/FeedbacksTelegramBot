@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Telegram;
+namespace App\Service\Telegram\Command;
 
 use Closure;
 
-readonly class FallbackTelegramCommand implements TelegramCommandInterface
+readonly class TelegramErrorCommand implements TelegramCommandInterface
 {
     public function __construct(
         private Closure $callback,

@@ -9,9 +9,9 @@ use App\Entity\Telegram\TelegramConversationState;
 use App\Service\Feedback\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Feedback\Telegram\Chat\StartTelegramCommandHandler;
 use App\Service\Intl\CountryProvider;
+use App\Service\Telegram\Conversation\TelegramConversation;
+use App\Service\Telegram\Conversation\TelegramConversationInterface;
 use App\Service\Telegram\TelegramAwareHelper;
-use App\Service\Telegram\TelegramConversation;
-use App\Service\Telegram\TelegramConversationInterface;
 
 class RestartConversationTelegramConversation extends TelegramConversation implements TelegramConversationInterface
 {

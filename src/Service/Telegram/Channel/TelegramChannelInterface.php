@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Telegram;
+namespace App\Service\Telegram\Channel;
 
 use App\Entity\Telegram\TelegramPayment;
+use App\Service\Telegram\Command\TelegramCommandInterface;
+use App\Service\Telegram\Conversation\TelegramConversationFactory;
+use App\Service\Telegram\Telegram;
 
 interface TelegramChannelInterface
 {

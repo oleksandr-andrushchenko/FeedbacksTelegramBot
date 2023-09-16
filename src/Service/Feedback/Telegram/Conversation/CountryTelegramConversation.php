@@ -9,9 +9,9 @@ use App\Entity\Telegram\TelegramConversation as Entity;
 use App\Entity\Telegram\TelegramConversationState;
 use App\Service\Feedback\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Intl\CountryProvider;
+use App\Service\Telegram\Conversation\TelegramConversation;
+use App\Service\Telegram\Conversation\TelegramConversationInterface;
 use App\Service\Telegram\TelegramAwareHelper;
-use App\Service\Telegram\TelegramConversation;
-use App\Service\Telegram\TelegramConversationInterface;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
 class CountryTelegramConversation extends TelegramConversation implements TelegramConversationInterface

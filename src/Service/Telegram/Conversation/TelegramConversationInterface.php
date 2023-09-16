@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Telegram;
+namespace App\Service\Telegram\Conversation;
 
 use App\Entity\Telegram\TelegramConversation as Entity;
 use App\Entity\Telegram\TelegramConversationState;
+use App\Service\Telegram\TelegramAwareHelper;
 
 interface TelegramConversationInterface
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Telegram;
+namespace App\Service\Telegram\Conversation;
 
 use Symfony\Component\DependencyInjection\ServiceLocator;
 

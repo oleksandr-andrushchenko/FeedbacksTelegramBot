@@ -33,11 +33,11 @@
             <argument type="service" id="Symfony\Component\Routing\Generator\UrlGeneratorInterface"/>
         </service>
         <service id="app.telegram_client_factory" class="App\Service\Telegram\TelegramClientFactory" lazy="true"/>
-        <service id="app.telegram_channel_factory" class="App\Service\Telegram\TelegramChannelFactory">
+        <service id="app.telegram_channel_factory" class="App\Service\Telegram\Channel\TelegramChannelFactory">
             <argument type="tagged_locator" tag="app.telegram_channel" index-by="channel"/>
         </service>
-        <service id="app.telegram_conversation_factory_default" class="App\Service\Telegram\TelegramConversationFactory"
-                 lazy="true">
+        <service id="app.telegram_conversation_factory_default"
+                 class="App\Service\Telegram\Conversation\TelegramConversationFactory" lazy="true">
             <argument type="tagged_locator" tag="app.telegram_conversation_default"/>
         </service>
         <service id="app.telegram_factory" class="App\Service\Telegram\TelegramFactory" lazy="true">
@@ -47,11 +47,11 @@
             <argument type="service" id="logger"/>
         </service>
         <service id="app.telegram_active_conversation_invoker"
-                 class="App\Service\Telegram\TelegramActiveConversationInvoker" lazy="true">
+                 class="App\Service\Telegram\Conversation\TelegramActiveConversationInvoker" lazy="true">
             <argument type="service" id="app.telegram_conversation_manager"/>
         </service>
-        <service id="app.telegram_conversation_manager" class="App\Service\Telegram\TelegramConversationManager"
-                 lazy="true">
+        <service id="app.telegram_conversation_manager"
+                 class="App\Service\Telegram\Conversation\TelegramConversationManager" lazy="true">
             <argument type="service" id="app.telegram_aware_helper"/>
             <argument type="service" id="app.repository.telegram_conversation"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
@@ -99,7 +99,8 @@
                  lazy="true">
             <argument type="service" id="app.telegram_user_provider"/>
         </service>
-        <service id="app.telegram_command_finder" class="App\Service\Telegram\TelegramCommandFinder" lazy="true"/>
+        <service id="app.telegram_command_finder" class="App\Service\Telegram\Command\TelegramCommandFinder"
+                 lazy="true"/>
         <service id="app.telegram_update_factory" class="App\Service\Telegram\TelegramUpdateFactory" lazy="true">
             <argument type="service" id="logger"/>
         </service>
@@ -145,7 +146,8 @@
         <service id="app.telegram_client_registry" class="App\Service\Telegram\TelegramClientRegistry" lazy="true">
             <argument type="service" id="app.telegram_client_factory"/>
         </service>
-        <service id="app.telegram_channel_registry" class="App\Service\Telegram\TelegramChannelRegistry" lazy="true">
+        <service id="app.telegram_channel_registry" class="App\Service\Telegram\Channel\TelegramChannelRegistry"
+                 lazy="true">
             <argument type="service" id="app.telegram_channel_factory"/>
         </service>
         <service id="app.telegram_messenger_user_maker" class="App\Service\Telegram\TelegramMessengerUserMaker"
@@ -168,12 +170,6 @@
         </service>
         <service id="app.telegram_registry" class="App\Service\Telegram\TelegramRegistry" lazy="true">
             <argument type="service" id="app.telegram_factory"/>
-        </service>
-        <service id="app.telegram_channel_default" class="App\Service\Telegram\Channel\DefaultTelegramChannel"
-                 lazy="true">
-            <argument type="service" id="app.telegram_aware_helper"/>
-            <argument type="service" id="app.telegram_conversation_factory_default"/>
-            <tag name="app.telegram_channel" channel="default"/>
         </service>
         <service id="app.telegram_aware_helper" class="App\Service\Telegram\TelegramAwareHelper" lazy="true">
             <argument type="service" id="app.telegram_keyboard_factory"/>

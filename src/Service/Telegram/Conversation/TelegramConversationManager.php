@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Telegram;
+namespace App\Service\Telegram\Conversation;
 
 use App\Entity\Telegram\TelegramConversation;
 use App\Entity\Telegram\TelegramConversationState;
 use App\Repository\Telegram\TelegramConversationRepository;
+use App\Service\Telegram\Channel\TelegramChannelRegistry;
+use App\Service\Telegram\Telegram;
+use App\Service\Telegram\TelegramAwareHelper;
+use App\Service\Telegram\TelegramChatProvider;
 use App\Service\Util\Array\ArrayNullFilter;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
