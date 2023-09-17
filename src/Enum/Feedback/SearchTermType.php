@@ -26,7 +26,7 @@ enum SearchTermType: int
     case organization_name = 70;
     case place_name = 80;
 
-    public const BASE = [
+    public const base = [
         self::messenger_profile_url,
         self::messenger_username,
         self::person_name,
@@ -36,19 +36,4 @@ enum SearchTermType: int
         self::phone_number,
         self::organization_name,
     ];
-
-    public static function sort(array $items): array
-    {
-        $sortedAll = self::cases();
-
-        $sorted = [];
-
-        foreach ($sortedAll as $item) {
-            if (in_array($item, $items, true)) {
-                $sorted[] = $item;
-            }
-        }
-
-        return $sorted;
-    }
 }

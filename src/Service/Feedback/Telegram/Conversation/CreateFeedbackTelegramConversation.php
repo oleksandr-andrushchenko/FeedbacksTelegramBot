@@ -26,7 +26,6 @@ use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
 use App\Service\Telegram\Conversation\TelegramConversation;
 use App\Service\Telegram\Conversation\TelegramConversationInterface;
 use App\Service\Telegram\TelegramAwareHelper;
-use App\Service\Util\Array\ArrayValueEraser;
 use App\Service\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Entities\KeyboardButton;
@@ -52,7 +51,6 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         private readonly SearchTermTelegramViewProvider $searchTermViewProvider,
         private readonly FeedbackSearchTermTypeProvider $searchTermTypeProvider,
         private readonly FeedbackCreator $creator,
-        private readonly ArrayValueEraser $arrayValueEraser,
         private readonly FeedbackRatingProvider $ratingProvider,
         private readonly FeedbackActivityTelegramChatSender $activityTelegramChatSender,
         private readonly EntityManagerInterface $entityManager,
@@ -271,12 +269,9 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
     public function getSearchTermTypes(): array
     {
-        $types = SearchTermType::sort($this->state->getSearchTerm()->getPossibleTypes() ?? []);
-
-        if (in_array(SearchTermType::unknown, $types, true)) {
-            $types = $this->arrayValueEraser->eraseValue($types, SearchTermType::unknown);
-            $types[] = SearchTermType::unknown;
-        }
+        $types = $this->state->getSearchTerm()->getPossibleTypes() ?? [];
+        $types = $this->searchTermTypeProvider->sortSearchTermTypes($types);
+        $types = $this->searchTermTypeProvider->moveUnknownToEnd($types);
 
         return $types;
     }
@@ -370,7 +365,9 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
     public function getSearchTermTypeByButton(string $button, TelegramAwareHelper $tg): ?SearchTermType
     {
-        foreach (SearchTermType::cases() as $type) {
+        $types = $this->searchTermTypeProvider->getSearchTermTypes(countryCode: $tg->getCountryCode());
+
+        foreach ($types as $type) {
             if ($this->getSearchTermTypeButton($type, $tg)->getText() === $button) {
                 return $type;
             }

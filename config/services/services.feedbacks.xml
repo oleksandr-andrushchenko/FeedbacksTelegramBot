@@ -201,6 +201,7 @@
         <service id="app.feedback_search_term_type_provider"
                  class="App\Service\Feedback\SearchTerm\FeedbackSearchTermTypeProvider" lazy="true">
             <argument type="service" id="translator"/>
+            <argument type="service" id="app.array_value_eraser"/>
         </service>
         <service id="app.feedback_rating_provider" class="App\Service\Feedback\Rating\FeedbackRatingProvider"
                  lazy="true">
@@ -267,7 +268,6 @@
             <argument type="service" id="app.search_term_telegram_view_provider"/>
             <argument type="service" id="app.feedback_search_term_type_provider"/>
             <argument type="service" id="app.feedback_creator"/>
-            <argument type="service" id="app.array_value_eraser"/>
             <argument type="service" id="app.feedback_rating_provider"/>
             <argument type="service" id="app.feedback_activity_telegram_chat_sender"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>

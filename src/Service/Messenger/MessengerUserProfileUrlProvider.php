@@ -18,7 +18,7 @@ class MessengerUserProfileUrlProvider
             Messenger::onlyfans => sprintf('https://onlyfans.com/%s', $username),
             Messenger::telegram => sprintf('https://t.me/%s', $username),
             Messenger::tiktok => sprintf('https://tiktok.com/@%s', $username),
-            Messenger::twitter => sprintf('https://twitter.com/%s', $username),
+            Messenger::twitter => sprintf('https://x.com/%s', $username),
             Messenger::youtube => sprintf('https://www.youtube.com/@%s', $username),
             default => null,
         };

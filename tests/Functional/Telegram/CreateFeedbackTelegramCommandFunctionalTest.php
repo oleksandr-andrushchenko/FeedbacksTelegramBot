@@ -1381,7 +1381,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         return [
             ...array_map(
                 fn (SearchTermType $type) => $tg->button($this->getFeedbackSearchTermTypeProvider()->getSearchTermTypeName($type)),
-                SearchTermType::sort($state->getSearchTerm()->getPossibleTypes())
+                $state->getSearchTerm()->getPossibleTypes()
             ),
             $this->backButton(),
             $this->helpButton(),

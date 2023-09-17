@@ -235,7 +235,8 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
 
         $message = $this->getSearchTermTypeQuery($tg, $help);
 
-        $types = SearchTermType::sort($this->state->getSearchTerm()->getPossibleTypes() ?? []);
+        $types = $this->state->getSearchTerm()->getPossibleTypes() ?? [];
+        $types = $this->searchTermTypeProvider->sortSearchTermTypes($types);
 
         $buttons = $this->getSearchTermTypeButtons($types, $tg);
         $buttons[] = $tg->backButton();
@@ -318,7 +319,9 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
 
     public function getSearchTermTypeByButton(string $button, TelegramAwareHelper $tg): ?SearchTermType
     {
-        foreach (SearchTermType::cases() as $type) {
+        $types = $this->searchTermTypeProvider->getSearchTermTypes(countryCode: $tg->getCountryCode());
+
+        foreach ($types as $type) {
             if ($this->getSearchTermTypeButton($type, $tg)->getText() === $button) {
                 return $type;
             }

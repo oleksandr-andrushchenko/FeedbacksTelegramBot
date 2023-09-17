@@ -19,22 +19,18 @@
 
 # TODO
 * queues
-* soft deletes
 * subscribe on specific feedbacks
 * generate badge (picture) with username/rating to post in messengers
 * "list my feedbacks" command
 * "list feedbacks on me" command
 * implement notifications on subscription matches
-* after country selection - link to che channel
 * manual payments
 * ban users
 * if users country/locale is out of bots country/locale - propose to go to native bot
 * log new user activity
 * allow to buy subscription even if already have one
-* ask about custom message before propose typing in contact command
 
 * Simplify country selection
-* Create & implement experienced mode for user: no press menu button text, less texts, shorter texts etc. (mode enabled automatically after activity checks with/without user confirmation)
 * Remove confirmation steps for premium-users
 * -> Check other channels and put emojis & description as much as possible + html
 
@@ -43,7 +39,6 @@
 * Fix limits reply (counts miss-matches)
 * Keep feedbacks, feedback searches and feedback lookups even if Limtis exceeded (notify user when found something - maybe as kfor payment before)
 * Protect against multi-account (if search term is popular - ask for money even if limits not exceeded)
-* MOve all render logic into views
 * Inject service locator in telegram channel for commands (coz many dependencies loadings)
 * Add car number as search term type
 * Custom search term types for each country (hide non-popular - show on demand)
@@ -51,6 +46,4 @@
 * groups: -1001645239372 (dev), -1001673132934 (local)
 * admins: 409525390
 * add bot id/country to payments/subscriptions
-* soft deletes mode (flag) for telegram conversations (will be useful for initial tracks)
-* Twitter search term parse update
 * Add vkontakte search term type and hide for ukr

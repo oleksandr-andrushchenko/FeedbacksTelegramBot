@@ -18,7 +18,7 @@ trait MessengerUserProfileUrlProviderTrait
             Messenger::onlyfans => sprintf('https://onlyfans.com/%s', $messengerUser->getUsername()),
             Messenger::telegram => sprintf('https://t.me/%s', $messengerUser->getUsername()),
             Messenger::tiktok => sprintf('https://tiktok.com/@%s', $messengerUser->getUsername()),
-            Messenger::twitter => sprintf('https://twitter.com/%s', $messengerUser->getUsername()),
+            Messenger::twitter => sprintf('https://x.com/%s', $messengerUser->getUsername()),
             Messenger::youtube => sprintf('https://www.youtube.com/@%s', $messengerUser->getUsername()),
             Messenger::unknown => sprintf('https://unknown.com/@%s', $messengerUser->getUsername()),
             default => null,

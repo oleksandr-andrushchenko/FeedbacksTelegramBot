@@ -84,12 +84,12 @@ class TwitterSearchTermParser implements SearchTermParserInterface
 
     private function makeProfileUrl(string $username): string
     {
-        return sprintf('https://twitter.com/%s', $username);
+        return sprintf('https://x.com/%s', $username);
     }
 
     private function supportsUrl(string $url, string &$username = null): bool
     {
-        $result = preg_match('/^(?:(?:http|https):\/\/)?(?:www\.)?twitter\.com\/(' . $this->getUsernamePattern(true) . ')[?\/]?/im', $url, $matches);
+        $result = preg_match('/^(?:(?:http|https):\/\/)?(?:www\.)?(?:twitter|x)\.com\/(' . $this->getUsernamePattern(true) . ')[?\/]?/im', $url, $matches);
 
         if ($result === 1 && $this->supportsUsername($matches[1])) {
             $username = $matches[1];
