@@ -1,7 +1,7 @@
 query:
   search_term: Кто или что вас интересует?
   search_term_type: Кем или чем является %search_term%?
-  confirm: Подтвердить поиск отзывов по %search_term%?
+  confirm: Начать поиск отзывов о %search_term%?
   create_confirm: Хотите оставить отзыв?
 keyboard:
   change_search_term: Изменить поисковый запрос

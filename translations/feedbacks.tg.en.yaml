@@ -11,7 +11,6 @@ query:
 keyboard:
   yes: Yes
   no: No
-  confirm: Confirm
   back: Get back
   cancel: Cancel
   leave_as: Leave as "%text%"
@@ -29,5 +28,6 @@ sign:
 
 reply:
   fail: "Unknown error has occurred,\n1) Make sure everything properly filled and repeat; or\n2) Try %contact_command% command; or\n3) Try again later please."
-  not_accept_payments: We do not accept payments now. Try again later please.
+  not_accept_payments: We do not accept payments now. Try again later or contact us please %contact_command%.
+  better_bot_match: 'A separate bot is available for your country %country% and locale %locale%:'
   wrong: I don't understand you.

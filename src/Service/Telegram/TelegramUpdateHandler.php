@@ -11,6 +11,7 @@ use App\Service\Telegram\Channel\TelegramChannelRegistry;
 use App\Service\Telegram\Command\TelegramCommandFinder;
 use App\Service\Telegram\Conversation\TelegramConversationManager;
 use App\Service\Telegram\Payment\TelegramPaymentManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\TelegramLog;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,6 +31,7 @@ class TelegramUpdateHandler
         private readonly TelegramPaymentManager $paymentManager,
         private readonly TelegramLocaleSwitcher $localeSwitcher,
         private readonly TelegramInputProvider $inputProvider,
+        private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
     )
     {
@@ -59,6 +61,7 @@ class TelegramUpdateHandler
         }
 
         $messengerUser = $this->messengerUserUpserter->upsertTelegramMessengerUser($telegram);
+        $this->entityManager->flush();
         $telegram->setMessengerUser($messengerUser);
         $this->localeSwitcher->syncLocale($telegram, $request);
 
@@ -89,7 +92,7 @@ class TelegramUpdateHandler
 
             if ($beforeConversationCommand = $this->commandFinder->findBeforeConversationCommand($text, $commands)) {
                 call_user_func($beforeConversationCommand->getCallback());
-            } elseif ($conversation = $this->conversationManager->getLastTelegramConversation($telegram)) {
+            } elseif ($conversation = $this->conversationManager->getCurrentTelegramConversation($telegram)) {
                 $this->conversationManager->continueTelegramConversation($telegram, $conversation);
             } elseif ($command = $this->commandFinder->findCommand($text, $commands)) {
                 call_user_func($command->getCallback());

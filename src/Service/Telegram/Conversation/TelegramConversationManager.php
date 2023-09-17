@@ -6,6 +6,7 @@ namespace App\Service\Telegram\Conversation;
 
 use App\Entity\Telegram\TelegramConversation;
 use App\Entity\Telegram\TelegramConversationState;
+use App\Entity\Telegram\TelegramStoppedConversation;
 use App\Repository\Telegram\TelegramConversationRepository;
 use App\Service\Telegram\Channel\TelegramChannelRegistry;
 use App\Service\Telegram\Telegram;
@@ -24,7 +25,7 @@ class TelegramConversationManager
 {
     public function __construct(
         private readonly TelegramAwareHelper $awareHelper,
-        private readonly TelegramConversationRepository $conversationRepository,
+        private readonly TelegramConversationRepository $repository,
         private readonly EntityManagerInterface $entityManager,
         private readonly NormalizerInterface $conversationStateNormalizer,
         private readonly DenormalizerInterface $conversationStateDenormalizer,
@@ -35,7 +36,7 @@ class TelegramConversationManager
     {
     }
 
-    public function getLastTelegramConversation(Telegram $telegram): ?TelegramConversation
+    public function getCurrentTelegramConversation(Telegram $telegram): ?TelegramConversation
     {
         $messengerUser = $telegram->getMessengerUser();
         $chatId = $this->chatProvider->getTelegramChatByUpdate($telegram->getUpdate())?->getId();
@@ -44,17 +45,9 @@ class TelegramConversationManager
             return null;
         }
 
-        $conversation = $this->conversationRepository->findOneByMessengerUserAndChatId($messengerUser, $chatId, $telegram->getBot());
+        $hash = $this->createTelegramConversationHash($messengerUser->getId(), $chatId, $telegram->getBot()->getId());
 
-        if ($conversation === null) {
-            return null;
-        }
-
-        if ($conversation->active()) {
-            return $conversation;
-        }
-
-        return null;
+        return $this->repository->findOneByHash($hash);
     }
 
     public function startTelegramConversation(Telegram $telegram, string $class): void
@@ -64,22 +57,23 @@ class TelegramConversationManager
         $this->executeConversation($telegram, $entity, 'invoke');
     }
 
+    public function createTelegramConversationHash(int $messengerUserId, int $chatId, int $botId): string
+    {
+        return $messengerUserId . '-' . $chatId . '-' . $botId;
+    }
+
     public function createTelegramConversation(
         Telegram $telegram,
         string $class,
         TelegramConversationState $state = null
     ): TelegramConversation
     {
+        $messengerUserId = $telegram->getMessengerUser()->getId();
         $chatId = $this->chatProvider->getTelegramChatByUpdate($telegram->getUpdate())?->getId();
+        $botId = $telegram->getBot()->getId();
+        $hash = $this->createTelegramConversationHash($messengerUserId, $chatId, $botId);
 
-        $entity = new TelegramConversation(
-            $telegram->getMessengerUser(),
-            $chatId,
-            $class,
-            $telegram->getBot(),
-            true,
-            $state === null ? null : $this->normalizeState($state)
-        );
+        $entity = new TelegramConversation($hash, $messengerUserId, $chatId, $botId, $class, $state === null ? null : $this->normalizeState($state));
         $this->entityManager->persist($entity);
 
         return $entity;
@@ -118,19 +112,28 @@ class TelegramConversationManager
         return $this->arrayNullFilter->filterNulls($normalized);
     }
 
-    public function stopTelegramConversations(Telegram $telegram): void
+    public function stopCurrentTelegramConversation(Telegram $telegram): void
     {
-        $conversations = $this->conversationRepository->getActiveByMessengerUser($telegram->getMessengerUser(), $telegram->getBot());
+        $conversation = $this->getCurrentTelegramConversation($telegram);
 
-        foreach ($conversations as $conversation) {
-            $this->stopTelegramConversation($conversation);
+        if ($conversation === null) {
+            return;
         }
+
+        $this->stopTelegramConversation($conversation);
     }
 
     public function stopTelegramConversation(TelegramConversation $entity): void
     {
-        $entity->setActive(false);
-        $entity->setUpdatedAt(new DateTimeImmutable());
+        $stopped = new TelegramStoppedConversation(
+            $entity->getMessengerUserId(),
+            $entity->getChatId(),
+            $entity->getBotId(),
+            $entity->getClass(),
+            $entity->getState(),
+            $entity->getCreatedAt()
+        );
+        $this->entityManager->persist($stopped);
 
         $this->entityManager->remove($entity);
     }

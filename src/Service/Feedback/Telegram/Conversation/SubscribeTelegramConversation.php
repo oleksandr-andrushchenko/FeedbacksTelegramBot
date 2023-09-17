@@ -73,12 +73,13 @@ class SubscribeTelegramConversation extends TelegramConversation implements Tele
         if (!$tg->getTelegram()->getBot()->acceptPayments() || $paymentMethodCount === 0) {
             $tg->stopConversation($entity);
 
-            $message = $tg->trans('reply.not_accept_payments');
+            $parameters = [
+                'contact_command' => $tg->command('contact', html: true),
+            ];
+            $message = $tg->trans('reply.not_accept_payments', parameters: $parameters);
             $message = $tg->failText($message);
 
-            $keyboard = $this->chooseActionChatSender->getKeyboard($tg);
-
-            return $tg->reply($message, keyboard: $keyboard)->null();
+            return $this->chooseActionChatSender->sendActions($tg, $message);
         }
 
         $this->state->setCurrencyStep($tg->getCurrencyCode() === null);

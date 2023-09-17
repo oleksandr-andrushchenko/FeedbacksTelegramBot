@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace App\Entity\Telegram;
 
-use App\Entity\Messenger\MessengerUser;
 use DateTimeImmutable;
 use DateTimeInterface;
 
 class TelegramConversation
 {
     public function __construct(
-        private readonly MessengerUser $messengerUser,
+        private readonly string $hash,
+        private readonly int $messengerUserId,
         private readonly int $chatId,
-        private string $class,
-        private readonly TelegramBot $bot,
-        private bool $active = true,
+        private readonly int $botId,
+        private readonly string $class,
         private ?array $state = null,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
@@ -29,9 +28,14 @@ class TelegramConversation
         return $this->id;
     }
 
-    public function getMessengerUser(): MessengerUser
+    public function getHash(): string
     {
-        return $this->messengerUser;
+        return $this->hash;
+    }
+
+    public function getMessengerUserId(): int
+    {
+        return $this->messengerUserId;
     }
 
     public function getChatId(): int
@@ -39,33 +43,14 @@ class TelegramConversation
         return $this->chatId;
     }
 
+    public function getBotId(): int
+    {
+        return $this->botId;
+    }
+
     public function getClass(): string
     {
         return $this->class;
-    }
-
-    public function active(): bool
-    {
-        return $this->active;
-    }
-
-    public function setActive(bool $active): self
-    {
-        $this->active = $active;
-
-        return $this;
-    }
-
-    public function setClass(string $class): static
-    {
-        $this->class = $class;
-
-        return $this;
-    }
-
-    public function getBot(): TelegramBot
-    {
-        return $this->bot;
     }
 
     public function getState(): ?array

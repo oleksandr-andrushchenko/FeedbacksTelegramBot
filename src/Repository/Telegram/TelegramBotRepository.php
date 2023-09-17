@@ -52,6 +52,18 @@ class TelegramBotRepository extends ServiceEntityRepository
 
     /**
      * @param TelegramGroup $group
+     * @return TelegramBot[]
+     */
+    public function findByGroup(TelegramGroup $group): array
+    {
+        return $this->findBy([
+            'group' => $group,
+            'deletedAt' => null,
+        ]);
+    }
+
+    /**
+     * @param TelegramGroup $group
      * @param string $countryCode
      * @return TelegramBot[]
      */

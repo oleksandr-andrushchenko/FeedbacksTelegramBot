@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Service\Feedback\Telegram\Chat;
 
 use App\Service\Feedback\Telegram\Conversation\CountryTelegramConversation;
+use App\Service\Intl\CountryProvider;
+use App\Service\Intl\LocaleProvider;
 use App\Service\Site\SiteUrlGenerator;
 use App\Service\Telegram\TelegramAwareHelper;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -14,6 +16,8 @@ class StartTelegramCommandHandler
     public function __construct(
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly SiteUrlGenerator $siteUrlGenerator,
+        private readonly CountryProvider $countryProvider,
+        private readonly LocaleProvider $localeProvider,
     )
     {
     }
@@ -32,6 +36,8 @@ class StartTelegramCommandHandler
     public function reply(TelegramAwareHelper $tg): void
     {
         $countryCode = $tg->getCountryCode();
+        $country = $this->countryProvider->getCountry($countryCode);
+        $locale = $this->localeProvider->getLocale($tg->getLocaleCode());
         $parameters = [
             '_locale' => $countryCode,
         ];
@@ -40,6 +46,8 @@ class StartTelegramCommandHandler
         $message = $tg->view('start', [
             'privacy_policy_link' => $privacyPolicyLink,
             'terms_of_use_link' => $termsOfUseLink,
+            'country_icon' => $this->countryProvider->getCountryIcon($country),
+            'locale_icon' => $this->localeProvider->getLocaleIcon($locale),
         ]);
 
         $tg->reply($message);

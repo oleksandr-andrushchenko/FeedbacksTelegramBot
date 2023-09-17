@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Object\User;
 
 use App\Entity\Messenger\MessengerUser;
+use App\Entity\Telegram\TelegramBot;
 use App\Entity\User\User;
 
 readonly class UserFeedbackMessageTransfer
@@ -13,6 +14,7 @@ readonly class UserFeedbackMessageTransfer
         private ?MessengerUser $messengerUser,
         private User $user,
         private string $text,
+        private ?TelegramBot $telegramBot,
     )
     {
     }
@@ -30,5 +32,10 @@ readonly class UserFeedbackMessageTransfer
     public function getText(): string
     {
         return $this->text;
+    }
+
+    public function getTelegramBot(): ?TelegramBot
+    {
+        return $this->telegramBot;
     }
 }

@@ -36,6 +36,7 @@ use App\Tests\Traits\Telegram\TelegramKeyboardFactoryProviderTrait;
 use App\Tests\Traits\Telegram\TelegramMessageSenderMockProviderTrait;
 use App\Tests\Traits\Telegram\TelegramMessageSenderProviderTrait;
 use App\Tests\Traits\Telegram\TelegramRegistryProviderTrait;
+use App\Tests\Traits\Telegram\TelegramStoppedConversationRepositoryProviderTrait;
 use App\Tests\Traits\Telegram\TelegramUpdateFixtureProviderTrait;
 use App\Tests\Traits\Telegram\TelegramUpdateHandlerTrait;
 use App\Tests\Traits\Telegram\TelegramUserProviderTrait;
@@ -70,6 +71,7 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
     use TelegramUserProviderTrait;
     use TelegramChatProviderTrait;
     use TelegramBotRepositoryMockProviderTrait;
+    use TelegramStoppedConversationRepositoryProviderTrait;
 
     protected ?Telegram $telegram;
     protected ?TelegramAwareHelper $tg;
@@ -141,16 +143,20 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
 
     protected function createConversation(string $class, TelegramConversationState $state): TelegramConversation
     {
+        $messengerUserId = $this->getUpdateMessengerUser()->getId();
+        $chatId = $this->getUpdateChatId();
+        $botId = $this->getTelegram()->getBot()->getId();
+
         $conversation = new TelegramConversation(
-            $this->getUpdateMessengerUser(),
-            $this->getUpdateChatId(),
+            $messengerUserId . '-' . $chatId . '-' . $botId,
+            $messengerUserId,
+            $chatId,
+            $botId,
             $class,
-            $this->getTelegram()->getBot(),
-            true,
             $this->getSerializer()->normalize($state)
         );
         $this->getEntityManager()->persist($conversation);
-        $this->getEntityManager()->flush();
+//        $this->getEntityManager()->flush();
 
         return $conversation;
     }
@@ -193,32 +199,26 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
 
     protected function shouldSeeConversation(?string $expectedClass, ?TelegramConversationState $expectedState, bool $active): static
     {
-        $conversation = $this->getTelegramConversationRepository()->findOneByMessengerUserAndChatId(
-            $this->getUpdateMessengerUser(),
-            $this->getUpdateChatId(),
-            $this->getTelegram()->getBot()
-        );
-
-        $checkEquals = true;
+        $messengerUserId = $this->getUpdateMessengerUser()->getId();
+        $chatId = $this->getUpdateChatId();
+        $botId = $this->getTelegram()->getBot()->getId();
+        $conversation = $this->getTelegramConversationRepository()->findOneByHash($messengerUserId . '-' . $chatId . '-' . $botId);
 
         if ($active) {
-            $this->assertNotNull($conversation);
-            $this->assertTrue($conversation->active());
+            $this->assertConversationActive($conversation);
         } else {
-            if ($conversation === null) {
-                $this->assertTrue(true);
-                $checkEquals = false;
-            } else {
-                $this->assertFalse($conversation->active());
-            }
+            $this->assertConversationInactive($conversation);
         }
 
-        if ($checkEquals) {
+        if ($conversation !== null) {
             if ($expectedClass !== null) {
                 $this->assertEquals($expectedClass, $conversation->getClass());
             }
             if ($expectedState !== null) {
-                $this->assertEquals($expectedState, $this->getSerializer()->denormalize($conversation->getState(), get_class($expectedState)));
+                $this->assertEquals(
+                    $expectedState,
+                    $this->getSerializer()->denormalize($conversation->getState(), get_class($expectedState))
+                );
             }
         }
 
@@ -393,7 +393,7 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
 
     protected function confirmButton(): string
     {
-        return '👌 keyboard.confirm';
+        return $this->yesButton();
     }
 
     protected function backButton(): string
@@ -418,7 +418,7 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
 
     protected function yesButton(): string
     {
-        return 'keyboard.yes';
+        return '👌 keyboard.yes';
     }
 
     protected function noButton(): string
@@ -429,5 +429,22 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
     protected function command(string $name): string
     {
         return $name . ' ' . $name;
+    }
+
+    protected function assertConversationActive(?TelegramConversation $conversation): void
+    {
+        $this->assertNotNull($conversation);
+        $this->assertNotNull($this->getTelegramConversationRepository()->findOneByHash($conversation->getHash()));
+//        $this->assertNull($this->getTelegramStoppedConversationRepository()->find($conversation->getId()));
+    }
+
+    protected function assertConversationInactive(?TelegramConversation $conversation): void
+    {
+        if ($conversation === null) {
+            $this->assertNull(null);
+        } else {
+            $this->assertNull($this->getTelegramConversationRepository()->findOneByHash($conversation->getHash()));
+        }
+//        $this->assertNotNull($this->getTelegramStoppedConversationRepository()->find($conversation->getId()));
     }
 }

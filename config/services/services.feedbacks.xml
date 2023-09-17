@@ -225,6 +225,8 @@
                  class="App\Service\Feedback\Telegram\Chat\StartTelegramCommandHandler" lazy="true">
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
             <argument type="service" id="app.site_url_generator"/>
+            <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="app.intl_locale_provider"/>
         </service>
         <service id="app.telegram_channel_feedbacks"
                  class="App\Service\Feedback\Telegram\FeedbackTelegramChannel" lazy="true">
@@ -246,6 +248,7 @@
                  class="App\Service\Feedback\Telegram\Conversation\CountryTelegramConversation" lazy="true">
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
+            <argument type="service" id="app.better_match_bot_telegram_chat_sender"/>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.telegram_conversation_locale"
@@ -253,6 +256,7 @@
             <argument type="service" id="app.intl_locale_provider"/>
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
             <argument type="service" id="app.telegram_locale_switcher"/>
+            <argument type="service" id="app.better_match_bot_telegram_chat_sender"/>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.telegram_conversation_create_feedback"

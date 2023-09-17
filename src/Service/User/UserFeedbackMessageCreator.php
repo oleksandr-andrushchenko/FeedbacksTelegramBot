@@ -28,16 +28,17 @@ class UserFeedbackMessageCreator
      */
     public function createUserFeedbackMessage(UserFeedbackMessageTransfer $userFeedbackMessageTransfer): UserFeedbackMessage
     {
-        // todo: add to activity log
         $this->validator->validate($userFeedbackMessageTransfer);
 
         $message = new UserFeedbackMessage(
             $userFeedbackMessageTransfer->getMessengerUser(),
             $userFeedbackMessageTransfer->getUser(),
-            $userFeedbackMessageTransfer->getText()
+            $userFeedbackMessageTransfer->getText(),
+            $userFeedbackMessageTransfer->getTelegramBot()
         );
         $this->entityManager->persist($message);
 
+        // todo: fire event and consume
         $this->activityLogger->logActivity($message);
 
         return $message;

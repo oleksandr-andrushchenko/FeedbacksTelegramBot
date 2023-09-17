@@ -11,4 +11,4 @@ purge: Remove stored user data.
 contact: Contact info, ask a question of left a feedback message.
 commands: Available command list.
 restart: Restore default settings and restart the bot.
-summary: These commands available in the menu below (if not visible - press %button_icon% button, just next to the input field)
+summary: These commands available in the menu below (just after input field), if not visible - press %button_icon% button (just next to the input field).

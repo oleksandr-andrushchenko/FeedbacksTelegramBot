@@ -823,7 +823,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             )
         ;
 
-        $this->assertTrue($conversation->active());
+        $this->assertConversationActive($conversation);
 
         $this->assertEquals($previousFeedbackSearchCount + 1, $feedbackSearchRepository->count([]));
 
@@ -885,7 +885,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             ->shouldSeeChooseAction()
         ;
 
-        $this->assertFalse($conversation->active());
+        $this->assertConversationInactive($conversation);
 
         $this->assertEquals($previousFeedbackSearchCount + 1, $feedbackSearchRepository->count([]));
 
@@ -943,7 +943,10 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             )
         ;
 
-        $this->assertFalse($conversation->active());
+        $this->assertNull($this->getTelegramConversationRepository()->findOneBy([
+            'hash' => $conversation->getHash(),
+            'class' => $conversation->getClass(),
+        ]));
     }
 
     public function gotCreateConfirmWithYesSuccessDataProvider(): Generator
@@ -985,7 +988,7 @@ class SearchFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             ->shouldNotSeeActiveConversation($conversation->getClass())
         ;
 
-        $this->assertFalse($conversation->active());
+        $this->assertConversationInactive($conversation);
     }
 
     public function gotCreateConfirmWithNoSuccessDataProvider(): Generator

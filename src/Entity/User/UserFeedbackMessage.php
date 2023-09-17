@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity\User;
 
 use App\Entity\Messenger\MessengerUser;
+use App\Entity\Telegram\TelegramBot;
 use DateTimeImmutable;
 use DateTimeInterface;
 
@@ -14,6 +15,7 @@ class UserFeedbackMessage
         private readonly ?MessengerUser $messengerUser,
         private readonly User $user,
         private readonly string $text,
+        private readonly ?TelegramBot $telegramBot,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?int $id = null,
     )

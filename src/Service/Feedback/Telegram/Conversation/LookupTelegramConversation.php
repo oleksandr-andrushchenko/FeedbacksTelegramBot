@@ -418,9 +418,9 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
 
             $feedbackSearchSearch = $this->creator->createFeedbackSearchSearch(
                 new FeedbackSearchSearchTransfer(
-                    $entity->getMessengerUser(),
+                    $tg->getTelegram()->getMessengerUser(),
                     $this->state->getSearchTerm(),
-                    $entity->getBot()
+                    $tg->getTelegram()->getBot()
                 )
             );
             $this->entityManager->flush();

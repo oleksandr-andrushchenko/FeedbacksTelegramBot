@@ -415,9 +415,9 @@ class SearchFeedbackTelegramConversation extends TelegramConversation implements
 
             $feedbackSearch = $this->creator->createFeedbackSearch(
                 new FeedbackSearchTransfer(
-                    $entity->getMessengerUser(),
+                    $tg->getTelegram()->getMessengerUser(),
                     $this->state->getSearchTerm(),
-                    $entity->getBot()
+                    $tg->getTelegram()->getBot()
                 )
             );
             $this->entityManager->flush();

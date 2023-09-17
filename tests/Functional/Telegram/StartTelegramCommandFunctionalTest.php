@@ -37,8 +37,8 @@ class StartTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestCa
         $this
             ->shouldNotSeeActiveConversation()
             ->shouldSeeReply(
-                'describe.title',
-                'describe.agreements',
+                'title',
+                'agreements',
             )
             ->shouldSeeChooseAction()
         ;

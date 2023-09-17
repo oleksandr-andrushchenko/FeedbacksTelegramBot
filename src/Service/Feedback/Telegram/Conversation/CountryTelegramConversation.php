@@ -9,6 +9,7 @@ use App\Entity\Telegram\TelegramConversation as Entity;
 use App\Entity\Telegram\TelegramConversationState;
 use App\Service\Feedback\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Intl\CountryProvider;
+use App\Service\Telegram\Chat\BetterMatchBotTelegramChatSender;
 use App\Service\Telegram\Conversation\TelegramConversation;
 use App\Service\Telegram\Conversation\TelegramConversationInterface;
 use App\Service\Telegram\TelegramAwareHelper;
@@ -25,6 +26,7 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
     public function __construct(
         private readonly CountryProvider $provider,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
+        private readonly BetterMatchBotTelegramChatSender $betterMatchBotSender,
     )
     {
         parent::__construct(new TelegramConversationState());
@@ -281,7 +283,12 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         $message .= "\n\n";
         $message .= $this->getCurrentReply($tg);
 
-        return $this->chooseActionChatSender->sendActions($tg, $message);
+        $this->chooseActionChatSender->sendActions($tg, $message);
+
+        $keyboard = $this->chooseActionChatSender->getKeyboard($tg);
+        $this->betterMatchBotSender->sendBetterMatchBotIfNeed($tg, $keyboard);
+
+        return null;
     }
 
     public function getTimezoneQuery(TelegramAwareHelper $tg, bool $help = false): string

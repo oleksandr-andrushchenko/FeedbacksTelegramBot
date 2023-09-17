@@ -25,7 +25,7 @@ class SubscriptionsTelegramChatSender
         $count = count($subscriptions);
 
         if ($count === 0) {
-            $message = $tg->trans('reply.empty_list', domain: 'subscriptions');
+            $message = $tg->trans('empty_list', domain: 'subscriptions');
             $message = $tg->upsetText($message);
 
             return $tg->reply($message)->null();
@@ -34,7 +34,7 @@ class SubscriptionsTelegramChatSender
         $parameters = [
             'count' => $count,
         ];
-        $message = $tg->trans('reply.title', $parameters, domain: 'subscriptions');
+        $message = $tg->trans('title', $parameters, domain: 'subscriptions');
 
         $tg->reply($message);
 

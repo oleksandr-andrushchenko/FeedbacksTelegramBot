@@ -1,7 +1,7 @@
 query:
   search_term: Хто або що вас цікавить?
   search_term_type: Ким або чим є %search_term%?
-  confirm: Підтвердити пошук відгуків про %search_term%?
+  confirm: Почати пошук відгуків про %search_term%?
   create_confirm: Бажаєте залишити відгук?
 keyboard:
   change_search_term: Змінити пошуковий термін

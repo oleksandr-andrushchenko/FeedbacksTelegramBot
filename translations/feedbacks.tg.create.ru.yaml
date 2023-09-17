@@ -2,8 +2,8 @@ query:
   search_term: О ком или о чем вы хотите оставить отзыв?
   search_term_type: Кем или чем является %search_term%?
   rating: Оцените ваш опыт с %search_term%.
-  description: Желаете оставить комментарий о %search_term%?
-  confirm: Подтвердить создание отзыва о %search_term%?
+  description: Оставьте комментарий о %search_term%.
+  confirm: Создать отзыв о %search_term%?
   send_to_channel_confirm: Хотите анонимно опубликовать ваш отзыв на канале %channel%?
 keyboard:
   change_search_term: Изменить поисковый запрос

@@ -96,9 +96,9 @@ class TelegramAwareHelper
         return $this;
     }
 
-    public function stopConversations(): static
+    public function stopCurrentConversation(): static
     {
-        $this->conversationManager->stopTelegramConversations($this->getTelegram());
+        $this->conversationManager->stopCurrentTelegramConversation($this->getTelegram());
 
         return $this;
     }
@@ -206,7 +206,7 @@ class TelegramAwareHelper
 
     public function yesButton(): KeyboardButton
     {
-        return $this->button($this->trans('keyboard.yes'));
+        return $this->button('👌 ' . $this->trans('keyboard.yes'));
     }
 
     public function noButton(): KeyboardButton
@@ -216,7 +216,7 @@ class TelegramAwareHelper
 
     public function confirmButton(): KeyboardButton
     {
-        return $this->button('👌 ' . $this->trans('keyboard.confirm'));
+        return $this->yesButton();
     }
 
     public function backButton(): KeyboardButton

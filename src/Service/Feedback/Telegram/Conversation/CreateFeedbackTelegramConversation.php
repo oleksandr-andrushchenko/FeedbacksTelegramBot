@@ -763,18 +763,18 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
             $feedback = $this->creator->createFeedback(
                 new FeedbackTransfer(
-                    $entity->getMessengerUser(),
+                    $tg->getTelegram()->getMessengerUser(),
                     $this->state->getSearchTerm(),
                     $this->state->getRating(),
                     $this->state->getDescription(),
-                    $entity->getBot()
+                    $tg->getTelegram()->getBot()
                 )
             );
 
             $message = $tg->trans('reply.created', domain: 'create');
             $message = $tg->okText($message);
 
-            if ($entity->getBot()->getChannelUsername() === null) {
+            if ($tg->getTelegram()->getBot()->getChannelUsername() === null) {
                 // todo: change text to something like: "want to add more?"
                 $tg->stopConversation($entity);
 

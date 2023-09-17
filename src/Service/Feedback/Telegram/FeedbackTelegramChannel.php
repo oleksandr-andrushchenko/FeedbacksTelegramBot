@@ -131,50 +131,51 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
     public function exception(TelegramAwareHelper $tg): null
     {
         $message = $tg->trans('reply.fail', [
-            'contact_command' => sprintf('<u>%s</u>', $tg->command('contact', true)),
+            'contact_command' => sprintf('<u>%s</u>', $tg->command('contact', html: true)),
         ]);
         $message = $tg->failText($message);
 
         $tg->reply($message);
 
-        $tg->stopConversations();
+        $tg->stopCurrentConversation();
 
         return $this->chooseActionChatSender->sendActions($tg);
     }
 
     public function start(TelegramAwareHelper $tg): null
     {
-        $tg->stopConversations();
+        $tg->stopCurrentConversation();
 
         return $this->startHandler->handleStart($tg);
     }
 
     public function create(TelegramAwareHelper $tg): null
     {
-        return $tg->stopConversations()->startConversation(CreateFeedbackTelegramConversation::class)->null();
+        return $tg->stopCurrentConversation()->startConversation(CreateFeedbackTelegramConversation::class)->null();
     }
 
     public function search(TelegramAwareHelper $tg): null
     {
-        return $tg->stopConversations()->startConversation(SearchFeedbackTelegramConversation::class)->null();
+        return $tg->stopCurrentConversation()->startConversation(SearchFeedbackTelegramConversation::class)->null();
     }
 
     public function lookup(TelegramAwareHelper $tg): null
     {
-        return $tg->stopConversations()->startConversation(LookupTelegramConversation::class)->null();
+        return $tg->stopCurrentConversation()->startConversation(LookupTelegramConversation::class)->null();
     }
 
     public function subscribe(TelegramAwareHelper $tg): null
     {
-        $tg->stopConversations();
+        $tg->stopCurrentConversation();
 
         if (!$tg->getTelegram()->getBot()->acceptPayments()) {
-            $message = $tg->trans('reply.not_accept_payments');
+            $parameters = [
+                'contact_command' => $tg->command('contact', html: true),
+            ];
+            $message = $tg->trans('reply.not_accept_payments', parameters: $parameters);
             $message = $tg->failText($message);
 
-            $tg->reply($message);
-
-            return $this->chooseActionChatSender->sendActions($tg);
+            return $this->chooseActionChatSender->sendActions($tg, $message);
         }
 
         $messengerUser = $tg->getTelegram()->getMessengerUser();
@@ -197,7 +198,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
 
     public function subscriptions(TelegramAwareHelper $tg): null
     {
-        $tg->stopConversations();
+        $tg->stopCurrentConversation();
 
         $this->subscriptionsChatSender->sendFeedbackSubscriptions($tg);
 
@@ -219,24 +220,24 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
 
         $tg->reply($message);
 
-        $tg->stopConversations();
+        $tg->stopCurrentConversation();
 
         $this->chooseActionChatSender->sendActions($tg);
     }
 
     public function country(TelegramAwareHelper $tg): null
     {
-        return $tg->stopConversations()->startConversation(CountryTelegramConversation::class)->null();
+        return $tg->stopCurrentConversation()->startConversation(CountryTelegramConversation::class)->null();
     }
 
     public function locale(TelegramAwareHelper $tg): null
     {
-        return $tg->stopConversations()->startConversation(LocaleTelegramConversation::class)->null();
+        return $tg->stopCurrentConversation()->startConversation(LocaleTelegramConversation::class)->null();
     }
 
     public function limits(TelegramAwareHelper $tg): null
     {
-        $tg->stopConversations();
+        $tg->stopCurrentConversation();
 
         $message = $tg->view('limits', [
             'commands' => [
@@ -253,17 +254,17 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
 
     public function purge(TelegramAwareHelper $tg): null
     {
-        return $tg->stopConversations()->startConversation(PurgeConversationTelegramConversation::class)->null();
+        return $tg->stopCurrentConversation()->startConversation(PurgeConversationTelegramConversation::class)->null();
     }
 
     public function contact(TelegramAwareHelper $tg): null
     {
-        return $tg->stopConversations()->startConversation(ContactTelegramConversation::class)->null();
+        return $tg->stopCurrentConversation()->startConversation(ContactTelegramConversation::class)->null();
     }
 
     public function commands(TelegramAwareHelper $tg): null
     {
-        $tg->stopConversations();
+        $tg->stopCurrentConversation();
 
         $message = $tg->view('commands');
 
@@ -274,7 +275,7 @@ class FeedbackTelegramChannel extends TelegramChannel implements TelegramChannel
 
     public function restart(TelegramAwareHelper $tg): null
     {
-        return $tg->stopConversations()->startConversation(RestartConversationTelegramConversation::class)->null();
+        return $tg->stopCurrentConversation()->startConversation(RestartConversationTelegramConversation::class)->null();
     }
 
     public function more(TelegramAwareHelper $tg): null

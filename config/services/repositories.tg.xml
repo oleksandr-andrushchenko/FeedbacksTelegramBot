@@ -8,7 +8,12 @@
         <service id="app.repository.telegram_update" class="App\Repository\Telegram\TelegramUpdateRepository">
             <argument type="service" id="doctrine"/>
         </service>
-        <service id="app.repository.telegram_conversation" class="App\Repository\Telegram\TelegramConversationRepository">
+        <service id="app.repository.telegram_conversation"
+                 class="App\Repository\Telegram\TelegramConversationRepository">
+            <argument type="service" id="doctrine"/>
+        </service>
+        <service id="app.repository.telegram_stopped_conversation"
+                 class="App\Repository\Telegram\TelegramStoppedConversationRepository">
             <argument type="service" id="doctrine"/>
         </service>
         <service id="app.repository.telegram_payment" class="App\Repository\Telegram\TelegramPaymentRepository">
@@ -20,7 +25,8 @@
         <service id="app.repository.telegram_bot" class="App\Repository\Telegram\TelegramBotRepository">
             <argument type="service" id="doctrine"/>
         </service>
-        <service id="app.repository.telegram_payment_method" class="App\Repository\Telegram\TelegramPaymentMethodRepository">
+        <service id="app.repository.telegram_payment_method"
+                 class="App\Repository\Telegram\TelegramPaymentMethodRepository">
             <argument type="service" id="doctrine"/>
         </service>
     </services>

@@ -16,6 +16,7 @@
         <many-to-one field="messengerUser" target-entity="App\Entity\Messenger\MessengerUser"/>
         <many-to-one field="user" target-entity="App\Entity\User\User"/>
         <field name="text" column="text"/>
+        <many-to-one field="telegramBot" target-entity="App\Entity\Telegram\TelegramBot"/>
         <field name="createdAt" column="created_at" type="datetime_immutable"/>
     </entity>
 </doctrine-mapping>

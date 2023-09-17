@@ -9,6 +9,7 @@ use App\Entity\Telegram\TelegramConversation as Entity;
 use App\Entity\Telegram\TelegramConversationState;
 use App\Service\Feedback\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Intl\LocaleProvider;
+use App\Service\Telegram\Chat\BetterMatchBotTelegramChatSender;
 use App\Service\Telegram\Conversation\TelegramConversation;
 use App\Service\Telegram\Conversation\TelegramConversationInterface;
 use App\Service\Telegram\TelegramAwareHelper;
@@ -26,6 +27,7 @@ class LocaleTelegramConversation extends TelegramConversation implements Telegra
         private readonly LocaleProvider $provider,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly TelegramLocaleSwitcher $localeSwitcher,
+        private readonly BetterMatchBotTelegramChatSender $betterMatchBotSender,
     )
     {
         parent::__construct(new TelegramConversationState());
@@ -259,7 +261,12 @@ class LocaleTelegramConversation extends TelegramConversation implements Telegra
 
         $message = $this->getGotLocaleReply($tg);
 
-        return $this->chooseActionChatSender->sendActions($tg, $message);
+        $this->chooseActionChatSender->sendActions($tg, $message);
+
+        $keyboard = $this->chooseActionChatSender->getKeyboard($tg);
+        $this->betterMatchBotSender->sendBetterMatchBotIfNeed($tg, $keyboard);
+
+        return null;
     }
 
     /**

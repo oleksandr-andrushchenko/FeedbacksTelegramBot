@@ -2,7 +2,7 @@ query:
   search_term: Who or what you would you like to leave feedback on?
   search_term_type: Who or what %search_term% is?
   rating: Rate your experience with %search_term%.
-  description: Would you like to add a comment about %search_term%?
+  description: Add a comment about %search_term%.
   confirm: Confirm feedback creation on %search_term%?
   send_to_channel_confirm: Would you like to post your feedback anonymously on %channel% channel?
 keyboard:

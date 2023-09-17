@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Repository\Telegram;
 
-use App\Entity\Messenger\MessengerUser;
-use App\Entity\Telegram\TelegramBot;
 use App\Entity\Telegram\TelegramConversation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -25,49 +23,29 @@ class TelegramConversationRepository extends ServiceEntityRepository
         parent::__construct($registry, TelegramConversation::class);
     }
 
-    public function save(TelegramConversation $entity, bool $flush = false): void
+    public function findOneByHash(string $hash): ?TelegramConversation
     {
-        $this->getEntityManager()->persist($entity);
+        $records = $this->findByHash($hash);
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
+        if (count($records) === 0) {
+            return null;
         }
-    }
 
-    public function remove(TelegramConversation $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
+        $return = $records[0];
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
+        foreach ($records as $record) {
+            if ($record->getCreatedAt() > $return) {
+                $return = $record;
+            }
         }
+
+        return $return;
     }
 
-    public function findOneByMessengerUserAndChatId(MessengerUser $messengerUser, int $chatId, TelegramBot $bot): ?TelegramConversation
-    {
-        return $this->findOneBy(
-            [
-                'messengerUser' => $messengerUser,
-                'chatId' => $chatId,
-                'bot' => $bot,
-            ],
-            [
-                'id' => 'DESC',
-            ]
-        );
-    }
-
-    /**
-     * @param MessengerUser $messengerUser
-     * @param TelegramBot $bot
-     * @return TelegramConversation[]
-     */
-    public function getActiveByMessengerUser(MessengerUser $messengerUser, TelegramBot $bot): array
+    public function findByHash(string $hash): array
     {
         return $this->findBy([
-            'messengerUser' => $messengerUser,
-            'active' => true,
-            'bot' => $bot,
+            'hash' => $hash,
         ]);
     }
 }

@@ -50,9 +50,7 @@
 
 * groups: -1001645239372 (dev), -1001673132934 (local)
 * admins: 409525390
-* add Locale to bot, in this case eash locale will have their own localized group
 * add bot id/country to payments/subscriptions
-* on country/locale change - and if such bot exists - propose user to switch onto it
-* switch from groups to channels
 * soft deletes mode (flag) for telegram conversations (will be useful for initial tracks)
 * Twitter search term parse update
+* Add vkontakte search term type and hide for ukr

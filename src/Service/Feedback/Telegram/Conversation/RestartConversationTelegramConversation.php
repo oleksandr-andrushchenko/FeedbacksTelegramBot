@@ -97,7 +97,7 @@ class RestartConversationTelegramConversation extends TelegramConversation imple
             ?->setTimezone($country->getTimezones()[0] ?? null)
         ;
 
-        $tg->stopConversation($entity)->stopConversations();
+        $tg->stopConversation($entity);
 
         $message = $tg->trans('reply.ok', domain: 'restart');
         $message = $tg->okText($message);

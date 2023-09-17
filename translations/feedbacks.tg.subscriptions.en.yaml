@@ -1,3 +1,2 @@
-reply:
-  empty_list: You do not have subscriptions
-  title: "You have %count% premium subscription(-s):"
+empty_list: You do not have subscriptions
+title: "You have %count% premium subscription(-s):"

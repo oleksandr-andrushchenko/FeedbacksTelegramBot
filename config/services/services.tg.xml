@@ -120,6 +120,7 @@
             <argument type="service" id="app.telegram_payment_manager"/>
             <argument type="service" id="app.telegram_locale_switcher"/>
             <argument type="service" id="app.telegram_input_provider"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="logger"/>
         </service>
         <service id="app.telegram_keyboard_factory" class="App\Service\Telegram\TelegramKeyboardFactory" lazy="true"/>
@@ -192,6 +193,17 @@
         <service id="app.telegram_payment_method_provider"
                  class="App\Service\Telegram\Payment\TelegramPaymentMethodProvider" lazy="true">
             <argument type="service" id="translator"/>
+        </service>
+        <service id="app.better_match_telegram_bot_provider"
+                 class="App\Service\Telegram\BetterMatchTelegramBotProvider" lazy="true">
+            <argument type="service" id="app.repository.telegram_bot"/>
+        </service>
+        <service id="app.better_match_bot_telegram_chat_sender"
+                 class="App\Service\Telegram\Chat\BetterMatchBotTelegramChatSender" lazy="true">
+            <argument type="service" id="app.better_match_telegram_bot_provider"/>
+            <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="app.intl_locale_provider"/>
+            <argument type="service" id="app.telegram_link_provider"/>
         </service>
     </services>
 </container>

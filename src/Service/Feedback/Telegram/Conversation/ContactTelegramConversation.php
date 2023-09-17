@@ -169,9 +169,10 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
         try {
             $this->messageCreator->createUserFeedbackMessage(
                 new UserFeedbackMessageTransfer(
-                    $entity->getMessengerUser(),
-                    $entity->getMessengerUser()->getUser(),
-                    $tg->getText()
+                    $tg->getTelegram()->getMessengerUser(),
+                    $tg->getTelegram()->getMessengerUser()->getUser(),
+                    $tg->getText(),
+                    $tg->getTelegram()->getBot()
                 )
             );
 

@@ -842,7 +842,7 @@ class LookupTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestC
             )
         ;
 
-        $this->assertFalse($conversation->active());
+        $this->assertConversationInactive($conversation);
 
         $this->assertEquals($previousFeedbackSearchSearchCount + 1, $feedbackSearchSearchRepository->count([]));
 
@@ -904,7 +904,7 @@ class LookupTelegramCommandFunctionalTest extends TelegramCommandFunctionalTestC
             ->shouldSeeChooseAction()
         ;
 
-        $this->assertFalse($conversation->active());
+        $this->assertConversationInactive($conversation);
 
         $this->assertEquals($previousFeedbackSearchSearchCount + 1, $feedbackSearchSearchRepository->count([]));
 
