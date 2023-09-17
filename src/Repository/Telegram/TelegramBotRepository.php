@@ -24,24 +24,6 @@ class TelegramBotRepository extends ServiceEntityRepository
         parent::__construct($registry, TelegramBot::class);
     }
 
-    public function save(TelegramBot $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(TelegramBot $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
     public function findOneByUsername(string $username): ?TelegramBot
     {
         return $this->findOneBy([

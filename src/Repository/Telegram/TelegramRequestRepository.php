@@ -25,24 +25,6 @@ class TelegramRequestRepository extends ServiceEntityRepository
         parent::__construct($registry, TelegramRequest::class);
     }
 
-    public function save(TelegramRequest $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(TelegramRequest $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
     public function getLimits(null|int|string $chatId, ?int $inlineMessageId): ?TelegramRequestLimits
     {
         $perSecondAll = $this

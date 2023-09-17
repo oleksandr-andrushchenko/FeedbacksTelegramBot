@@ -25,24 +25,6 @@ class TelegramPaymentMethodRepository extends ServiceEntityRepository
         parent::__construct($registry, TelegramPaymentMethod::class);
     }
 
-    public function save(TelegramPaymentMethod $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(TelegramPaymentMethod $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
     /**
      * @param TelegramBot $bot
      * @return TelegramPaymentMethod[]
