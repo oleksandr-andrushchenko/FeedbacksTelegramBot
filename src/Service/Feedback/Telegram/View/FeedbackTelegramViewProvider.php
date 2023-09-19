@@ -67,8 +67,8 @@ class FeedbackTelegramViewProvider
         $message .= $this->translator->trans('somebody_from', domain: 'feedbacks.tg.feedback', locale: $localeCode);
         $message .= ' ';
         $country = $this->countryProvider->getCountryComposeName($country, localeCode: $localeCode);
-//        $message .= sprintf('<u>%s</u>', $country);
-        $message .= $country;
+        $message .= sprintf('<u>%s</u>', $country);
+//        $message .= $country;
         $message .= ' ';
         $message .= $this->translator->trans('wrote_about', domain: 'feedbacks.tg.feedback', locale: $localeCode);
         $message .= ' ';

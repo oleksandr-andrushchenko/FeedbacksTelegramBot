@@ -12,7 +12,7 @@ class PhoneNumberSearchTermParser implements SearchTermParserInterface
     public function supportsSearchTerm(SearchTermTransfer $searchTerm): bool
     {
         if ($searchTerm->getType() === null) {
-            return preg_match("/^\\+?\\d{1,4}?[-.\\s]?\\(?\\d{1,3}?\\)?[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,9}$/", $searchTerm->getText()) === 1;
+            return $this->supports($searchTerm->getText());
         }
 
         if ($searchTerm->getType() === SearchTermType::phone_number) {
@@ -24,23 +24,25 @@ class PhoneNumberSearchTermParser implements SearchTermParserInterface
 
     public function parseWithGuessType(SearchTermTransfer $searchTerm): void
     {
-        $normalized = $this->normalizePhoneNumber($searchTerm->getText());
+        if ($this->supports($searchTerm->getText())) {
+            $normalized = $this->normalize($searchTerm->getText());
 
-        if ($normalized === $searchTerm->getText()) {
-            $searchTerm
-                ->setType(SearchTermType::phone_number)
-            ;
-        } else {
-            $searchTerm
-                ->addPossibleType(SearchTermType::phone_number)
-            ;
+            if ($normalized === $searchTerm->getText()) {
+                $searchTerm
+                    ->setType(SearchTermType::phone_number)
+                ;
+            } else {
+                $searchTerm
+                    ->addPossibleType(SearchTermType::phone_number)
+                ;
+            }
         }
     }
 
     public function parseWithKnownType(SearchTermTransfer $searchTerm): void
     {
         if ($searchTerm->getType() === SearchTermType::phone_number) {
-            $normalized = $this->normalizePhoneNumber($searchTerm->getText());
+            $normalized = $this->normalize($searchTerm->getText());
 
             $searchTerm
                 ->setNormalizedText($normalized === $searchTerm->getText() ? null : $normalized)
@@ -53,9 +55,13 @@ class PhoneNumberSearchTermParser implements SearchTermParserInterface
         // TODO: Implement parseWithNetwork() method.
     }
 
-    private function normalizePhoneNumber(string $phoneNumber): ?string
+    private function supports(string $number): bool
     {
-//        return filter_var($phoneNumber, FILTER_SANITIZE_NUMBER_INT);
-        return preg_replace('/[^0-9]+/', '', $phoneNumber);
+        return preg_match("/^\\+?\\d{1,4}?[-.\\s]?\\(?\\d{1,3}?\\)?[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,9}$/", $number) === 1;
+    }
+
+    private function normalize(string $number): ?string
+    {
+        return preg_replace('/[^0-9]/', '', $number);
     }
 }

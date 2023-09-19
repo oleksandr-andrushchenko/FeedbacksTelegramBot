@@ -91,11 +91,11 @@
         <parameter key="app.create.change_description_button">false</parameter>
         <parameter key="app.create.confirm_step">true</parameter>
 
-        <parameter key="app.search.search_term_type_step">false</parameter>
+        <parameter key="app.search.search_term_type_step">true</parameter>
         <parameter key="app.search.change_search_term_button">false</parameter>
         <parameter key="app.search.confirm_step">true</parameter>
 
-        <parameter key="app.lookup.search_term_type_step">false</parameter>
+        <parameter key="app.lookup.search_term_type_step">true</parameter>
         <parameter key="app.lookup.change_search_term_button">false</parameter>
         <parameter key="app.lookup.confirm_step">true</parameter>
     </parameters>

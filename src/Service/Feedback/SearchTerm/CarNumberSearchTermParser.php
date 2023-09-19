@@ -15,7 +15,7 @@ class CarNumberSearchTermParser implements SearchTermParserInterface
             return $this->supports($searchTerm->getText());
         }
 
-        if ($searchTerm->getText() === SearchTermType::car_number) {
+        if ($searchTerm->getType() === SearchTermType::car_number) {
             return true;
         }
 
@@ -33,7 +33,13 @@ class CarNumberSearchTermParser implements SearchTermParserInterface
 
     public function parseWithKnownType(SearchTermTransfer $searchTerm): void
     {
-        // TODO: Implement parseWithKnownType() method.
+        if ($searchTerm->getType() === SearchTermType::car_number) {
+            $normalized = $this->normalize($searchTerm->getText());
+
+            $searchTerm
+                ->setNormalizedText($normalized === $searchTerm->getText() ? null : $normalized)
+            ;
+        }
     }
 
     public function parseWithNetwork(SearchTermTransfer $searchTerm): void
@@ -59,5 +65,10 @@ class CarNumberSearchTermParser implements SearchTermParserInterface
     private function getPattern(string $first, string $next): string
     {
         return sprintf('/^[%s][%s\-]+([\ %s][%s\-]+)*$/iu', $first, ...array_fill(0, 3, $next));
+    }
+
+    private function normalize(string $number): ?string
+    {
+        return preg_replace('/[^\p{L}0-9]/u', '', $number);
     }
 }
