@@ -14,6 +14,7 @@ use App\Service\Command\CommandLimitsChecker;
 use App\Service\Command\CommandStatisticProviderInterface;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\Logger\ActivityLogger;
+use App\Service\Messenger\MessengerUserUpserter;
 use App\Service\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -27,6 +28,7 @@ class FeedbackCreator
         private readonly CommandLimitsChecker $limitsChecker,
         private readonly FeedbackSubscriptionManager $subscriptionManager,
         private readonly ActivityLogger $activityLogger,
+        private readonly MessengerUserUpserter $messengerUserUpserter,
     )
     {
     }
@@ -72,15 +74,23 @@ class FeedbackCreator
         $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($messengerUser);
         $searchTermTransfer = $feedbackTransfer->getSearchTerm();
 
+        if ($searchTermTransfer->getMessengerUser() === null) {
+            $searchTermMessengerUser = null;
+        } else {
+            $searchTermMessengerUser = $this->messengerUserUpserter->upsertMessengerUser(
+                $searchTermTransfer->getMessengerUser()
+            );
+        }
+
         return new Feedback(
             $messengerUser->getUser(),
             $messengerUser,
             $searchTermTransfer->getText(),
             $searchTermTransfer->getNormalizedText() ?? $searchTermTransfer->getText(),
             $searchTermTransfer->getType(),
-            null,
-            $searchTermTransfer->getMessenger(),
-            $searchTermTransfer->getMessengerUsername(),
+            $searchTermMessengerUser,
+            $searchTermMessengerUser?->getMessenger() ?? $searchTermTransfer->getMessenger(),
+            $searchTermMessengerUser?->getUsername() ?? $searchTermTransfer->getMessengerUsername(),
             $feedbackTransfer->getRating(),
             $feedbackTransfer->getDescription(),
             $hasActiveSubscription,

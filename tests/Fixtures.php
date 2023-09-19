@@ -33,6 +33,8 @@ class Fixtures
     public const TWITTER_USERNAME_1 = '6dm_ytr.o2811';
     public const YOUTUBE_USER_ID_1 = 4;
     public const YOUTUBE_USERNAME_1 = '6dm_ytr.o2811';
+    public const VKONTAKTE_USER_ID_1 = 4;
+    public const VKONTAKTE_USERNAME_1 = '6dm_ytr.o2811';
     public const UNKNOWN_USER_ID_1 = 5;
     public const UNKNOWN_USERNAME_1 = 'unknown';
 
@@ -86,6 +88,10 @@ class Fixtures
         'place_name' => [
             SearchTermType::place_name,
             '2901 N Federal Hwy',
+        ],
+        'car_number' => [
+            SearchTermType::car_number,
+            'нu34123ЧW',
         ],
     ];
 
@@ -186,8 +192,21 @@ class Fixtures
         return new MessengerUserTransfer(
             Messenger::youtube,
             (string) Fixtures::YOUTUBE_USER_ID_1,
-            Fixtures::TWITTER_USERNAME_1,
+            Fixtures::YOUTUBE_USERNAME_1,
             'Youtube Name',
+            'us',
+            'en',
+            'USD'
+        );
+    }
+
+    public static function getVkontakteMessengerUserTransferFixture(): MessengerUserTransfer
+    {
+        return new MessengerUserTransfer(
+            Messenger::vkontakte,
+            (string) Fixtures::VKONTAKTE_USER_ID_1,
+            Fixtures::VKONTAKTE_USERNAME_1,
+            'Vkontakte Name',
             'us',
             'en',
             'USD'
@@ -269,6 +288,10 @@ class Fixtures
                 static::getYoutubeMessengerUserTransferFixture(),
                 SearchTermType::youtube_username,
             ],
+            'vkontakte' => [
+                static::getVkontakteMessengerUserTransferFixture(),
+                SearchTermType::vkontakte_username,
+            ],
         ];
     }
 
@@ -321,6 +344,10 @@ class Fixtures
             'youtube' => [
                 static::getYoutubeMessengerUserTransferFixture(),
                 SearchTermType::youtube_username,
+            ],
+            'vkontakte' => [
+                static::getVkontakteMessengerUserTransferFixture(),
+                SearchTermType::vkontakte_username,
             ],
         ];
     }

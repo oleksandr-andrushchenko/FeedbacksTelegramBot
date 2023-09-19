@@ -32,12 +32,12 @@ class SearchTermTelegramViewProvider
             $message .= sprintf(
                 '<a href="%s">%s</a>',
                 $searchTermTransfer->getText(),
-                $searchTermTransfer->getNormalizedText()
+                $searchTermTransfer->getNormalizedText() ?? $searchTermTransfer->getText()
             );
         } elseif ($searchTermTransfer->getType() === SearchTermType::phone_number) {
-            $message .= $searchTermTransfer->getNormalizedText();
+            $message .= $searchTermTransfer->getNormalizedText() ?? $searchTermTransfer->getText();
         } elseif ($searchTermTransfer->getType() === SearchTermType::email) {
-            $message .= $searchTermTransfer->getNormalizedText();
+            $message .= $searchTermTransfer->getNormalizedText() ?? $searchTermTransfer->getText();
         } else {
             $message .= $searchTermTransfer->getText();
         }

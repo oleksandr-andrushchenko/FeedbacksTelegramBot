@@ -23,11 +23,13 @@ keyboard:
   help: Need help
 
 sign:
-  bot: Create anonymous reviews
-  channel: SUBSCRIBE
+  title: Create and search here
+  bot: BOT
+  channel: CHANNEL
+  group: COMMENTS
 
 reply:
   fail: "Unknown error has occurred,\n1) Make sure everything properly filled and repeat; or\n2) Try %contact_command% command; or\n3) Try again later please."
   not_accept_payments: We do not accept payments now. Try again later or contact us please %contact_command%.
   better_bot_match: 'A separate bot is available for your country %country% and locale %locale%:'
-  wrong: I don't understand you.
+  wrong: I don't understand you. Use input field or keyboard above please.

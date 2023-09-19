@@ -20,6 +20,7 @@
             </options>
         </field>
         <field name="identifier" column="identifier"/>
+        <field name="name" column="name" nullable="true"/>
         <field name="username" column="username" nullable="true"/>
         <many-to-one field="user" target-entity="App\Entity\User\User"/>
         <field name="showExtendedKeyboard" column="show_extended_keyboard" type="boolean">

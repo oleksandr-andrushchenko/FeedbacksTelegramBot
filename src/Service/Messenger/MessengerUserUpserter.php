@@ -35,8 +35,12 @@ class MessengerUserUpserter
             $messengerUser->setUpdatedAt(new DateTimeImmutable());
         }
 
-        $messengerUser->setUsername($messengerUserTransfer->getUsername());
-        $messengerUser->setName($messengerUserTransfer->getName());
+        if (empty($messengerUser->getUsername()) && !empty($messengerUserTransfer->getUsername())) {
+            $messengerUser->setUsername($messengerUserTransfer->getUsername());
+        }
+        if (empty($messengerUser->getName()) && !empty($messengerUserTransfer->getName())) {
+            $messengerUser->setName($messengerUserTransfer->getName());
+        }
 
         return $messengerUser;
     }

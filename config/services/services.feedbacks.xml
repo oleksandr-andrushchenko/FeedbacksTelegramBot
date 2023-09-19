@@ -23,6 +23,7 @@
             <argument type="service" id="app.command_limits_checker"/>
             <argument type="service" id="app.feedback_subscription_manager"/>
             <argument type="service" id="app.logger_activity"/>
+            <argument type="service" id="app.messenger_user_upserter"/>
         </service>
         <service id="app.feedback_search_creator" class="App\Service\Feedback\FeedbackSearchCreator" lazy="true">
             <argument type="service" id="app.search_command_options"/>
@@ -104,6 +105,14 @@
         </service>
         <service id="app.feedback_search_term_parser_unknown"
                  class="App\Service\Feedback\SearchTerm\UnknownSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_vkontakte"
+                 class="App\Service\Feedback\SearchTerm\VkontakteSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
+        <service id="app.feedback_search_term_parser_car_number"
+                 class="App\Service\Feedback\SearchTerm\CarNumberSearchTermParser" lazy="true">
             <tag name="app.feedback_search_term_parser"/>
         </service>
         <service id="app.feedback_search_term_parser_factory"

@@ -35,7 +35,7 @@ class FeedbackSearchTermTypeProvider
         return $icon . ' ' . $name;
     }
 
-    public function getSearchTermTypes(string $countryCode = null): array
+    public function getSearchTermTypes(): array
     {
         return SearchTermType::cases();
     }

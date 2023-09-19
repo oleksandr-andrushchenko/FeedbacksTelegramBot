@@ -20,8 +20,8 @@ trait MessengerUserProfileUrlProviderTrait
             Messenger::tiktok => sprintf('https://tiktok.com/@%s', $messengerUser->getUsername()),
             Messenger::twitter => sprintf('https://x.com/%s', $messengerUser->getUsername()),
             Messenger::youtube => sprintf('https://www.youtube.com/@%s', $messengerUser->getUsername()),
+            Messenger::vkontakte => sprintf('https://vk.com/%s', $messengerUser->getUsername() === null ? ('id' . $messengerUser->getId()) : $messengerUser->getUsername()),
             Messenger::unknown => sprintf('https://unknown.com/@%s', $messengerUser->getUsername()),
-            default => null,
         };
     }
 }

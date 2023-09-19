@@ -40,10 +40,7 @@
 * Keep feedbacks, feedback searches and feedback lookups even if Limtis exceeded (notify user when found something - maybe as kfor payment before)
 * Protect against multi-account (if search term is popular - ask for money even if limits not exceeded)
 * Inject service locator in telegram channel for commands (coz many dependencies loadings)
-* Add car number as search term type
-* Custom search term types for each country (hide non-popular - show on demand)
 
 * groups: -1001645239372 (dev), -1001673132934 (local)
 * admins: 409525390
 * add bot id/country to payments/subscriptions
-* Add vkontakte search term type and hide for ukr

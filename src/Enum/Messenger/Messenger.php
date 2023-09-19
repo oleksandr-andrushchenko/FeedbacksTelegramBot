@@ -15,4 +15,5 @@ enum Messenger: int
     case youtube = 5;
     case onlyfans = 6;
     case reddit = 7;
+    case vkontakte = 9;
 }

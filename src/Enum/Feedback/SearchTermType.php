@@ -16,6 +16,7 @@ enum SearchTermType: int
     case youtube_username = 25;
     case onlyfans_username = 26;
     case reddit_username = 27;
+    case vkontakte_username = 28;
     case messenger_username = 20;
 
     case messenger_profile_url = 10;
@@ -25,6 +26,7 @@ enum SearchTermType: int
     case person_name = 60;
     case organization_name = 70;
     case place_name = 80;
+    case car_number = 1;
 
     public const base = [
         self::messenger_profile_url,
@@ -35,5 +37,6 @@ enum SearchTermType: int
         self::place_name,
         self::phone_number,
         self::organization_name,
+        self::car_number,
     ];
 }

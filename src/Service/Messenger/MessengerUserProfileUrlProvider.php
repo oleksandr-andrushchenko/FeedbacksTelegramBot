@@ -20,12 +20,16 @@ class MessengerUserProfileUrlProvider
             Messenger::tiktok => sprintf('https://tiktok.com/@%s', $username),
             Messenger::twitter => sprintf('https://x.com/%s', $username),
             Messenger::youtube => sprintf('https://www.youtube.com/@%s', $username),
+            Messenger::vkontakte => sprintf('https://vk.com/%s', is_numeric($username) ? ('id' . $username) : $username),
             default => null,
         };
     }
 
     public function getMessengerUserProfileUrlByUser(MessengerUserTransfer $messengerUser): ?string
     {
-        return $this->getMessengerUserProfileUrl($messengerUser->getMessenger(), $messengerUser->getUsername());
+        return $this->getMessengerUserProfileUrl(
+            $messengerUser->getMessenger(),
+            $messengerUser->getUsername() ?? $messengerUser->getId()
+        );
     }
 }

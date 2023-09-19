@@ -192,15 +192,17 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             ->setStep(CreateFeedbackTelegramConversation::STEP_SEARCH_TERM_QUERIED)
         ;
 
-        yield from $this->gotUnknownSearchTermSuccessDataProvider('', $state);
+        yield from $this->gotUnknownSearchTermSuccessDataProvider($state, false);
     }
 
-    public function gotUnknownSearchTermSuccessDataProvider(string $key, CreateFeedbackTelegramConversationState $state): Generator
+    public function gotUnknownSearchTermSuccessDataProvider(CreateFeedbackTelegramConversationState $state, bool $change): Generator
     {
+        $key = $change ? 'change &' : '';
+
         /** @var MessengerUserTransfer $messengerUser */
 
         // unknown messenger profile url
-        yield sprintf('%s & messenger profile url', $key) => [
+        yield sprintf('%s messenger profile url', $key) => [
             fn ($tg) => [
                 'command' => $command = 'https://unknown.com/me',
                 'mocks' => null,
@@ -217,7 +219,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 
         // messenger usernames
         foreach (Fixtures::getMessengerUserUsernames() as $commandKey => [$messengerUser, $expectedSearchTermPossibleType]) {
-            yield sprintf('%s & %s username', $key, $commandKey) => [
+            yield sprintf('%s %s username', $key, $commandKey) => [
                 fn ($tg) => [
                     'command' => $command = $messengerUser->getUsername(),
                     'mocks' => null,
@@ -234,7 +236,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         }
 
         // unknown messenger username
-        yield sprintf('%s & messenger username', $key) => [
+        yield sprintf('%s messenger username', $key) => [
             fn ($tg) => [
                 'command' => $command = 'me',
                 'mocks' => null,
@@ -251,7 +253,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 
         // person names
         foreach (Fixtures::PERSONS as $personKey => $personName) {
-            yield sprintf('%s & person name & %s', $key, $personKey) => [
+            yield sprintf('%s person name & %s', $key, $personKey) => [
                 fn ($tg) => [
                     'command' => $personName,
                     'mocks' => null,
@@ -275,7 +277,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 
         // place names
         foreach (Fixtures::PLACES as $placeKey => $placeName) {
-            yield sprintf('%s & place name & %s', $key, $placeKey) => [
+            yield sprintf('%s place name & %s', $key, $placeKey) => [
                 fn ($tg) => [
                     'command' => $placeName,
                     'mocks' => null,
@@ -298,7 +300,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
 
         // organizations names
         foreach (Fixtures::ORGANIZATIONS as $orgKey => $orgName) {
-            yield sprintf('%s & organization name & %s', $key, $orgKey) => [
+            yield sprintf('%s organization name & %s', $key, $orgKey) => [
                 fn ($tg) => [
                     'command' => $orgName,
                     'mocks' => null,
@@ -319,7 +321,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         }
 
         // phone number
-        yield sprintf('%s & %s', $key, SearchTermType::phone_number->name) => [
+        yield sprintf('%s %s', $key, SearchTermType::phone_number->name) => [
             fn ($tg) => [
                 'command' => $command = '+1 (561) 314-5672',
                 'mocks' => null,
@@ -339,7 +341,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
         ];
 
         // email
-        yield sprintf('%s & %s', $key, SearchTermType::email->name) => [
+        yield sprintf('%s %s', $key, SearchTermType::email->name) => [
             fn ($tg) => [
                 'command' => $command = 'example+123@gma//il.com',
                 'mocks' => null,
@@ -487,7 +489,7 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             ->setDescription(mt_rand(0, 1) === 0 ? null : 'any')
         ;
 
-        yield from $this->gotUnknownSearchTermSuccessDataProvider('change', $state);
+        yield from $this->gotUnknownSearchTermSuccessDataProvider($state, true);
     }
 
     /**

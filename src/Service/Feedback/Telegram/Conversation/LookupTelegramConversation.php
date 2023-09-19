@@ -319,7 +319,7 @@ class LookupTelegramConversation extends TelegramConversation implements Telegra
 
     public function getSearchTermTypeByButton(string $button, TelegramAwareHelper $tg): ?SearchTermType
     {
-        $types = $this->searchTermTypeProvider->getSearchTermTypes(countryCode: $tg->getCountryCode());
+        $types = $this->searchTermTypeProvider->getSearchTermTypes();
 
         foreach ($types as $type) {
             if ($this->getSearchTermTypeButton($type, $tg)->getText() === $button) {
