@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Traits\Telegram;
+namespace App\Tests\Traits\Feedback\Telegram;
 
 use App\Serializer\Feedback\Telegram\CreateFeedbackTelegramConversationStateNormalizer;
 

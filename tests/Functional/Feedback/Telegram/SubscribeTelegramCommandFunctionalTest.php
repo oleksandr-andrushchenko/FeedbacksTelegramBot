@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Telegram;
+namespace App\Tests\Functional\Feedback\Telegram;
 
 use App\Entity\Feedback\Telegram\SubscribeTelegramConversationState;
 use App\Entity\Messenger\MessengerUser;

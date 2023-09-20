@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Telegram;
+namespace App\Tests\Functional\Feedback\Telegram;
 
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramConversation;
@@ -41,12 +41,12 @@ use App\Tests\Traits\Telegram\TelegramUpdateFixtureProviderTrait;
 use App\Tests\Traits\Telegram\TelegramUpdateHandlerTrait;
 use App\Tests\Traits\Telegram\TelegramUserProviderTrait;
 use App\Tests\Traits\TranslatorProviderTrait;
+use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\KeyboardButton;
 use Longman\TelegramBot\Entities\Update;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 
 abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
 {

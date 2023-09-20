@@ -8,7 +8,7 @@ use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
 use App\Object\Messenger\MessengerUserTransfer;
 use App\Tests\Fake\Service\Instagram\FakeInstagramMessengerUserProvider;
-use App\Tests\Functional\Telegram\TelegramCommandFunctionalTestCase;
+use App\Tests\Functional\Feedback\Telegram\TelegramCommandFunctionalTestCase;
 use Closure;
 
 class Fixtures
