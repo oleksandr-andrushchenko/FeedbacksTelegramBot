@@ -16,13 +16,16 @@ trait TelegramUpdateHandlerTrait
     use TelegramUpdateHandlerProviderTrait;
     use EntityManagerProviderTrait;
     use TelegramRegistryProviderTrait;
+    use TelegramBotRepositoryProviderTrait;
 
     private function handleTelegramUpdate(?Telegram $telegram, Update $update): void
     {
-        $this->getTelegramUpdateHandler()->handleTelegramUpdate(
-            $telegram === null ? $this->getTelegramRegistry()->getTelegram(Fixtures::BOT_USERNAME_1) : $telegram,
-            new Request(content: $update->toJson())
-        );
+        if ($telegram === null) {
+            $bot = $this->getTelegramBotRepository()->findOneByUsername(Fixtures::BOT_USERNAME_1);
+            $telegram = $this->getTelegramRegistry()->getTelegram($bot);
+        }
+
+        $this->getTelegramUpdateHandler()->handleTelegramUpdate($telegram, new Request(content: $update->toJson()));
         $this->getEntityManager()->flush();
     }
 }

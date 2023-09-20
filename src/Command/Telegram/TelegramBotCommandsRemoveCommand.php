@@ -54,7 +54,7 @@ class TelegramBotCommandsRemoveCommand extends Command
                 throw new TelegramNotFoundException($username);
             }
 
-            $telegram = $this->registry->getTelegram($bot->getUsername());
+            $telegram = $this->registry->getTelegram($bot);
 
             $this->remover->removeTelegramCommands($telegram);
             $bot->setCommandsSet(false);

@@ -9,12 +9,5 @@
             <argument>%app.site_base_url%</argument>
             <argument type="service" id="Symfony\Component\Routing\Generator\UrlGeneratorInterface"/>
         </service>
-        <service id="app.site_view_response_factory" class="App\Service\Site\SiteViewResponseFactory" lazy="true">
-            <argument type="service" id="twig"/>
-            <argument type="service" id="translation.locale_switcher"/>
-            <argument type="service" id="app.intl_country_provider"/>
-            <argument type="service" id="app.intl_locale_provider"/>
-            <argument type="service" id="app.contact_options_factory"/>
-        </service>
     </services>
 </container>

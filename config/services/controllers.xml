@@ -5,14 +5,12 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.controller.site" class="App\Controller\SiteController">
-            <argument type="service" id="app.site_view_response_factory"/>
-            <tag name="controller.service_arguments"/>
-        </service>
-        <service id="app.controller.telegram" class="App\Controller\Telegram\TelegramController">
+        <service id="app.controller.telegram" class="App\Controller\TelegramController">
+            <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_registry"/>
             <argument type="service" id="app.telegram_update_handler"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.telegram_site_view_response_factory"/>
             <argument type="service" id="logger"/>
             <tag name="controller.service_arguments"/>
         </service>

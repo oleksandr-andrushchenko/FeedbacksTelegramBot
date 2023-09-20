@@ -23,7 +23,7 @@ class TelegramWebhookInfoProvider
      */
     public function getTelegramWebhookInfo(TelegramBot $bot): array
     {
-        $telegram = $this->registry->getTelegram($bot->getUsername());
+        $telegram = $this->registry->getTelegram($bot);
         /** @var WebhookInfo $info */
         $info = $telegram->getWebhookInfo()->getResult();
 

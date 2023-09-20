@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Feedback\Telegram\Chat;
 
+use App\Enum\Site\SitePage;
 use App\Service\Feedback\Telegram\Conversation\CountryTelegramConversation;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\LocaleProvider;
@@ -39,10 +40,18 @@ class StartTelegramCommandHandler
         $country = $this->countryProvider->getCountry($countryCode);
         $locale = $this->localeProvider->getLocale($tg->getLocaleCode());
         $parameters = [
-            '_locale' => $countryCode,
+            'username' => $tg->getTelegram()->getBot()->getUsername(),
         ];
-        $privacyPolicyLink = $this->siteUrlGenerator->generate('app.site_privacy_policy', $parameters, UrlGeneratorInterface::ABSOLUTE_URL);
-        $termsOfUseLink = $this->siteUrlGenerator->generate('app.site_terms_of_use', $parameters, UrlGeneratorInterface::ABSOLUTE_URL);
+        $privacyPolicyLink = $this->siteUrlGenerator->generate(
+            'app.telegram_site_page',
+            $parameters + ['page' => SitePage::PRIVACY_POLICY->value],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+        $termsOfUseLink = $this->siteUrlGenerator->generate(
+            'app.telegram_site_page',
+            $parameters + ['page' => SitePage::TERMS_OF_USE->value],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
         $message = $tg->view('start', [
             'privacy_policy_link' => $privacyPolicyLink,
             'terms_of_use_link' => $termsOfUseLink,

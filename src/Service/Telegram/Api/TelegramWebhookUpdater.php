@@ -19,7 +19,7 @@ class TelegramWebhookUpdater
 
     public function updateTelegramWebhook(TelegramBot $bot): void
     {
-        $telegram = $this->registry->getTelegram($bot->getUsername());
+        $telegram = $this->registry->getTelegram($bot);
         $url = $this->webhookUrlGenerator->generate($telegram->getBot()->getUsername());
 
         $telegram->setWebhook($url);

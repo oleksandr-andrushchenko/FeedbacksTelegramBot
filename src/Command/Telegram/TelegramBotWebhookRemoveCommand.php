@@ -81,7 +81,7 @@ class TelegramBotWebhookRemoveCommand extends Command
                 return Command::SUCCESS;
             }
 
-            $telegram = $this->registry->getTelegram($bot->getUsername());
+            $telegram = $this->registry->getTelegram($bot);
 
             $this->remover->removeTelegramWebhook($telegram);
             $bot->setWebhookSet(false);

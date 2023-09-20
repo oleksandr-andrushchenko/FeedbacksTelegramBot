@@ -16,7 +16,7 @@ class TelegramBotTextsInfoProvider
 
     public function getTelegramBotTextsInfo(TelegramBot $bot): array
     {
-        $telegram = $this->registry->getTelegram($bot->getUsername());
+        $telegram = $this->registry->getTelegram($bot);
 
         $row = [];
         $localeCode = $bot->getLocaleCode();

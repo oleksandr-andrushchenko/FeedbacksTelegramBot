@@ -1,4 +1,4 @@
-{% extends 'site.terms_of_use.html.twig' %}
+{% extends 'feedbacks.tg.site.terms_of_use.html.twig' %}
 {#https://talkabot.net/terms-of-service/#}
 {% block content %}
     <p><b>Last updated: 27 July, 2023</b></p>
@@ -9,7 +9,7 @@
     <p>By using and accessing our chatbots you <b>are bound to agree to</b>:</p>
     <ul>
         <li><b>the present Terms of Service, and</b></li>
-        <li><b>the applicable <a href="{{ path('app.site_privacy_policy') }}">privacy policy</a>.</b></li>
+        <li><b>the applicable <a href="{{ path('app.telegram_site_page', {username: bot.username, page: 'privacy_policy'}) }}">privacy policy</a>.</b></li>
     </ul>
     <p>In case of individual chatbot solutions our Customers regulations and policies (such as terms of use,
             privacy policy) are binding terms as well.</p>
@@ -185,7 +185,7 @@
                 in order to achieve the purpose of the use of the data;</b></li>
         <li><b>data handling is voluntary; the legal basis for processing personal data is the voluntary consent of
                 the Users under GDPR, further information is available in our <a
-                        href="{{ path('app.site_privacy_policy') }}" target="_blank" rel="noopener"><u>Privacy
+                        href="{{ path('app.telegram_site_page', {username: bot.username, page: 'privacy_policy'}) }}" target="_blank" rel="noopener"><u>Privacy
                         Policy</u></a>;</b>
         </li>
         <li><b>in order to operate some functions of the chatbot, we work together with third parties and external

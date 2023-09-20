@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Telegram\Api;
 
 use App\Entity\Telegram\TelegramBot;
+use App\Enum\Site\SitePage;
 use App\Service\Intl\CountryProvider;
 use App\Service\Site\SiteUrlGenerator;
 use App\Service\Telegram\TelegramRegistry;
@@ -25,7 +26,7 @@ class TelegramTextsUpdater
 
     public function updateTelegramDescriptions(TelegramBot $bot): void
     {
-        $telegram = $this->registry->getTelegram($bot->getUsername());
+        $telegram = $this->registry->getTelegram($bot);
 
         $countryCode = $telegram->getBot()->getCountryCode();
         $country = $this->countryProvider->getCountry($countryCode);
@@ -40,16 +41,18 @@ class TelegramTextsUpdater
         $description = $this->twig->render('tg.description.html.twig', [
             'localeCode' => $localeCode,
             'privacy_policy_link' => $this->siteUrlGenerator->generate(
-                'app.site_privacy_policy',
+                'app.telegram_site_page',
                 [
-                    '_locale' => $country->getCode(),
+                    'username' => $bot->getUsername(),
+                    'page' => SitePage::PRIVACY_POLICY->value,
                 ],
                 referenceType: UrlGeneratorInterface::ABSOLUTE_URL
             ),
             'terms_of_use_link' => $this->siteUrlGenerator->generate(
-                'app.site_terms_of_use',
+                'app.telegram_site_page',
                 [
-                    '_locale' => $country->getCode(),
+                    'username' => $bot->getUsername(),
+                    'page' => SitePage::TERMS_OF_USE->value,
                 ],
                 referenceType: UrlGeneratorInterface::ABSOLUTE_URL
             ),

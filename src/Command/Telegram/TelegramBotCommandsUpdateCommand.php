@@ -54,7 +54,7 @@ class TelegramBotCommandsUpdateCommand extends Command
                 throw new TelegramNotFoundException($username);
             }
 
-            $telegram = $this->registry->getTelegram($bot->getUsername());
+            $telegram = $this->registry->getTelegram($bot);
 
             $this->updater->updateTelegramCommands($telegram);
             $bot->setCommandsSet(true);

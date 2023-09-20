@@ -6,9 +6,7 @@ namespace App\Service;
 
 use App\Entity\ContactOptions;
 use App\Entity\Telegram\TelegramBot;
-use App\Enum\Telegram\TelegramGroup;
 use App\Exception\ContactOptionsNotFoundException;
-use App\Repository\Telegram\TelegramBotRepository;
 use App\Service\Telegram\TelegramLinkProvider;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -16,20 +14,17 @@ class ContactOptionsFactory
 {
     public function __construct(
         private readonly array $options,
-        private readonly TelegramBotRepository $telegramBotRepository,
         private readonly TranslatorInterface $translator,
         private readonly TelegramLinkProvider $telegramLinkProvider,
     )
     {
     }
 
-    public function createContactOptions(TelegramGroup $group, string $countryCode, string $localeCode): ContactOptions
-    {
-        $bot = $this->telegramBotRepository->findOneByGroupCountryAndLocale($group, $countryCode, $localeCode);
-
-        return $this->createContactOptionsByTelegramBot($bot);
-    }
-
+    /**
+     * @param TelegramBot $bot
+     * @return ContactOptions
+     * @throws ContactOptionsNotFoundException
+     */
     public function createContactOptionsByTelegramBot(TelegramBot $bot): ContactOptions
     {
         $group = $bot->getGroup();

@@ -1,6 +1,6 @@
 {% trans_default_domain 'site.layout' %}
 <!DOCTYPE html>
-<html lang="{{ locale.code }}">
+<html lang="{{ locale }}">
 <head>
     <meta charset="utf-8">
     <meta name="robots" content="noindex"/>
@@ -26,7 +26,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand"
-               href="{{ path('app.site_index') }}">{{ 'search'|trans({}, 'feedbacks.tg.command_icon') }} {{ contacts.botName }}</a>
+               href="{{ path('app.telegram_site_page', {username: bot.username, page: 'index'}) }}">{{ 'search'|trans({}, 'feedbacks.tg.command_icon') }} {{ contacts.botName }}</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -42,26 +42,28 @@
                             </li>
                         {% else %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app.site_' ~ _page) }}">{{ _page|trans }}</a>
+                                <a class="nav-link" href="{{ path('app.telegram_site_page', {username: bot.username, page: _page}) }}">{{ _page|trans }}</a>
                             </li>
                         {% endif %}
                     {% endfor %}
-                    <li class="nav-item dropdown" id="locale-switcher">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                           aria-expanded="false">
-                            {{ locale.icon }} {{ locale.name }}
-                        </a>
-                        <ul class="dropdown-menu">
-                            {% for _locale in locales %}
-                                {% if _locale.code != locale.code %}
-                                    <li>
-                                        <a class="dropdown-item"
-                                           href="{{ path(app.request.attributes.get('_route'), {_locale: _locale.code}) }}">{{ _locale.icon }} {{ _locale.name }}</a>
-                                    </li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                    </li>
+                    {% if switcher %}
+                        <li class="nav-item dropdown" id="locale-switcher">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                {{ bot.country_icon }} / {{ bot.locale_icon }} {{ bot.name }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                {% for _bot in bots %}
+                                    {% if _bot.username != bot.username %}
+                                        <li>
+                                            <a class="dropdown-item"
+                                               href="{{ path(app.request.attributes.get('_route'), {username: _bot.username, page: page}) }}">{{ _bot.country_icon }} / {{ _bot.locale_icon }} {{ _bot.name }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -74,7 +76,7 @@
                     {% if (page == 'index') %}
                         <li class="breadcrumb-item active" aria-current="page">{{ page|trans }}</li>
                     {% else %}
-                        <li class="breadcrumb-item"><a href="{{ path('app.site_index') }}">{{ 'index'|trans }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ path('app.telegram_site_page', {username: bot.username, page: 'index'}) }}">{{ 'index'|trans }}</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ page|trans }}</li>
                     {% endif %}
                 {% endblock %}
@@ -88,7 +90,7 @@
         <a href="{{ contacts.botLink }}" class="btn btn-primary btn-lg">{{ 'open_bot_button'|trans }}</a>
 
         {% if page != 'contacts' %}
-            <a href="{{ path('app.site_contacts') }}"
+            <a href="{{ path('app.telegram_site_page', {username: bot.username, page: 'contacts'}) }}"
                class="btn btn-secondary">{{ 'left_comment_button'|trans }}</a>
         {% endif %}
     </div>

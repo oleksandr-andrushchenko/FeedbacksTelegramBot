@@ -29,6 +29,7 @@ use App\Tests\Traits\Messenger\MessengerUserRepositoryProviderTrait;
 use App\Tests\Traits\SerializerProviderTrait;
 use App\Tests\Traits\Telegram\TelegramAwareHelperProviderTrait;
 use App\Tests\Traits\Telegram\TelegramBotRepositoryMockProviderTrait;
+use App\Tests\Traits\Telegram\TelegramBotRepositoryProviderTrait;
 use App\Tests\Traits\Telegram\TelegramChatProviderTrait;
 use App\Tests\Traits\Telegram\TelegramConversationManagerProviderTrait;
 use App\Tests\Traits\Telegram\TelegramConversationRepositoryProviderTrait;
@@ -72,6 +73,7 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
     use TelegramChatProviderTrait;
     use TelegramBotRepositoryMockProviderTrait;
     use TelegramStoppedConversationRepositoryProviderTrait;
+    use TelegramBotRepositoryProviderTrait;
 
     protected ?Telegram $telegram;
     protected ?TelegramAwareHelper $tg;
@@ -97,7 +99,8 @@ abstract class TelegramCommandFunctionalTestCase extends DatabaseTestCase
     protected function getTelegram(): Telegram
     {
         if ($this->telegram === null) {
-            $this->telegram = $this->getTelegramRegistry()->getTelegram(Fixtures::BOT_USERNAME_1);
+            $bot = $this->getTelegramBotRepository()->findOneByUsername(Fixtures::BOT_USERNAME_1);
+            $this->telegram = $this->getTelegramRegistry()->getTelegram($bot);
         }
 
         return $this->telegram;

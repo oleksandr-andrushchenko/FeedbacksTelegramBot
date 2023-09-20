@@ -1,4 +1,4 @@
-{% extends 'site.privacy_policy.html.twig' %}
+{% extends 'feedbacks.tg.site.privacy_policy.html.twig' %}
 {#https://talkabot.net/privacy-policy/#}
 {% block content %}
     <p><b>Last updated: 27 July, 2023</b></p>
@@ -386,7 +386,7 @@
             </td>
             <td>
                 Anyone may get in touch with our Company on our website at <a
-                        href="{{ path('app.site_contacts') }}">contacts</a>. In case our
+                        href="{{ path('app.telegram_site_page', {username: bot.username, page: 'contacts'}) }}">contacts</a>. In case our
                 Company receives any requests, our Company is controlling the questions and all content of those
                 requests which is shared by the individuals with us – including the individuals’ personal data
                 in

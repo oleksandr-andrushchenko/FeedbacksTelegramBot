@@ -54,7 +54,7 @@ class TelegramBotMessageSendCommand extends Command
                 throw new TelegramNotFoundException($username);
             }
 
-            $telegram = $this->registry->getTelegram($bot->getUsername());
+            $telegram = $this->registry->getTelegram($bot);
 
             $chatId = $input->getArgument('chat');
             $chatId = is_numeric($chatId) ? $chatId : ('@' . $chatId);

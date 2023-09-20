@@ -27,7 +27,6 @@ use Throwable;
  * @method ServerResponse sendMessage(array $data)
  * @method ServerResponse deleteMessage(array $data)
  * @method ServerResponse emptyResponse()
- * @method ServerResponse getMe()
  * @method ServerResponse getUserProfilePhotos(array $data)
  * @method ServerResponse getMyName(array $data)
  * @method ServerResponse setMyName(array $data)
@@ -155,11 +154,7 @@ class Telegram
         } catch (Throwable $exception) {
             $this->logger->error($exception);
 
-            $message = sprintf(
-                'Failed to %s for "%s" telegram bot',
-                strtolower(implode(' ', preg_split('/(?=[A-Z])/', $name))),
-                $this->getBot()->getUsername(),
-            );
+            $message = sprintf('Failed to "%s" for "%s" telegram bot', $name, $this->getBot()->getUsername());
 
             throw new TelegramException($message, 0, $exception);
         }

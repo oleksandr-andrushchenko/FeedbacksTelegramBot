@@ -1,4 +1,4 @@
-{% extends 'site.privacy_policy.en.html.twig' %}
+{% extends 'feedbacks.tg.site.privacy_policy.us.html.twig' %}
 
 {% block content %}
     <p><b>Последнее обновление: 27 июля 2023 г.</b></p>
@@ -24,7 +24,7 @@
         или о Пользователях, как мы используем эту информацию и предоставляем ей доступ, а также ваш выбор относительно
         нашей
         обработки данных Эта Политика конфиденциальности Chatbot является частью наших <a
-                href="{{ path('app.site_terms_of_use') }}">Условия использования Chatbot</a>.
+                href="{{ path('app.telegram_site_page', {username: bot.username, page: 'terms_of_use'}) }}">Условия использования Chatbot</a>.
     </p>
     <p>
         Прежде чем пользоваться Сервисом или отправлять нам любую личную информацию, внимательно просмотрите эту
@@ -53,7 +53,7 @@
     </p>
     <ul>
         <li>Команда "Удалить данные и выйти" в самом боте</li>
-        <li>Путем <a href="{{ path('app.site_contacts') }}">обращение</a> любим удобным способом</li>
+        <li>Путем <a href="{{ path('app.telegram_site_page', {username: bot.username, page: 'contacts'}) }}">обращение</a> любим удобным способом</li>
     </ul>
     <p>
         Больше информации можно найти здесь.
