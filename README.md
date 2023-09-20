@@ -44,3 +44,4 @@
 * groups: -1001645239372 (dev), -1001673132934 (local)
 * admins: 409525390
 * add bot id/country to payments/subscriptions
+* add contacts info (table columns) for each bot
