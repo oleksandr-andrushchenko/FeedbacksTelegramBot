@@ -18,14 +18,12 @@ class TelegramBotTextsInfoProvider
     {
         $telegram = $this->registry->getTelegram($bot);
 
-        $row = [];
-        $localeCode = $bot->getLocaleCode();
-        $params = ['language_code' => $localeCode];
+        $data = [];
 
-        $row['name'] = $telegram->getMyName($params)->getResult()->getName();
-        $row['short_description'] = $telegram->getMyShortDescription($params)->getResult()->getShortDescription();
-        $row['description'] = $telegram->getMyDescription($params)->getResult()->getDescription();
-
-        return $row;
+        return [
+            'name' => $telegram->getMyName($data)->getResult()->getName(),
+            'short_description' => $telegram->getMyShortDescription($data)->getResult()->getShortDescription(),
+            'description' => $telegram->getMyDescription($data)->getResult()->getDescription(),
+        ];
     }
 }
