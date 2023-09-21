@@ -63,11 +63,7 @@ class TelegramTextsUpdater
             ],
             referenceType: UrlGeneratorInterface::ABSOLUTE_URL
         );
-        $privacyPolicy = sprintf(
-            '<a href="%s">%s</a>',
-            $privacyPolicyLink,
-            $this->translator->trans('privacy_policy', domain: $domain, locale: $localeCode)
-        );
+        $privacyPolicy = $this->translator->trans('privacy_policy', domain: $domain, locale: $localeCode);
 
         $termsOfUseLink = $this->siteUrlGenerator->generate(
             'app.telegram_site_page',
@@ -77,26 +73,28 @@ class TelegramTextsUpdater
             ],
             referenceType: UrlGeneratorInterface::ABSOLUTE_URL
         );
-        $termsOfUse = sprintf(
-            '<a href="%s">%s</a>',
-            $termsOfUseLink,
-            $this->translator->trans('terms_of_use', domain: $domain, locale: $localeCode)
-        );
+        $termsOfUse = $this->translator->trans('terms_of_use', domain: $domain, locale: $localeCode);
 
 
         $myDescription = 'ℹ️ ';
         $myDescription .= $this->getMyShortDescription($bot);
         $myDescription .= "\n\n";
         $myDescription .= '‼️ ';
-        $myDescription .= $this->translator->trans(
-            'agreement',
-            [
-                'privacy_policy' => $privacyPolicy,
-                'terms_of_use' => $termsOfUse,
-            ],
-            domain: $domain,
-            locale: $localeCode
-        );
+        $myDescription .= $this->translator->trans('agreement', domain: $domain, locale: $localeCode);
+
+        $myDescription .= "\n\n";
+        $myDescription .= '🔹 ';
+        $myDescription .= $privacyPolicy;
+        $myDescription .= ':';
+        $myDescription .= "\n";
+        $myDescription .= $privacyPolicyLink;
+
+        $myDescription .= "\n\n";
+        $myDescription .= '🔹 ';
+        $myDescription .= $termsOfUse;
+        $myDescription .= ':';
+        $myDescription .= "\n";
+        $myDescription .= $termsOfUseLink;
 
         return $myDescription;
     }
