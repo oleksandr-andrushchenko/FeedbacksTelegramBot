@@ -76,7 +76,8 @@ class TelegramTextsUpdater
         $termsOfUse = $this->translator->trans('terms_of_use', domain: $domain, locale: $localeCode);
 
 
-        $myDescription = 'ℹ️ ';
+        $myDescription = "\n";
+        $myDescription .= 'ℹ️ ';
         $myDescription .= $this->getMyShortDescription($bot);
         $myDescription .= "\n\n";
         $myDescription .= '‼️ ';
