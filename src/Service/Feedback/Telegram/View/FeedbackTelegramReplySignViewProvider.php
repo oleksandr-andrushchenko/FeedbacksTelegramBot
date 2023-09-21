@@ -24,11 +24,8 @@ class FeedbackTelegramReplySignViewProvider
         $text = fn ($key) => $this->translator->trans('sign.' . $key, domain: 'feedbacks.tg', locale: $bot->getLocaleCode());
 
         $botLink = $this->messengerUserProfileUrlProvider->getMessengerUserProfileUrl(Messenger::telegram, $bot->getUsername());
-//        $message = $text('title');
-//        $message .= ":\n⇉ ";
         $message = '';
-//        $message .= '⇉ ';
-        $message .= sprintf('<u><b><a href="%s">%s</a></b></u>', $botLink, $text('bot'));
+        $message .= sprintf('<a href="%s">%s</a>', $botLink, $text('bot'));
 
         if ($bot->getChannelUsername() !== null) {
             $message .= ' • ';
