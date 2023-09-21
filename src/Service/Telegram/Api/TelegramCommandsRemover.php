@@ -27,10 +27,9 @@ class TelegramCommandsRemover
         $this->myCommands = [];
 
         foreach ($this->telegramMyCommandsProvider->getTelegramMyCommands($telegram) as $myCommands) {
-            $data = [];
-
-            $data['language_code'] = $myCommands->getLocaleCode();
-            $data['scope'] = $myCommands->getScope()->jsonSerialize();
+            $data = [
+                'scope' => $myCommands->getScope()->jsonSerialize(),
+            ];
 
             $this->myCommands[] = $myCommands;
 

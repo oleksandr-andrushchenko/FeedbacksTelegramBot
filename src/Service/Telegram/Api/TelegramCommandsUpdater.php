@@ -30,17 +30,16 @@ class TelegramCommandsUpdater
         $this->myCommands = [];
 
         foreach ($this->telegramMyCommandsProvider->getTelegramMyCommands($telegram) as $myCommands) {
-            $data = [];
-
-            $data['language_code'] = $myCommands->getLocaleCode();
-            $data['scope'] = $myCommands->getScope()->jsonSerialize();
-            $data['commands'] = array_map(
-                fn (TelegramCommand $command) => [
-                    'command' => $command->getName(),
-                    'description' => $this->getDescription($telegram, $command, $myCommands),
-                ],
-                $myCommands->getCommands()
-            );
+            $data = [
+                'scope' => $myCommands->getScope()->jsonSerialize(),
+                'commands' => array_map(
+                    fn (TelegramCommand $command) => [
+                        'command' => $command->getName(),
+                        'description' => $this->getDescription($telegram, $command, $myCommands),
+                    ],
+                    $myCommands->getCommands()
+                ),
+            ];
 
             $this->myCommands[] = $myCommands;
 
