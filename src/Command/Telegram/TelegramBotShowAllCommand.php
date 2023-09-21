@@ -32,6 +32,7 @@ class TelegramBotShowAllCommand extends Command
     {
         $this
             ->addOption('group', mode: InputOption::VALUE_REQUIRED, description: 'Telegram Group name')
+            ->addOption('full', mode: InputOption::VALUE_NONE, description: 'Whether to show all information')
             ->setDescription('Show all telegram bots info')
         ;
     }
@@ -55,6 +56,8 @@ class TelegramBotShowAllCommand extends Command
                 }
             }
 
+            $full = $input->getOption('full');
+
             $bots = $this->repository->findAll();
 
             $table = [];
@@ -69,7 +72,7 @@ class TelegramBotShowAllCommand extends Command
                     [
                         '#' => $index + 1,
                     ],
-                    $this->infoProvider->getTelegramBotInfo($bot)
+                    $this->infoProvider->getTelegramBotInfo($bot, $full)
                 );
 
                 $index++;
@@ -86,6 +89,7 @@ class TelegramBotShowAllCommand extends Command
             $io->createTable()
                 ->setHeaders(array_keys($table[0]))
                 ->setRows($table)
+                ->setVertical($full)
                 ->render()
             ;
 

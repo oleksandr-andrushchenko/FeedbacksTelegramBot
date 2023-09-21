@@ -50,7 +50,7 @@ class TelegramBotUpdateCommand extends Command
             ->addOption('token', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Token')
             ->addOption('country', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Country code')
             ->addOption('locale', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Locale code')
-            ->addOption('no-locale', mode: InputOption::VALUE_NONE, description: 'Whether to unset Telegrma bot Locale code (set to country\'s default)')
+            ->addOption('no-locale', mode: InputOption::VALUE_NONE, description: 'Whether to unset Telegram bot Locale code (set to country\'s default)')
             ->addOption('channel-username', mode: InputOption::VALUE_REQUIRED, description: 'Telegram channel username where to send activity')
             ->addOption('no-channel', mode: InputOption::VALUE_NONE, description: 'Whether to unset activity Telegram channel username')
             ->addOption('group-username', mode: InputOption::VALUE_REQUIRED, description: 'Telegram group username which should be linked to telegram channel')
@@ -186,6 +186,7 @@ class TelegramBotUpdateCommand extends Command
         $io->createTable()
             ->setHeaders(array_keys($row))
             ->setRows([$row])
+            ->setVertical()
             ->render()
         ;
 

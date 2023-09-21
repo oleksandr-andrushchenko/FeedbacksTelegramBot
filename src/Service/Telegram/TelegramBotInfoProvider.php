@@ -16,7 +16,7 @@ class TelegramBotInfoProvider
     {
     }
 
-    public function getTelegramBotInfo(TelegramBot $bot): array
+    public function getTelegramBotInfo(TelegramBot $bot, bool $full = true): array
     {
         $paymentMethods = $this->paymentMethodRepository->findActiveByBot($bot);
         $paymentMethodNames = array_map(
@@ -28,30 +28,37 @@ class TelegramBotInfoProvider
             $paymentMethods
         );
 
-        $flag = fn ($label, $value) => str_pad($label . ':', 10) . ($value ? 'Yes' : 'No');
-
-        return [
+        $info = [
             'group' => $bot->getGroup()->name,
             'name' => $bot->getName(),
             'username' => $bot->getUsername(),
-            'channel / group' => join(' / ', [
-                $bot->getChannelUsername() === null ? '-' : $bot->getChannelUsername(),
-                $bot->getGroupUsername() === null ? '-' : $bot->getGroupUsername(),
-            ]),
+            'channel' => $bot->getChannelUsername() === null ? 'N/A' : $bot->getChannelUsername(),
+            'comments' => $bot->getGroupUsername() === null ? 'N/A' : $bot->getGroupUsername(),
             'country' => $bot->getCountryCode(),
             'locale' => $bot->getLocaleCode(),
             'payment_methods' => count($paymentMethodNames) === 0 ? 'N/A' : join(', ', $paymentMethodNames),
-            'flags' => join("\n", [
-                $flag('texts', $bot->textsSet()),
-                $flag('webhook', $bot->webhookSet()),
-                $flag('commands', $bot->commandsSet()),
-                $flag('updates', $bot->checkUpdates()),
-                $flag('requests', $bot->checkRequests()),
-                $flag('payments', $bot->acceptPayments()),
-            ]),
+            'payments' => $bot->acceptPayments() ? 'Yes' : 'No',
+            'texts' => $bot->textsSet() ? 'Yes' : 'No',
+            'webhook' => $bot->webhookSet() ? 'Yes' : 'No',
+            'commands' => $bot->commandsSet() ? 'Yes' : 'No',
+            'updates' => $bot->checkUpdates() ? 'Yes' : 'No',
+            'requests' => $bot->checkRequests() ? 'Yes' : 'No',
             'admin_ids' => count($bot->getAdminIds()) === 0 ? 'N/A' : join(', ', $bot->getAdminIds()),
             'admin_only' => $bot->adminOnly() ? 'Yes' : 'No',
-            'deleted_at' => $bot->getDeletedAt() === null ? '-' : $bot->getDeletedAt()->format('Y-m-d H:i'),
+            'deleted_at' => $bot->getDeletedAt() === null ? 'N/A' : $bot->getDeletedAt()->format('Y-m-d H:i'),
         ];
+
+        if (!$full) {
+            unset(
+                $info['group'],
+                $info['payment_methods'],
+                $info['commands'],
+                $info['updates'],
+                $info['requests'],
+                $info['admin_ids'],
+            );
+        }
+
+        return $info;
     }
 }

@@ -60,6 +60,7 @@ class TelegramBotShowCommand extends Command
         $io->createTable()
             ->setHeaders(array_keys($row))
             ->setRows([$row])
+            ->setVertical()
             ->render()
         ;
 
