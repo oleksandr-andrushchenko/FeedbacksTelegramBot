@@ -8,7 +8,7 @@ use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBot;
 use App\Entity\User\User;
 
-readonly class UserFeedbackMessageTransfer
+readonly class UserContactMessageTransfer
 {
     public function __construct(
         private ?MessengerUser $messengerUser,

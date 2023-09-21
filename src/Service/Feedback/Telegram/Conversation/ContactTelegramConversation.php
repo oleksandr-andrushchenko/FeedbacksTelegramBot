@@ -7,13 +7,13 @@ namespace App\Service\Feedback\Telegram\Conversation;
 use App\Entity\Feedback\Telegram\CreateFeedbackTelegramConversationState;
 use App\Entity\Telegram\TelegramConversation as Entity;
 use App\Exception\ValidatorException;
-use App\Object\User\UserFeedbackMessageTransfer;
+use App\Object\User\UserContactMessageTransfer;
 use App\Service\ContactOptionsFactory;
 use App\Service\Feedback\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Telegram\Conversation\TelegramConversation;
 use App\Service\Telegram\Conversation\TelegramConversationInterface;
 use App\Service\Telegram\TelegramAwareHelper;
-use App\Service\User\UserFeedbackMessageCreator;
+use App\Service\User\UserContactMessageCreator;
 
 class ContactTelegramConversation extends TelegramConversation implements TelegramConversationInterface
 {
@@ -22,7 +22,7 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
     public const STEP_CANCEL_PRESSED = 30;
 
     public function __construct(
-        private readonly UserFeedbackMessageCreator $messageCreator,
+        private readonly UserContactMessageCreator $messageCreator,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly ContactOptionsFactory $contactOptionsFactory,
     )
@@ -167,8 +167,8 @@ class ContactTelegramConversation extends TelegramConversation implements Telegr
         }
 
         try {
-            $this->messageCreator->createUserFeedbackMessage(
-                new UserFeedbackMessageTransfer(
+            $this->messageCreator->createUserContactMessage(
+                new UserContactMessageTransfer(
                     $tg->getTelegram()->getMessengerUser(),
                     $tg->getTelegram()->getMessengerUser()->getUser(),
                     $tg->getText(),

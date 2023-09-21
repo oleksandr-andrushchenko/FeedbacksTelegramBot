@@ -4,8 +4,8 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
         https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="App\Entity\User\UserFeedbackMessage"
-            repository-class="App\Repository\User\UserFeedbackMessageRepository" table="user_feedback_messages">
+    <entity name="App\Entity\User\UserContactMessage"
+            repository-class="App\Repository\User\UserContactMessageRepository" table="user_contact_messages">
 
         <id name="id" column="id" type="integer">
             <generator/>

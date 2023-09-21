@@ -9,7 +9,7 @@ use App\Entity\Telegram\TelegramBot;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-class UserFeedbackMessage
+class UserContactMessage
 {
     public function __construct(
         private readonly ?MessengerUser $messengerUser,
