@@ -137,8 +137,7 @@
             <argument>%app.stage%</argument>
             <argument type="service" id="app.telegram_registry"/>
             <argument type="service" id="app.site_url_generator"/>
-            <argument type="service" id="twig"/>
-            <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="translator"/>
         </service>
         <service id="app.telegram_message_sender" class="App\Service\Telegram\Api\TelegramMessageSender" lazy="true"/>
         <service id="app.telegram_chat_action_sender" class="App\Service\Telegram\Api\TelegramChatActionSender"
