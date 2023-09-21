@@ -14,7 +14,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class TelegramTextsUpdater
 {
     public function __construct(
-        private string $stage,
+        private readonly string $stage,
         private readonly TelegramRegistry $registry,
         private readonly SiteUrlGenerator $siteUrlGenerator,
         private readonly TranslatorInterface $translator,
