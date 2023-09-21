@@ -6,6 +6,7 @@ namespace App\Enum\Telegram;
 
 enum TelegramGroup: int
 {
+    case default = 0;
     case feedbacks = 1;
 
     public static function fromName(string $name): ?self
