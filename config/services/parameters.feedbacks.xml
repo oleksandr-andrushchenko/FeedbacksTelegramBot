@@ -30,7 +30,7 @@
 
         <parameter key="app.search_command_options" type="collection">
             <parameter key="limits" type="collection">
-                <parameter key="day">10</parameter>
+                <parameter key="day">5</parameter>
                 <parameter key="month">50</parameter>
                 <parameter key="year">300</parameter>
             </parameter>
@@ -39,7 +39,7 @@
 
         <parameter key="app.lookup_command_options" type="collection">
             <parameter key="limits" type="collection">
-                <parameter key="day">10</parameter>
+                <parameter key="day">1</parameter>
                 <parameter key="month">30</parameter>
                 <parameter key="year">120</parameter>
             </parameter>
