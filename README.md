@@ -45,3 +45,8 @@
 * admins: 409525390
 * add bot id/country to payments/subscriptions
 * add contacts info (table columns) for each bot
+* check if bot can add subscribers - if so - use it just after start using the bot
+* bug (?): when user already exists and then change bot - there is still country/locale of the user (not bots country/locale), solution is to
+* 1) propose to keep/change current settings on start
+* 2) move settings to messenger user layer (+ delete from user) and make messenger user unique per [messenger, id, bot]
+* Implemented request_user for keyboard button when asking for search term type (as telegram user possible type - will receive ID!!)
