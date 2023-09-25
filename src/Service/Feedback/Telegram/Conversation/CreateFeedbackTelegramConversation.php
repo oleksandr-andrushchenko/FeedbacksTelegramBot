@@ -15,6 +15,7 @@ use App\Exception\ValidatorException;
 use App\Object\Feedback\FeedbackTransfer;
 use App\Object\Feedback\SearchTermTransfer;
 use App\Repository\Feedback\FeedbackRepository;
+use App\Repository\Telegram\TelegramBotRepository;
 use App\Service\Feedback\FeedbackCreator;
 use App\Service\Feedback\Rating\FeedbackRatingProvider;
 use App\Service\Feedback\SearchTerm\FeedbackSearchTermTypeProvider;
@@ -26,9 +27,12 @@ use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
 use App\Service\Telegram\Conversation\TelegramConversation;
 use App\Service\Telegram\Conversation\TelegramConversationInterface;
 use App\Service\Telegram\TelegramAwareHelper;
+use App\Service\Telegram\TelegramRegistry;
 use App\Service\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Entities\KeyboardButton;
+use Psr\Log\LoggerInterface;
+use Throwable;
 
 /**
  * /**
@@ -56,6 +60,8 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         private readonly EntityManagerInterface $entityManager,
         private readonly FeedbackRepository $feedbackRepository,
         private readonly FeedbackTelegramViewProvider $feedbackViewProvider,
+        private readonly TelegramBotRepository $botRepository,
+        private readonly LoggerInterface $logger,
         private readonly bool $searchTermTypeStep,
         private readonly bool $descriptionStep,
         private readonly bool $changeSearchTermButton,
@@ -898,9 +904,31 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         $tg->stopConversation($entity);
 
         $feedback = $this->feedbackRepository->find($this->state->getFeedbackId());
-        $message = $this->activityTelegramChatSender->sendFeedbackActivityToTelegramChat($tg->getTelegram(), $feedback);
 
-        $feedback->setChannelMessageId($message->getMessageId());
+        $telegram = $tg->getTelegram();
+        $bot = $telegram->getBot();
+
+        if ($bot->singleChannel()) {
+            $bots = [$bot];
+        } else {
+            $bots = $this->botRepository->findByGroupAndCountry($bot->getGroup(), $bot->getCountryCode());
+        }
+
+        foreach ($bots as $bot) {
+            try {
+                $sentMessage = $this->activityTelegramChatSender->sendFeedbackActivityToTelegramChat(
+                    $telegram,
+                    $feedback,
+                    channelUsername: $bot->getChannelUsername()
+                );
+
+                if ($sentMessage->getMessageId() !== null) {
+                    $feedback->addChannelMessageId($sentMessage->getMessageId());
+                }
+            } catch (Throwable $exception) {
+                $this->logger->error($exception);
+            }
+        }
 
         $message = $tg->trans('reply.sent_to_channel', domain: 'create');
         $message = $tg->okText($message);

@@ -36,6 +36,8 @@ class TelegramBotTransfer
         private bool $adminOnlyPassed = false,
         private ?array $adminIds = null,
         private bool $adminIdsPassed = false,
+        private ?bool $singleChannel = null,
+        private bool $singleChannelPassed = false,
     )
     {
     }
@@ -259,5 +261,23 @@ class TelegramBotTransfer
     public function adminIdsPassed(): bool
     {
         return $this->adminIdsPassed;
+    }
+
+    public function singleChannel(): ?bool
+    {
+        return $this->singleChannel;
+    }
+
+    public function setSingleChannel(bool $singleChannel): self
+    {
+        $this->singleChannel = $singleChannel;
+        $this->singleChannelPassed = true;
+
+        return $this;
+    }
+
+    public function singleChannelPassed(): bool
+    {
+        return $this->singleChannelPassed;
     }
 }

@@ -14,7 +14,7 @@ App\Entity\Feedback\Feedback:
       hasActiveSubscription: false
       countryCode: ua
       localeCode: uk
-      channelMessageId: null
+      channelMessageIds: null
       telegramBot: null
   feedback_23_telegram_instagram_username:
     __construct:
@@ -31,5 +31,5 @@ App\Entity\Feedback\Feedback:
       hasActiveSubscription: false
       countryCode: ua
       localeCode: uk
-      channelMessageId: null
+      channelMessageIds: null
       telegramBot: null

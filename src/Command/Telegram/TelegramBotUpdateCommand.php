@@ -60,6 +60,7 @@ class TelegramBotUpdateCommand extends Command
             ->addOption('accept-payments', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to allow the bot accept payments', default: false)
             ->addOption('admin-id', mode: InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, description: 'Telegram user admin id (-s)')
             ->addOption('admin-only', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to process admin requests only', default: true)
+            ->addOption('single-channel', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to process single channel only (when country has single language)', default: true)
             ->setDescription('Create telegram bot')
         ;
     }
@@ -170,6 +171,9 @@ class TelegramBotUpdateCommand extends Command
 
             if ($adminIds !== null) {
                 $botTransfer->setAdminIds($adminIds);
+            }
+            if ($input->hasOption('single-channel')) {
+                $botTransfer->setSingleChannel($input->getOption('single-channel'));
             }
 
             $this->updater->updateTelegramBot($bot, $botTransfer);

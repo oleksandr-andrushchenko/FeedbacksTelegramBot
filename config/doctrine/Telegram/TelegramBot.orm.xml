@@ -62,6 +62,11 @@
                 <option name="default">0</option>
             </options>
         </field>
+        <field name="singleChannel" column="single_channel" type="boolean">
+            <options>
+                <option name="default">1</option>
+            </options>
+        </field>
         <field name="createdAt" column="created_at" type="datetime_immutable"/>
         <field name="deletedAt" column="deleted_at" type="datetime_immutable" nullable="true"/>
     </entity>

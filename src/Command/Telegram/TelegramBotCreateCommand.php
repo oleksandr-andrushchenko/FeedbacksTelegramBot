@@ -54,6 +54,7 @@ class TelegramBotCreateCommand extends Command
             ->addOption('accept-payments', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to allow the bot accept payments', default: false)
             ->addOption('admin-id', mode: InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, description: 'Telegram user admin id (-s)')
             ->addOption('admin-only', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to process admin requests only', default: true)
+            ->addOption('single-channel', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to process single channel only (when country has single language)', default: true)
             ->setDescription('Create telegram bot')
         ;
     }
@@ -120,6 +121,7 @@ class TelegramBotCreateCommand extends Command
             $botTransfer->setAdminOnly($input->getOption('admin-only'));
 
             $botTransfer->setAdminIds($input->getOption('admin-id'));
+            $botTransfer->setSingleChannel($input->getOption('single-channel'));
 
             $bot = $this->creator->createTelegramBot($botTransfer);
 

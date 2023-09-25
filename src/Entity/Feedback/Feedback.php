@@ -29,7 +29,7 @@ class Feedback
         private readonly bool $hasActiveSubscription,
         private readonly ?string $countryCode = null,
         private readonly ?string $localeCode = null,
-        private ?int $channelMessageId = null,
+        private ?array $channelMessageIds = null,
         private readonly ?TelegramBot $telegramBot = null,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?int $id = null,
@@ -107,16 +107,21 @@ class Feedback
         return $this->localeCode;
     }
 
-    public function getChannelMessageId(): ?int
+    public function addChannelMessageId(string|int $channelMessageId): self
     {
-        return $this->channelMessageId;
-    }
+        if ($this->channelMessageIds === null) {
+            $this->channelMessageIds = [];
+        }
 
-    public function setChannelMessageId(?int $channelMessageId): self
-    {
-        $this->channelMessageId = $channelMessageId;
+        $this->channelMessageIds[] = (int) $channelMessageId;
+        $this->channelMessageIds = array_filter(array_unique($this->channelMessageIds));
 
         return $this;
+    }
+
+    public function getTelegramBot(): ?TelegramBot
+    {
+        return $this->telegramBot;
     }
 
     public function getCreatedAt(): DateTimeInterface

@@ -37,6 +37,7 @@ class TelegramBotCreator
             acceptPayments: $botTransfer->acceptPayments(),
             adminIds: $botTransfer->getAdminIds(),
             adminOnly: $botTransfer->adminOnly(),
+            singleChannel: $botTransfer->singleChannel(),
         );
 
         $this->validator->validateTelegramBot($bot);

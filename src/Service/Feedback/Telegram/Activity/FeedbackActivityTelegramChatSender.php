@@ -20,11 +20,15 @@ class FeedbackActivityTelegramChatSender
     {
     }
 
-    public function sendFeedbackActivityToTelegramChat(Telegram $telegram, Feedback $feedback): ?Message
+    public function sendFeedbackActivityToTelegramChat(
+        Telegram $telegram,
+        Feedback $feedback,
+        string $channelUsername = null
+    ): ?Message
     {
         $bot = $telegram->getBot();
 
-        $channelUsername = $bot->getChannelUsername();
+        $channelUsername = $channelUsername ?? $bot->getChannelUsername();
 
         if ($channelUsername === null) {
             throw new RuntimeException(sprintf('"%s" telegram bot does not have channel to post to', $bot->getUsername()));

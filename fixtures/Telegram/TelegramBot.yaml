@@ -17,3 +17,4 @@ App\Entity\Telegram\TelegramBot:
       textsSet: false
       webhookSet: false
       commandsSet: false
+      singleChannel: true

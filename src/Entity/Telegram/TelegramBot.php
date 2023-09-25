@@ -27,6 +27,7 @@ class TelegramBot
         private bool $textsSet = false,
         private bool $webhookSet = false,
         private bool $commandsSet = false,
+        private bool $singleChannel = true,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $deletedAt = null,
         private ?int $id = null,
@@ -232,6 +233,18 @@ class TelegramBot
         $this->commandsSet = $commandsSet;
 
         return $this;
+    }
+
+    public function setSingleChannel(bool $singleChannel): self
+    {
+        $this->singleChannel = $singleChannel;
+
+        return $this;
+    }
+
+    public function singleChannel(): bool
+    {
+        return $this->singleChannel;
     }
 
     public function getCreatedAt(): DateTimeInterface

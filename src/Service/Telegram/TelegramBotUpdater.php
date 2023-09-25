@@ -73,6 +73,9 @@ class TelegramBotUpdater
         if ($botTransfer->adminIdsPassed()) {
             $bot->setAdminIds($botTransfer->getAdminIds());
         }
+        if ($botTransfer->singleChannelPassed()) {
+            $bot->setSingleChannel($botTransfer->singleChannel());
+        }
 
         $this->validator->validateTelegramBot($bot);
     }
