@@ -52,7 +52,18 @@ class GoogleAddressGeocoder implements AddressGeocoderInterface
             return null;
         }
 
-        foreach ($data['results'] as $result) {
+        $addressWithRegion2 = $this->findByAddressComponents($data['results'], 'administrative_area_level_2');
+
+        if ($addressWithRegion2 === null) {
+            return $this->findByAddressComponents($data['results'], 'administrative_area_level_3');
+        }
+
+        return $addressWithRegion2;
+    }
+
+    private function findByAddressComponents(array $results, string $region2Key): ?Address
+    {
+        foreach ($results as $result) {
             if (
                 !is_array($result)
                 || !isset($result['address_components'])
@@ -69,7 +80,7 @@ class GoogleAddressGeocoder implements AddressGeocoderInterface
                 continue;
             }
 
-            $region2 = $this->findAddressComponent('administrative_area_level_2', $addressComponents);
+            $region2 = $this->findAddressComponent($region2Key, $addressComponents);
 
             if ($region2 === null) {
                 continue;
