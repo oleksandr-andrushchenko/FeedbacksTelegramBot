@@ -25,15 +25,14 @@ class TelegramBotValidator
      */
     public function validateTelegramBot(TelegramBot $bot): void
     {
-        $group = $bot->getGroup();
-        $countryCode = $bot->getCountryCode();
-        $localeCode = $bot->getLocaleCode();
-
-        $existing = $this->repository->findOneByGroupCountryAndLocale($group, $countryCode, $localeCode);
+        $existing = $this->repository->findOneByBot($bot);
 
         if ($existing !== null && $existing->getId() !== $bot->getId()) {
-            throw new LogicException(sprintf('"%s" Telegram bot already has the same group, country and locale', $existing->getUsername()));
+            throw new LogicException(sprintf('"%s" Telegram bot already has the same settings', $existing->getUsername()));
         }
+
+        $countryCode = $bot->getCountryCode();
+        $localeCode = $bot->getLocaleCode();
 
         $country = $this->countryProvider->getCountry($countryCode);
 
