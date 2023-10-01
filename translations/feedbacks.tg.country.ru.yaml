@@ -7,6 +7,7 @@ keyboard:
   request_location: Определить автоматически
   custom_location: Выставить вручную
 reply:
+  request_location_failed: Мы не смогли определить Ваше местоположение, попробуйте выбрать вручную.
   current_country: Ваша текущая страна - %country%.
   current_region: Регион - %region%.
   current_locality: Населенный пункт - %locality%.

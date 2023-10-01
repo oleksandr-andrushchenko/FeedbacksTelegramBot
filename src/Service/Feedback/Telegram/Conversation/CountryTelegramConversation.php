@@ -233,7 +233,7 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
 
         if ($address === null) {
             // todo: change message
-            $message = $tg->trans('reply.wrong');
+            $message = $tg->trans('reply.request_location_failed', domain: 'country');
             $message = $tg->wrongText($message);
 
             $tg->reply($message);
