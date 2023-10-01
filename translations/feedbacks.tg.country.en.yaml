@@ -1,10 +1,16 @@
 query:
   change_confirm: Would you like to change it?
+  request_location: Determine automatically or set manually?
   country: Select your country please.
   timezone: Select your timezone please.
+keyboard:
+  request_location: Determine automatically
+  custom_location: Set manually
 reply:
   current_country: Your current country - %country%.
-  current_timezone: Your current timezone - %timezone%.
+  current_region: Region - %region%.
+  current_locality: Locality - %locality%.
+  current_timezone: Timezone - %timezone%.
   unknown_timezone: Unknown
   canceled: Country selection dialog has been canceled.
   ok: Successfully updated.

@@ -40,6 +40,15 @@ class TelegramBotUpdater
         if ($botTransfer->countryPassed()) {
             $bot->setCountryCode($botTransfer->getCountry()->getCode());
         }
+        if ($botTransfer->region1Passed()) {
+            $bot->setRegion1($botTransfer->getRegion1());
+        }
+        if ($botTransfer->region2Passed()) {
+            $bot->setRegion2($botTransfer->getRegion2());
+        }
+        if ($botTransfer->localityPassed()) {
+            $bot->setLocality($botTransfer->getLocality());
+        }
 
         if ($botTransfer->localePassed()) {
             if ($botTransfer->getLocale() === null) {

@@ -1,10 +1,16 @@
 query:
   change_confirm: Желаете изменить настройки?
+  request_location: Определить автоматически или выставить вручную?
   country: Выберите Вашу страну.
   timezone: Выберите Ваш часовой пояс.
+keyboard:
+  request_location: Определить автоматически
+  custom_location: Выставить вручную
 reply:
   current_country: Ваша текущая страна - %country%.
-  current_timezone: Ваш текущий часовой пояс - %timezone%.
+  current_region: Регион - %region%.
+  current_locality: Населенный пункт - %locality%.
+  current_timezone: Часовой пояс - %timezone%.
   unknown_timezone: Неизвестно
   canceled: Диалог выбора страны отменен.
   ok: Успешно обновлено.

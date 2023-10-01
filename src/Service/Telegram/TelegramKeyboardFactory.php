@@ -23,10 +23,13 @@ class TelegramKeyboardFactory
         ]);
     }
 
-    public function createTelegramButton(string $text): KeyboardButton
+    public function createTelegramButton(string $text, bool $requestLocation = false): KeyboardButton
     {
 //        return $this->createTelegramInlineButton($text);
-        return new KeyboardButton($text);
+        return new KeyboardButton([
+            'text' => $text,
+            'request_location' => $requestLocation,
+        ]);
     }
 
     public function createTelegramInlineKeyboard(...$buttons): InlineKeyboard

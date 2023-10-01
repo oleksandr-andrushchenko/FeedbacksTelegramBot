@@ -5,19 +5,24 @@ declare(strict_types=1);
 namespace App\Service\Feedback\Telegram\Conversation;
 
 use App\Entity\Intl\Country;
+use App\Entity\Location;
 use App\Entity\Telegram\TelegramConversation as Entity;
 use App\Entity\Telegram\TelegramConversationState;
+use App\Service\Address\AddressLocalityUpserter;
 use App\Service\Feedback\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Intl\CountryProvider;
+use App\Service\AddressGeocoderInterface;
 use App\Service\Telegram\Chat\BetterMatchBotTelegramChatSender;
 use App\Service\Telegram\Conversation\TelegramConversation;
 use App\Service\Telegram\Conversation\TelegramConversationInterface;
 use App\Service\Telegram\TelegramAwareHelper;
+use App\Service\TimezoneGeocoderInterface;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
 class CountryTelegramConversation extends TelegramConversation implements TelegramConversationInterface
 {
     public const STEP_CHANGE_CONFIRM_QUERIED = 5;
+    public const STEP_REQUEST_LOCATION_QUERIED = 7;
     public const STEP_GUESS_COUNTRY_QUERIED = 10;
     public const STEP_COUNTRY_QUERIED = 20;
     public const STEP_TIMEZONE_QUERIED = 30;
@@ -27,6 +32,10 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         private readonly CountryProvider $provider,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly BetterMatchBotTelegramChatSender $betterMatchBotSender,
+        private readonly AddressGeocoderInterface $addressGeocoder,
+        private readonly TimezoneGeocoderInterface $timezoneGeocoder,
+        private readonly AddressLocalityUpserter $addressLocalityUpserter,
+        private readonly bool $requestLocationStep,
     )
     {
         parent::__construct(new TelegramConversationState());
@@ -37,6 +46,7 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         return match ($this->state->getStep()) {
             default => $this->start($tg),
             self::STEP_CHANGE_CONFIRM_QUERIED => $this->gotChangeConfirm($tg, $entity),
+            self::STEP_REQUEST_LOCATION_QUERIED => $this->gotRequestLocation($tg, $entity),
             self::STEP_GUESS_COUNTRY_QUERIED => $this->gotCountry($tg, $entity, true),
             self::STEP_COUNTRY_QUERIED => $this->gotCountry($tg, $entity, false),
             self::STEP_TIMEZONE_QUERIED => $this->gotTimezone($tg, $entity),
@@ -72,35 +82,9 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         return $this->chooseActionChatSender->sendActions($tg);
     }
 
-    public function getCurrentCountryReply(TelegramAwareHelper $tg): string
-    {
-        $countryCode = $tg->getCountryCode();
-        $country = $countryCode === null ? null : $this->provider->getCountry($countryCode);
-
-        $countryName = sprintf('<u>%s</u>', $this->provider->getCountryComposeName($country));
-        $parameters = [
-            'country' => $countryName,
-        ];
-
-        return $tg->trans('reply.current_country', $parameters, domain: 'country');
-    }
-
-    public function getCurrentTimezoneReply(TelegramAwareHelper $tg): string
-    {
-        $timezone = $tg->getTimezone() ?? $tg->trans('reply.unknown_timezone', domain: 'country');
-        $timezoneName = sprintf('<u>%s</u>', $timezone);
-        $parameters = [
-            'timezone' => $timezoneName,
-        ];
-
-        return $tg->trans('reply.current_timezone', $parameters, domain: 'country');
-    }
-
     public function getChangeConfirmQuery(TelegramAwareHelper $tg, bool $help = false): string
     {
-        $message = $this->getCurrentCountryReply($tg);
-        $message .= "\n";
-        $message .= $this->getCurrentTimezoneReply($tg);
+        $message = $this->getCurrentReply($tg);
         $message .= "\n\n";
 
         $query = $tg->trans('query.change_confirm', domain: 'country');
@@ -134,6 +118,17 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         return $tg->reply($message, $tg->keyboard(...$buttons))->null();
     }
 
+    public function queryCustomLocation(TelegramAwareHelper $tg): null
+    {
+        $countries = $this->getGuessCountries($tg);
+
+        if (count($countries) === 0) {
+            return $this->queryCountry($tg);
+        }
+
+        return $this->queryGuessCountry($tg);
+    }
+
     public function gotChangeConfirm(TelegramAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText($tg->noButton()->getText())) {
@@ -155,13 +150,122 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
             return $this->queryChangeConfirm($tg);
         }
 
-        $countries = $this->getGuessCountries($tg);
-
-        if (count($countries) === 0) {
-            return $this->queryCountry($tg);
+        if ($this->requestLocationStep) {
+            return $this->queryRequestLocation($tg);
         }
 
-        return $this->queryGuessCountry($tg);
+        return $this->queryCustomLocation($tg);
+    }
+
+    public function getRequestLocationButton(TelegramAwareHelper $tg): KeyboardButton
+    {
+        return $tg->button('📍 ' . $tg->trans('keyboard.request_location', domain: 'country'), requestLocation: true);
+    }
+
+    public function getCustomLocationButton(TelegramAwareHelper $tg): KeyboardButton
+    {
+        return $tg->button($tg->trans('keyboard.custom_location', domain: 'country'));
+    }
+
+    public function getRequestLocationQuery(TelegramAwareHelper $tg, bool $help = false): string
+    {
+        $query = $tg->trans('query.request_location', domain: 'country');
+
+        if ($help) {
+            $query = $tg->view('country_request_location_help', [
+                'query' => $query,
+            ]);
+        }
+
+        return $query;
+    }
+
+    public function queryRequestLocation(TelegramAwareHelper $tg, bool $help = false): ?string
+    {
+        $this->state->setStep(self::STEP_REQUEST_LOCATION_QUERIED);
+
+        $message = $this->getRequestLocationQuery($tg, $help);
+
+        $buttons = [];
+        $buttons[] = $this->getRequestLocationButton($tg);
+        $buttons[] = $this->getCustomLocationButton($tg);
+
+        if ($this->state->hasNotSkipHelpButton('request_location')) {
+            $buttons[] = $tg->helpButton();
+        }
+
+        $buttons[] = $tg->cancelButton();
+
+        return $tg->reply($message, $tg->keyboard(...$buttons))->null();
+    }
+
+    public function gotRequestLocation(TelegramAwareHelper $tg, Entity $entity): null
+    {
+        if ($tg->matchText($tg->helpButton()->getText())) {
+            $this->state->addSkipHelpButton('request_location');
+
+            return $this->queryRequestLocation($tg, true);
+        }
+        if ($tg->matchText($tg->cancelButton()->getText())) {
+            return $this->gotCancel($tg, $entity);
+        }
+
+        if ($tg->matchText($this->getCustomLocationButton($tg)->getText())) {
+            return $this->queryCustomLocation($tg);
+        }
+
+        $locationResponse = $tg->getLocation();
+
+        if ($locationResponse === null) {
+            $message = $tg->trans('reply.wrong');
+            $message = $tg->wrongText($message);
+
+            $tg->reply($message);
+
+            return $this->queryRequestLocation($tg);
+        }
+
+        $user = $tg->getTelegram()->getMessengerUser()->getUser();
+        $location = new Location($locationResponse->getLatitude(), $locationResponse->getLongitude());
+        $user->setLocation($location);
+
+        $address = $this->addressGeocoder->addressGeocode($user->getLocation());
+
+        if ($address === null) {
+            // todo: change message
+            $message = $tg->trans('reply.wrong');
+            $message = $tg->wrongText($message);
+
+            $tg->reply($message);
+
+            return $this->queryCustomLocation($tg);
+        }
+
+        $addressLocality = $this->addressLocalityUpserter->upsertAddressLocality($address);
+
+        $user
+            ->setCountryCode($addressLocality->getCountryCode())
+            ->setAddressLocality($addressLocality)
+            ->setTimezone($addressLocality->getTimezone())
+        ;
+
+        $timezone = $user->getTimezone() ?? $this->timezoneGeocoder->timezoneGeocode($user->getLocation());
+
+        if ($timezone === null) {
+            // todo: change message
+            $message = $tg->trans('reply.wrong');
+            $message = $tg->wrongText($message);
+
+            $tg->reply($message);
+
+            return $this->queryTimezone($tg);
+        }
+
+        $user
+            ->setTimezone($timezone)
+        ;
+
+        return $this->replyAndClose($tg, $entity);
     }
 
     public function getCountryQuery(TelegramAwareHelper $tg, bool $help = false): string
@@ -183,7 +287,8 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
 
         $message = $this->getCountryQuery($tg, $help);
 
-        $buttons = $this->getCountryButtons($this->getGuessCountries($tg), $tg);
+        $buttons = [];
+        $buttons = array_merge($buttons, $this->getCountryButtons($this->getGuessCountries($tg), $tg));
         $buttons[] = $this->getOtherCountryButton($tg);
 
         if ($this->state->hasNotSkipHelpButton('guess_country')) {
@@ -201,7 +306,8 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
 
         $message = $this->getCountryQuery($tg, $help);
 
-        $buttons = $this->getCountryButtons($this->getCountries(), $tg);
+        $buttons = [];
+        $buttons = array_merge($buttons, $this->getCountryButtons($this->getCountries(), $tg));
 
         if ($this->state->hasNotSkipHelpButton('country')) {
             $buttons[] = $tg->helpButton();
@@ -248,11 +354,13 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
             return $guess ? $this->queryGuessCountry($tg) : $this->queryCountry($tg);
         }
 
-        if ($country->getCode() !== $tg->getCountryCode()) {
-            $tg->getTelegram()->getMessengerUser()?->getUser()
-                ->setCountryCode($country->getCode())
-            ;
-        }
+        $user = $tg->getTelegram()->getMessengerUser()?->getUser();
+
+        $user
+            ->setCountryCode($country->getCode())
+            ->setAddressLocality(null)
+            ->setTimezone($country->getTimezones()[0])
+        ;
 
         $timezones = $this->getTimezones($tg);
 
@@ -260,16 +368,55 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
             return $this->queryTimezone($tg);
         }
 
-        $tg->getTelegram()->getMessengerUser()?->getUser()->setTimezone($timezones[0] ?? null);
+        $user
+            ->setTimezone($timezones[0] ?? null)
+        ;
 
         return $this->replyAndClose($tg, $entity);
     }
 
     public function getCurrentReply(TelegramAwareHelper $tg): string
     {
-        $message = $this->getCurrentCountryReply($tg);
+        $domain = 'country';
+        $user = $tg->getTelegram()->getMessengerUser()->getUser();
+
+        $countryCode = $tg->getCountryCode();
+        $country = $countryCode === null ? null : $this->provider->getCountry($countryCode);
+        $countryName = sprintf('<u>%s</u>', $this->provider->getCountryComposeName($country));
+        $parameters = [
+            'country' => $countryName,
+        ];
+        $message = $tg->trans('reply.current_country', $parameters, domain: $domain);
+
+        $addressLocality = $user->getAddressLocality();
+
+        if ($addressLocality !== null) {
+            $message .= "\n";
+            $regionName = sprintf(
+                '<u>%s, %s</u>',
+                $addressLocality->getRegion2(),
+                $addressLocality->getRegion1()
+            );
+            $parameters = [
+                'region' => $regionName,
+            ];
+            $message .= $tg->trans('reply.current_region', $parameters, domain: $domain);
+
+            $message .= "\n";
+            $localityName = sprintf('<u>%s</u>', $addressLocality->getLocality());
+            $parameters = [
+                'locality' => $localityName,
+            ];
+            $message .= $tg->trans('reply.current_locality', $parameters, domain: $domain);
+        }
+
         $message .= "\n";
-        $message .= $this->getCurrentTimezoneReply($tg);
+        $timezone = $tg->getTimezone() ?? $tg->trans('reply.unknown_timezone', domain: $domain);
+        $timezoneName = sprintf('<u>%s</u>', $timezone);
+        $parameters = [
+            'timezone' => $timezoneName,
+        ];
+        $message .= $tg->trans('reply.current_timezone', $parameters, domain: $domain);
 
         return $message;
     }

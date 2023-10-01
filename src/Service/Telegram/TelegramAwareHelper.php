@@ -14,6 +14,7 @@ use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Entities\InlineKeyboardButton;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\KeyboardButton;
+use Longman\TelegramBot\Entities\Location;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
@@ -60,6 +61,11 @@ class TelegramAwareHelper
     public function getChatId(): ?int
     {
         return $this->chatProvider->getTelegramChatByUpdate($this->getTelegram()->getUpdate())?->getId();
+    }
+
+    public function getLocation(): ?Location
+    {
+        return $this->getTelegram()->getUpdate()->getMessage()?->getLocation();
     }
 
     public function getLocaleCode(): ?string
@@ -189,9 +195,9 @@ class TelegramAwareHelper
         return $this->keyboardFactory->createTelegramKeyboard(...$buttons);
     }
 
-    public function button(string $text): KeyboardButton
+    public function button(string $text, bool $requestLocation = false): KeyboardButton
     {
-        return $this->keyboardFactory->createTelegramButton($text);
+        return $this->keyboardFactory->createTelegramButton($text, $requestLocation);
     }
 
     public function inlineKeyboard(...$buttons): InlineKeyboard

@@ -259,6 +259,10 @@
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
             <argument type="service" id="app.better_match_bot_telegram_chat_sender"/>
+            <argument type="service" id="app.google_address_geocoder"/>
+            <argument type="service" id="app.google_timezone_geocoder"/>
+            <argument type="service" id="app.address_locality_upserter"/>
+            <argument>%app.country.request_location_step%</argument>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.telegram_conversation_locale"

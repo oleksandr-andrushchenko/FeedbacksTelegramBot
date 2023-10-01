@@ -20,6 +20,12 @@ class TelegramBotTransfer
         private bool $tokenPassed = false,
         private ?Country $country = null,
         private bool $countryPassed = false,
+        private ?string $region1 = null,
+        private bool $region1Passed = false,
+        private ?string $region2 = null,
+        private bool $region2Passed = false,
+        private ?string $locality = null,
+        private bool $localityPassed = false,
         private ?Locale $locale = null,
         private bool $localePassed = false,
         private ?string $channelUsername = null,
@@ -112,6 +118,60 @@ class TelegramBotTransfer
     public function countryPassed(): bool
     {
         return $this->countryPassed;
+    }
+
+    public function getRegion1(): ?string
+    {
+        return $this->region1;
+    }
+
+    public function setRegion1(string $region1): self
+    {
+        $this->region1 = $region1;
+        $this->region1Passed = true;
+
+        return $this;
+    }
+
+    public function region1Passed(): bool
+    {
+        return $this->region1Passed;
+    }
+
+    public function getRegion2(): ?string
+    {
+        return $this->region2;
+    }
+
+    public function setRegion2(string $region2): self
+    {
+        $this->region2 = $region2;
+        $this->region2Passed = true;
+
+        return $this;
+    }
+
+    public function region2Passed(): bool
+    {
+        return $this->region2Passed;
+    }
+
+    public function getLocality(): ?string
+    {
+        return $this->locality;
+    }
+
+    public function setLocality(string $locality): self
+    {
+        $this->locality = $locality;
+        $this->localityPassed = true;
+
+        return $this;
+    }
+
+    public function localityPassed(): bool
+    {
+        return $this->localityPassed;
     }
 
     public function getLocale(): ?Locale

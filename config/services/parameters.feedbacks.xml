@@ -98,5 +98,9 @@
         <parameter key="app.lookup.search_term_type_step">true</parameter>
         <parameter key="app.lookup.change_search_term_button">false</parameter>
         <parameter key="app.lookup.confirm_step">true</parameter>
+
+        <parameter key="app.country.request_location_step">true</parameter>
+
+        <parameter key="app.google_api_key">%env(GOOGLE_API_KEY)%</parameter>
     </parameters>
 </container>

@@ -23,6 +23,7 @@ provider:
     TELEGRAM_ACTIVITIES_TOKEN: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_ACTIVITIES_TOKEN}
     TELEGRAM_ERRORS_TOKEN: ${ssm:/feedbacks/${sls:stage}/TELEGRAM_ERRORS_TOKEN}
     LOG_ACTIVITIES: ${ssm:/feedbacks/${sls:stage}/LOG_ACTIVITIES}
+    GOOGLE_API_KEY: ${ssm:/feedbacks/${sls:stage}/GOOGLE_API_KEY}
     DATABASE_URL: ${ssm:/feedbacks/${sls:stage}/DATABASE_URL}
     # todo: add vpc with private (for RDS) and public (lambda outbound internet requests) subnets
     # @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html#Add_IGW_Attach_Gateway

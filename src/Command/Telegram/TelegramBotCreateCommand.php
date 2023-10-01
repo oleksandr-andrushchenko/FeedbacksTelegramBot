@@ -46,6 +46,9 @@ class TelegramBotCreateCommand extends Command
             ->addArgument('name', InputArgument::REQUIRED, 'Telegram bot name')
             ->addArgument('token', InputArgument::REQUIRED, 'Telegram bot Token')
             ->addArgument('country', InputArgument::REQUIRED, 'Telegram bot Country code')
+            ->addOption('region1', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Google Region 1 short name')
+            ->addOption('region2', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Google Region 2 short name')
+            ->addOption('locality', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Google Locality short name')
             ->addOption('locale', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Locale code')
             ->addOption('channel-username', mode: InputOption::VALUE_REQUIRED, description: 'Telegram channel username where to send activity')
             ->addOption('group-username', mode: InputOption::VALUE_REQUIRED, description: 'Telegram group username which should be linked to telegram channel')
@@ -102,6 +105,9 @@ class TelegramBotCreateCommand extends Command
             }
 
             $botTransfer->setCountry($country);
+            $botTransfer->setRegion1($input->getOption('region1'));
+            $botTransfer->setRegion2($input->getOption('region2'));
+            $botTransfer->setLocality($input->getOption('locality'));
 
             $localeCode = $input->getOption('locale');
 

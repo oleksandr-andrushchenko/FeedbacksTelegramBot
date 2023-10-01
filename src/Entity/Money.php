@@ -7,13 +7,13 @@ namespace App\Entity;
 readonly class Money
 {
     public function __construct(
-        private float $amount,
+        private float|string $amount,
         private string $currency
     )
     {
     }
 
-    public function getAmount(): float
+    public function getAmount(): float|string
     {
         return $this->amount;
     }

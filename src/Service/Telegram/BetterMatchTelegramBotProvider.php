@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram;
 
-use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBot;
+use App\Entity\User\User;
+use App\Enum\Telegram\TelegramGroup;
 use App\Repository\Telegram\TelegramBotRepository;
-use RuntimeException;
 
 class BetterMatchTelegramBotProvider
 {
@@ -17,44 +17,114 @@ class BetterMatchTelegramBotProvider
     {
     }
 
-    public function getBetterMatchTelegramBot(MessengerUser $messengerUser, TelegramBot $currentBot): ?TelegramBot
+    /**
+     * @param User $user
+     * @param TelegramGroup $group
+     * @return TelegramBot[]
+     */
+    public function getBetterMatchTelegramBots(User $user, TelegramGroup $group): array
     {
-        $user = $messengerUser->getUser();
-        $countyCode = $user->getCountryCode();
-        $localeCode = $user->getLocaleCode();
-
-        if ($currentBot->getCountryCode() === $countyCode && $currentBot->getLocaleCode() === $localeCode) {
-            return null;
-        }
-
-        $bots = $this->repository->findByGroup($currentBot->getGroup());
+        $bots = $this->repository->findByGroup($group);
 
         if (count($bots) === 0) {
-            throw new RuntimeException(sprintf('No telegram bots has been found for "%s" group', $currentBot->getGroup()->name));
+            return [];
         }
 
-        $bots = array_filter($bots, fn (TelegramBot $bot) => $bot->getId() !== $currentBot->getId());
-        $bots = array_filter($bots, fn (TelegramBot $bot) => $bot->getCountryCode() === $countyCode);
+        $bots = array_combine(array_map(fn (TelegramBot $bot) => $bot->getId(), $bots), $bots);
 
-        if (count($bots) === 0) {
-            return null;
+        $points = [];
+
+        foreach ($bots as $id => $bot) {
+            $points[$id] = $this->calculateTelegramBotPoints($user, $bot);
         }
 
-        reset($bots);
-        $countryBot = current($bots);
+        $points = array_filter($points);
 
-        $bots = array_filter($bots, fn (TelegramBot $bot) => $bot->getLocaleCode() === $localeCode);
+        if (count($points) === 0) {
+            return [];
+        }
 
-        if (count($bots) === 0) {
-            if ($countryBot->getCountryCode() === $currentBot->getCountryCode()) {
-                return null;
+        asort($points);
+
+        $lastMaxPointsId = array_key_last($points);
+        $maxPoints = $points[$lastMaxPointsId];
+
+        // todo: add previous bots layer if bot has locality
+
+        $maxPointsIds = array_keys(array_filter($points, fn (int $pts) => $pts === $maxPoints));
+
+        $bots = array_filter($bots, fn (TelegramBot $bot) => in_array($bot->getId(), $maxPointsIds, true));
+
+        return array_values($bots);
+    }
+
+    public function calculateTelegramBotPoints(User $user, TelegramBot $bot): int
+    {
+        $points = 0;
+
+        if ($user->getCountryCode() === null) {
+            return 0;
+        }
+
+        if ($user->getCountryCode() !== $bot->getCountryCode()) {
+            return 0;
+        }
+
+        $points += 1;
+
+        if ($user->getAddressLocality() === null) {
+            if ($bot->getRegion1() === null) {
+                $points += 4;
+            } else {
+                if ($bot->getRegion2() === null) {
+                    $points += 2;
+                } else {
+                    return 0;
+                }
             }
 
-            return $countryBot;
+            goto out;
         }
 
-        reset($bots);
+        if ($bot->getRegion1() === null) {
+            $points += 8;
+            goto out;
+        }
 
-        return current($bots);
+        if ($user->getAddressLocality()->getRegion1() !== $bot->getRegion1()) {
+            return 0;
+        }
+
+        $points += 16;
+
+        if ($bot->getRegion2() === null) {
+            $points += 32;
+            goto out;
+        }
+
+        if ($user->getAddressLocality()->getRegion2() !== $bot->getRegion2()) {
+            return 0;
+        }
+
+        $points += 64;
+
+        if ($bot->getLocality() === null) {
+            $points += 128;
+            goto out;
+        }
+
+        if ($user->getAddressLocality()->getLocality() !== $bot->getLocality()) {
+            return 0;
+        }
+
+        $points += 256;
+
+        out:
+
+        if ($user->getLocaleCode() === $bot->getLocaleCode()) {
+            $points += 1;
+        }
+
+        return $points;
     }
 }

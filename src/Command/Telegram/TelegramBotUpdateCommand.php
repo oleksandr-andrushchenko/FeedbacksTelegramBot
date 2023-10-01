@@ -49,6 +49,9 @@ class TelegramBotUpdateCommand extends Command
             ->addOption('name', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot name')
             ->addOption('token', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Token')
             ->addOption('country', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Country code')
+            ->addOption('region1', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Google Region 1 short name')
+            ->addOption('region2', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Google Region 2 short name')
+            ->addOption('locality', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Google Locality short name')
             ->addOption('locale', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Locale code')
             ->addOption('no-locale', mode: InputOption::VALUE_NONE, description: 'Whether to unset Telegram bot Locale code (set to country\'s default)')
             ->addOption('channel-username', mode: InputOption::VALUE_REQUIRED, description: 'Telegram channel username where to send activity')
@@ -136,6 +139,24 @@ class TelegramBotUpdateCommand extends Command
                 }
 
                 $botTransfer->setCountry($country);
+            }
+
+            $region1 = $input->getOption('region1');
+
+            if ($region1 !== null) {
+                $botTransfer->setRegion1($region1);
+            }
+
+            $region2 = $input->getOption('region2');
+
+            if ($region2 !== null) {
+                $botTransfer->setRegion2($region2);
+            }
+
+            $locality = $input->getOption('locality');
+
+            if ($locality !== null) {
+                $botTransfer->setLocality($locality);
             }
 
             $localeCode = $input->getOption('locale');

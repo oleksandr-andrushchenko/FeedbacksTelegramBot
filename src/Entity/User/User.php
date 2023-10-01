@@ -4,16 +4,23 @@ declare(strict_types=1);
 
 namespace App\Entity\User;
 
+use App\Entity\Address\AddressLocality;
+use App\Entity\Location;
 use App\Enum\Feedback\Rating;
 use DateTimeImmutable;
 use DateTimeInterface;
 
 class User
 {
+    private ?string $locationLatitude;
+    private ?string $locationLongitude;
+
     public function __construct(
         private ?string $username = null,
         private ?string $name = null,
         private ?string $countryCode = null,
+        ?Location $location = null,
+        private ?AddressLocality $addressLocality = null,
         private ?string $localeCode = null,
         private ?string $currencyCode = null,
         private ?string $timezone = null,
@@ -27,6 +34,7 @@ class User
         private ?int $id = null,
     )
     {
+        $this->setLocation($location);
     }
 
     public function getId(): ?int
@@ -69,7 +77,6 @@ class User
 
         return $this;
     }
-
 
     public function getCurrencyCode(): ?string
     {
@@ -127,6 +134,40 @@ class User
     public function setCountryCode(?string $countryCode): self
     {
         $this->countryCode = $countryCode;
+
+        return $this;
+    }
+
+    public function getLocation(): ?Location
+    {
+        if ($this->locationLatitude === null || $this->locationLongitude === null) {
+            return null;
+        }
+
+        return new Location((float) $this->locationLatitude, (float) $this->locationLongitude);
+    }
+
+    public function setLocation(?Location $location): self
+    {
+        if ($location === null) {
+            $this->locationLatitude = null;
+            $this->locationLongitude = null;
+        } else {
+            $this->locationLatitude = (string) $location->getLatitude();
+            $this->locationLongitude = (string) $location->getLongitude();
+        }
+
+        return $this;
+    }
+
+    public function getAddressLocality(): ?AddressLocality
+    {
+        return $this->addressLocality;
+    }
+
+    public function setAddressLocality(?AddressLocality $addressLocality): self
+    {
+        $this->addressLocality = $addressLocality;
 
         return $this;
     }

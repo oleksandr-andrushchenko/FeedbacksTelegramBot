@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Entity\Address\AddressLocality"
+            repository-class="App\Repository\Address\AddressLocalityRepository"
+            table="address_localities">
+
+        <indexes>
+            <index fields="locality"/>
+        </indexes>
+
+        <id name="id" column="id" type="integer">
+            <generator/>
+            <options>
+                <option name="unsigned">true</option>
+            </options>
+        </id>
+        <field name="countryCode" column="country_code" length="2"/>
+        <field name="region1" column="region_1"/>
+        <field name="region2" column="region_2"/>
+        <field name="locality" column="locality"/>
+        <field name="timezone" column="timezone" length="32" nullable="true"/>
+        <field name="count" column="count" type="integer">
+            <options>
+                <option name="default">0</option>
+                <option name="unsigned">true</option>
+            </options>
+        </field>
+    </entity>
+</doctrine-mapping>

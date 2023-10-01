@@ -26,26 +26,39 @@ class BetterMatchBotTelegramChatSender
     {
         $telegram = $tg->getTelegram();
 
-        $bot = $this->provider->getBetterMatchTelegramBot($telegram->getMessengerUser(), $telegram->getBot());
+        $bots = $this->provider->getBetterMatchTelegramBots(
+            $telegram->getMessengerUser()->getUser(),
+            $telegram->getBot()->getGroup()
+        );
 
-        if ($bot === null) {
+        if (count($bots) === 0) {
             return null;
         }
 
-        $user = $telegram->getMessengerUser()->getUser();
+        foreach ($bots as $bot) {
+            if ($bot->getId() === $telegram->getBot()->getId()) {
+                return null;
+            }
+        }
 
-        $country = $this->countryProvider->getCountry($user->getCountryCode());
-        $locale = $this->localeProvider->getLocale($user->getLocaleCode());
-        $link = $this->linkProvider->getTelegramLink($bot->getUsername());
-
-        $parameters = [
-            'country' => sprintf('<u>%s</u>', $this->countryProvider->getCountryComposeName($country)),
-            'locale' => sprintf('<u>%s</u>', $this->localeProvider->getLocaleComposeName($locale)),
-        ];
-        $message = $tg->trans('reply.better_bot_match', $parameters);
+        $message = $tg->trans('reply.better_bot_match');
         $message = $tg->infoText($message);
-        $message .= "\n";
-        $message .= sprintf('<b><a href="%s">%s</a></b>', $link, $bot->getName());
+        $message .= ":\n\n";
+
+        $botNames = [];
+
+        foreach ($bots as $bot) {
+            $country = $this->countryProvider->getCountry($bot->getCountryCode());
+            $countryIcon = $this->countryProvider->getCountryIcon($country);
+            $locale = $this->localeProvider->getLocale($bot->getLocaleCode());
+            $localeIcon = $this->localeProvider->getLocaleIcon($locale);
+            $link = $this->linkProvider->getTelegramLink($bot->getUsername());
+
+            $localeIcon = $countryIcon === $localeIcon ? '' : ('/' . $localeIcon);
+            $botNames[] = sprintf('%s%s <b><a href="%s">%s</a></b>', $countryIcon, $localeIcon, $link, $bot->getName());
+        }
+
+        $message .= join("\n", $botNames);
 
         $tg->reply($message, keyboard: $keyboard);
 

@@ -50,3 +50,5 @@
 * 1) propose to keep/change current settings on start
 * 2) move settings to messenger user layer (+ delete from user) and make messenger user unique per [messenger, id, bot]
 * Implemented request_user for keyboard button when asking for search term type (as telegram user possible type - will receive ID!!)
+* Add region1, region2 and locality selection steps for country conversation's custom flow (when address table is ready)
+* Replace help replies using php not twig

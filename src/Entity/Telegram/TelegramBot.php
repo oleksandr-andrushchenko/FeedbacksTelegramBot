@@ -17,6 +17,9 @@ class TelegramBot
         private string $token,
         private string $countryCode,
         private string $localeCode,
+        private ?string $region1 = null,
+        private ?string $region2 = null,
+        private ?string $locality = null,
         private ?string $channelUsername = null,
         private ?string $groupUsername = null,
         private bool $checkUpdates = true,
@@ -89,6 +92,42 @@ class TelegramBot
     public function setLocaleCode(string $localeCode): self
     {
         $this->localeCode = $localeCode;
+
+        return $this;
+    }
+
+    public function getRegion1(): ?string
+    {
+        return $this->region1;
+    }
+
+    public function setRegion1(string $region1): self
+    {
+        $this->region1 = $region1;
+
+        return $this;
+    }
+
+    public function getRegion2(): ?string
+    {
+        return $this->region2;
+    }
+
+    public function setRegion2(string $region2): self
+    {
+        $this->region2 = $region2;
+
+        return $this;
+    }
+
+    public function getLocality(): ?string
+    {
+        return $this->locality;
+    }
+
+    public function setLocality(string $locality): self
+    {
+        $this->locality = $locality;
 
         return $this;
     }
