@@ -58,16 +58,15 @@ class TelegramBotRepository extends ServiceEntityRepository
         ]);
     }
 
-    public function findOneByGroupCountryAndLocale(
-        TelegramGroup $group,
-        string $countryCode,
-        string $localeCode
-    ): ?TelegramBot
+    public function findOneByBot(TelegramBot $bot): ?TelegramBot
     {
         return $this->findOneBy([
-            'group' => $group,
-            'countryCode' => $countryCode,
-            'localeCode' => $localeCode,
+            'group' => $bot->getGroup(),
+            'countryCode' => $bot->getCountryCode(),
+            'localeCode' => $bot->getLocaleCode(),
+            'region1' => $bot->getRegion1(),
+            'region2' => $bot->getRegion2(),
+            'locality' => $bot->getLocality(),
             'deletedAt' => null,
         ]);
     }
