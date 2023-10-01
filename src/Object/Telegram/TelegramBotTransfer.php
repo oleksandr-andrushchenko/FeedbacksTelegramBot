@@ -125,7 +125,7 @@ class TelegramBotTransfer
         return $this->region1;
     }
 
-    public function setRegion1(string $region1): self
+    public function setRegion1(?string $region1): self
     {
         $this->region1 = $region1;
         $this->region1Passed = true;
@@ -143,7 +143,7 @@ class TelegramBotTransfer
         return $this->region2;
     }
 
-    public function setRegion2(string $region2): self
+    public function setRegion2(?string $region2): self
     {
         $this->region2 = $region2;
         $this->region2Passed = true;
@@ -161,7 +161,7 @@ class TelegramBotTransfer
         return $this->locality;
     }
 
-    public function setLocality(string $locality): self
+    public function setLocality(?string $locality): self
     {
         $this->locality = $locality;
         $this->localityPassed = true;
