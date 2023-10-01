@@ -48,46 +48,54 @@ class GoogleAddressGeocoder implements AddressGeocoderInterface
             || !isset($data['results'])
             || !is_array($data['results'])
             || count($data['results']) === 0
-            || !isset($data['results'][0])
-            || !is_array($data['results'][0])
-            || !isset($data['results'][0]['address_components'])
-            || !is_array($data['results'][0]['address_components'])
         ) {
             return null;
         }
 
-        $addressComponents = $data['results'][0]['address_components'];
+        foreach ($data['results'] as $result) {
+            if (
+                !is_array($result)
+                || !isset($result['address_components'])
+                || !is_array($result['address_components'])
+            ) {
+                continue;
+            }
 
-        $locality = $this->findAddressComponent('locality', $addressComponents);
+            $addressComponents = $result['address_components'];
 
-        if ($locality === null) {
-            return null;
+            $locality = $this->findAddressComponent('locality', $addressComponents);
+
+            if ($locality === null) {
+                continue;
+            }
+
+            $region2 = $this->findAddressComponent('administrative_area_level_2', $addressComponents);
+
+            if ($region2 === null) {
+                continue;
+            }
+
+            $region1 = $this->findAddressComponent('administrative_area_level_1', $addressComponents);
+
+            if ($region1 === null) {
+                continue;
+            }
+
+            $country = $this->findAddressComponent('country', $addressComponents);
+
+            if ($country === null) {
+                continue;
+            }
+
+            return new Address(
+                strtolower($country->getShortName()),
+                $region1,
+                $region2,
+                $locality,
+            );
         }
 
-        $region2 = $this->findAddressComponent('administrative_area_level_2', $addressComponents);
-
-        if ($region2 === null) {
-            return null;
-        }
-
-        $region1 = $this->findAddressComponent('administrative_area_level_1', $addressComponents);
-
-        if ($region1 === null) {
-            return null;
-        }
-
-        $country = $this->findAddressComponent('country', $addressComponents);
-
-        if ($country === null) {
-            return null;
-        }
-
-        return new Address(
-            strtolower($country->getShortName()),
-            $region1,
-            $region2,
-            $locality,
-        );
+        return null;
     }
 
     private function findAddressComponent(string $type, $addressComponents): ?AddressComponent
