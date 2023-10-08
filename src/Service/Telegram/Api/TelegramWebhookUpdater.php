@@ -23,5 +23,7 @@ class TelegramWebhookUpdater
         $url = $this->webhookUrlGenerator->generate($telegram->getBot()->getUsername());
 
         $telegram->setWebhook($url);
+
+        $bot->setWebhookSet(true);
     }
 }

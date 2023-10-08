@@ -22,7 +22,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Throwable;
 
 class TelegramBotUpdateCommand extends Command
 {
@@ -44,27 +43,19 @@ class TelegramBotUpdateCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('username', InputArgument::REQUIRED, 'Telegram bot username')
-            ->addOption('group', mode: InputOption::VALUE_REQUIRED, description: 'Telegram Group name')
-            ->addOption('name', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot name')
-            ->addOption('token', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Token')
-            ->addOption('country', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Country code')
-            ->addOption('region1', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Google Region 1 short name')
-            ->addOption('region2', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Google Region 2 short name')
-            ->addOption('locality', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Google Locality short name')
-            ->addOption('locale', mode: InputOption::VALUE_REQUIRED, description: 'Telegram bot Locale code')
-            ->addOption('no-locale', mode: InputOption::VALUE_NONE, description: 'Whether to unset Telegram bot Locale code (set to country\'s default)')
-            ->addOption('channel-username', mode: InputOption::VALUE_REQUIRED, description: 'Telegram channel username where to send activity')
-            ->addOption('no-channel', mode: InputOption::VALUE_NONE, description: 'Whether to unset activity Telegram channel username')
-            ->addOption('group-username', mode: InputOption::VALUE_REQUIRED, description: 'Telegram group username which should be linked to telegram channel')
-            ->addOption('no-group', mode: InputOption::VALUE_NONE, description: 'Whether to unset Telegram group username')
+            ->addArgument('username', InputArgument::REQUIRED, 'Telegram Username')
+            ->addOption('group', mode: InputOption::VALUE_REQUIRED, description: 'Telegram Group (inner name)')
+            ->addOption('name', mode: InputOption::VALUE_REQUIRED, description: 'Telegram Name')
+            ->addOption('token', mode: InputOption::VALUE_REQUIRED, description: 'Telegram Token')
+            ->addOption('country', mode: InputOption::VALUE_REQUIRED, description: 'Country code')
+            ->addOption('locale', mode: InputOption::VALUE_REQUIRED, description: 'Locale code')
             ->addOption('check-updates', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to check telegram updates', default: true)
             ->addOption('check-requests', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to check telegram requests', default: true)
             ->addOption('accept-payments', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to allow the bot accept payments', default: false)
             ->addOption('admin-id', mode: InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, description: 'Telegram user admin id (-s)')
             ->addOption('admin-only', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to process admin requests only', default: true)
-            ->addOption('single-channel', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to process single channel only (when country has single language)', default: true)
-            ->setDescription('Create telegram bot')
+            ->addOption('primary', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to make a bot primary or not, primary bots are unique across group, country and locale', default: true)
+            ->setDescription('Update telegram bot (inner)')
         ;
     }
 
@@ -75,136 +66,88 @@ class TelegramBotUpdateCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        try {
-            $username = $input->getArgument('username');
-            $bot = $this->repository->findOneByUsername($username);
+        $username = $input->getArgument('username');
+        $bot = $this->repository->findOneByUsername($username);
 
-            if ($bot === null) {
-                throw new TelegramNotFoundException($username);
-            }
-
-            $botTransfer = new TelegramBotTransfer($username);
-
-            $groupName = $input->getOption('group');
-
-            if ($groupName !== null) {
-                $group = TelegramGroup::fromName($groupName);
-
-                if ($group === null) {
-                    throw new TelegramGroupNotFoundException($groupName);
-                }
-
-                $botTransfer->setGroup($group);
-            }
-
-            $name = $input->getOption('name');
-
-            if ($name !== null) {
-                $botTransfer->setName($name);
-            }
-
-            $channelUsername = $input->getOption('channel-username');
-
-            if ($channelUsername !== null) {
-                $botTransfer->setChannelUsername($channelUsername);
-            }
-
-            if ($input->getOption('no-channel')) {
-                $botTransfer->setChannelUsername(null);
-            }
-
-            $groupUsername = $input->getOption('group-username');
-
-            if ($groupUsername !== null) {
-                $botTransfer->setGroupUsername($groupUsername);
-            }
-
-            if ($input->getOption('no-group')) {
-                $botTransfer->setGroupUsername(null);
-            }
-
-            $token = $input->getOption('token');
-
-            if ($token !== null) {
-                $botTransfer->setToken($token);
-            }
-
-            $countryCode = $input->getOption('country');
-
-            if ($countryCode !== null) {
-                $country = $this->countryProvider->getCountry($countryCode);
-
-                if ($country === null) {
-                    throw new CountryNotFoundException($countryCode);
-                }
-
-                $botTransfer->setCountry($country);
-            }
-
-            $region1 = $input->getOption('region1');
-
-            if ($region1 !== null) {
-                $botTransfer->setRegion1($region1);
-            }
-
-            $region2 = $input->getOption('region2');
-
-            if ($region2 !== null) {
-                $botTransfer->setRegion2($region2);
-            }
-
-            $locality = $input->getOption('locality');
-
-            if ($locality !== null) {
-                $botTransfer->setLocality($locality);
-            }
-
-            $localeCode = $input->getOption('locale');
-
-            if ($localeCode !== null) {
-                $locale = $this->localeProvider->getLocale($localeCode);
-
-                if ($locale === null) {
-                    throw new LocaleNotFoundException($localeCode);
-                }
-
-                $botTransfer->setLocale($locale);
-            }
-
-            if ($input->getOption('no-locale')) {
-                $botTransfer->setLocale(null);
-            }
-
-            if ($input->hasOption('check-updates')) {
-                $botTransfer->setCheckUpdates($input->getOption('check-updates'));
-            }
-            if ($input->hasOption('check-requests')) {
-                $botTransfer->setCheckRequests($input->getOption('check-requests'));
-            }
-            if ($input->hasOption('accept-payments')) {
-                $botTransfer->setAcceptPayments($input->getOption('accept-payments'));
-            }
-            if ($input->hasOption('admin-only')) {
-                $botTransfer->setAdminOnly($input->getOption('admin-only'));
-            }
-
-            $adminIds = $input->getOption('admin-id');
-
-            if ($adminIds !== null) {
-                $botTransfer->setAdminIds($adminIds);
-            }
-            if ($input->hasOption('single-channel')) {
-                $botTransfer->setSingleChannel($input->getOption('single-channel'));
-            }
-
-            $this->updater->updateTelegramBot($bot, $botTransfer);
-
-            $this->entityManager->flush();
-        } catch (Throwable $exception) {
-            $io->error($exception->getMessage());
-
-            return Command::FAILURE;
+        if ($bot === null) {
+            throw new TelegramNotFoundException($username);
         }
+
+        $botTransfer = new TelegramBotTransfer($username);
+
+        $groupName = $input->getOption('group');
+
+        if ($groupName !== null) {
+            $group = TelegramGroup::fromName($groupName);
+
+            if ($group === null) {
+                throw new TelegramGroupNotFoundException($groupName);
+            }
+
+            $botTransfer->setGroup($group);
+        }
+
+        $name = $input->getOption('name');
+
+        if ($name !== null) {
+            $botTransfer->setName($name);
+        }
+
+        $token = $input->getOption('token');
+
+        if ($token !== null) {
+            $botTransfer->setToken($token);
+        }
+
+        $countryCode = $input->getOption('country');
+
+        if ($countryCode !== null) {
+            $country = $this->countryProvider->getCountry($countryCode);
+
+            if ($country === null) {
+                throw new CountryNotFoundException($countryCode);
+            }
+
+            $botTransfer->setCountry($country);
+        }
+
+        $localeCode = $input->getOption('locale');
+
+        if ($localeCode !== null) {
+            $locale = $this->localeProvider->getLocale($localeCode);
+
+            if ($locale === null) {
+                throw new LocaleNotFoundException($localeCode);
+            }
+
+            $botTransfer->setLocale($locale);
+        }
+        if ($input->hasOption('check-updates')) {
+            $botTransfer->setCheckUpdates($input->getOption('check-updates'));
+        }
+        if ($input->hasOption('check-requests')) {
+            $botTransfer->setCheckRequests($input->getOption('check-requests'));
+        }
+        if ($input->hasOption('accept-payments')) {
+            $botTransfer->setAcceptPayments($input->getOption('accept-payments'));
+        }
+        if ($input->hasOption('admin-only')) {
+            $botTransfer->setAdminOnly($input->getOption('admin-only'));
+        }
+
+        $adminIds = $input->getOption('admin-id');
+
+        if ($adminIds !== null) {
+            $botTransfer->setAdminIds($adminIds);
+        }
+
+        if ($input->hasOption('primary')) {
+            $botTransfer->setPrimary($input->getOption('primary'));
+        }
+
+        $this->updater->updateTelegramBot($bot, $botTransfer);
+
+        $this->entityManager->flush();
 
         $row = $this->infoProvider->getTelegramBotInfo($bot);
 

@@ -13,7 +13,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Throwable;
 
 class TelegramBotRemoveCommand extends Command
 {
@@ -32,7 +31,7 @@ class TelegramBotRemoveCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('username', InputArgument::REQUIRED, 'Telegram bot username')
+            ->addArgument('username', InputArgument::REQUIRED, 'Telegram Username')
             ->setDescription('Remove telegram bot')
         ;
     }
@@ -44,21 +43,15 @@ class TelegramBotRemoveCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        try {
-            $username = $input->getArgument('username');
-            $bot = $this->repository->findOneByUsername($username);
+        $username = $input->getArgument('username');
+        $bot = $this->repository->findOneByUsername($username);
 
-            if ($bot === null) {
-                throw new TelegramNotFoundException($username);
-            }
-
-            $this->remover->removeTelegramBot($bot);
-            $this->entityManager->flush();
-        } catch (Throwable $exception) {
-            $io->error($exception->getMessage());
-
-            return Command::FAILURE;
+        if ($bot === null) {
+            throw new TelegramNotFoundException($username);
         }
+
+        $this->remover->removeTelegramBot($bot);
+        $this->entityManager->flush();
 
         $io->newLine();
         $io->success(sprintf('"%s" Telegram bot has been removed', $bot->getUsername()));

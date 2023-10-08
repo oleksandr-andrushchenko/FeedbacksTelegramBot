@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Entity\Telegram\TelegramChannel"
+            repository-class="App\Repository\Telegram\TelegramChannelRepository"
+            table="telegram_channels">
+
+        <id name="id" column="id" type="smallint">
+            <generator/>
+            <options>
+                <option name="unsigned">true</option>
+            </options>
+        </id>
+        <field name="username" column="username" length="38" unique="true"/>
+        <field name="group" column="_group" type="smallint" enum-type="App\Enum\Telegram\TelegramGroup">
+            <options>
+                <option name="unsigned">true</option>
+            </options>
+        </field>
+        <field name="name" column="name" length="1024"/>
+        <field name="countryCode" column="country_code" length="2"/>
+        <field name="localeCode" column="locale_code" length="2"/>
+        <field name="region1" column="region_1" nullable="true"/>
+        <field name="region2" column="region_2" nullable="true"/>
+        <field name="locality" column="locality" nullable="true"/>
+        <field name="primary" column="_primary" type="boolean">
+            <options>
+                <option name="default">1</option>
+            </options>
+        </field>
+        <field name="createdAt" column="created_at" type="datetime_immutable"/>
+        <field name="updatedAt" column="updated_at" type="datetime_immutable" nullable="true"/>
+        <field name="deletedAt" column="deleted_at" type="datetime_immutable" nullable="true"/>
+    </entity>
+</doctrine-mapping>

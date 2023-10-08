@@ -4,7 +4,7 @@ query:
   rating: Оцените ваш опыт с %search_term%.
   description: Оставьте комментарий или добавьте любую информацию о %search_term%.
   confirm: Создать отзыв о %search_term%?
-  send_to_channel_confirm: Хотите анонимно опубликовать ваш отзыв на канале %channel%?
+  send_to_channel_confirm: Хотите анонимно опубликовать ваш отзыв на канале %channels%?
 keyboard:
   change_search_term: Изменить поисковый запрос
   change_rating: Изменить оценку

@@ -25,10 +25,12 @@ class TelegramBotValidator
      */
     public function validateTelegramBot(TelegramBot $bot): void
     {
-        $existing = $this->repository->findOneByBot($bot);
+        if ($bot->primary()) {
+            $existing = $this->repository->findOnePrimaryByBot($bot);
 
-        if ($existing !== null && $existing->getId() !== $bot->getId()) {
-            throw new LogicException(sprintf('"%s" Telegram bot already has the same settings', $existing->getUsername()));
+            if ($existing !== null && $existing->getId() !== $bot->getId()) {
+                throw new LogicException(sprintf('"%s" Primary Telegram bot already has the same settings', $existing->getUsername()));
+            }
         }
 
         $countryCode = $bot->getCountryCode();
@@ -37,7 +39,7 @@ class TelegramBotValidator
         $country = $this->countryProvider->getCountry($countryCode);
 
         if (!in_array($localeCode, $country->getLocaleCodes(), true)) {
-            throw new LogicException(sprintf('"%s" locale not belongs to "%s" country', $localeCode, $countryCode));
+            throw new LogicException(sprintf('"%s" locale does not belongs to "%s" country', $localeCode, $countryCode));
         }
     }
 }

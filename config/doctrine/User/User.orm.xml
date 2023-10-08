@@ -19,7 +19,7 @@
         <field name="countryCode" column="country_code" length="2" nullable="true"/>
         <field name="locationLatitude" column="location_latitude" length="20" nullable="true"/>
         <field name="locationLongitude" column="location_longitude" length="20" nullable="true"/>
-        <many-to-one field="addressLocality" target-entity="App\Entity\Address\AddressLocality"/>
+        <many-to-one field="address" target-entity="App\Entity\Address\Address"/>
         <field name="currencyCode" column="currency_code" length="3" nullable="true"/>
         <field name="timezone" column="timezone" length="32" nullable="true"/>
         <field name="phoneNumber" column="phone_number" type="bigint" nullable="true">

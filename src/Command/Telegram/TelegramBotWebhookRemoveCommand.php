@@ -15,7 +15,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Throwable;
 
 class TelegramBotWebhookRemoveCommand extends Command
 {
@@ -35,7 +34,7 @@ class TelegramBotWebhookRemoveCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('username', InputArgument::REQUIRED, 'Telegram bot username')
+            ->addArgument('username', InputArgument::REQUIRED, 'Telegram Username')
             ->setDescription('Remove telegram bot webhook')
         ;
     }
@@ -47,51 +46,45 @@ class TelegramBotWebhookRemoveCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        try {
-            $username = $input->getArgument('username');
-            $bot = $this->repository->findOneByUsername($username);
+        $username = $input->getArgument('username');
+        $bot = $this->repository->findOneByUsername($username);
 
-            if ($bot === null) {
-                throw new TelegramNotFoundException($username);
-            }
+        if ($bot === null) {
+            throw new TelegramNotFoundException($username);
+        }
 
-            if (!$bot->webhookSet()) {
-                $io->warning('No webhook found for remove');
+        if (!$bot->webhookSet()) {
+            $io->warning('No webhook found for remove');
 
-                $confirmed = $io->askQuestion(
-                    new ConfirmationQuestion(
-                        sprintf('Continue removing "%s" telegram bot webhook anyway?', $bot->getUsername()),
-                        true
-                    )
-                );
-            }
-
-            $confirmed = $confirmed ?? $io->askQuestion(
+            $confirmed = $io->askQuestion(
                 new ConfirmationQuestion(
-                    sprintf('Are you sure you want to remove "%s" telegram bot webhook?', $bot->getUsername()),
+                    sprintf('Continue removing "%s" telegram bot webhook anyway?', $bot->getUsername()),
                     true
                 )
             );
-
-            if (!$confirmed) {
-                $io->info(
-                    sprintf('"%s" telegram bot webhook removing has been cancelled', $bot->getUsername())
-                );
-
-                return Command::SUCCESS;
-            }
-
-            $telegram = $this->registry->getTelegram($bot);
-
-            $this->remover->removeTelegramWebhook($telegram);
-            $bot->setWebhookSet(false);
-
-            $this->entityManager->flush();
-        } catch (Throwable $exception) {
-            $io->error($exception->getMessage());
-
-            return Command::FAILURE;
         }
+
+        $confirmed = $confirmed ?? $io->askQuestion(
+            new ConfirmationQuestion(
+                sprintf('Are you sure you want to remove "%s" telegram bot webhook?', $bot->getUsername()),
+                true
+            )
+        );
+
+        if (!$confirmed) {
+            $io->warning(
+                sprintf('"%s" telegram bot webhook removing has been cancelled', $bot->getUsername())
+            );
+
+            return Command::SUCCESS;
+        }
+
+        $telegram = $this->registry->getTelegram($bot);
+
+        $this->remover->removeTelegramWebhook($telegram);
+        $bot->setWebhookSet(false);
+
+        $this->entityManager->flush();
 
         $io->success('Telegram bot webhook has been removed');
 

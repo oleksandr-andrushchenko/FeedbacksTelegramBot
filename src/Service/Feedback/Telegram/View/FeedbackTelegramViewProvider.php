@@ -9,6 +9,7 @@ use App\Service\Feedback\Rating\FeedbackRatingProvider;
 use App\Service\Feedback\SearchTerm\SearchTermByFeedbackProvider;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\TimeProvider;
+use App\Entity\Telegram\TelegramChannel;
 use App\Service\Telegram\Telegram;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -32,7 +33,8 @@ class FeedbackTelegramViewProvider
         int $number = null,
         string $localeCode = null,
         bool $showSign = true,
-        bool $showTime = true
+        bool $showTime = true,
+        TelegramChannel $channel = null,
     ): string
     {
         $searchTerm = $this->searchTermProvider->getSearchTermByFeedback($feedback);
@@ -94,7 +96,7 @@ class FeedbackTelegramViewProvider
         if ($showSign) {
             $message .= "\n\n";
 
-            $message .= $this->signViewProvider->getFeedbackTelegramReplySignView($telegram);
+            $message .= $this->signViewProvider->getFeedbackTelegramReplySignView($telegram, $channel);
         }
 
         return $message;

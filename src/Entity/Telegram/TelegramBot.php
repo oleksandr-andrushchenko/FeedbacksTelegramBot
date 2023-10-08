@@ -17,11 +17,6 @@ class TelegramBot
         private string $token,
         private string $countryCode,
         private string $localeCode,
-        private ?string $region1 = null,
-        private ?string $region2 = null,
-        private ?string $locality = null,
-        private ?string $channelUsername = null,
-        private ?string $groupUsername = null,
         private bool $checkUpdates = true,
         private bool $checkRequests = true,
         private bool $acceptPayments = false,
@@ -30,8 +25,9 @@ class TelegramBot
         private bool $textsSet = false,
         private bool $webhookSet = false,
         private bool $commandsSet = false,
-        private bool $singleChannel = true,
+        private bool $primary = true,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
+        private ?DateTimeInterface $updatedAt = null,
         private ?DateTimeInterface $deletedAt = null,
         private ?int $id = null,
     )
@@ -96,42 +92,6 @@ class TelegramBot
         return $this;
     }
 
-    public function getRegion1(): ?string
-    {
-        return $this->region1;
-    }
-
-    public function setRegion1(string $region1): self
-    {
-        $this->region1 = $region1;
-
-        return $this;
-    }
-
-    public function getRegion2(): ?string
-    {
-        return $this->region2;
-    }
-
-    public function setRegion2(string $region2): self
-    {
-        $this->region2 = $region2;
-
-        return $this;
-    }
-
-    public function getLocality(): ?string
-    {
-        return $this->locality;
-    }
-
-    public function setLocality(string $locality): self
-    {
-        $this->locality = $locality;
-
-        return $this;
-    }
-
     public function getGroup(): TelegramGroup
     {
         return $this->group;
@@ -140,30 +100,6 @@ class TelegramBot
     public function setGroup(TelegramGroup $group): self
     {
         $this->group = $group;
-
-        return $this;
-    }
-
-    public function getChannelUsername(): ?string
-    {
-        return $this->channelUsername;
-    }
-
-    public function setChannelUsername(?string $channelUsername): self
-    {
-        $this->channelUsername = $channelUsername;
-
-        return $this;
-    }
-
-    public function getGroupUsername(): ?string
-    {
-        return $this->groupUsername;
-    }
-
-    public function setGroupUsername(?string $groupUsername): self
-    {
-        $this->groupUsername = $groupUsername;
 
         return $this;
     }
@@ -274,21 +210,33 @@ class TelegramBot
         return $this;
     }
 
-    public function setSingleChannel(bool $singleChannel): self
+    public function primary(): bool
     {
-        $this->singleChannel = $singleChannel;
-
-        return $this;
+        return $this->primary;
     }
 
-    public function singleChannel(): bool
+    public function setPrimary(bool $primary): self
     {
-        return $this->singleChannel;
+        $this->primary = $primary;
+
+        return $this;
     }
 
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): ?DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
     }
 
     public function getDeletedAt(): ?DateTimeInterface

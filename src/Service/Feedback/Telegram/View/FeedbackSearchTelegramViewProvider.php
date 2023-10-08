@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Feedback\Telegram\View;
 
 use App\Entity\Feedback\FeedbackSearch;
+use App\Entity\Telegram\TelegramChannel;
 use App\Service\Feedback\SearchTerm\SearchTermByFeedbackSearchProvider;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\TimeProvider;
@@ -28,7 +29,8 @@ class FeedbackSearchTelegramViewProvider
         Telegram $telegram,
         FeedbackSearch $feedbackSearch,
         int $number = null,
-        string $localeCode = null
+        string $localeCode = null,
+        TelegramChannel $channel = null,
     ): string
     {
         $searchTerm = $this->searchTermProvider->getSearchTermByFeedbackSearch($feedbackSearch);
@@ -60,7 +62,7 @@ class FeedbackSearchTelegramViewProvider
         $message .= $this->translator->trans('somebody_from', domain: 'feedbacks.tg.feedback_search', locale: $localeCode);
         $message .= ' ';
         $country = $this->countryProvider->getCountryComposeName($country, localeCode: $localeCode);
-//        $message .= sprintf('<u>%s</u>', $country);
+        $message .= sprintf('<u>%s</u>', $country);
         $message .= $country;
         $message .= ' ';
         $message .= $this->translator->trans('searched_for', domain: 'feedbacks.tg.feedback_search', locale: $localeCode);
@@ -71,7 +73,7 @@ class FeedbackSearchTelegramViewProvider
 
         $message .= "\n\n";
 
-        $message .= $this->signViewProvider->getFeedbackTelegramReplySignView($telegram);
+        $message .= $this->signViewProvider->getFeedbackTelegramReplySignView($telegram, $channel);
 
         return $message;
     }

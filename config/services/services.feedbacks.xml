@@ -7,13 +7,16 @@
     <services>
         <service id="app.feedback_telegram_reply_sign_view_provider"
                  class="App\Service\Feedback\Telegram\View\FeedbackTelegramReplySignViewProvider" lazy="true">
+            <argument type="service" id="app.repository.telegram_channel"/>
             <argument type="service" id="app.messenger_user_profile_url_provider"/>
             <argument type="service" id="translator"/>
         </service>
-        <service id="app.feedback_activity_telegram_chat_sender"
-                 class="App\Service\Feedback\Telegram\Activity\FeedbackActivityTelegramChatSender" lazy="true">
+        <service id="app.telegram_channel_feedback_activity_publisher"
+                 class="App\Service\Feedback\Telegram\Activity\TelegramChannelFeedbackActivityPublisher" lazy="true">
+            <argument type="service" id="app.repository.telegram_channel"/>
             <argument type="service" id="app.telegram_message_sender"/>
             <argument type="service" id="app.feedback_telegram_view_provider"/>
+            <argument type="service" id="logger"/>
         </service>
         <service id="app.feedback_creator" class="App\Service\Feedback\FeedbackCreator" lazy="true">
             <argument type="service" id="app.create_command_options"/>
@@ -258,10 +261,8 @@
                  class="App\Service\Feedback\Telegram\Conversation\CountryTelegramConversation" lazy="true">
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
-            <argument type="service" id="app.better_match_bot_telegram_chat_sender"/>
-            <argument type="service" id="app.google_address_geocoder"/>
-            <argument type="service" id="app.google_timezone_geocoder"/>
-            <argument type="service" id="app.address_locality_upserter"/>
+            <argument type="service" id="app.telegram_bot_matches_chat_sender"/>
+            <argument type="service" id="app.address_provider"/>
             <argument>%app.country.request_location_step%</argument>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
@@ -270,7 +271,7 @@
             <argument type="service" id="app.intl_locale_provider"/>
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
             <argument type="service" id="app.telegram_locale_switcher"/>
-            <argument type="service" id="app.better_match_bot_telegram_chat_sender"/>
+            <argument type="service" id="app.telegram_bot_matches_chat_sender"/>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.telegram_conversation_create_feedback"
@@ -282,12 +283,11 @@
             <argument type="service" id="app.feedback_search_term_type_provider"/>
             <argument type="service" id="app.feedback_creator"/>
             <argument type="service" id="app.feedback_rating_provider"/>
-            <argument type="service" id="app.feedback_activity_telegram_chat_sender"/>
+            <argument type="service" id="app.telegram_channel_feedback_activity_publisher"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.repository.feedback"/>
             <argument type="service" id="app.feedback_telegram_view_provider"/>
-            <argument type="service" id="app.repository.telegram_bot"/>
-            <argument type="service" id="logger"/>
+            <argument type="service" id="app.repository.telegram_channel"/>
             <argument>%app.create.search_term_type_step%</argument>
             <argument>%app.create.description_step%</argument>
             <argument>%app.create.change_search_term_button%</argument>

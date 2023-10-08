@@ -4,6 +4,7 @@
         xsi:schemaLocation="http://symfony.com/schema/routing
         https://symfony.com/schema/routing/routing-1.0.xsd">
 
+    <import resource="routes/index.xml" name-prefix="app.index_"/>
     <import resource="routes/tg.site.xml" prefix="/telegram/{username}" name-prefix="app.telegram_site_"
             trailing-slash-on-root="false"/>
 

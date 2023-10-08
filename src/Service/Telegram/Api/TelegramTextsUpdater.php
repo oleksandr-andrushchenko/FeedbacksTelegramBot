@@ -37,6 +37,8 @@ class TelegramTextsUpdater
         $telegram->setMyShortDescription([
             'short_description' => $this->getMyShortDescription($bot),
         ]);
+
+        $bot->setTextsSet(true);
     }
 
     private function getMyName(TelegramBot $bot): string

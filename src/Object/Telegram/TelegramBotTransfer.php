@@ -20,18 +20,8 @@ class TelegramBotTransfer
         private bool $tokenPassed = false,
         private ?Country $country = null,
         private bool $countryPassed = false,
-        private ?string $region1 = null,
-        private bool $region1Passed = false,
-        private ?string $region2 = null,
-        private bool $region2Passed = false,
-        private ?string $locality = null,
-        private bool $localityPassed = false,
         private ?Locale $locale = null,
         private bool $localePassed = false,
-        private ?string $channelUsername = null,
-        private bool $channelUsernamePassed = false,
-        private ?string $groupUsername = null,
-        private bool $groupUsernamePassed = false,
         private ?bool $checkUpdates = null,
         private bool $checkUpdatesPassed = false,
         private ?bool $checkRequests = null,
@@ -42,8 +32,14 @@ class TelegramBotTransfer
         private bool $adminOnlyPassed = false,
         private ?array $adminIds = null,
         private bool $adminIdsPassed = false,
-        private ?bool $singleChannel = null,
-        private bool $singleChannelPassed = false,
+        private ?bool $syncTexts = null,
+        private bool $syncTextsPassed = false,
+        private ?bool $syncWebhook = null,
+        private bool $syncWebhookPassed = false,
+        private ?bool $syncCommands = null,
+        private bool $syncCommandsPassed = false,
+        private ?bool $primary = null,
+        private bool $primaryPassed = false,
     )
     {
     }
@@ -120,60 +116,6 @@ class TelegramBotTransfer
         return $this->countryPassed;
     }
 
-    public function getRegion1(): ?string
-    {
-        return $this->region1;
-    }
-
-    public function setRegion1(?string $region1): self
-    {
-        $this->region1 = $region1;
-        $this->region1Passed = true;
-
-        return $this;
-    }
-
-    public function region1Passed(): bool
-    {
-        return $this->region1Passed;
-    }
-
-    public function getRegion2(): ?string
-    {
-        return $this->region2;
-    }
-
-    public function setRegion2(?string $region2): self
-    {
-        $this->region2 = $region2;
-        $this->region2Passed = true;
-
-        return $this;
-    }
-
-    public function region2Passed(): bool
-    {
-        return $this->region2Passed;
-    }
-
-    public function getLocality(): ?string
-    {
-        return $this->locality;
-    }
-
-    public function setLocality(?string $locality): self
-    {
-        $this->locality = $locality;
-        $this->localityPassed = true;
-
-        return $this;
-    }
-
-    public function localityPassed(): bool
-    {
-        return $this->localityPassed;
-    }
-
     public function getLocale(): ?Locale
     {
         return $this->locale;
@@ -195,42 +137,6 @@ class TelegramBotTransfer
     public function getGroup(): ?TelegramGroup
     {
         return $this->group;
-    }
-
-    public function getChannelUsername(): ?string
-    {
-        return $this->channelUsername;
-    }
-
-    public function setChannelUsername(?string $channelUsername): self
-    {
-        $this->channelUsername = $channelUsername;
-        $this->channelUsernamePassed = true;
-
-        return $this;
-    }
-
-    public function channelUsernamePassed(): bool
-    {
-        return $this->channelUsernamePassed;
-    }
-
-    public function getGroupUsername(): ?string
-    {
-        return $this->groupUsername;
-    }
-
-    public function setGroupUsername(?string $groupUsername): self
-    {
-        $this->groupUsername = $groupUsername;
-        $this->groupUsernamePassed = true;
-
-        return $this;
-    }
-
-    public function groupUsernamePassed(): bool
-    {
-        return $this->groupUsernamePassed;
     }
 
     public function checkUpdates(): ?bool
@@ -323,21 +229,75 @@ class TelegramBotTransfer
         return $this->adminIdsPassed;
     }
 
-    public function singleChannel(): ?bool
+    public function syncTexts(): ?bool
     {
-        return $this->singleChannel;
+        return $this->syncTexts;
     }
 
-    public function setSingleChannel(bool $singleChannel): self
+    public function setSyncTexts(bool $syncTexts): self
     {
-        $this->singleChannel = $singleChannel;
-        $this->singleChannelPassed = true;
+        $this->syncTexts = $syncTexts;
+        $this->syncTextsPassed = true;
 
         return $this;
     }
 
-    public function singleChannelPassed(): bool
+    public function syncTextsPassed(): bool
     {
-        return $this->singleChannelPassed;
+        return $this->syncTextsPassed;
+    }
+
+    public function syncWebhook(): ?bool
+    {
+        return $this->syncWebhook;
+    }
+
+    public function setSyncWebhook(bool $syncWebhook): self
+    {
+        $this->syncWebhook = $syncWebhook;
+        $this->syncWebhookPassed = true;
+
+        return $this;
+    }
+
+    public function syncWebhookPassed(): bool
+    {
+        return $this->syncWebhookPassed;
+    }
+
+    public function syncCommands(): ?bool
+    {
+        return $this->syncCommands;
+    }
+
+    public function setSyncCommands(bool $syncCommands): self
+    {
+        $this->syncCommands = $syncCommands;
+        $this->syncCommandsPassed = true;
+
+        return $this;
+    }
+
+    public function syncCommandsPassed(): bool
+    {
+        return $this->syncCommandsPassed;
+    }
+
+    public function primary(): ?bool
+    {
+        return $this->primary;
+    }
+
+    public function setPrimary(bool $primary): self
+    {
+        $this->primary = $primary;
+        $this->primaryPassed = true;
+
+        return $this;
+    }
+
+    public function primaryPassed(): bool
+    {
+        return $this->primaryPassed;
     }
 }

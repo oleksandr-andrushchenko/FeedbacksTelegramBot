@@ -5,7 +5,7 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.repository.address_locality" class="App\Repository\Address\AddressLocalityRepository">
+        <service id="app.repository.address" class="App\Repository\Address\AddressRepository">
             <argument type="service" id="doctrine"/>
         </service>
     </services>

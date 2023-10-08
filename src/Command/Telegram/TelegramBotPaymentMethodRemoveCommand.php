@@ -17,7 +17,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Throwable;
 
 class TelegramBotPaymentMethodRemoveCommand extends Command
 {
@@ -36,7 +35,7 @@ class TelegramBotPaymentMethodRemoveCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('username', InputArgument::REQUIRED, 'Telegram bot username')
+            ->addArgument('username', InputArgument::REQUIRED, 'Telegram Username')
             ->addArgument('name', InputArgument::REQUIRED, 'Payment Method Name')
             ->setDescription('Remove telegram bot payment method')
         ;
@@ -49,57 +48,51 @@ class TelegramBotPaymentMethodRemoveCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        try {
-            $username = $input->getArgument('username');
-            $bot = $this->botRepository->findOneByUsername($username);
+        $username = $input->getArgument('username');
+        $bot = $this->botRepository->findOneByUsername($username);
 
-            if ($bot === null) {
-                throw new TelegramNotFoundException($username);
-            }
+        if ($bot === null) {
+            throw new TelegramNotFoundException($username);
+        }
 
-            $methodName = $input->getArgument('username');
-            $name = TelegramPaymentMethodName::fromName($methodName);
+        $methodName = $input->getArgument('username');
+        $name = TelegramPaymentMethodName::fromName($methodName);
 
-            if ($name === null) {
-                throw new TelegramPaymentMethodNotFoundException($methodName);
-            }
+        if ($name === null) {
+            throw new TelegramPaymentMethodNotFoundException($methodName);
+        }
 
-            $paymentMethod = $this->repository->findOneActiveByBotAndName($bot, $name);
+        $paymentMethod = $this->repository->findOneActiveByBotAndName($bot, $name);
 
-            if ($paymentMethod === null) {
-                throw new TelegramPaymentMethodNotFoundException($methodName);
-            }
+        if ($paymentMethod === null) {
+            throw new TelegramPaymentMethodNotFoundException($methodName);
+        }
 
-            $confirmed = $io->askQuestion(
-                new ConfirmationQuestion(
-                    sprintf(
-                        'Are you sure you want to remove "%s" telegram bot\'s "%s" payment method?',
-                        $bot->getUsername(),
-                        $paymentMethod->getName()->name
-                    ),
-                    true
+        $confirmed = $io->askQuestion(
+            new ConfirmationQuestion(
+                sprintf(
+                    'Are you sure you want to remove "%s" telegram bot\'s "%s" payment method?',
+                    $bot->getUsername(),
+                    $paymentMethod->getName()->name
+                ),
+                true
+            )
+        );
+
+        if (!$confirmed) {
+            $io->warning(
+                sprintf(
+                    '"%s" telegram bot\'s "%s" payment method removing has been cancelled',
+                    $bot->getUsername(),
+                    $paymentMethod->getName()->name
                 )
             );
 
-            if (!$confirmed) {
-                $io->info(
-                    sprintf(
-                        '"%s" telegram bot\'s "%s" payment method removing has been cancelled',
-                        $bot->getUsername(),
-                        $paymentMethod->getName()->name
-                    )
-                );
-
-                return Command::SUCCESS;
-            }
-
-            $paymentMethod->setDeletedAt(new DateTimeImmutable());
-            $this->entityManager->flush();
-        } catch (Throwable $exception) {
-            $io->error($exception->getMessage());
-
-            return Command::FAILURE;
+            return Command::SUCCESS;
         }
+
+        $paymentMethod->setDeletedAt(new DateTimeImmutable());
+        $this->entityManager->flush();
 
         $io->success(
             sprintf(

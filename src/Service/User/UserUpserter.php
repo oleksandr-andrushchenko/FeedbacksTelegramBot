@@ -7,6 +7,7 @@ namespace App\Service\User;
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\User\User;
 use App\Object\Messenger\MessengerUserTransfer;
+use App\Repository\Address\AddressRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -14,6 +15,7 @@ class UserUpserter
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly AddressRepository $addressRepository,
     )
     {
     }
@@ -39,6 +41,22 @@ class UserUpserter
         }
         if (empty($user->getCountryCode()) && !empty($messengerUserTransfer->getCountryCode())) {
             $user->setCountryCode($messengerUserTransfer->getCountryCode());
+        }
+        if (
+            !empty($messengerUserTransfer->getCountryCode())
+            && !empty($messengerUserTransfer->getRegion1())
+            && !empty($messengerUserTransfer->getRegion2())
+            && !empty($messengerUserTransfer->getLocality())
+            && empty($user->getAddress())
+        ) {
+            $address = $this->addressRepository->findOneByAddressComponents(
+                $messengerUserTransfer->getCountryCode(),
+                $messengerUserTransfer->getRegion1(),
+                $messengerUserTransfer->getRegion2(),
+                $messengerUserTransfer->getLocality(),
+            );
+
+            $user->setAddress($address);
         }
         if ($user->getLocaleCode() === null && $messengerUserTransfer->getLocaleCode() !== null) {
             $user->setLocaleCode($messengerUserTransfer->getLocaleCode());

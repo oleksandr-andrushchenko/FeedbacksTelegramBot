@@ -33,7 +33,6 @@
         <service id="app.command.telegram_bot_commands_update"
                  class="App\Command\Telegram\TelegramBotCommandsUpdateCommand" lazy="true">
             <argument type="service" id="app.repository.telegram_bot"/>
-            <argument type="service" id="app.telegram_registry"/>
             <argument type="service" id="app.telegram_commands_updater"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
 
@@ -126,6 +125,47 @@
             <argument type="service" id="app.telegram_message_sender"/>
 
             <tag name="console.command" command="telegram:bot:message:send"/>
+        </service>
+        <service id="app.command.telegram_bot_import" class="App\Command\Telegram\TelegramBotImportCommand" lazy="true">
+            <argument>%app.data_dir%</argument>
+            <argument type="service" id="app.telegram_bot_importer"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+
+            <tag name="console.command" command="telegram:bot:import"/>
+        </service>
+        <service id="app.command.telegram_channel_create" class="App\Command\Telegram\TelegramChannelCreateCommand"
+                 lazy="true">
+            <argument type="service" id="app.telegram_channel_creator"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.telegram_channel_info_provider"/>
+            <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="app.intl_locale_provider"/>
+            <tag name="console.command" command="telegram:channel:create"/>
+        </service>
+        <service id="app.command.telegram_channel_update" class="App\Command\Telegram\TelegramChannelUpdateCommand"
+                 lazy="true">
+            <argument type="service" id="app.repository.telegram_channel"/>
+            <argument type="service" id="app.telegram_channel_updater"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.telegram_channel_info_provider"/>
+            <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="app.intl_locale_provider"/>
+            <tag name="console.command" command="telegram:channel:update"/>
+        </service>
+        <service id="app.command.telegram_channel_show_all" class="App\Command\Telegram\TelegramChannelShowAllCommand"
+                 lazy="true">
+            <argument type="service" id="app.repository.telegram_channel"/>
+            <argument type="service" id="app.telegram_channel_info_provider"/>
+
+            <tag name="console.command" command="telegram:channel:show-all"/>
+        </service>
+        <service id="app.command.telegram_channel_import" class="App\Command\Telegram\TelegramChannelImportCommand"
+                 lazy="true">
+            <argument>%app.data_dir%</argument>
+            <argument type="service" id="app.telegram_channel_importer"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+
+            <tag name="console.command" command="telegram:channel:import"/>
         </service>
     </services>
 </container>

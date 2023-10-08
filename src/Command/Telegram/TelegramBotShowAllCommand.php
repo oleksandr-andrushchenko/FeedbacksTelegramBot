@@ -13,7 +13,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Throwable;
 
 class TelegramBotShowAllCommand extends Command
 {
@@ -44,43 +43,37 @@ class TelegramBotShowAllCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        try {
-            $groupName = $input->getOption('group');
-            $group = null;
+        $groupName = $input->getOption('group');
+        $group = null;
 
-            if ($groupName !== null) {
-                $group = TelegramGroup::fromName($groupName);
+        if ($groupName !== null) {
+            $group = TelegramGroup::fromName($groupName);
 
-                if ($group === null) {
-                    throw new TelegramGroupNotFoundException($groupName);
-                }
+            if ($group === null) {
+                throw new TelegramGroupNotFoundException($groupName);
+            }
+        }
+
+        $full = $input->getOption('full');
+
+        $bots = $this->repository->findAll();
+
+        $table = [];
+        $index = 0;
+
+        foreach ($bots as $bot) {
+            if ($group !== null && $bot->getGroup() !== $group) {
+                continue;
             }
 
-            $full = $input->getOption('full');
+            $table[] = array_merge(
+                [
+                    '#' => $index + 1,
+                ],
+                $this->infoProvider->getTelegramBotInfo($bot, $full)
+            );
 
-            $bots = $this->repository->findAll();
-
-            $table = [];
-            $index = 0;
-
-            foreach ($bots as $bot) {
-                if ($group !== null && $bot->getGroup() !== $group) {
-                    continue;
-                }
-
-                $table[] = array_merge(
-                    [
-                        '#' => $index + 1,
-                    ],
-                    $this->infoProvider->getTelegramBotInfo($bot, $full)
-                );
-
-                $index++;
-            }
-        } catch (Throwable $exception) {
-            $io->error($exception->getMessage());
-
-            return Command::FAILURE;
+            $index++;
         }
 
         if (count($table) === 0) {

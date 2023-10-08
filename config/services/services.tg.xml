@@ -23,7 +23,6 @@
             <argument type="service" id="app.telegram_bot_validator"/>
         </service>
         <service id="app.telegram_bot_updater" class="App\Service\Telegram\TelegramBotUpdater" lazy="true">
-            <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.telegram_bot_validator"/>
         </service>
         <service id="app.telegram_webhook_url_generator" class="App\Service\Telegram\TelegramWebhookUrlGenerator"
@@ -125,6 +124,7 @@
         <service id="app.telegram_keyboard_factory" class="App\Service\Telegram\TelegramKeyboardFactory" lazy="true"/>
         <service id="app.telegram_commands_updater" class="App\Service\Telegram\Api\TelegramCommandsUpdater"
                  lazy="true">
+            <argument type="service" id="app.telegram_registry"/>
             <argument type="service" id="app.translator"/>
             <argument type="service" id="app.telegram_my_commands_provider"/>
         </service>
@@ -192,13 +192,13 @@
                  class="App\Service\Telegram\Payment\TelegramPaymentMethodProvider" lazy="true">
             <argument type="service" id="translator"/>
         </service>
-        <service id="app.better_match_telegram_bot_provider"
-                 class="App\Service\Telegram\BetterMatchTelegramBotProvider" lazy="true">
+        <service id="app.telegram_bot_matches_provider"
+                 class="App\Service\Telegram\TelegramBotMatchesProvider" lazy="true">
             <argument type="service" id="app.repository.telegram_bot"/>
         </service>
-        <service id="app.better_match_bot_telegram_chat_sender"
-                 class="App\Service\Telegram\Chat\BetterMatchBotTelegramChatSender" lazy="true">
-            <argument type="service" id="app.better_match_telegram_bot_provider"/>
+        <service id="app.telegram_bot_matches_chat_sender"
+                 class="App\Service\Telegram\Chat\TelegramBotMatchesChatSender" lazy="true">
+            <argument type="service" id="app.telegram_bot_matches_provider"/>
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.intl_locale_provider"/>
             <argument type="service" id="app.telegram_link_provider"/>
@@ -211,6 +211,37 @@
             <argument type="service" id="app.intl_locale_provider"/>
             <argument type="service" id="app.contact_options_factory"/>
             <argument type="service" id="app.repository.telegram_bot"/>
+        </service>
+        <service id="app.telegram_bot_importer" class="App\Service\Telegram\TelegramBotImporter" lazy="true">
+            <argument type="service" id="app.repository.telegram_bot"/>
+            <argument type="service" id="app.telegram_bot_creator"/>
+            <argument type="service" id="app.telegram_bot_updater"/>
+            <argument type="service" id="app.telegram_texts_updater"/>
+            <argument type="service" id="app.telegram_webhook_updater"/>
+            <argument type="service" id="app.telegram_commands_updater"/>
+            <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="app.intl_locale_provider"/>
+        </service>
+        <service id="app.telegram_channel_validator" class="App\Service\Telegram\TelegramChannelValidator" lazy="true">
+            <argument type="service" id="app.repository.telegram_channel"/>
+            <argument type="service" id="app.intl_country_provider"/>
+        </service>
+        <service id="app.telegram_channel_creator" class="App\Service\Telegram\TelegramChannelCreator" lazy="true">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.telegram_channel_validator"/>
+        </service>
+        <service id="app.telegram_channel_updater" class="App\Service\Telegram\TelegramChannelUpdater" lazy="true">
+            <argument type="service" id="app.telegram_channel_validator"/>
+        </service>
+        <service id="app.telegram_channel_info_provider" class="App\Service\Telegram\TelegramChannelInfoProvider"
+                 lazy="true"/>
+        <service id="app.telegram_channel_importer" class="App\Service\Telegram\TelegramChannelImporter" lazy="true">
+            <argument type="service" id="app.address_provider"/>
+            <argument type="service" id="app.repository.telegram_channel"/>
+            <argument type="service" id="app.telegram_channel_creator"/>
+            <argument type="service" id="app.telegram_channel_updater"/>
+            <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="app.intl_locale_provider"/>
         </service>
     </services>
 </container>

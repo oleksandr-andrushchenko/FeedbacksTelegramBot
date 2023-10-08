@@ -15,24 +15,22 @@ use App\Exception\ValidatorException;
 use App\Object\Feedback\FeedbackTransfer;
 use App\Object\Feedback\SearchTermTransfer;
 use App\Repository\Feedback\FeedbackRepository;
-use App\Repository\Telegram\TelegramBotRepository;
+use App\Repository\Telegram\TelegramChannelRepository;
 use App\Service\Feedback\FeedbackCreator;
 use App\Service\Feedback\Rating\FeedbackRatingProvider;
 use App\Service\Feedback\SearchTerm\FeedbackSearchTermTypeProvider;
 use App\Service\Feedback\SearchTerm\SearchTermParserOnlyInterface;
-use App\Service\Feedback\Telegram\Activity\FeedbackActivityTelegramChatSender;
+use App\Service\Feedback\Telegram\Activity\TelegramChannelFeedbackActivityPublisher;
 use App\Service\Feedback\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Feedback\Telegram\View\FeedbackTelegramViewProvider;
 use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
+use App\Entity\Telegram\TelegramChannel;
 use App\Service\Telegram\Conversation\TelegramConversation;
 use App\Service\Telegram\Conversation\TelegramConversationInterface;
 use App\Service\Telegram\TelegramAwareHelper;
-use App\Service\Telegram\TelegramRegistry;
 use App\Service\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Entities\KeyboardButton;
-use Psr\Log\LoggerInterface;
-use Throwable;
 
 /**
  * /**
@@ -56,12 +54,11 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
         private readonly FeedbackSearchTermTypeProvider $searchTermTypeProvider,
         private readonly FeedbackCreator $creator,
         private readonly FeedbackRatingProvider $ratingProvider,
-        private readonly FeedbackActivityTelegramChatSender $activityTelegramChatSender,
+        private readonly TelegramChannelFeedbackActivityPublisher $channelActivityPublisher,
         private readonly EntityManagerInterface $entityManager,
         private readonly FeedbackRepository $feedbackRepository,
         private readonly FeedbackTelegramViewProvider $feedbackViewProvider,
-        private readonly TelegramBotRepository $botRepository,
-        private readonly LoggerInterface $logger,
+        private readonly TelegramChannelRepository $channelRepository,
         private readonly bool $searchTermTypeStep,
         private readonly bool $descriptionStep,
         private readonly bool $changeSearchTermButton,
@@ -714,9 +711,15 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
     public function getSendToChannelConfirmQuery(TelegramAwareHelper $tg, bool $help = false): string
     {
-        $channel = '@' . $tg->getTelegram()->getBot()->getChannelUsername();
+        $telegram = $tg->getTelegram();
+        $bot = $telegram->getBot();
+
+        // todo: get whole chain (locality -> country) from all existing locales
+        $channels = $this->channelRepository->findPrimaryByGroupAndCountry($bot->getGroup(), $bot->getCountryCode());
+        $channelNames = implode(', ', array_map(fn (TelegramChannel $channel) => '@' . $channel->getUsername(), $channels));
+
         $parameters = [
-            'channel' => $channel,
+            'channels' => $channelNames,
         ];
         $query = $tg->trans('query.send_to_channel_confirm', parameters: $parameters, domain: 'create');
 
@@ -732,7 +735,7 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
             $query = $tg->view('create_send_to_channel_confirm_help', [
                 'query' => $query,
-                'channel' => $channel,
+                'channels' => $channelNames,
                 'feedback' => $feedbackView,
             ]);
         }
@@ -776,13 +779,6 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
             $message = $tg->trans('reply.created', domain: 'create');
             $message = $tg->okText($message);
-
-            if ($tg->getTelegram()->getBot()->getChannelUsername() === null) {
-                // todo: change text to something like: "want to add more?"
-                $tg->stopConversation($entity);
-
-                return $this->chooseActionChatSender->sendActions($tg, $message);
-            }
 
             $this->entityManager->flush();
             $this->state->setFeedbackId($feedback->getId());
@@ -903,32 +899,10 @@ class CreateFeedbackTelegramConversation extends TelegramConversation implements
 
         $tg->stopConversation($entity);
 
+        $telegram = $tg->getTelegram();
         $feedback = $this->feedbackRepository->find($this->state->getFeedbackId());
 
-        $telegram = $tg->getTelegram();
-        $bot = $telegram->getBot();
-
-        if ($bot->singleChannel()) {
-            $bots = [$bot];
-        } else {
-            $bots = $this->botRepository->findByGroupAndCountry($bot->getGroup(), $bot->getCountryCode());
-        }
-
-        foreach ($bots as $bot) {
-            try {
-                $sentMessage = $this->activityTelegramChatSender->sendFeedbackActivityToTelegramChat(
-                    $telegram,
-                    $feedback,
-                    channelUsername: $bot->getChannelUsername()
-                );
-
-                if ($sentMessage->getMessageId() !== null) {
-                    $feedback->addChannelMessageId($sentMessage->getMessageId());
-                }
-            } catch (Throwable $exception) {
-                $this->logger->error($exception);
-            }
-        }
+        $this->channelActivityPublisher->publishTelegramChannelFeedbackActivity($telegram, $feedback);
 
         $message = $tg->trans('reply.sent_to_channel', domain: 'create');
         $message = $tg->okText($message);

@@ -14,7 +14,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Throwable;
 
 class TelegramBotWebhookUpdateCommand extends Command
 {
@@ -34,7 +33,7 @@ class TelegramBotWebhookUpdateCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('username', InputArgument::REQUIRED, 'Telegram bot username')
+            ->addArgument('username', InputArgument::REQUIRED, 'Telegram Username')
             ->setDescription('Update telegram bot webhook')
         ;
     }
@@ -46,23 +45,15 @@ class TelegramBotWebhookUpdateCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        try {
-            $username = $input->getArgument('username');
-            $bot = $this->repository->findOneByUsername($username);
+        $username = $input->getArgument('username');
+        $bot = $this->repository->findOneByUsername($username);
 
-            if ($bot === null) {
-                throw new TelegramNotFoundException($username);
-            }
-
-            $this->updater->updateTelegramWebhook($bot);
-            $bot->setWebhookSet(true);
-
-            $this->entityManager->flush();
-        } catch (Throwable $exception) {
-            $io->error($exception->getMessage());
-
-            return Command::FAILURE;
+        if ($bot === null) {
+            throw new TelegramNotFoundException($username);
         }
+
+        $this->updater->updateTelegramWebhook($bot);
+        $this->entityManager->flush();
 
         $row = $this->infoProvider->getTelegramWebhookInfo($bot);
 

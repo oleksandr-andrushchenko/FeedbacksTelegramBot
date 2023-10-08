@@ -46,6 +46,19 @@ class TelegramBotRepository extends ServiceEntityRepository
 
     /**
      * @param TelegramGroup $group
+     * @return TelegramBot[]
+     */
+    public function findPrimaryByGroup(TelegramGroup $group): array
+    {
+        return $this->findBy([
+            'group' => $group,
+            'primary' => true,
+            'deletedAt' => null,
+        ]);
+    }
+
+    /**
+     * @param TelegramGroup $group
      * @param string $countryCode
      * @return TelegramBot[]
      */
@@ -58,15 +71,13 @@ class TelegramBotRepository extends ServiceEntityRepository
         ]);
     }
 
-    public function findOneByBot(TelegramBot $bot): ?TelegramBot
+    public function findOnePrimaryByBot(TelegramBot $bot): ?TelegramBot
     {
         return $this->findOneBy([
             'group' => $bot->getGroup(),
             'countryCode' => $bot->getCountryCode(),
             'localeCode' => $bot->getLocaleCode(),
-            'region1' => $bot->getRegion1(),
-            'region2' => $bot->getRegion2(),
-            'locality' => $bot->getLocality(),
+            'primary' => true,
             'deletedAt' => null,
         ]);
     }

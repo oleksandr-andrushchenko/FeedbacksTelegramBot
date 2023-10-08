@@ -6,12 +6,10 @@ namespace App\Service\Telegram;
 
 use App\Entity\Telegram\TelegramBot;
 use App\Object\Telegram\TelegramBotTransfer;
-use App\Service\Intl\CountryProvider;
 
 class TelegramBotUpdater
 {
     public function __construct(
-        private readonly CountryProvider $countryProvider,
         private readonly TelegramBotValidator $validator,
     )
     {
@@ -40,30 +38,8 @@ class TelegramBotUpdater
         if ($botTransfer->countryPassed()) {
             $bot->setCountryCode($botTransfer->getCountry()->getCode());
         }
-        if ($botTransfer->region1Passed()) {
-            $bot->setRegion1($botTransfer->getRegion1());
-        }
-        if ($botTransfer->region2Passed()) {
-            $bot->setRegion2($botTransfer->getRegion2());
-        }
-        if ($botTransfer->localityPassed()) {
-            $bot->setLocality($botTransfer->getLocality());
-        }
-
         if ($botTransfer->localePassed()) {
-            if ($botTransfer->getLocale() === null) {
-                $country = $this->countryProvider->getCountry($bot->getCountryCode());
-                $bot->setLocaleCode($country->getLocaleCodes()[0]);
-            } else {
-                $bot->setLocaleCode($botTransfer->getLocale()->getCode());
-            }
-        }
-
-        if ($botTransfer->channelUsernamePassed()) {
-            $bot->setChannelUsername($botTransfer->getChannelUsername());
-        }
-        if ($botTransfer->groupUsernamePassed()) {
-            $bot->setGroupUsername($botTransfer->getGroupUsername());
+            $bot->setLocaleCode($botTransfer->getLocale()->getCode());
         }
 
         if ($botTransfer->checkUpdatesPassed()) {
@@ -82,8 +58,8 @@ class TelegramBotUpdater
         if ($botTransfer->adminIdsPassed()) {
             $bot->setAdminIds($botTransfer->getAdminIds());
         }
-        if ($botTransfer->singleChannelPassed()) {
-            $bot->setSingleChannel($botTransfer->singleChannel());
+        if ($botTransfer->primaryPassed()) {
+            $bot->setPrimary($botTransfer->primary());
         }
 
         $this->validator->validateTelegramBot($bot);

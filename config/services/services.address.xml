@@ -5,9 +5,14 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.address_locality_upserter" class="App\Service\Address\AddressLocalityUpserter" lazy="true">
-            <argument type="service" id="app.repository.address_locality"/>
+        <service id="app.address_upserter" class="App\Service\Address\AddressUpserter" lazy="true">
+            <argument type="service" id="app.repository.address"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
+        <service id="app.address_provider" class="App\Service\Address\AddressProvider" lazy="true">
+            <argument type="service" id="app.google_address_geocoder"/>
+            <argument type="service" id="app.google_timezone_geocoder"/>
+            <argument type="service" id="app.address_upserter"/>
         </service>
     </services>
 </container>

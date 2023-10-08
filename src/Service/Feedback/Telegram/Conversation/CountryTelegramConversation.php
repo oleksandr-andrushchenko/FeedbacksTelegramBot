@@ -8,15 +8,13 @@ use App\Entity\Intl\Country;
 use App\Entity\Location;
 use App\Entity\Telegram\TelegramConversation as Entity;
 use App\Entity\Telegram\TelegramConversationState;
-use App\Service\Address\AddressLocalityUpserter;
+use App\Service\Address\AddressProvider;
 use App\Service\Feedback\Telegram\Chat\ChooseActionTelegramChatSender;
 use App\Service\Intl\CountryProvider;
-use App\Service\AddressGeocoderInterface;
-use App\Service\Telegram\Chat\BetterMatchBotTelegramChatSender;
+use App\Service\Telegram\Chat\TelegramBotMatchesChatSender;
 use App\Service\Telegram\Conversation\TelegramConversation;
 use App\Service\Telegram\Conversation\TelegramConversationInterface;
 use App\Service\Telegram\TelegramAwareHelper;
-use App\Service\TimezoneGeocoderInterface;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
 class CountryTelegramConversation extends TelegramConversation implements TelegramConversationInterface
@@ -31,10 +29,8 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
     public function __construct(
         private readonly CountryProvider $provider,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
-        private readonly BetterMatchBotTelegramChatSender $betterMatchBotSender,
-        private readonly AddressGeocoderInterface $addressGeocoder,
-        private readonly TimezoneGeocoderInterface $timezoneGeocoder,
-        private readonly AddressLocalityUpserter $addressLocalityUpserter,
+        private readonly TelegramBotMatchesChatSender $betterMatchBotSender,
+        private readonly AddressProvider $addressProvider,
         private readonly bool $requestLocationStep,
     )
     {
@@ -229,10 +225,9 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         $location = new Location($locationResponse->getLatitude(), $locationResponse->getLongitude());
         $user->setLocation($location);
 
-        $address = $this->addressGeocoder->addressGeocode($user->getLocation());
+        $address = $this->addressProvider->getAddress($user->getLocation());
 
         if ($address === null) {
-            // todo: change message
             $message = $tg->trans('reply.request_location_failed', domain: 'country');
             $message = $tg->wrongText($message);
 
@@ -241,29 +236,17 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
             return $this->queryCustomLocation($tg);
         }
 
-        $addressLocality = $this->addressLocalityUpserter->upsertAddressLocality($address);
+        $address->incCount();
 
         $user
-            ->setCountryCode($addressLocality->getCountryCode())
-            ->setAddressLocality($addressLocality)
-            ->setTimezone($addressLocality->getTimezone())
+            ->setCountryCode($address->getCountryCode())
+            ->setAddress($address)
+            ->setTimezone($address->getTimezone())
         ;
 
-        $timezone = $user->getTimezone() ?? $this->timezoneGeocoder->timezoneGeocode($user->getLocation());
-
-        if ($timezone === null) {
-            // todo: change message
-            $message = $tg->trans('reply.wrong');
-            $message = $tg->wrongText($message);
-
-            $tg->reply($message);
-
+        if ($user->getTimezone() === null) {
             return $this->queryTimezone($tg);
         }
-
-        $user
-            ->setTimezone($timezone)
-        ;
 
         return $this->replyAndClose($tg, $entity);
     }
@@ -358,7 +341,7 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
 
         $user
             ->setCountryCode($country->getCode())
-            ->setAddressLocality(null)
+            ->setAddress(null)
             ->setTimezone($country->getTimezones()[0])
         ;
 
@@ -388,14 +371,14 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         ];
         $message = $tg->trans('reply.current_country', $parameters, domain: $domain);
 
-        $addressLocality = $user->getAddressLocality();
+        $address = $user->getAddress();
 
-        if ($addressLocality !== null) {
+        if ($address !== null) {
             $message .= "\n";
             $regionName = sprintf(
                 '<u>%s, %s</u>',
-                $addressLocality->getRegion2(),
-                $addressLocality->getRegion1()
+                $address->getRegion2(),
+                $address->getRegion1()
             );
             $parameters = [
                 'region' => $regionName,
@@ -403,7 +386,7 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
             $message .= $tg->trans('reply.current_region', $parameters, domain: $domain);
 
             $message .= "\n";
-            $localityName = sprintf('<u>%s</u>', $addressLocality->getLocality());
+            $localityName = sprintf('<u>%s</u>', $address->getLocality());
             $parameters = [
                 'locality' => $localityName,
             ];
@@ -433,7 +416,7 @@ class CountryTelegramConversation extends TelegramConversation implements Telegr
         $this->chooseActionChatSender->sendActions($tg, $message);
 
         $keyboard = $this->chooseActionChatSender->getKeyboard($tg);
-        $this->betterMatchBotSender->sendBetterMatchBotIfNeed($tg, $keyboard);
+        $this->betterMatchBotSender->sendTelegramBotMatchesIfNeed($tg, $keyboard);
 
         return null;
     }

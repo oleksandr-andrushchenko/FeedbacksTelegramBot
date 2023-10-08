@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\User;
 
-use App\Entity\Address\AddressLocality;
+use App\Entity\Address\Address;
 use App\Entity\Location;
 use App\Enum\Feedback\Rating;
 use DateTimeImmutable;
@@ -20,7 +20,7 @@ class User
         private ?string $name = null,
         private ?string $countryCode = null,
         ?Location $location = null,
-        private ?AddressLocality $addressLocality = null,
+        private ?Address $address = null,
         private ?string $localeCode = null,
         private ?string $currencyCode = null,
         private ?string $timezone = null,
@@ -160,14 +160,14 @@ class User
         return $this;
     }
 
-    public function getAddressLocality(): ?AddressLocality
+    public function getAddress(): ?Address
     {
-        return $this->addressLocality;
+        return $this->address;
     }
 
-    public function setAddressLocality(?AddressLocality $addressLocality): self
+    public function setAddress(?Address $address): self
     {
-        $this->addressLocality = $addressLocality;
+        $this->address = $address;
 
         return $this;
     }

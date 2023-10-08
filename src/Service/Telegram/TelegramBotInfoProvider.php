@@ -32,13 +32,9 @@ class TelegramBotInfoProvider
             'group' => $bot->getGroup()->name,
             'name' => $bot->getName(),
             'username' => $bot->getUsername(),
-            'channel' => $bot->getChannelUsername() ?: 'N/A',
-            'comments' => $bot->getGroupUsername() ?: 'N/A',
             'country' => $bot->getCountryCode(),
-            'region1' => $bot->getRegion1() ?: 'N/A',
-            'region2' => $bot->getRegion2() ?: 'N/A',
-            'locality' => $bot->getLocality() ?: 'N/A',
             'locale' => $bot->getLocaleCode(),
+            'primary' => $bot->primary() ? 'Yes' : 'No',
             'texts' => $bot->textsSet() ? 'Yes' : 'No',
             'payment_methods' => count($paymentMethodNames) === 0 ? 'N/A' : join(', ', $paymentMethodNames),
             'payments' => $bot->acceptPayments() ? 'Yes' : 'No',
@@ -48,17 +44,17 @@ class TelegramBotInfoProvider
             'requests' => $bot->checkRequests() ? 'Yes' : 'No',
             'admin_ids' => count($bot->getAdminIds()) === 0 ? 'N/A' : join(', ', $bot->getAdminIds()),
             'admin_only' => $bot->adminOnly() ? 'Yes' : 'No',
+            'created_at' => $bot->getCreatedAt()->format('Y-m-d H:i'),
+            'updated_at' => $bot->getUpdatedAt() === null ? 'N/A' : $bot->getUpdatedAt()->format('Y-m-d H:i'),
             'deleted_at' => $bot->getDeletedAt() === null ? 'N/A' : $bot->getDeletedAt()->format('Y-m-d H:i'),
         ];
 
         if (!$full) {
             unset(
-                $info['group'],
                 $info['payment_methods'],
                 $info['commands'],
-                $info['updates'],
-                $info['requests'],
-                $info['admin_ids'],
+                $info['created_at'],
+                $info['updated_at'],
             );
         }
 

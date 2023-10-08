@@ -4,7 +4,7 @@ query:
   rating: Rate your experience with %search_term%.
   description: Left a comment or add some details about %search_term%.
   confirm: Confirm feedback creation on %search_term%?
-  send_to_channel_confirm: Would you like to post your feedback anonymously on %channel% channel?
+  send_to_channel_confirm: Would you like to post your feedback anonymously on %channels% channels?
 keyboard:
   change_search_term: Change search term
   change_rating: Change rate

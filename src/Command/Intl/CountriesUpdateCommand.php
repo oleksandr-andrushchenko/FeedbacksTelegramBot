@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Command\Intl;
 
-use App\Entity\Intl\Country;
 use App\Service\Intl\CountriesProviderInterface;
 use App\Service\Intl\CountryTranslationsProviderInterface;
 use Symfony\Component\Console\Command\Command;
@@ -12,7 +11,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Throwable;
 use RuntimeException;
 
 class CountriesUpdateCommand extends Command
@@ -46,14 +44,8 @@ class CountriesUpdateCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        try {
-            $this->updateCountries($io);
-            $this->updateCountryTranslations($io);
-        } catch (Throwable $exception) {
-            $io->error($exception->getMessage());
-
-            return Command::FAILURE;
-        }
+        $this->updateCountries($io);
+        $this->updateCountryTranslations($io);
 
         $io->newLine();
         $io->success('Countries have been updated');

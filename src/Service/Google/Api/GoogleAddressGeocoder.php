@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service\Google\Api;
 
-use App\Entity\Address\Address;
 use App\Entity\Address\AddressComponent;
+use App\Entity\Address\Address;
 use App\Entity\Location;
 use App\Service\AddressGeocoderInterface;
 use Psr\Log\LoggerInterface;
@@ -100,9 +100,9 @@ class GoogleAddressGeocoder implements AddressGeocoderInterface
 
             return new Address(
                 strtolower($country->getShortName()),
-                $region1,
-                $region2,
-                $locality,
+                $region1->getShortName(),
+                $region2->getShortName(),
+                $locality->getShortName(),
             );
         }
 

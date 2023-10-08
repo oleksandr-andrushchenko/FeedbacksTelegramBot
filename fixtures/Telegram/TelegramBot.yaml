@@ -7,11 +7,6 @@ App\Entity\Telegram\TelegramBot:
       token: 0:any
       countryCode: ua
       localeCode: uk
-      region1: null,
-      region2: null,
-      locality: null,
-      channelUsername: null
-      groupUsername: null
       checkUpdates: true
       checkRequests: true
       acceptPayments: false
@@ -20,4 +15,4 @@ App\Entity\Telegram\TelegramBot:
       textsSet: false
       webhookSet: false
       commandsSet: false
-      singleChannel: true
+      primary: true

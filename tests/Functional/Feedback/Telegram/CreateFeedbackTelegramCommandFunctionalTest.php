@@ -1327,15 +1327,24 @@ class CreateFeedbackTelegramCommandFunctionalTest extends TelegramCommandFunctio
             TelegramBot::class,
         ]);
 
-        $this->createConversation(CreateFeedbackTelegramConversation::class, $state);
+        $conversation = $this->createConversation(CreateFeedbackTelegramConversation::class, $state);
 
         $feedbackRepository = $this->getFeedbackRepository();
         $previousFeedbackCount = $feedbackRepository->count([]);
 
         $this
             ->type($this->confirmButton())
-            ->shouldNotSeeActiveConversation()
-            ->shouldSeeChooseAction('reply.created')
+            ->shouldSeeActiveConversation(
+                $conversation->getClass(),
+                (clone $state)
+                    ->setStep(CreateFeedbackTelegramConversation::STEP_SEND_TO_CHANNEL_CONFIRM_QUERIED)
+                    ->setFeedbackId(1)
+            )
+            ->shouldSeeButtons(
+                'keyboard.yes',
+                'keyboard.no',
+                'keyboard.help',
+            )
         ;
 
         $this->assertEquals($previousFeedbackCount + 1, $feedbackRepository->count([]));

@@ -12,7 +12,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Throwable;
 
 class TelegramBotShowCommand extends Command
 {
@@ -30,7 +29,7 @@ class TelegramBotShowCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('username', InputArgument::REQUIRED, 'Telegram bot username')
+            ->addArgument('username', InputArgument::REQUIRED, 'Telegram Username')
             ->setDescription('Show telegram bot info')
         ;
     }
@@ -42,20 +41,15 @@ class TelegramBotShowCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        try {
-            $username = $input->getArgument('username');
-            $bot = $this->repository->findOneByUsername($username);
+        $username = $input->getArgument('username');
+        $bot = $this->repository->findOneByUsername($username);
 
-            if ($bot === null) {
-                throw new TelegramNotFoundException($username);
-            }
-
-            $row = $this->infoProvider->getTelegramBotInfo($bot);
-        } catch (Throwable $exception) {
-            $io->error($exception->getMessage());
-
-            return Command::FAILURE;
+        if ($bot === null) {
+            throw new TelegramNotFoundException($username);
         }
+
+        $row = $this->infoProvider->getTelegramBotInfo($bot);
+
 
         $io->createTable()
             ->setHeaders(array_keys($row))

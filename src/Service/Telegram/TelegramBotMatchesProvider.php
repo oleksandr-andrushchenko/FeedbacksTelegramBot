@@ -9,7 +9,7 @@ use App\Entity\User\User;
 use App\Enum\Telegram\TelegramGroup;
 use App\Repository\Telegram\TelegramBotRepository;
 
-class BetterMatchTelegramBotProvider
+class TelegramBotMatchesProvider
 {
     public function __construct(
         private readonly TelegramBotRepository $repository,
@@ -22,9 +22,9 @@ class BetterMatchTelegramBotProvider
      * @param TelegramGroup $group
      * @return TelegramBot[]
      */
-    public function getBetterMatchTelegramBots(User $user, TelegramGroup $group): array
+    public function getTelegramBotMatches(User $user, TelegramGroup $group): array
     {
-        $bots = $this->repository->findByGroup($group);
+        $bots = $this->repository->findPrimaryByGroup($group);
 
         if (count($bots) === 0) {
             return [];
@@ -71,55 +71,6 @@ class BetterMatchTelegramBotProvider
         }
 
         $points += 1;
-
-        if ($user->getAddressLocality() === null) {
-            if ($bot->getRegion1() === null) {
-                $points += 4;
-            } else {
-                if ($bot->getRegion2() === null) {
-                    $points += 2;
-                } else {
-                    return 0;
-                }
-            }
-
-            goto out;
-        }
-
-        if ($bot->getRegion1() === null) {
-            $points += 8;
-            goto out;
-        }
-
-        if ($user->getAddressLocality()->getRegion1() !== $bot->getRegion1()) {
-            return 0;
-        }
-
-        $points += 16;
-
-        if ($bot->getRegion2() === null) {
-            $points += 32;
-            goto out;
-        }
-
-        if ($user->getAddressLocality()->getRegion2() !== $bot->getRegion2()) {
-            return 0;
-        }
-
-        $points += 64;
-
-        if ($bot->getLocality() === null) {
-            $points += 128;
-            goto out;
-        }
-
-        if ($user->getAddressLocality()->getLocality() !== $bot->getLocality()) {
-            return 0;
-        }
-
-        $points += 256;
-
-        out:
 
         if ($user->getLocaleCode() === $bot->getLocaleCode()) {
             $points += 1;

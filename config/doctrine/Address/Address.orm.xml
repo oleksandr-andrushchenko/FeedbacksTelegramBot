@@ -4,9 +4,8 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
         https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="App\Entity\Address\AddressLocality"
-            repository-class="App\Repository\Address\AddressLocalityRepository"
-            table="address_localities">
+    <entity name="App\Entity\Address\Address" repository-class="App\Repository\Address\AddressRepository"
+            table="addresses">
 
         <indexes>
             <index fields="locality"/>

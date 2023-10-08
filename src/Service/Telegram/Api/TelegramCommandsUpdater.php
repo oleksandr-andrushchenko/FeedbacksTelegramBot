@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram\Api;
 
+use App\Entity\Telegram\TelegramBot;
 use App\Service\Telegram\Command\TelegramCommand;
 use App\Service\Telegram\Telegram;
 use App\Service\Telegram\TelegramMyCommands;
 use App\Service\Telegram\TelegramMyCommandsProvider;
+use App\Service\Telegram\TelegramRegistry;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class TelegramCommandsUpdater
 {
     public function __construct(
+        private readonly TelegramRegistry $registry,
         private readonly TranslatorInterface $translator,
         private readonly TelegramMyCommandsProvider $telegramMyCommandsProvider,
         private ?array $myCommands = null,
@@ -22,11 +25,12 @@ class TelegramCommandsUpdater
     }
 
     /**
-     * @param Telegram $telegram
+     * @param TelegramBot $bot
      * @return void
      */
-    public function updateTelegramCommands(Telegram $telegram): void
+    public function updateTelegramCommands(TelegramBot $bot): void
     {
+        $telegram = $this->registry->getTelegram($bot);
         $this->myCommands = [];
 
         foreach ($this->telegramMyCommandsProvider->getTelegramMyCommands($telegram) as $myCommands) {
@@ -45,6 +49,8 @@ class TelegramCommandsUpdater
 
             $telegram->setMyCommands($data);
         }
+
+        $bot->setCommandsSet(true);
     }
 
     /**

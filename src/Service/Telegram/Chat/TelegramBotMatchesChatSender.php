@@ -6,15 +6,15 @@ namespace App\Service\Telegram\Chat;
 
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\LocaleProvider;
-use App\Service\Telegram\BetterMatchTelegramBotProvider;
+use App\Service\Telegram\TelegramBotMatchesProvider;
 use App\Service\Telegram\TelegramAwareHelper;
 use App\Service\Telegram\TelegramLinkProvider;
 use Longman\TelegramBot\Entities\Keyboard;
 
-class BetterMatchBotTelegramChatSender
+class TelegramBotMatchesChatSender
 {
     public function __construct(
-        private readonly BetterMatchTelegramBotProvider $provider,
+        private readonly TelegramBotMatchesProvider $provider,
         private readonly CountryProvider $countryProvider,
         private readonly LocaleProvider $localeProvider,
         private readonly TelegramLinkProvider $linkProvider,
@@ -22,11 +22,11 @@ class BetterMatchBotTelegramChatSender
     {
     }
 
-    public function sendBetterMatchBotIfNeed(TelegramAwareHelper $tg, Keyboard $keyboard = null): null
+    public function sendTelegramBotMatchesIfNeed(TelegramAwareHelper $tg, Keyboard $keyboard = null): null
     {
         $telegram = $tg->getTelegram();
 
-        $bots = $this->provider->getBetterMatchTelegramBots(
+        $bots = $this->provider->getTelegramBotMatches(
             $telegram->getMessengerUser()->getUser(),
             $telegram->getBot()->getGroup()
         );
