@@ -5,31 +5,34 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.repository.telegram_update" class="App\Repository\Telegram\TelegramUpdateRepository">
+        <service id="app.repository.telegram_bot_update"
+                 class="App\Repository\Telegram\Bot\TelegramBotUpdateRepository">
             <argument type="service" id="doctrine"/>
         </service>
-        <service id="app.repository.telegram_conversation"
-                 class="App\Repository\Telegram\TelegramConversationRepository">
+        <service id="app.repository.telegram_bot_conversation"
+                 class="App\Repository\Telegram\Bot\TelegramBotConversationRepository">
             <argument type="service" id="doctrine"/>
         </service>
-        <service id="app.repository.telegram_stopped_conversation"
-                 class="App\Repository\Telegram\TelegramStoppedConversationRepository">
+        <service id="app.repository.telegram_bot_stopped_conversation"
+                 class="App\Repository\Telegram\Bot\TelegramBotStoppedConversationRepository">
             <argument type="service" id="doctrine"/>
         </service>
-        <service id="app.repository.telegram_payment" class="App\Repository\Telegram\TelegramPaymentRepository">
+        <service id="app.repository.telegram_bot_payment"
+                 class="App\Repository\Telegram\Bot\TelegramBotPaymentRepository">
             <argument type="service" id="doctrine"/>
         </service>
-        <service id="app.repository.telegram_request" class="App\Repository\Telegram\TelegramRequestRepository">
+        <service id="app.repository.telegram_bot_request"
+                 class="App\Repository\Telegram\Bot\TelegramBotRequestRepository">
             <argument type="service" id="doctrine"/>
         </service>
-        <service id="app.repository.telegram_bot" class="App\Repository\Telegram\TelegramBotRepository">
+        <service id="app.repository.telegram_bot" class="App\Repository\Telegram\Bot\TelegramBotRepository">
             <argument type="service" id="doctrine"/>
         </service>
-        <service id="app.repository.telegram_channel" class="App\Repository\Telegram\TelegramChannelRepository">
+        <service id="app.repository.telegram_channel" class="App\Repository\Telegram\Channel\TelegramChannelRepository">
             <argument type="service" id="doctrine"/>
         </service>
-        <service id="app.repository.telegram_payment_method"
-                 class="App\Repository\Telegram\TelegramPaymentMethodRepository">
+        <service id="app.repository.telegram_bot_payment_method"
+                 class="App\Repository\Telegram\Bot\TelegramBotPaymentMethodRepository">
             <argument type="service" id="doctrine"/>
         </service>
     </services>

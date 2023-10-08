@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Serializer\Messenger;
 
 use App\Enum\Messenger\Messenger;
-use App\Object\Messenger\MessengerUserTransfer;
+use App\Transfer\Messenger\MessengerUserTransfer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 

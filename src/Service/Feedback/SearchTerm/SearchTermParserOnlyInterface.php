@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Feedback\SearchTerm;
 
-use App\Object\Feedback\SearchTermTransfer;
+use App\Transfer\Feedback\SearchTermTransfer;
 
 /**
  * @todo split into several interfaces

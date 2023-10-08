@@ -8,9 +8,9 @@ use App\Entity\Telegram\TelegramBot;
 use App\Enum\Site\SitePage;
 use App\Tests\DatabaseTestCase;
 use App\Tests\Fixtures;
-use App\Tests\Traits\Telegram\TelegramBotRepositoryProviderTrait;
-use App\Tests\Traits\Telegram\TelegramUpdateHandlerMockProviderTrait;
-use App\Tests\Traits\Telegram\TelegramUpdateFixtureProviderTrait;
+use App\Tests\Traits\Telegram\Bot\TelegramBotRepositoryProviderTrait;
+use App\Tests\Traits\Telegram\Bot\TelegramBotUpdateFixtureProviderTrait;
+use App\Tests\Traits\Telegram\Bot\TelegramBotUpdateHandlerMockProviderTrait;
 use App\Tests\Traits\WebClientProviderTrait;
 use Exception;
 use Generator;
@@ -18,8 +18,8 @@ use Generator;
 class TelegramControllerTest extends DatabaseTestCase
 {
     use WebClientProviderTrait;
-    use TelegramUpdateHandlerMockProviderTrait;
-    use TelegramUpdateFixtureProviderTrait;
+    use TelegramBotUpdateHandlerMockProviderTrait;
+    use TelegramBotUpdateFixtureProviderTrait;
     use TelegramBotRepositoryProviderTrait;
 
     /**
@@ -72,12 +72,12 @@ class TelegramControllerTest extends DatabaseTestCase
 
         $client = $this->getWebClient();
 
-        $this->getTelegramUpdateHandlerMock();
+        $this->getTelegramBotUpdateHandlerMock();
 
         $client->jsonRequest(
             'POST',
             sprintf('/telegram/%s/webhook', Fixtures::BOT_USERNAME_1),
-            $this->getTelegramUpdateFixture()->jsonSerialize()
+            $this->getTelegramBotUpdateFixture()->jsonSerialize()
         );
 
         $response = $client->getResponse();
@@ -94,15 +94,15 @@ class TelegramControllerTest extends DatabaseTestCase
 
         $client = $this->getWebClient();
 
-        $this->getTelegramUpdateHandlerMock()
-            ->method('handleTelegramUpdate')
+        $this->getTelegramBotUpdateHandlerMock()
+            ->method('handleTelegramBotUpdate')
             ->willThrowException(new Exception())
         ;
 
         $client->jsonRequest(
             'POST',
             sprintf('/telegram/%s/webhook', Fixtures::BOT_USERNAME_1),
-            $this->getTelegramUpdateFixture()->jsonSerialize()
+            $this->getTelegramBotUpdateFixture()->jsonSerialize()
         );
 
         $response = $client->getResponse();

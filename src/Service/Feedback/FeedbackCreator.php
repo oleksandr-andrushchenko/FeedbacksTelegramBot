@@ -6,16 +6,16 @@ namespace App\Service\Feedback;
 
 use App\Entity\CommandOptions;
 use App\Entity\Feedback\Feedback;
-use App\Exception\CommandLimitExceeded;
 use App\Exception\Messenger\SameMessengerUserException;
+use App\Exception\CommandLimitExceededException;
 use App\Exception\ValidatorException;
-use App\Object\Feedback\FeedbackTransfer;
 use App\Service\Command\CommandLimitsChecker;
 use App\Service\Command\CommandStatisticProviderInterface;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\Logger\ActivityLogger;
 use App\Service\Messenger\MessengerUserUpserter;
 use App\Service\Validator;
+use App\Transfer\Feedback\FeedbackTransfer;
 use Doctrine\ORM\EntityManagerInterface;
 
 class FeedbackCreator
@@ -41,7 +41,7 @@ class FeedbackCreator
     /**
      * @param FeedbackTransfer $feedbackTransfer
      * @return Feedback
-     * @throws CommandLimitExceeded
+     * @throws CommandLimitExceededException
      * @throws SameMessengerUserException
      * @throws ValidatorException
      */

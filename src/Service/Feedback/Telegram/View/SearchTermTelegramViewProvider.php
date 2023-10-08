@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Feedback\Telegram\View;
 
 use App\Enum\Feedback\SearchTermType;
-use App\Object\Feedback\SearchTermTransfer;
+use App\Transfer\Feedback\SearchTermTransfer;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SearchTermTelegramViewProvider

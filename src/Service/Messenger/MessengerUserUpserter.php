@@ -6,7 +6,7 @@ namespace App\Service\Messenger;
 
 use App\Entity\Messenger\MessengerUser;
 use App\Repository\Messenger\MessengerUserRepository;
-use App\Object\Messenger\MessengerUserTransfer;
+use App\Transfer\Messenger\MessengerUserTransfer;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 

@@ -5,8 +5,7 @@
         https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
     <entity name="App\Entity\Telegram\TelegramChannel"
-            repository-class="App\Repository\Telegram\TelegramChannelRepository"
-            table="telegram_channels">
+            repository-class="App\Repository\Telegram\Channel\TelegramChannelRepository" table="telegram_channels">
 
         <id name="id" column="id" type="smallint">
             <generator/>
@@ -15,7 +14,7 @@
             </options>
         </id>
         <field name="username" column="username" length="38" unique="true"/>
-        <field name="group" column="_group" type="smallint" enum-type="App\Enum\Telegram\TelegramGroup">
+        <field name="group" column="_group" type="smallint" enum-type="App\Enum\Telegram\TelegramBotGroupName">
             <options>
                 <option name="unsigned">true</option>
             </options>

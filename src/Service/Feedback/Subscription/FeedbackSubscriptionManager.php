@@ -6,7 +6,7 @@ namespace App\Service\Feedback\Subscription;
 
 use App\Entity\Feedback\FeedbackUserSubscription;
 use App\Entity\Messenger\MessengerUser;
-use App\Entity\Telegram\TelegramPayment;
+use App\Entity\Telegram\TelegramBotPayment;
 use App\Enum\Feedback\FeedbackSubscriptionPlanName;
 use App\Repository\Feedback\FeedbackUserSubscriptionRepository;
 use DateTimeImmutable;
@@ -22,7 +22,7 @@ class FeedbackSubscriptionManager
     {
     }
 
-    public function createByTelegramPayment(TelegramPayment $payment): FeedbackUserSubscription
+    public function createByTelegramPayment(TelegramBotPayment $payment): FeedbackUserSubscription
     {
         $subscriptionPlanName = FeedbackSubscriptionPlanName::fromName($payment->getPurpose());
         $subscriptionPlan = $this->subscriptionPlanProvider->getSubscriptionPlan($subscriptionPlanName);

@@ -6,9 +6,7 @@ namespace App\Tests;
 
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
-use App\Object\Messenger\MessengerUserTransfer;
-use App\Tests\Fake\Service\Instagram\FakeInstagramMessengerUserProvider;
-use App\Tests\Functional\Feedback\Telegram\TelegramCommandFunctionalTestCase;
+use App\Transfer\Messenger\MessengerUserTransfer;
 use Closure;
 
 class Fixtures
@@ -240,15 +238,6 @@ class Fixtures
     public static function getInstagramMessengerUserProviderMocks($messengerUser): ?Closure
     {
         return null;
-        return function (TelegramCommandFunctionalTestCase $testCase) use ($messengerUser): void {
-            $provider = $testCase->getInstagramMessengerUserProvider();
-
-            if ($provider instanceof FakeInstagramMessengerUserProvider) {
-                $provider->addReturn($messengerUser->getUsername(), $messengerUser);
-            } else {
-                die(__METHOD__);
-            }
-        };
     }
 
     public static function getNonNetworkMessengerUserUsernames(int $number = 1): array

@@ -6,7 +6,7 @@ namespace App\Service\User;
 
 use App\Entity\User\UserContactMessage;
 use App\Exception\ValidatorException;
-use App\Object\User\UserContactMessageTransfer;
+use App\Transfer\User\UserContactMessageTransfer;
 use App\Service\Logger\ActivityLogger;
 use App\Service\Validator;
 use Doctrine\ORM\EntityManagerInterface;

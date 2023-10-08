@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Traits\Messenger;
 
 use App\Enum\Messenger\Messenger;
-use App\Object\Messenger\MessengerUserTransfer;
+use App\Transfer\Messenger\MessengerUserTransfer;
 
 trait MessengerUserProfileUrlProviderTrait
 {

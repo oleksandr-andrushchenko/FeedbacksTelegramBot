@@ -6,8 +6,8 @@ namespace App\Serializer\Feedback;
 
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
-use App\Object\Feedback\SearchTermTransfer;
-use App\Object\Messenger\MessengerUserTransfer;
+use App\Transfer\Feedback\SearchTermTransfer;
+use App\Transfer\Messenger\MessengerUserTransfer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 

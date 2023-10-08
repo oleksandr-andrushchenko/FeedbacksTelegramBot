@@ -38,7 +38,7 @@
             <parameter key="feedbacks">%app.feedbacks_contact_options%</parameter>
         </parameter>
 
-        <parameter key="app.telegram_payment_manager_options" type="collection">
+        <parameter key="app.telegram_bot_payment_manager_options" type="collection">
             <parameter key="log_activities">%app.log_activities_telegram_payment_manager%</parameter>
         </parameter>
     </parameters>

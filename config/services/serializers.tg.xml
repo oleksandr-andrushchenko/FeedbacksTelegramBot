@@ -5,19 +5,19 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.encoder.telegram_command" class="App\Serializer\Telegram\TelegramCommandEncoder" lazy="true">
+        <service id="app.encoder.telegram_bot_command" class="App\Serializer\Telegram\Bot\TelegramBotCommandEncoder"
+                 lazy="true">
             <tag name="serializer.encoder"/>
         </service>
-        <service id="app.normalizer.telegram_conversation_state"
-                 class="App\Serializer\Telegram\TelegramConversationStateNormalizer" lazy="true">
+        <service id="app.normalizer.telegram_bot_conversation_state"
+                 class="App\Serializer\Telegram\Bot\TelegramBotConversationStateNormalizer" lazy="true">
             <tag name="serializer.normalizer" priority="-970"/>
         </service>
-        <service id="app.normalizer.telegram_payment_method"
-                 class="App\Serializer\Telegram\TelegramPaymentMethodNormalizer"
-                 lazy="true">
+        <service id="app.normalizer.telegram_bot_payment_method"
+                 class="App\Serializer\Telegram\Bot\TelegramBotPaymentMethodNormalizer" lazy="true">
             <tag name="serializer.normalizer" priority="-967"/>
         </service>
-        <service id="app.normalizer.telegram_payment" class="App\Serializer\Telegram\TelegramPaymentNormalizer"
+        <service id="app.normalizer.telegram_bot_payment" class="App\Serializer\Telegram\Bot\TelegramBotPaymentNormalizer"
                  lazy="true">
             <argument type="service" id="app.normalizer.money"/>
             <tag name="serializer.normalizer" priority="-966"/>

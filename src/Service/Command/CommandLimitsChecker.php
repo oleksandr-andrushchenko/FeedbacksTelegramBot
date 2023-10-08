@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Command;
 
 use App\Entity\User\User;
-use App\Exception\CommandLimitExceeded;
+use App\Exception\CommandLimitExceededException;
 
 class CommandLimitsChecker
 {
@@ -19,7 +19,7 @@ class CommandLimitsChecker
      * @param User $user
      * @param CommandStatisticProviderInterface $statisticProvider
      * @return void
-     * @throws CommandLimitExceeded
+     * @throws CommandLimitExceededException
      */
     public function checkCommandLimits(User $user, CommandStatisticProviderInterface $statisticProvider): void
     {
@@ -45,7 +45,7 @@ class CommandLimitsChecker
             }
 
             if ($current >= $count) {
-                throw new CommandLimitExceeded($limit);
+                throw new CommandLimitExceededException($limit);
             }
         }
     }

@@ -5,206 +5,224 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.telegram_bot_remover" class="App\Service\Telegram\TelegramBotRemover" lazy="true"/>
-        <service id="app.telegram_bot_info_provider" class="App\Service\Telegram\TelegramBotInfoProvider" lazy="true">
-            <argument type="service" id="app.repository.telegram_payment_method"/>
-        </service>
-        <service id="app.telegram_bot_texts_info_provider" class="App\Service\Telegram\TelegramBotTextsInfoProvider"
+        <service id="app.telegram_bot_remover" class="App\Service\Telegram\Bot\TelegramBotRemover" lazy="true"/>
+        <service id="app.telegram_bot_info_provider" class="App\Service\Telegram\Bot\TelegramBotInfoProvider"
                  lazy="true">
-            <argument type="service" id="app.telegram_registry"/>
+            <argument type="service" id="app.repository.telegram_bot_payment_method"/>
+        </service>
+        <service id="app.telegram_bot_texts_info_provider" class="App\Service\Telegram\Bot\TelegramBotTextsInfoProvider"
+                 lazy="true">
+            <argument type="service" id="app.telegram_bot_registry"/>
         </service>
         <service id="app.telegram_link_provider" class="App\Service\Telegram\TelegramLinkProvider" lazy="true"/>
-        <service id="app.telegram_bot_validator" class="App\Service\Telegram\TelegramBotValidator" lazy="true">
+        <service id="app.telegram_bot_validator" class="App\Service\Telegram\Bot\TelegramBotValidator" lazy="true">
             <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.intl_country_provider"/>
         </service>
-        <service id="app.telegram_bot_creator" class="App\Service\Telegram\TelegramBotCreator" lazy="true">
+        <service id="app.telegram_bot_creator" class="App\Service\Telegram\Bot\TelegramBotCreator" lazy="true">
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.telegram_bot_validator"/>
         </service>
-        <service id="app.telegram_bot_updater" class="App\Service\Telegram\TelegramBotUpdater" lazy="true">
+        <service id="app.telegram_bot_updater" class="App\Service\Telegram\Bot\TelegramBotUpdater" lazy="true">
             <argument type="service" id="app.telegram_bot_validator"/>
         </service>
-        <service id="app.telegram_webhook_url_generator" class="App\Service\Telegram\TelegramWebhookUrlGenerator"
+        <service id="app.telegram_bot_webhook_url_generator"
+                 class="App\Service\Telegram\Bot\TelegramBotWebhookUrlGenerator"
                  lazy="true">
             <argument>%app.telegram_webhook_base_url%</argument>
             <argument>app.telegram_site_webhook</argument>
             <argument type="service" id="Symfony\Component\Routing\Generator\UrlGeneratorInterface"/>
         </service>
-        <service id="app.telegram_client_factory" class="App\Service\Telegram\TelegramClientFactory" lazy="true"/>
-        <service id="app.telegram_channel_factory" class="App\Service\Telegram\Channel\TelegramChannelFactory">
-            <argument type="tagged_locator" tag="app.telegram_channel" index-by="channel"/>
+        <service id="app.telegram_bot_client_factory" class="App\Service\Telegram\Bot\TelegramBotClientFactory"
+                 lazy="true"/>
+        <service id="app.telegram_bot_group_factory" class="App\Service\Telegram\Bot\Group\TelegramBotGroupFactory"
+                 lazy="true">
+            <argument type="tagged_locator" tag="app.telegram_group" index-by="channel"/>
         </service>
-        <service id="app.telegram_conversation_factory_default"
-                 class="App\Service\Telegram\Conversation\TelegramConversationFactory" lazy="true">
+        <service id="app.telegram_bot_conversation_factory_default"
+                 class="App\Service\Telegram\Bot\Conversation\TelegramBotConversationFactory" lazy="true">
             <argument type="tagged_locator" tag="app.telegram_conversation_default"/>
         </service>
-        <service id="app.telegram_factory" class="App\Service\Telegram\TelegramFactory" lazy="true">
-            <argument type="service" id="app.telegram_client_registry"/>
-            <argument type="service" id="app.telegram_request_checker"/>
+        <service id="app.telegram_bot_factory" class="App\Service\Telegram\Bot\TelegramBotFactory" lazy="true">
+            <argument type="service" id="app.telegram_bot_client_registry"/>
+            <argument type="service" id="app.telegram_bot_request_checker"/>
             <argument type="service" id="logger"/>
         </service>
-        <service id="app.telegram_active_conversation_invoker"
-                 class="App\Service\Telegram\Conversation\TelegramActiveConversationInvoker" lazy="true">
-            <argument type="service" id="app.telegram_conversation_manager"/>
-        </service>
-        <service id="app.telegram_conversation_manager"
-                 class="App\Service\Telegram\Conversation\TelegramConversationManager" lazy="true">
-            <argument type="service" id="app.telegram_aware_helper"/>
-            <argument type="service" id="app.repository.telegram_conversation"/>
+        <service id="app.telegram_bot_conversation_manager"
+                 class="App\Service\Telegram\Bot\Conversation\TelegramBotConversationManager" lazy="true">
+            <argument type="service" id="app.telegram_bot_aware_helper"/>
+            <argument type="service" id="app.repository.telegram_bot_conversation"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="serializer"/>
             <argument type="service" id="serializer"/>
             <argument type="service" id="app.array_null_filter"/>
-            <argument type="service" id="app.telegram_channel_registry"/>
-            <argument type="service" id="app.telegram_chat_provider"/>
+            <argument type="service" id="app.telegram_bot_group_registry"/>
+            <argument type="service" id="app.telegram_bot_chat_provider"/>
         </service>
-        <service id="app.telegram_my_commands_provider" class="App\Service\Telegram\TelegramMyCommandsProvider"
+        <service id="app.telegram_bot_my_commands_provider"
+                 class="App\Service\Telegram\Bot\TelegramBotMyCommandsProvider"
                  lazy="true">
-            <argument type="service" id="app.telegram_channel_registry"/>
+            <argument type="service" id="app.telegram_bot_group_registry"/>
         </service>
-        <service id="app.telegram_webhook_updater" class="App\Service\Telegram\Api\TelegramWebhookUpdater" lazy="true">
-            <argument type="service" id="app.telegram_registry"/>
-            <argument type="service" id="app.telegram_webhook_url_generator"/>
-        </service>
-        <service id="app.telegram_webhook_remover" class="App\Service\Telegram\Api\TelegramWebhookRemover" lazy="true"/>
-        <service id="app.telegram_webhook_info_provider" class="App\Service\Telegram\TelegramWebhookInfoProvider"
+        <service id="app.telegram_bot_webhook_updater" class="App\Service\Telegram\Bot\Api\TelegramBotWebhookUpdater"
                  lazy="true">
-            <argument type="service" id="app.telegram_registry"/>
+            <argument type="service" id="app.telegram_bot_registry"/>
+            <argument type="service" id="app.telegram_bot_webhook_url_generator"/>
         </service>
-        <service id="app.telegram_user_provider" class="App\Service\Telegram\TelegramUserProvider" lazy="true"/>
-        <service id="app.telegram_chat_provider" class="App\Service\Telegram\TelegramChatProvider" lazy="true"/>
-        <service id="app.telegram_input_provider" class="App\Service\Telegram\TelegramInputProvider" lazy="true"/>
-        <service id="app.telegram_messenger_user_upserter" class="App\Service\Telegram\TelegramMessengerUserUpserter"
+        <service id="app.telegram_bot_webhook_remover" class="App\Service\Telegram\Bot\Api\TelegramBotWebhookRemover"
                  lazy="true">
-            <argument type="service" id="app.telegram_user_provider"/>
+            <argument type="service" id="app.telegram_bot_registry"/>
+        </service>
+        <service id="app.telegram_bot_webhook_info_provider"
+                 class="App\Service\Telegram\Bot\TelegramBotWebhookInfoProvider"
+                 lazy="true">
+            <argument type="service" id="app.telegram_bot_registry"/>
+        </service>
+        <service id="app.telegram_bot_user_provider" class="App\Service\Telegram\Bot\TelegramBotUserProvider"
+                 lazy="true"/>
+        <service id="app.telegram_bot_chat_provider" class="App\Service\Telegram\Bot\TelegramBotChatProvider" lazy="true"/>
+        <service id="app.telegram_input_provider" class="App\Service\Telegram\Bot\TelegramBotInputProvider"
+                 lazy="true"/>
+        <service id="app.telegram_bot_messenger_user_upserter"
+                 class="App\Service\Telegram\Bot\TelegramBotMessengerUserUpserter" lazy="true">
+            <argument type="service" id="app.telegram_bot_user_provider"/>
             <argument type="service" id="app.messenger_user_upserter"/>
             <argument type="service" id="app.user_upserter"/>
             <argument type="service" id="app.intl_country_provider"/>
         </service>
-        <service id="app.telegram_update_checker" class="App\Service\Telegram\TelegramUpdateChecker"
+        <service id="app.telegram_bot_update_checker" class="App\Service\Telegram\Bot\TelegramBotUpdateChecker"
                  lazy="true">
-            <argument type="service" id="app.repository.telegram_update"/>
+            <argument type="service" id="app.repository.telegram_bot_update"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="logger"/>
         </service>
-        <service id="app.telegram_request_checker" class="App\Service\Telegram\TelegramRequestChecker"
+        <service id="app.telegram_bot_request_checker" class="App\Service\Telegram\Bot\TelegramBotRequestChecker"
                  lazy="true">
-            <argument type="service" id="app.repository.telegram_request"/>
+            <argument type="service" id="app.repository.telegram_bot_request"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
-        <service id="app.telegram_non_admin_update_checker" class="App\Service\Telegram\TelegramNonAdminUpdateChecker"
-                 lazy="true">
-            <argument type="service" id="app.telegram_user_provider"/>
+        <service id="app.telegram_bot_non_admin_update_checker"
+                 class="App\Service\Telegram\Bot\TelegramBotNonAdminUpdateChecker" lazy="true">
+            <argument type="service" id="app.telegram_bot_user_provider"/>
         </service>
-        <service id="app.telegram_command_finder" class="App\Service\Telegram\Command\TelegramCommandFinder"
+        <service id="app.telegram_bot_command_finder" class="App\Service\Telegram\Bot\TelegramBotCommandFinder"
                  lazy="true"/>
-        <service id="app.telegram_update_factory" class="App\Service\Telegram\TelegramUpdateFactory" lazy="true">
+        <service id="app.telegram_bot_update_factory" class="App\Service\Telegram\Bot\TelegramBotUpdateFactory"
+                 lazy="true">
             <argument type="service" id="logger"/>
         </service>
-        <service id="app.telegram_locale_switcher" class="App\Service\Telegram\TelegramLocaleSwitcher" lazy="true">
+        <service id="app.telegram_bot_locale_switcher" class="App\Service\Telegram\Bot\TelegramBotLocaleSwitcher"
+                 lazy="true">
             <argument type="service" id="translation.locale_switcher"/>
             <argument type="service" id="app.intl_country_provider"/>
         </service>
-        <service id="app.telegram_update_handler" class="App\Service\Telegram\TelegramUpdateHandler" lazy="true">
+        <service id="app.telegram_bot_update_handler" class="App\Service\Telegram\Bot\TelegramBotUpdateHandler"
+                 lazy="true">
             <argument>%kernel.environment%</argument>
-            <argument type="service" id="app.telegram_update_factory"/>
-            <argument type="service" id="app.telegram_update_checker"/>
-            <argument type="service" id="app.telegram_non_admin_update_checker"/>
-            <argument type="service" id="app.telegram_conversation_manager"/>
-            <argument type="service" id="app.telegram_messenger_user_upserter"/>
-            <argument type="service" id="app.telegram_channel_registry"/>
-            <argument type="service" id="app.telegram_command_finder"/>
-            <argument type="service" id="app.telegram_payment_manager"/>
-            <argument type="service" id="app.telegram_locale_switcher"/>
+            <argument type="service" id="app.telegram_bot_update_factory"/>
+            <argument type="service" id="app.telegram_bot_update_checker"/>
+            <argument type="service" id="app.telegram_bot_non_admin_update_checker"/>
+            <argument type="service" id="app.telegram_bot_conversation_manager"/>
+            <argument type="service" id="app.telegram_bot_messenger_user_upserter"/>
+            <argument type="service" id="app.telegram_bot_group_registry"/>
+            <argument type="service" id="app.telegram_bot_command_finder"/>
+            <argument type="service" id="app.telegram_bot_payment_manager"/>
+            <argument type="service" id="app.telegram_bot_locale_switcher"/>
             <argument type="service" id="app.telegram_input_provider"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.telegram_bot_registry"/>
             <argument type="service" id="logger"/>
         </service>
-        <service id="app.telegram_keyboard_factory" class="App\Service\Telegram\TelegramKeyboardFactory" lazy="true"/>
-        <service id="app.telegram_commands_updater" class="App\Service\Telegram\Api\TelegramCommandsUpdater"
+        <service id="app.telegram_bot_keyboard_factory" class="App\Service\Telegram\Bot\TelegramBotKeyboardFactory"
+                 lazy="true"/>
+        <service id="app.telegram_bot_commands_updater" class="App\Service\Telegram\Bot\Api\TelegramBotCommandsUpdater"
                  lazy="true">
-            <argument type="service" id="app.telegram_registry"/>
+            <argument type="service" id="app.telegram_bot_registry"/>
             <argument type="service" id="app.translator"/>
-            <argument type="service" id="app.telegram_my_commands_provider"/>
+            <argument type="service" id="app.telegram_bot_my_commands_provider"/>
         </service>
-        <service id="app.telegram_commands_remover" class="App\Service\Telegram\Api\TelegramCommandsRemover"
+        <service id="app.telegram_bot_commands_remover" class="App\Service\Telegram\Bot\Api\TelegramBotCommandsRemover"
                  lazy="true">
-            <argument type="service" id="app.telegram_my_commands_provider"/>
+            <argument type="service" id="app.telegram_bot_registry"/>
+            <argument type="service" id="app.telegram_bot_my_commands_provider"/>
         </service>
-        <service id="app.telegram_texts_updater" class="App\Service\Telegram\Api\TelegramTextsUpdater"
+        <service id="app.telegram_bot_texts_updater" class="App\Service\Telegram\Bot\Api\TelegramBotTextsUpdater"
                  lazy="true">
             <argument>%app.stage%</argument>
-            <argument type="service" id="app.telegram_registry"/>
+            <argument type="service" id="app.telegram_bot_registry"/>
             <argument type="service" id="app.site_url_generator"/>
             <argument type="service" id="app.translator"/>
         </service>
-        <service id="app.telegram_message_sender" class="App\Service\Telegram\Api\TelegramMessageSender" lazy="true"/>
-        <service id="app.telegram_chat_action_sender" class="App\Service\Telegram\Api\TelegramChatActionSender"
-                 lazy="true"/>
-        <service id="app.telegram_client_registry" class="App\Service\Telegram\TelegramClientRegistry" lazy="true">
-            <argument type="service" id="app.telegram_client_factory"/>
-        </service>
-        <service id="app.telegram_channel_registry" class="App\Service\Telegram\Channel\TelegramChannelRegistry"
+        <service id="app.telegram_bot_message_sender" class="App\Service\Telegram\Bot\Api\TelegramBotMessageSender"
                  lazy="true">
-            <argument type="service" id="app.telegram_channel_factory"/>
+            <argument type="service" id="app.telegram_bot_registry"/>
+        </service>
+        <service id="app.telegram_bot_chat_action_sender"
+                 class="App\Service\Telegram\Bot\Api\TelegramBotChatActionSender"
+                 lazy="true"/>
+        <service id="app.telegram_bot_client_registry" class="App\Service\Telegram\Bot\TelegramBotClientRegistry"
+                 lazy="true">
+            <argument type="service" id="app.telegram_bot_client_factory"/>
+        </service>
+        <service id="app.telegram_bot_group_registry" class="App\Service\Telegram\Bot\Group\TelegramBotGroupRegistry"
+                 lazy="true">
+            <argument type="service" id="app.telegram_bot_group_factory"/>
         </service>
         <service id="app.telegram_messenger_user_maker" class="App\Service\Telegram\TelegramMessengerUserMaker"
                  lazy="true"/>
-        <service id="app.telegram_payment_manager_options_factory"
-                 class="App\Service\Telegram\TelegramPaymentManagerOptionsFactory" lazy="true"/>
-        <service id="app.telegram_payment_manager_options" class="App\Entity\Telegram\TelegramPaymentManagerOptions">
-            <factory service="app.telegram_payment_manager_options_factory"/>
-            <argument>%app.telegram_payment_manager_options%</argument>
+        <service id="app.telegram_bot_payment_manager_options_factory"
+                 class="App\Service\Telegram\Bot\TelegramBotPaymentManagerOptionsFactory" lazy="true"/>
+        <service id="app.telegram_bot_payment_manager_options"
+                 class="App\Entity\Telegram\TelegramBotPaymentManagerOptions">
+            <factory service="app.telegram_bot_payment_manager_options_factory"/>
+            <argument>%app.telegram_bot_payment_manager_options%</argument>
         </service>
-        <service id="app.telegram_payment_manager" class="App\Service\Telegram\Payment\TelegramPaymentManager"
+        <service id="app.telegram_bot_payment_manager"
+                 class="App\Service\Telegram\Bot\Payment\TelegramBotPaymentManager"
                  lazy="true">
-            <argument type="service" id="app.telegram_payment_manager_options"/>
-            <argument type="service" id="app.telegram_invoice_sender"/>
+            <argument type="service" id="app.telegram_bot_payment_manager_options"/>
+            <argument type="service" id="app.telegram_bot_invoice_sender"/>
             <argument type="service" id="app.intl_currency_provider"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
-            <argument type="service" id="app.repository.telegram_payment"/>
+            <argument type="service" id="app.repository.telegram_bot_payment"/>
             <argument type="service" id="app.uuid_generator"/>
             <argument type="service" id="app.logger_activity"/>
         </service>
-        <service id="app.telegram_registry" class="App\Service\Telegram\TelegramRegistry" lazy="true">
-            <argument type="service" id="app.telegram_factory"/>
+        <service id="app.telegram_bot_registry" class="App\Service\Telegram\Bot\TelegramBotRegistry" lazy="true">
+            <argument type="service" id="app.telegram_bot_factory"/>
         </service>
-        <service id="app.telegram_aware_helper" class="App\Service\Telegram\TelegramAwareHelper" lazy="true">
-            <argument type="service" id="app.telegram_keyboard_factory"/>
-            <argument type="service" id="app.telegram_message_sender"/>
+        <service id="app.telegram_bot_aware_helper" class="App\Service\Telegram\Bot\TelegramBotAwareHelper" lazy="true">
+            <argument type="service" id="app.telegram_bot_keyboard_factory"/>
+            <argument type="service" id="app.telegram_bot_message_sender"/>
             <argument type="service" id="app.translator"/>
-            <argument type="service" id="app.telegram_conversation_manager"/>
-            <argument type="service" id="app.telegram_chat_action_sender"/>
-            <argument type="service" id="app.telegram_chat_provider"/>
+            <argument type="service" id="app.telegram_bot_conversation_manager"/>
+            <argument type="service" id="app.telegram_bot_chat_action_sender"/>
+            <argument type="service" id="app.telegram_bot_chat_provider"/>
             <argument type="service" id="app.telegram_input_provider"/>
             <argument type="service" id="twig"/>
         </service>
-        <service id="app.telegram_invoice_sender" class="App\Service\Telegram\Api\TelegramInvoiceSender" lazy="true"/>
-        <service id="app.telegram_payment_method_creator"
-                 class="App\Service\Telegram\Payment\TelegramPaymentMethodCreator" lazy="true">
+        <service id="app.telegram_bot_invoice_sender" class="App\Service\Telegram\Bot\Api\TelegramBotInvoiceSender"
+                 lazy="true"/>
+        <service id="app.telegram_bot_payment_method_creator"
+                 class="App\Service\Telegram\Bot\Payment\TelegramBotPaymentMethodCreator" lazy="true">
             <argument type="service" id="app.intl_currency_provider"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
-        <service id="app.telegram_payment_method_info_provider"
-                 class="App\Service\Telegram\Payment\TelegramPaymentMethodInfoProvider" lazy="true"/>
-        <service id="app.telegram_payment_method_provider"
-                 class="App\Service\Telegram\Payment\TelegramPaymentMethodProvider" lazy="true">
-            <argument type="service" id="translator"/>
-        </service>
+        <service id="app.telegram_bot_payment_method_info_provider"
+                 class="App\Service\Telegram\Bot\Payment\TelegramBotPaymentMethodInfoProvider" lazy="true"/>
         <service id="app.telegram_bot_matches_provider"
-                 class="App\Service\Telegram\TelegramBotMatchesProvider" lazy="true">
+                 class="App\Service\Telegram\Bot\TelegramBotMatchesProvider" lazy="true">
             <argument type="service" id="app.repository.telegram_bot"/>
         </service>
         <service id="app.telegram_bot_matches_chat_sender"
-                 class="App\Service\Telegram\Chat\TelegramBotMatchesChatSender" lazy="true">
+                 class="App\Service\Telegram\Bot\Chat\TelegramBotMatchesChatSender" lazy="true">
             <argument type="service" id="app.telegram_bot_matches_provider"/>
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.intl_locale_provider"/>
             <argument type="service" id="app.telegram_link_provider"/>
         </service>
-        <service id="app.telegram_site_view_response_factory"
-                 class="App\Service\Telegram\Site\TelegramSiteViewResponseFactory" lazy="true">
+        <service id="app.telegram_bot_site_view_response_factory"
+                 class="App\Service\Telegram\Bot\Site\TelegramSiteViewResponseFactory" lazy="true">
             <argument type="service" id="twig"/>
             <argument type="service" id="translation.locale_switcher"/>
             <argument type="service" id="app.intl_country_provider"/>
@@ -212,30 +230,35 @@
             <argument type="service" id="app.contact_options_factory"/>
             <argument type="service" id="app.repository.telegram_bot"/>
         </service>
-        <service id="app.telegram_bot_importer" class="App\Service\Telegram\TelegramBotImporter" lazy="true">
+        <service id="app.telegram_bot_importer" class="App\Service\Telegram\Bot\TelegramBotImporter" lazy="true">
             <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_bot_creator"/>
             <argument type="service" id="app.telegram_bot_updater"/>
-            <argument type="service" id="app.telegram_texts_updater"/>
-            <argument type="service" id="app.telegram_webhook_updater"/>
-            <argument type="service" id="app.telegram_commands_updater"/>
+            <argument type="service" id="app.telegram_bot_texts_updater"/>
+            <argument type="service" id="app.telegram_bot_webhook_updater"/>
+            <argument type="service" id="app.telegram_bot_commands_updater"/>
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.intl_locale_provider"/>
         </service>
-        <service id="app.telegram_channel_validator" class="App\Service\Telegram\TelegramChannelValidator" lazy="true">
+        <service id="app.telegram_channel_validator" class="App\Service\Telegram\Channel\TelegramChannelValidator"
+                 lazy="true">
             <argument type="service" id="app.repository.telegram_channel"/>
             <argument type="service" id="app.intl_country_provider"/>
         </service>
-        <service id="app.telegram_channel_creator" class="App\Service\Telegram\TelegramChannelCreator" lazy="true">
+        <service id="app.telegram_channel_creator" class="App\Service\Telegram\Channel\TelegramChannelCreator"
+                 lazy="true">
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.telegram_channel_validator"/>
         </service>
-        <service id="app.telegram_channel_updater" class="App\Service\Telegram\TelegramChannelUpdater" lazy="true">
+        <service id="app.telegram_channel_updater" class="App\Service\Telegram\Channel\TelegramChannelUpdater"
+                 lazy="true">
             <argument type="service" id="app.telegram_channel_validator"/>
         </service>
-        <service id="app.telegram_channel_info_provider" class="App\Service\Telegram\TelegramChannelInfoProvider"
+        <service id="app.telegram_channel_info_provider"
+                 class="App\Service\Telegram\Channel\TelegramChannelInfoProvider"
                  lazy="true"/>
-        <service id="app.telegram_channel_importer" class="App\Service\Telegram\TelegramChannelImporter" lazy="true">
+        <service id="app.telegram_channel_importer" class="App\Service\Telegram\Channel\TelegramChannelImporter"
+                 lazy="true">
             <argument type="service" id="app.address_provider"/>
             <argument type="service" id="app.repository.telegram_channel"/>
             <argument type="service" id="app.telegram_channel_creator"/>

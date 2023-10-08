@@ -6,7 +6,7 @@ namespace App\Service\Feedback\SearchTerm;
 
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
-use App\Object\Feedback\SearchTermTransfer;
+use App\Transfer\Feedback\SearchTermTransfer;
 
 class FacebookSearchTermParser implements SearchTermParserInterface
 {

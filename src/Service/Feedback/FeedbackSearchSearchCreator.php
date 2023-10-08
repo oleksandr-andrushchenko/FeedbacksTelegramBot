@@ -6,14 +6,14 @@ namespace App\Service\Feedback;
 
 use App\Entity\CommandOptions;
 use App\Entity\Feedback\FeedbackSearchSearch;
-use App\Exception\CommandLimitExceeded;
+use App\Exception\CommandLimitExceededException;
 use App\Exception\ValidatorException;
-use App\Object\Feedback\FeedbackSearchSearchTransfer;
 use App\Service\Command\CommandLimitsChecker;
 use App\Service\Command\CommandStatisticProviderInterface;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\Logger\ActivityLogger;
 use App\Service\Validator;
+use App\Transfer\Feedback\FeedbackSearchSearchTransfer;
 use Doctrine\ORM\EntityManagerInterface;
 
 class FeedbackSearchSearchCreator
@@ -38,7 +38,7 @@ class FeedbackSearchSearchCreator
     /**
      * @param FeedbackSearchSearchTransfer $feedbackSearchLookupTransfer
      * @return FeedbackSearchSearch
-     * @throws CommandLimitExceeded
+     * @throws CommandLimitExceededException
      * @throws ValidatorException
      */
     public function createFeedbackSearchSearch(FeedbackSearchSearchTransfer $feedbackSearchLookupTransfer): FeedbackSearchSearch

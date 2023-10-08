@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Traits\Feedback\Telegram;
 
-use App\Serializer\Feedback\Telegram\CreateFeedbackTelegramConversationStateNormalizer;
+use App\Serializer\Feedback\Telegram\Bot\CreateFeedbackTelegramBotConversationStateNormalizer;
 
 trait CreateFeedbackTelegramConversationStateNormalizerProviderTrait
 {
-    public function getCreateFeedbackTelegramConversationStateNormalizer(): CreateFeedbackTelegramConversationStateNormalizer
+    public function getCreateFeedbackTelegramConversationStateNormalizer(): CreateFeedbackTelegramBotConversationStateNormalizer
     {
-        return static::getContainer()->get('app.normalizer.telegram_conversation_state_create_feedback');
+        return static::getContainer()->get('app.normalizer.telegram_bot_conversation_state_create_feedback');
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Messenger;
 
 use App\Enum\Messenger\Messenger;
-use App\Object\Messenger\MessengerUserTransfer;
+use App\Transfer\Messenger\MessengerUserTransfer;
 
 class MessengerUserProfileUrlProvider
 {

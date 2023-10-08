@@ -4,7 +4,7 @@
                     xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping
         https://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
 
-    <class name="App\Object\Feedback\SearchTermTransfer">
+    <class name="App\Transfer\Feedback\SearchTermTransfer">
         <property name="text">
             <constraint name="NotBlank">
                 <option name="message">search_term.text.not_blank</option>

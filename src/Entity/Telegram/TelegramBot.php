@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\Telegram;
 
-use App\Enum\Telegram\TelegramGroup;
+use App\Enum\Telegram\TelegramBotGroupName;
 use DateTimeImmutable;
 use DateTimeInterface;
 
@@ -12,7 +12,7 @@ class TelegramBot
 {
     public function __construct(
         private readonly string $username,
-        private TelegramGroup $group,
+        private TelegramBotGroupName $group,
         private string $name,
         private string $token,
         private string $countryCode,
@@ -92,12 +92,12 @@ class TelegramBot
         return $this;
     }
 
-    public function getGroup(): TelegramGroup
+    public function getGroup(): TelegramBotGroupName
     {
         return $this->group;
     }
 
-    public function setGroup(TelegramGroup $group): self
+    public function setGroup(TelegramBotGroupName $group): self
     {
         $this->group = $group;
 

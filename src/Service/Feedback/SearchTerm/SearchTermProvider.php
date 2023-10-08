@@ -7,8 +7,8 @@ namespace App\Service\Feedback\SearchTerm;
 use App\Entity\Messenger\MessengerUser;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
-use App\Object\Feedback\SearchTermTransfer;
-use App\Object\Messenger\MessengerUserTransfer;
+use App\Transfer\Feedback\SearchTermTransfer;
+use App\Transfer\Messenger\MessengerUserTransfer;
 use App\Service\Messenger\MessengerUserProfileUrlProvider;
 
 class SearchTermProvider

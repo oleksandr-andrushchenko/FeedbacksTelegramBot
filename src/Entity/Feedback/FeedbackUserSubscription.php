@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Entity\Feedback;
 
 use App\Entity\Messenger\MessengerUser;
-use App\Entity\Telegram\TelegramPayment;
+use App\Entity\Telegram\TelegramBotPayment;
 use App\Enum\Feedback\FeedbackSubscriptionPlanName;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -16,7 +16,7 @@ class FeedbackUserSubscription
         private readonly MessengerUser $messengerUser,
         private readonly FeedbackSubscriptionPlanName $subscriptionPlan,
         private readonly DateTimeInterface $expireAt,
-        private readonly ?TelegramPayment $payment = null,
+        private readonly ?TelegramBotPayment $payment = null,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
         private ?int $id = null,
@@ -39,7 +39,7 @@ class FeedbackUserSubscription
         return $this->subscriptionPlan;
     }
 
-    public function getPayment(): TelegramPayment
+    public function getPayment(): TelegramBotPayment
     {
         return $this->payment;
     }
