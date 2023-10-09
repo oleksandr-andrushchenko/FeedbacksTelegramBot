@@ -35,7 +35,7 @@ class TelegramBotMatchesProvider
         $points = [];
 
         foreach ($bots as $id => $bot) {
-            $points[$id] = $this->calculateTelegramBotPoints($user, $bot);
+            $points[$id] = $this->calculateTelegramBotPoints($bot, $user);
         }
 
         $points = array_filter($points);
@@ -49,16 +49,13 @@ class TelegramBotMatchesProvider
         $lastMaxPointsId = array_key_last($points);
         $maxPoints = $points[$lastMaxPointsId];
 
-        // todo: add previous bots layer if bot has locality
-
         $maxPointsIds = array_keys(array_filter($points, fn (int $pts) => $pts === $maxPoints));
-
         $bots = array_filter($bots, fn (TelegramBot $bot) => in_array($bot->getId(), $maxPointsIds, true));
 
         return array_values($bots);
     }
 
-    public function calculateTelegramBotPoints(User $user, TelegramBot $bot): int
+    public function calculateTelegramBotPoints(TelegramBot $bot, User $user): int
     {
         $points = 0;
 

@@ -3,7 +3,6 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services
         https://symfony.com/schema/dic/services/services-1.0.xsd">
-
     <services>
         <service id="app.command.telegram_webhook_update"
                  class="App\Command\Telegram\Bot\TelegramBotWebhookUpdateCommand" lazy="true">
@@ -11,7 +10,6 @@
             <argument type="service" id="app.telegram_bot_webhook_updater"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.telegram_bot_webhook_info_provider"/>
-
             <tag name="console.command" command="telegram:bot:webhook:update"/>
         </service>
         <service id="app.command.telegram_bot_webhook_remove"
@@ -19,14 +17,12 @@
             <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_bot_webhook_remover"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
-
             <tag name="console.command" command="telegram:bot:webhook:remove"/>
         </service>
         <service id="app.command.telegram_webhook_show" class="App\Command\Telegram\Bot\TelegramBotWebhookShowCommand"
                  lazy="true">
             <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_bot_webhook_info_provider"/>
-
             <tag name="console.command" command="telegram:bot:webhook:show"/>
         </service>
         <service id="app.command.telegram_bot_commands_update"
@@ -34,7 +30,6 @@
             <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_bot_commands_updater"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
-
             <tag name="console.command" command="telegram:bot:commands:update"/>
         </service>
         <service id="app.command.telegram_bot_commands_remove"
@@ -42,7 +37,6 @@
             <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_bot_commands_remover"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
-
             <tag name="console.command" command="telegram:bot:commands:remove"/>
         </service>
         <service id="app.command.telegram_bot_texts_update"
@@ -51,14 +45,12 @@
             <argument type="service" id="app.telegram_bot_texts_updater"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.telegram_bot_texts_info_provider"/>
-
             <tag name="console.command" command="telegram:bot:texts:update"/>
         </service>
         <service id="app.command.telegram_bot_texts_show"
                  class="App\Command\Telegram\Bot\TelegramBotTextsShowCommand" lazy="true">
             <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_bot_texts_info_provider"/>
-
             <tag name="console.command" command="telegram:bot:texts:show"/>
         </service>
         <service id="app.command.telegram_bot_create" class="App\Command\Telegram\Bot\TelegramBotCreateCommand"
@@ -84,7 +76,6 @@
                  lazy="true">
             <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_bot_info_provider"/>
-
             <tag name="console.command" command="telegram:bot:show-all"/>
         </service>
         <service id="app.command.telegram_bot_remove" class="App\Command\Telegram\Bot\TelegramBotRemoveCommand"
@@ -92,13 +83,11 @@
             <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_bot_remover"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
-
             <tag name="console.command" command="telegram:bot:remove"/>
         </service>
         <service id="app.command.telegram_bot_info" class="App\Command\Telegram\Bot\TelegramBotShowCommand" lazy="true">
             <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_bot_info_provider"/>
-
             <tag name="console.command" command="telegram:bot:show"/>
         </service>
         <service id="app.command.telegram_bot_payment_method_create"
@@ -107,7 +96,6 @@
             <argument type="service" id="app.telegram_bot_payment_method_creator"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.telegram_bot_payment_method_info_provider"/>
-
             <tag name="console.command" command="telegram:bot:payment-method:create"/>
         </service>
         <service id="app.command.telegram_bot_payment_method_remove"
@@ -115,22 +103,20 @@
             <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.repository.telegram_bot_payment_method"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
-
             <tag name="console.command" command="telegram:bot:payment-method:remove"/>
         </service>
         <service id="app.command.telegram_bot_message_send"
                  class="App\Command\Telegram\Bot\TelegramBotMessageSendCommand" lazy="true">
             <argument type="service" id="app.repository.telegram_bot"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>
-
             <tag name="console.command" command="telegram:bot:message:send"/>
         </service>
         <service id="app.command.telegram_bot_import" class="App\Command\Telegram\Bot\TelegramBotImportCommand"
                  lazy="true">
             <argument>%app.data_dir%</argument>
             <argument type="service" id="app.telegram_bot_importer"/>
+            <argument type="service" id="app.doctrine_dry_runner"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
-
             <tag name="console.command" command="telegram:bot:import"/>
         </service>
         <service id="app.command.telegram_channel_create"
@@ -156,15 +142,14 @@
                  class="App\Command\Telegram\Channel\TelegramChannelShowAllCommand" lazy="true">
             <argument type="service" id="app.repository.telegram_channel"/>
             <argument type="service" id="app.telegram_channel_info_provider"/>
-
             <tag name="console.command" command="telegram:channel:show-all"/>
         </service>
         <service id="app.command.telegram_channel_import"
                  class="App\Command\Telegram\Channel\TelegramChannelImportCommand" lazy="true">
             <argument>%app.data_dir%</argument>
             <argument type="service" id="app.telegram_channel_importer"/>
+            <argument type="service" id="app.doctrine_dry_runner"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
-
             <tag name="console.command" command="telegram:channel:import"/>
         </service>
     </services>

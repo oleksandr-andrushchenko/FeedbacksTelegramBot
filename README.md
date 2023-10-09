@@ -50,3 +50,8 @@
 * Implemented request_user for keyboard button when asking for search term type (as telegram user possible type - will receive ID!!)
 * Add region1, region2 and locality selection steps for country conversation's custom flow (when address table is ready)
 * Replace help replies using php not twig
+
+* Location select on start ??
+* Deploy
+* Create groups
+* Create adv

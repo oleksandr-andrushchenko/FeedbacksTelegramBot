@@ -6,6 +6,7 @@ namespace App\Service\Telegram\Channel;
 
 use App\Entity\Telegram\TelegramChannel;
 use App\Transfer\Telegram\TelegramChannelTransfer;
+use DateTimeImmutable;
 
 class TelegramChannelUpdater
 {
@@ -36,18 +37,20 @@ class TelegramChannelUpdater
         if ($channelTransfer->localePassed()) {
             $channel->setLocaleCode($channelTransfer->getLocale()->getCode());
         }
-        if ($channelTransfer->region1Passed()) {
-            $channel->setRegion1($channelTransfer->getRegion1());
+        if ($channelTransfer->administrativeAreaLevel1Passed()) {
+            $channel->setAdministrativeAreaLevel1($channelTransfer->getAdministrativeAreaLevel1());
         }
-        if ($channelTransfer->region2Passed()) {
-            $channel->setRegion2($channelTransfer->getRegion2());
+        if ($channelTransfer->administrativeAreaLevel2Passed()) {
+            $channel->setAdministrativeAreaLevel2($channelTransfer->getAdministrativeAreaLevel2());
         }
-        if ($channelTransfer->localityPassed()) {
-            $channel->setLocality($channelTransfer->getLocality());
+        if ($channelTransfer->administrativeAreaLevel3Passed()) {
+            $channel->setAdministrativeAreaLevel3($channelTransfer->getAdministrativeAreaLevel3());
         }
         if ($channelTransfer->primaryPassed()) {
             $channel->setPrimary($channelTransfer->primary());
         }
+
+        $channel->setUpdatedAt(new DateTimeImmutable());
 
         $this->validator->validateTelegramChannel($channel);
     }

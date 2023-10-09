@@ -20,12 +20,18 @@ class GoogleAddressGeocoder implements AddressGeocoderInterface
     {
     }
 
-    public function addressGeocode(Location $location): ?Address
+    public function geocodeAddress(Location $location): ?Address
     {
         $url = sprintf(
-            'https://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&key=%s',
+            'https://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&result_type=%s&key=%s',
             $location->getLatitude(),
             $location->getLongitude(),
+            implode('|', [
+                'country',
+                'administrative_area_level_1',
+                'administrative_area_level_2',
+                'administrative_area_level_3',
+            ]),
             $this->apiKey
         );
 
@@ -52,16 +58,22 @@ class GoogleAddressGeocoder implements AddressGeocoderInterface
             return null;
         }
 
-        $addressWithRegion2 = $this->findByAddressComponents($data['results'], 'administrative_area_level_2');
+        $withAdministrativeAreaLevel1 = $this->findByAddressComponents($data['results'], 'administrative_area_level_3');
 
-        if ($addressWithRegion2 === null) {
-            return $this->findByAddressComponents($data['results'], 'administrative_area_level_3');
+        if ($withAdministrativeAreaLevel1 !== null) {
+            return $withAdministrativeAreaLevel1;
         }
 
-        return $addressWithRegion2;
+        $withAdministrativeAreaLevel2 = $this->findByAddressComponents($data['results'], 'administrative_area_level_2');
+
+        if ($withAdministrativeAreaLevel2 !== null) {
+            return $withAdministrativeAreaLevel2;
+        }
+
+        return $this->findByAddressComponents($data['results']);
     }
 
-    private function findByAddressComponents(array $results, string $region2Key): ?Address
+    private function findByAddressComponents(array $results, string $keyShouldExists = null): ?Address
     {
         foreach ($results as $result) {
             if (
@@ -74,35 +86,35 @@ class GoogleAddressGeocoder implements AddressGeocoderInterface
 
             $addressComponents = $result['address_components'];
 
-            $locality = $this->findAddressComponent('locality', $addressComponents);
-
-            if ($locality === null) {
-                continue;
-            }
-
-            $region2 = $this->findAddressComponent($region2Key, $addressComponents);
-
-            if ($region2 === null) {
-                continue;
-            }
-
-            $region1 = $this->findAddressComponent('administrative_area_level_1', $addressComponents);
-
-            if ($region1 === null) {
-                continue;
-            }
-
             $country = $this->findAddressComponent('country', $addressComponents);
 
             if ($country === null) {
                 continue;
             }
 
+            $administrativeAreaLevel1 = $this->findAddressComponent('administrative_area_level_1', $addressComponents);
+
+            if ($administrativeAreaLevel1 === null) {
+                continue;
+            }
+
+            $administrativeAreaLevel2 = $this->findAddressComponent('administrative_area_level_2', $addressComponents);
+
+            if ($keyShouldExists === 'administrative_area_level_2' && $administrativeAreaLevel2 === null) {
+                continue;
+            }
+
+            $administrativeAreaLevel3 = $this->findAddressComponent('administrative_area_level_3', $addressComponents);
+
+            if ($keyShouldExists === 'administrative_area_level_3' && $administrativeAreaLevel3 === null) {
+                continue;
+            }
+
             return new Address(
                 strtolower($country->getShortName()),
-                $region1->getShortName(),
-                $region2->getShortName(),
-                $locality->getShortName(),
+                $administrativeAreaLevel1->getShortName(),
+                $administrativeAreaLevel2?->getShortName(),
+                $administrativeAreaLevel3?->getShortName(),
             );
         }
 
@@ -113,7 +125,7 @@ class GoogleAddressGeocoder implements AddressGeocoderInterface
     {
         foreach ($addressComponents as $addressComponent) {
             if (in_array($type, $addressComponent['types'], true)) {
-                return new AddressComponent($addressComponent['short_name'], $addressComponent['long_name']);
+                return new AddressComponent($addressComponent['short_name']);
             }
         }
 

@@ -22,9 +22,9 @@
         <field name="name" column="name" length="1024"/>
         <field name="countryCode" column="country_code" length="2"/>
         <field name="localeCode" column="locale_code" length="2"/>
-        <field name="region1" column="region_1" nullable="true"/>
-        <field name="region2" column="region_2" nullable="true"/>
-        <field name="locality" column="locality" nullable="true"/>
+        <field name="administrativeAreaLevel1" column="administrative_area_level_1" nullable="true"/>
+        <field name="administrativeAreaLevel2" column="administrative_area_level_2" nullable="true"/>
+        <field name="administrativeAreaLevel3" column="administrative_area_level_3" nullable="true"/>
         <field name="primary" column="_primary" type="boolean">
             <options>
                 <option name="default">1</option>

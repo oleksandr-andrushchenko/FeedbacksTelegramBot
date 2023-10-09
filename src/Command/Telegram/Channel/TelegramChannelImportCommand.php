@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command\Telegram\Channel;
 
+use App\Service\Doctrine\DryRunner;
 use App\Service\Telegram\Channel\TelegramChannelImporter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -19,6 +20,7 @@ class TelegramChannelImportCommand extends Command
     public function __construct(
         private readonly string $dataDir,
         private readonly TelegramChannelImporter $importer,
+        private readonly DryRunner $dryRunner,
         private readonly EntityManagerInterface $entityManager,
     )
     {
@@ -65,13 +67,12 @@ class TelegramChannelImportCommand extends Command
         $countUpdated = 0;
 
         $logger = fn (string $message) => $io->note($message);
-
-        $this->importer->importTelegramChannels($filename, $logger, $countCreated, $countUpdated);
+        $func = fn () => $this->importer->importTelegramChannels($filename, $logger, $countCreated, $countUpdated);
 
         if ($dryRun) {
-            $this->entityManager->close();
+            $this->dryRunner->dryRun($func);
         } else {
-            $this->entityManager->flush();
+            $this->entityManager->wrapInTransaction($func);
         }
 
         $io->newLine();

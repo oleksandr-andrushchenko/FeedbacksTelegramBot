@@ -25,5 +25,8 @@
         <service id="app.money_formatter" class="App\Service\MoneyFormatter" lazy="true">
             <argument type="service" id="app.intl_currency_provider"/>
         </service>
+        <service id="app.doctrine_dry_runner" class="App\Service\Doctrine\DryRunner" lazy="true">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
     </services>
 </container>

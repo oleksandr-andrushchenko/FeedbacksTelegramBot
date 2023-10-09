@@ -24,19 +24,17 @@ class TelegramBotMatchesChatSender
 
     public function sendTelegramBotMatchesIfNeed(TelegramBotAwareHelper $tg, Keyboard $keyboard = null): null
     {
-        $bot = $tg->getBot();
-
         $bots = $this->provider->getTelegramBotMatches(
-            $bot->getMessengerUser()->getUser(),
-            $bot->getEntity()->getGroup()
+            $tg->getBot()->getMessengerUser()->getUser(),
+            $tg->getBot()->getEntity()->getGroup()
         );
 
         if (count($bots) === 0) {
             return null;
         }
 
-        foreach ($bots as $botEntity) {
-            if ($botEntity->getId() === $bot->getEntity()->getId()) {
+        foreach ($bots as $bot) {
+            if ($bot->getId() === $tg->getBot()->getEntity()->getId()) {
                 return null;
             }
         }
@@ -47,15 +45,15 @@ class TelegramBotMatchesChatSender
 
         $botNames = [];
 
-        foreach ($bots as $botEntity) {
-            $country = $this->countryProvider->getCountry($botEntity->getCountryCode());
+        foreach ($bots as $bot) {
+            $country = $this->countryProvider->getCountry($bot->getCountryCode());
             $countryIcon = $this->countryProvider->getCountryIcon($country);
-            $locale = $this->localeProvider->getLocale($botEntity->getLocaleCode());
+            $locale = $this->localeProvider->getLocale($bot->getLocaleCode());
             $localeIcon = $this->localeProvider->getLocaleIcon($locale);
-            $link = $this->linkProvider->getTelegramLink($botEntity->getUsername());
+            $link = $this->linkProvider->getTelegramLink($bot->getUsername());
 
             $localeIcon = $countryIcon === $localeIcon ? '' : ('/' . $localeIcon);
-            $botNames[] = sprintf('%s%s <b><a href="%s">%s</a></b>', $countryIcon, $localeIcon, $link, $botEntity->getName());
+            $botNames[] = sprintf('%s%s <b><a href="%s">%s</a></b>', $countryIcon, $localeIcon, $link, $bot->getName());
         }
 
         $message .= join("\n", $botNames);

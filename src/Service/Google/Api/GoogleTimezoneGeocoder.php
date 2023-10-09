@@ -18,7 +18,7 @@ class GoogleTimezoneGeocoder implements TimezoneGeocoderInterface
     {
     }
 
-    public function timezoneGeocode(Location $location, int $timestamp = null): ?string
+    public function geocodeTimezone(Location $location, int $timestamp = null): ?string
     {
         $url = sprintf(
             'https://maps.googleapis.com/maps/api/timezone/json?location=%s%s%s&timestamp=%s&key=%s',

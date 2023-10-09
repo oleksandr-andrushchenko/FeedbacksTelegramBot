@@ -10,7 +10,6 @@ reply:
   request_location_failed: We could not determine your location, try to select manually please.
   current_country: Your current country - %country%.
   current_region: Region - %region%.
-  current_locality: Locality - %locality%.
   current_timezone: Timezone - %timezone%.
   unknown_timezone: Unknown
   canceled: Country selection dialog has been canceled.

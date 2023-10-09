@@ -4,15 +4,21 @@ declare(strict_types=1);
 
 namespace App\Entity\Address;
 
+use DateTimeImmutable;
+use DateTimeInterface;
+
 class Address
 {
     public function __construct(
         private readonly string $countryCode,
-        private readonly string $region1,
-        private readonly string $region2,
-        private readonly string $locality,
+        private readonly string $administrativeAreaLevel1,
+        private readonly ?string $administrativeAreaLevel2 = null,
+        private readonly ?string $administrativeAreaLevel3 = null,
         private ?string $timezone = null,
         private int $count = 0,
+        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
+        private ?DateTimeInterface $updatedAt = null,
+        private ?DateTimeInterface $deletedAt = null,
         private ?int $id = null,
     )
     {
@@ -23,24 +29,24 @@ class Address
         return $this->id;
     }
 
-    public function getCountryCode(): string
+    public function getCountryCode(): ?string
     {
         return $this->countryCode;
     }
 
-    public function getRegion1(): string
+    public function getAdministrativeAreaLevel1(): ?string
     {
-        return $this->region1;
+        return $this->administrativeAreaLevel1;
     }
 
-    public function getRegion2(): string
+    public function getAdministrativeAreaLevel2(): ?string
     {
-        return $this->region2;
+        return $this->administrativeAreaLevel2;
     }
 
-    public function getLocality(): string
+    public function getAdministrativeAreaLevel3(): ?string
     {
-        return $this->locality;
+        return $this->administrativeAreaLevel3;
     }
 
     public function getTimezone(): ?string
@@ -63,6 +69,35 @@ class Address
     public function incCount(): self
     {
         $this->count++;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): ?DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getDeletedAt(): ?DateTimeInterface
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?DateTimeInterface $deletedAt): self
+    {
+        $this->deletedAt = $deletedAt;
 
         return $this;
     }

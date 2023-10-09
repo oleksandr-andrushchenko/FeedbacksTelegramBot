@@ -14,9 +14,6 @@ readonly class MessengerUserTransfer
         private ?string $username = null,
         private ?string $name = null,
         private ?string $countryCode = null,
-        private ?string $region1 = null,
-        private ?string $region2 = null,
-        private ?string $locality = null,
         private ?string $localeCode = null,
         private ?string $currencyCode = null,
         private ?string $timezone = null,
@@ -47,21 +44,6 @@ readonly class MessengerUserTransfer
     public function getCountryCode(): ?string
     {
         return $this->countryCode;
-    }
-
-    public function getRegion1(): ?string
-    {
-        return $this->region1;
-    }
-
-    public function getRegion2(): ?string
-    {
-        return $this->region2;
-    }
-
-    public function getLocality(): ?string
-    {
-        return $this->locality;
     }
 
     public function getLocaleCode(): ?string

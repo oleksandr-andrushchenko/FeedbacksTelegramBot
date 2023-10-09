@@ -48,9 +48,9 @@ class TelegramChannelUpdateCommand extends Command
             ->addOption('name', mode: InputOption::VALUE_REQUIRED, description: 'Telegram Name')
             ->addOption('country', mode: InputOption::VALUE_REQUIRED, description: 'Country code')
             ->addOption('locale', mode: InputOption::VALUE_REQUIRED, description: 'Locale code')
-            ->addOption('region1', mode: InputOption::VALUE_REQUIRED, description: 'Google Region 1 short name')
-            ->addOption('region2', mode: InputOption::VALUE_REQUIRED, description: 'Google Region 2 (3) short name')
-            ->addOption('locality', mode: InputOption::VALUE_REQUIRED, description: 'Google Locality short name')
+            ->addOption('administrative-area-level-1', mode: InputOption::VALUE_REQUIRED, description: 'Google Administrative area level 1 short name')
+            ->addOption('administrative-area-level-2', mode: InputOption::VALUE_REQUIRED, description: 'Google Administrative area level 2 short name')
+            ->addOption('administrative-area-level-3', mode: InputOption::VALUE_REQUIRED, description: 'Google Administrative area level 3 short name')
             ->addOption('primary', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to make a channel primary or not, primary channels are unique across group, country, locale and address', default: true)
             ->setDescription('Update telegram channel (inner)')
         ;
@@ -114,22 +114,22 @@ class TelegramChannelUpdateCommand extends Command
             $channelTransfer->setLocale($locale);
         }
 
-        $region1 = $input->getOption('region1');
+        $administrativeAreaLevel1 = $input->getOption('administrative-area-level-1');
 
-        if ($region1 !== null) {
-            $channelTransfer->setRegion1($region1);
+        if ($administrativeAreaLevel1 !== null) {
+            $channelTransfer->setAdministrativeAreaLevel1($administrativeAreaLevel1);
         }
 
-        $region2 = $input->getOption('region2');
+        $administrativeAreaLevel2 = $input->getOption('administrative-area-level-2');
 
-        if ($region2 !== null) {
-            $channelTransfer->setRegion2($region2);
+        if ($administrativeAreaLevel2 !== null) {
+            $channelTransfer->setAdministrativeAreaLevel1($administrativeAreaLevel2);
         }
 
-        $locality = $input->getOption('locality');
+        $administrativeAreaLevel3 = $input->getOption('administrative-area-level-3');
 
-        if ($locality !== null) {
-            $channelTransfer->setLocality($locality);
+        if ($administrativeAreaLevel3 !== null) {
+            $channelTransfer->setAdministrativeAreaLevel1($administrativeAreaLevel3);
         }
 
         if ($input->hasOption('primary')) {

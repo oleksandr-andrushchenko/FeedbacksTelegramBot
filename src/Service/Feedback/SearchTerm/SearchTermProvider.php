@@ -35,11 +35,11 @@ class SearchTermProvider
             $messengerUserTransfer = new MessengerUserTransfer(
                 $messengerUser->getMessenger(),
                 $messengerUser->getIdentifier(),
-                $messengerUser->getUsername(),
-                $messengerUser->getName(),
-                $messengerUser->getUser()->getCountryCode(),
-                $messengerUser->getUser()->getLocaleCode(),
-                $messengerUser->getUser()->getCurrencyCode()
+                username: $messengerUser->getUsername(),
+                name: $messengerUser->getName(),
+                countryCode: $messengerUser->getUser()->getCountryCode(),
+                localeCode: $messengerUser->getUser()->getLocaleCode(),
+                currencyCode: $messengerUser->getUser()->getCurrencyCode()
             );
 
             $messengerProfileUrl = $this->messengerUserProfileUrlProvider->getMessengerUserProfileUrlByUser($messengerUserTransfer);

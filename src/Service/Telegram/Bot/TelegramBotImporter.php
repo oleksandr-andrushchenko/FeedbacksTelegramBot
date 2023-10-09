@@ -39,81 +39,6 @@ class TelegramBotImporter
         int &$countUpdated = 0,
     ): void
     {
-        $this->validateTelegramBots($filename);
-
-        $logger = $logger ?? fn (string $message) => null;
-
-        $handle = fopen($filename, 'r');
-        $columns = fgetcsv($handle);
-
-        while (($row = fgetcsv($handle)) !== false) {
-            $data = array_combine($columns, $row);
-
-            if (isset($data['skip']) && $data['skip'] === '1') {
-                continue;
-            }
-
-            $transfer = (new TelegramBotTransfer($data['username']))
-                ->setGroup(empty($data['group']) ? null : TelegramBotGroupName::fromName($data['group']))
-                ->setName(empty($data['name']) ? null : $data['name'])
-                ->setToken(empty($data['token']) ? null : $data['token'])
-                ->setCountry(empty($data['country']) ? null : $this->countryProvider->getCountry($data['country']))
-                ->setLocale(empty($data['locale']) ? null : $this->localeProvider->getLocale($data['locale']))
-                ->setAdminIds(empty($data['admin_id']) ? null : [$data['admin_id']])
-                ->setSyncTexts(isset($data['sync_texts']) && $data['sync_texts'] === '1')
-                ->setSyncWebhook(isset($data['sync_webhook']) && $data['sync_webhook'] === '1')
-                ->setSyncCommands(isset($data['sync_commands']) && $data['sync_commands'] === '1')
-                ->setPrimary(isset($data['primary']) && $data['primary'] === '1')
-                ->setAdminOnly(isset($data['admin_only']) && $data['admin_only'] === '1')
-            ;
-
-            $bot = $this->repository->findOneByUsername($transfer->getUsername());
-
-            if ($bot === null) {
-                $bot = $this->creator->createTelegramBot($transfer);
-                $countCreated++;
-            } else {
-                $this->updater->updateTelegramBot($bot, $transfer);
-                $countUpdated++;
-            }
-
-            $message = $bot->getUsername();
-            $message .= ': [OK] ';
-            $message .= $bot->getId() === null ? 'created' : 'updated';
-
-            if ($transfer->syncTexts()) {
-                try {
-                    $this->textsUpdater->updateTelegramDescriptions($bot);
-                    $message .= '; [OK] texts';
-                } catch (Throwable $exception) {
-                    $message .= '; [FAIL] texts - ' . $exception->getMessage();
-                }
-            }
-            if ($transfer->syncWebhook()) {
-                try {
-                    $this->webhookUpdater->updateTelegramWebhook($bot);
-                    $message .= '; [OK] webhook';
-                } catch (Throwable $exception) {
-                    $message .= '; [FAIL] webhook - ' . $exception->getMessage();
-                }
-            }
-            if ($transfer->syncCommands()) {
-                try {
-                    $this->commandsUpdater->updateTelegramCommands($bot);
-                    $message .= '; [OK] commands';
-                } catch (Throwable $exception) {
-                    $message .= '; [FAIL] commands - ' . $exception->getMessage();
-                }
-            }
-
-            $logger($message);
-        }
-
-        fclose($handle);
-    }
-
-    public function validateTelegramBots(string $filename): void
-    {
         if (!file_exists($filename)) {
             throw new InvalidArgumentException(sprintf('"%s" file is not exists', $filename));
         }
@@ -123,6 +48,8 @@ class TelegramBotImporter
         if ($handle === false) {
             throw new RuntimeException(sprintf('Unable to open "%s" file', $filename));
         }
+
+        $logger = $logger ?? fn (string $message) => null;
 
         try {
             $columns = fgetcsv($handle);
@@ -139,9 +66,68 @@ class TelegramBotImporter
 
                 $data = array_combine($columns, $row);
 
+                if (isset($data['skip']) && $data['skip'] === '1') {
+                    continue;
+                }
+
                 if (!isset($data['username'])) {
                     throw new LogicException(sprintf('Row #%d has not "username" column', $index));
                 }
+
+                $transfer = (new TelegramBotTransfer($data['username']))
+                    ->setGroup(empty($data['group']) ? null : TelegramBotGroupName::fromName($data['group']))
+                    ->setName(empty($data['name']) ? null : $data['name'])
+                    ->setToken(empty($data['token']) ? null : $data['token'])
+                    ->setCountry(empty($data['country']) ? null : $this->countryProvider->getCountry($data['country']))
+                    ->setLocale(empty($data['locale']) ? null : $this->localeProvider->getLocale($data['locale']))
+                    ->setAdminIds(empty($data['admin_id']) ? null : [$data['admin_id']])
+                    ->setSyncTexts(isset($data['sync_texts']) && $data['sync_texts'] === '1')
+                    ->setSyncWebhook(isset($data['sync_webhook']) && $data['sync_webhook'] === '1')
+                    ->setSyncCommands(isset($data['sync_commands']) && $data['sync_commands'] === '1')
+                    ->setPrimary(isset($data['primary']) && $data['primary'] === '1')
+                    ->setAdminOnly(isset($data['admin_only']) && $data['admin_only'] === '1')
+                ;
+
+                $bot = $this->repository->findOneByUsername($transfer->getUsername());
+
+                if ($bot === null) {
+                    $bot = $this->creator->createTelegramBot($transfer);
+                    $countCreated++;
+                } else {
+                    $this->updater->updateTelegramBot($bot, $transfer);
+                    $countUpdated++;
+                }
+
+                $message = $bot->getUsername();
+                $message .= ': [OK] ';
+                $message .= $bot->getId() === null ? 'created' : 'updated';
+
+                if ($transfer->syncTexts()) {
+                    try {
+                        $this->textsUpdater->updateTelegramDescriptions($bot);
+                        $message .= '; [OK] texts';
+                    } catch (Throwable $exception) {
+                        $message .= '; [FAIL] texts - ' . $exception->getMessage();
+                    }
+                }
+                if ($transfer->syncWebhook()) {
+                    try {
+                        $this->webhookUpdater->updateTelegramWebhook($bot);
+                        $message .= '; [OK] webhook';
+                    } catch (Throwable $exception) {
+                        $message .= '; [FAIL] webhook - ' . $exception->getMessage();
+                    }
+                }
+                if ($transfer->syncCommands()) {
+                    try {
+                        $this->commandsUpdater->updateTelegramCommands($bot);
+                        $message .= '; [OK] commands';
+                    } catch (Throwable $exception) {
+                        $message .= '; [FAIL] commands - ' . $exception->getMessage();
+                    }
+                }
+
+                $logger($message);
 
                 $index++;
             }

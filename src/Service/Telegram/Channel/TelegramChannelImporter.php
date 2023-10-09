@@ -35,76 +35,6 @@ class TelegramChannelImporter
         int &$countUpdated = 0,
     ): void
     {
-        $this->validateTelegramChannels($filename);
-
-        $logger = $logger ?? fn (string $message) => null;
-
-        $addressComponents = ['country', 'region1', 'region2', 'locality'];
-
-        $handle = fopen($filename, 'r');
-        $columns = fgetcsv($handle);
-
-        while (($row = fgetcsv($handle)) !== false) {
-            $data = array_combine($columns, $row);
-
-            if (isset($data['skip']) && $data['skip'] === '1') {
-                continue;
-            }
-
-            $location = new Location($data['latitude'], $data['longitude']);
-            $address = $this->addressProvider->getAddress($location);
-
-            $highestAddressComponent = empty($data['highest_address_component']) ? null : $data['highest_address_component'];
-            if ($highestAddressComponent === null) {
-                $region1 = null;
-                $region2 = null;
-                $locality = null;
-            } else {
-                $addressComponentPosition = array_search($highestAddressComponent, $addressComponents);
-                $region1 = $addressComponentPosition >= array_search('region1', $addressComponents)
-                    ? $address?->getRegion1()
-                    : null;
-                $region2 = $addressComponentPosition >= array_search('region2', $addressComponents)
-                    ? $address?->getRegion2()
-                    : null;
-                $locality = $addressComponentPosition >= array_search('locality', $addressComponents)
-                    ? $address?->getLocality()
-                    : null;
-            }
-
-            $transfer = (new TelegramChannelTransfer($data['username']))
-                ->setGroup(empty($data['group']) ? null : TelegramBotGroupName::fromName($data['group']))
-                ->setName(empty($data['name']) ? null : $data['name'])
-                ->setCountry(empty($data['country']) ? null : $this->countryProvider->getCountry($data['country']))
-                ->setLocale(empty($data['locale']) ? null : $this->localeProvider->getLocale($data['locale']))
-                ->setRegion1($region1)
-                ->setRegion2($region2)
-                ->setLocality($locality)
-                ->setPrimary(isset($data['primary']) && $data['primary'] === '1')
-            ;
-
-            $channel = $this->repository->findOneByUsername($transfer->getUsername());
-
-            if ($channel === null) {
-                $channel = $this->creator->createTelegramChannel($transfer);
-                $countCreated++;
-            } else {
-                $this->updater->updateTelegramChannel($channel, $transfer);
-                $countUpdated++;
-            }
-
-            $message = $channel->getUsername();
-            $message .= ': [OK] ';
-            $message .= $channel->getId() === null ? 'created' : 'updated';
-
-            $logger($message);
-        }
-
-        fclose($handle);
-    }
-
-    public function validateTelegramChannels(string $filename): void
-    {
         if (!file_exists($filename)) {
             throw new InvalidArgumentException(sprintf('"%s" file is not exists', $filename));
         }
@@ -114,6 +44,10 @@ class TelegramChannelImporter
         if ($handle === false) {
             throw new RuntimeException(sprintf('Unable to open "%s" file', $filename));
         }
+
+        $logger = $logger ?? fn (string $message) => null;
+
+        $addressComponents = ['country', 'administrative_area_level_1', 'administrative_area_level_2', 'administrative_area_level_3'];
 
         try {
             $columns = fgetcsv($handle);
@@ -130,9 +64,70 @@ class TelegramChannelImporter
 
                 $data = array_combine($columns, $row);
 
+                if (isset($data['skip']) && $data['skip'] === '1') {
+                    continue;
+                }
+
                 if (!isset($data['username'])) {
                     throw new LogicException(sprintf('Row #%d has not "username" column', $index));
                 }
+
+                $administrativeAreaLevel1 = null;
+                $administrativeAreaLevel2 = null;
+                $administrativeAreaLevel3 = null;
+
+                if (!empty($data['latitude']) && !empty($data['longitude'])) {
+                    if (empty($data['highest_address_component'])) {
+                        continue;
+                    }
+
+                    $location = new Location($data['latitude'], $data['longitude']);
+                    $address = $this->addressProvider->getAddress($location);
+
+                    if ($address === null) {
+                        continue;
+                    }
+
+                    $highestAddressComponent = $data['highest_address_component'];
+
+                    $addressComponentPosition = array_search($highestAddressComponent, $addressComponents);
+                    $administrativeAreaLevel1 = $addressComponentPosition >= array_search('administrative_area_level_1', $addressComponents)
+                        ? $address?->getAdministrativeAreaLevel1()
+                        : null;
+                    $administrativeAreaLevel2 = $addressComponentPosition >= array_search('administrative_area_level_2', $addressComponents)
+                        ? $address?->getAdministrativeAreaLevel2()
+                        : null;
+                    $administrativeAreaLevel3 = $addressComponentPosition >= array_search('administrative_area_level_3', $addressComponents)
+                        ? $address?->getAdministrativeAreaLevel3()
+                        : null;
+                }
+
+                $transfer = (new TelegramChannelTransfer($data['username']))
+                    ->setGroup(empty($data['group']) ? null : TelegramBotGroupName::fromName($data['group']))
+                    ->setName(empty($data['name']) ? null : $data['name'])
+                    ->setCountry(empty($data['country']) ? null : $this->countryProvider->getCountry($data['country']))
+                    ->setLocale(empty($data['locale']) ? null : $this->localeProvider->getLocale($data['locale']))
+                    ->setAdministrativeAreaLevel1($administrativeAreaLevel1)
+                    ->setAdministrativeAreaLevel2($administrativeAreaLevel2)
+                    ->setAdministrativeAreaLevel3($administrativeAreaLevel3)
+                    ->setPrimary(isset($data['primary']) && $data['primary'] === '1')
+                ;
+
+                $channel = $this->repository->findOneByUsername($transfer->getUsername());
+
+                if ($channel === null) {
+                    $channel = $this->creator->createTelegramChannel($transfer);
+                    $countCreated++;
+                } else {
+                    $this->updater->updateTelegramChannel($channel, $transfer);
+                    $countUpdated++;
+                }
+
+                $message = $channel->getUsername();
+                $message .= ': [OK] ';
+                $message .= $channel->getId() === null ? 'created' : 'updated';
+
+                $logger($message);
 
                 $index++;
             }

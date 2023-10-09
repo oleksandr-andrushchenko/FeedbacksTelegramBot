@@ -26,6 +26,7 @@ use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversation;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
+use App\Service\Telegram\Channel\TelegramChannelMatchesProvider;
 use App\Service\Validator;
 use App\Transfer\Feedback\FeedbackTransfer;
 use App\Transfer\Feedback\SearchTermTransfer;
@@ -58,7 +59,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         private readonly EntityManagerInterface $entityManager,
         private readonly FeedbackRepository $feedbackRepository,
         private readonly FeedbackTelegramViewProvider $feedbackViewProvider,
-        private readonly TelegramChannelRepository $channelRepository,
+        private readonly TelegramChannelMatchesProvider $channelMatchesProvider,
         private readonly bool $searchTermTypeStep,
         private readonly bool $descriptionStep,
         private readonly bool $changeSearchTermButton,
@@ -711,12 +712,9 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
     public function getSendToChannelConfirmQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
-        $bot = $tg->getBot();
-
-        // todo: get whole chain (locality -> country) from all existing locales
-        $channels = $this->channelRepository->findPrimaryByGroupAndCountry(
-            $bot->getEntity()->getGroup(),
-            $bot->getEntity()->getCountryCode()
+        $channels = $this->channelMatchesProvider->getTelegramChannelMatches(
+            $tg->getBot()->getMessengerUser()->getUser(),
+            $tg->getBot()->getEntity()
         );
         $channelNames = implode(', ', array_map(fn (TelegramChannel $channel) => '@' . $channel->getUsername(), $channels));
 

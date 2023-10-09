@@ -26,7 +26,7 @@ class AddressRepository extends ServiceEntityRepository
     public function findOneByAddress(Address $address): ?Address
     {
         $addresses = $this->findBy([
-            'locality' => $address->getLocality(),
+            'administrativeAreaLevel1' => $address->getAdministrativeAreaLevel1(),
         ]);
 
         foreach ($addresses as $existingAddress) {
@@ -34,41 +34,11 @@ class AddressRepository extends ServiceEntityRepository
                 continue;
             }
 
-            if ($existingAddress->getRegion1() !== $address->getRegion1()) {
+            if ($existingAddress->getAdministrativeAreaLevel2() !== $address->getAdministrativeAreaLevel2()) {
                 continue;
             }
 
-            if ($existingAddress->getRegion2() !== $address->getRegion2()) {
-                continue;
-            }
-
-            return $existingAddress;
-        }
-
-        return null;
-    }
-
-    public function findOneByAddressComponents(
-        string $country,
-        string $region1,
-        string $region2,
-        string $locality
-    ): ?Address
-    {
-        $addresses = $this->findBy([
-            'locality' => $locality,
-        ]);
-
-        foreach ($addresses as $existingAddress) {
-            if ($existingAddress->getCountryCode() !== $country) {
-                continue;
-            }
-
-            if ($existingAddress->getRegion1() !== $region1) {
-                continue;
-            }
-
-            if ($existingAddress->getRegion2() !== $region2) {
+            if ($existingAddress->getAdministrativeAreaLevel3() !== $address->getAdministrativeAreaLevel3()) {
                 continue;
             }
 

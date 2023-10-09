@@ -8,5 +8,5 @@ use App\Entity\Location;
 
 interface TimezoneGeocoderInterface
 {
-    public function timezoneGeocode(Location $location, int $timestamp = null): ?string;
+    public function geocodeTimezone(Location $location, int $timestamp = null): ?string;
 }

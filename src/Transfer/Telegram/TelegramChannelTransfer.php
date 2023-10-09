@@ -20,12 +20,12 @@ class TelegramChannelTransfer
         private bool $countryPassed = false,
         private ?Locale $locale = null,
         private bool $localePassed = false,
-        private ?string $region1 = null,
-        private bool $region1Passed = false,
-        private ?string $region2 = null,
-        private bool $region2Passed = false,
-        private ?string $locality = null,
-        private bool $localityPassed = false,
+        private ?string $administrativeAreaLevel1 = null,
+        private bool $administrativeAreaLevel1Passed = false,
+        private ?string $administrativeAreaLevel2 = null,
+        private bool $administrativeAreaLevel2Passed = false,
+        private ?string $administrativeAreaLevel3 = null,
+        private bool $administrativeAreaLevel3Passed = false,
         private ?bool $primary = null,
         private bool $primaryPassed = false,
     )
@@ -105,58 +105,58 @@ class TelegramChannelTransfer
         return $this->localePassed;
     }
 
-    public function getRegion1(): ?string
+    public function getAdministrativeAreaLevel1(): ?string
     {
-        return $this->region1;
+        return $this->administrativeAreaLevel1;
     }
 
-    public function setRegion1(?string $region1): self
+    public function setAdministrativeAreaLevel1(?string $administrativeAreaLevel1): self
     {
-        $this->region1 = $region1;
-        $this->region1Passed = true;
+        $this->administrativeAreaLevel1 = $administrativeAreaLevel1;
+        $this->administrativeAreaLevel1Passed = true;
 
         return $this;
     }
 
-    public function region1Passed(): bool
+    public function administrativeAreaLevel1Passed(): bool
     {
-        return $this->region1Passed;
+        return $this->administrativeAreaLevel1Passed;
     }
 
-    public function getRegion2(): ?string
+    public function getAdministrativeAreaLevel2(): ?string
     {
-        return $this->region2;
+        return $this->administrativeAreaLevel2;
     }
 
-    public function setRegion2(?string $region2): self
+    public function setAdministrativeAreaLevel2(?string $administrativeAreaLevel2): self
     {
-        $this->region2 = $region2;
-        $this->region2Passed = true;
+        $this->administrativeAreaLevel2 = $administrativeAreaLevel2;
+        $this->administrativeAreaLevel2Passed = true;
 
         return $this;
     }
 
-    public function region2Passed(): bool
+    public function administrativeAreaLevel2Passed(): bool
     {
-        return $this->region2Passed;
+        return $this->administrativeAreaLevel2Passed;
     }
 
-    public function getLocality(): ?string
+    public function getAdministrativeAreaLevel3(): ?string
     {
-        return $this->locality;
+        return $this->administrativeAreaLevel3;
     }
 
-    public function setLocality(?string $locality): self
+    public function setAdministrativeAreaLevel3(?string $administrativeAreaLevel3): self
     {
-        $this->locality = $locality;
-        $this->localityPassed = true;
+        $this->administrativeAreaLevel3 = $administrativeAreaLevel3;
+        $this->administrativeAreaLevel3Passed = true;
 
         return $this;
     }
 
-    public function localityPassed(): bool
+    public function administrativeAreaLevel3Passed(): bool
     {
-        return $this->localityPassed;
+        return $this->administrativeAreaLevel3Passed;
     }
 
     public function getGroup(): ?TelegramBotGroupName

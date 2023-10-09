@@ -17,10 +17,6 @@ class TelegramChannelCreator
     {
     }
 
-    /**
-     * @param TelegramChannelTransfer $channelTransfer
-     * @return TelegramChannel
-     */
     public function createTelegramChannel(TelegramChannelTransfer $channelTransfer): TelegramChannel
     {
         $channel = new TelegramChannel(
@@ -29,9 +25,9 @@ class TelegramChannelCreator
             $channelTransfer->getName(),
             $channelTransfer->getCountry()->getCode(),
             $channelTransfer->getLocale()?->getCode() ?? $channelTransfer->getCountry()->getLocaleCodes()[0],
-            region1: $channelTransfer->getRegion1(),
-            region2: $channelTransfer->getRegion2(),
-            locality: $channelTransfer->getLocality(),
+            administrativeAreaLevel1: $channelTransfer->getAdministrativeAreaLevel1(),
+            administrativeAreaLevel2: $channelTransfer->getAdministrativeAreaLevel2(),
+            administrativeAreaLevel3: $channelTransfer->getAdministrativeAreaLevel3(),
             primary: $channelTransfer->primary(),
         );
 

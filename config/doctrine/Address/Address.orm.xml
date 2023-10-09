@@ -8,7 +8,7 @@
             table="addresses">
 
         <indexes>
-            <index fields="locality"/>
+            <index fields="administrativeAreaLevel1"/>
         </indexes>
 
         <id name="id" column="id" type="integer">
@@ -18,9 +18,9 @@
             </options>
         </id>
         <field name="countryCode" column="country_code" length="2"/>
-        <field name="region1" column="region_1"/>
-        <field name="region2" column="region_2"/>
-        <field name="locality" column="locality"/>
+        <field name="administrativeAreaLevel1" column="administrative_area_level_1"/>
+        <field name="administrativeAreaLevel2" column="administrative_area_level_2" nullable="true"/>
+        <field name="administrativeAreaLevel3" column="administrative_area_level_3" nullable="true"/>
         <field name="timezone" column="timezone" length="32" nullable="true"/>
         <field name="count" column="count" type="integer">
             <options>
@@ -28,5 +28,8 @@
                 <option name="unsigned">true</option>
             </options>
         </field>
+        <field name="createdAt" column="created_at" type="datetime_immutable"/>
+        <field name="updatedAt" column="updated_at" type="datetime_immutable" nullable="true"/>
+        <field name="deletedAt" column="deleted_at" type="datetime_immutable" nullable="true"/>
     </entity>
 </doctrine-mapping>

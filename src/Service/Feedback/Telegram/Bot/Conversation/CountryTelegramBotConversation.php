@@ -15,6 +15,7 @@ use App\Service\Telegram\Bot\Chat\TelegramBotMatchesChatSender;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversation;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
+use DateTimeImmutable;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
 class CountryTelegramBotConversation extends TelegramBotConversation implements TelegramBotConversationInterface
@@ -237,6 +238,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
         }
 
         $address->incCount();
+        $address->setUpdatedAt(new DateTimeImmutable());
 
         $user
             ->setCountryCode($address->getCountryCode())
@@ -376,21 +378,17 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
         if ($address !== null) {
             $message .= "\n";
             $regionName = sprintf(
-                '<u>%s, %s</u>',
-                $address->getRegion2(),
-                $address->getRegion1()
+                '<u>%s</u>',
+                implode(', ', array_filter([
+                    $address->getAdministrativeAreaLevel3(),
+                    $address->getAdministrativeAreaLevel2(),
+                    $address->getAdministrativeAreaLevel1(),
+                ]))
             );
             $parameters = [
                 'region' => $regionName,
             ];
             $message .= $tg->trans('reply.current_region', $parameters, domain: $domain);
-
-            $message .= "\n";
-            $localityName = sprintf('<u>%s</u>', $address->getLocality());
-            $parameters = [
-                'locality' => $localityName,
-            ];
-            $message .= $tg->trans('reply.current_locality', $parameters, domain: $domain);
         }
 
         $message .= "\n";

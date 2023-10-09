@@ -21,7 +21,7 @@ class AddressProvider
 
     public function getAddress(Location $location): ?Address
     {
-        $address = $this->addressGeocoder->addressGeocode($location);
+        $address = $this->addressGeocoder->geocodeAddress($location);
 
         if ($address === null) {
             return null;
@@ -29,7 +29,7 @@ class AddressProvider
 
         $address = $this->upserter->upsertAddress($address);
 
-        $timezone = $this->timezoneGeocoder->timezoneGeocode($location);
+        $timezone = $this->timezoneGeocoder->geocodeTimezone($location);
 
         $address->setTimezone($timezone);
 

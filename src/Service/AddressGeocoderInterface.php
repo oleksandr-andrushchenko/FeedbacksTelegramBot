@@ -9,5 +9,5 @@ use App\Entity\Location;
 
 interface AddressGeocoderInterface
 {
-    public function addressGeocode(Location $location): ?Address;
+    public function geocodeAddress(Location $location): ?Address;
 }

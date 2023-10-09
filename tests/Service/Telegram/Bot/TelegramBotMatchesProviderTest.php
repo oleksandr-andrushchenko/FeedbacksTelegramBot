@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Service\Telegram\Bot;
 
+use App\Entity\Address\Address;
 use App\Entity\Telegram\TelegramBot;
 use App\Entity\User\User;
 use App\Enum\Telegram\TelegramBotGroupName;
@@ -31,33 +32,39 @@ class TelegramBotMatchesProviderTest extends TestCase
         $bot = $this->makeBot(...$botAddressComponents);
         $provider = new TelegramBotMatchesProvider($this->createMock(TelegramBotRepository::class));
 
-        $actualPoints = $provider->calculateTelegramBotPoints($user, $bot);
+        $actualPoints = $provider->calculateTelegramBotPoints($bot, $user);
         $this->assertEquals($expectedPoints, $actualPoints);
     }
 
     public function calculateTelegramBotPointsDataProvider(): Generator
     {
-        yield 'nothing & country, locale1' => [
+        yield 'null+null & c+l' => [
             'user' => [],
-            'bot' => ['au'],
+            'bot' => ['au', 'en'],
             'expected' => 0,
         ];
 
-        yield 'country1 & country2, locale1' => [
+        yield 'c+null & cc+l' => [
             'user' => ['us'],
-            'bot' => ['au'],
+            'bot' => ['au', 'en'],
             'expected' => 0,
         ];
 
-        yield 'country1 & country1, locale1' => [
+        yield 'c+null & c+l' => [
             'user' => ['us'],
-            'bot' => ['us'],
+            'bot' => ['us', 'es'],
             'expected' => 1,
         ];
 
-        yield 'country1, locale1 & country1, locale1' => [
+        yield 'c+l & c+ll' => [
             'user' => ['us', 'en'],
-            'bot' => ['us'],
+            'bot' => ['us', 'es'],
+            'expected' => 1,
+        ];
+
+        yield 'c+l & c+l' => [
+            'user' => ['us', 'en'],
+            'bot' => ['us', 'en'],
             'expected' => 2,
         ];
     }
@@ -100,10 +107,19 @@ class TelegramBotMatchesProviderTest extends TestCase
             [5, 'au'],
         ];
 
-        yield 'country1, locale1 & full match & single' => [
+        yield 'null+null & c+l' => [
+            'user' => [],
+            'bots' => [
+                [1, 'us', 'en'],
+                ...$notMatchedBots,
+            ],
+            'expected' => [],
+        ];
+
+        yield 'c+null & c+l' => [
             'user' => ['us'],
             'bots' => [
-                [1, 'us'],
+                [1, 'us', 'en'],
                 ...$notMatchedBots,
             ],
             'expected' => [
@@ -111,57 +127,33 @@ class TelegramBotMatchesProviderTest extends TestCase
             ],
         ];
 
-        yield 'country1, locale1 & region2 guess match & single' => [
-            'user' => ['us'],
+        yield 'c+l & c+l' => [
+            'user' => ['us', 'en'],
             'bots' => [
-                [3, 'us'],
+                [1, 'us', 'en'],
                 ...$notMatchedBots,
             ],
             'expected' => [
-                3,
+                1,
             ],
         ];
 
-        yield 'country1, locale1 & region2 guess match & multiple' => [
-            'user' => ['us'],
-            'bots' => [
-                [3, 'us'],
-                [4, 'us'],
-                ...$notMatchedBots,
-            ],
-            'expected' => [
-                3,
-                4,
-            ],
-        ];
-
-        yield 'country1, locale1 & no match' => [
-            'user' => ['us'],
+        yield 'c+l & empty' => [
+            'user' => ['us', 'en'],
             'bots' => [
                 ...$notMatchedBots,
             ],
             'expected' => [],
         ];
 
-        yield 'country1, locale1 & region2 match & single' => [
-            'user' => ['us'],
+        yield 'c+l+a1+a2 & c+l' => [
+            'user' => ['us', 'en', 'MT', 'Missoula County'],
             'bots' => [
-                [2, 'us'],
+                [1, 'us', 'en'],
                 ...$notMatchedBots,
             ],
             'expected' => [
-                2,
-            ],
-        ];
-
-        yield 'country1, locale1 & region1 match & single' => [
-            'user' => ['us', 'MT', 'Missoula County', 'Missoula'],
-            'bots' => [
-                [4, 'us'],
-                ...$notMatchedBots,
-            ],
-            'expected' => [
-                4,
+                1,
             ],
         ];
 
@@ -176,7 +168,7 @@ class TelegramBotMatchesProviderTest extends TestCase
             ],
         ];
 
-        yield 'country1, locale12 & full match + other locale & single' => [
+        yield 'c+l & c+ll' => [
             'user' => ['us', 'es'],
             'bots' => [
                 [1, 'us', 'de'],
@@ -187,7 +179,7 @@ class TelegramBotMatchesProviderTest extends TestCase
             ],
         ];
 
-        yield 'country1, locale12 & full match + locale & single' => [
+        yield 'c+l & c+ll, c+l' => [
             'user' => ['us', 'es'],
             'bots' => [
                 [1, 'us', 'de'],
@@ -203,17 +195,32 @@ class TelegramBotMatchesProviderTest extends TestCase
     private function makeUser(
         string $countryCode = null,
         string $localeCode = null,
+        string $administrativeAreaLevel1 = null,
+        string $administrativeAreaLevel2 = null,
+        string $administrativeAreaLevel3 = null,
     ): User
     {
+        if ($countryCode === null || $administrativeAreaLevel1 === null) {
+            $address = null;
+        } else {
+            $address = new Address(
+                $countryCode,
+                $administrativeAreaLevel1,
+                $administrativeAreaLevel2,
+                $administrativeAreaLevel3,
+            );
+        }
+
         return $this->createConfiguredMock(User::class, [
             'getCountryCode' => $countryCode,
             'getLocaleCode' => $localeCode,
+            'getAddress' => $address,
         ]);
     }
 
     private function makeBot(
         string $countryCode = '',
-        string $localeCode = 'en',
+        string $localeCode = '',
         int $id = null
     ): TelegramBot
     {

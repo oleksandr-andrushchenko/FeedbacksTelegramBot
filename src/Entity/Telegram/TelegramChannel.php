@@ -16,9 +16,9 @@ class TelegramChannel
         private string $name,
         private string $countryCode,
         private string $localeCode,
-        private ?string $region1 = null,
-        private ?string $region2 = null,
-        private ?string $locality = null,
+        private ?string $administrativeAreaLevel1 = null,
+        private ?string $administrativeAreaLevel2 = null,
+        private ?string $administrativeAreaLevel3 = null,
         private bool $primary = true,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
@@ -74,38 +74,38 @@ class TelegramChannel
         return $this;
     }
 
-    public function getRegion1(): ?string
+    public function getAdministrativeAreaLevel1(): ?string
     {
-        return $this->region1;
+        return $this->administrativeAreaLevel1;
     }
 
-    public function setRegion1(string $region1 = null): self
+    public function setAdministrativeAreaLevel1(string $administrativeAreaLevel1 = null): self
     {
-        $this->region1 = $region1;
+        $this->administrativeAreaLevel1 = $administrativeAreaLevel1;
 
         return $this;
     }
 
-    public function getRegion2(): ?string
+    public function getAdministrativeAreaLevel2(): ?string
     {
-        return $this->region2;
+        return $this->administrativeAreaLevel2;
     }
 
-    public function setRegion2(string $region2 = null): self
+    public function setAdministrativeAreaLevel2(string $administrativeAreaLevel2 = null): self
     {
-        $this->region2 = $region2;
+        $this->administrativeAreaLevel2 = $administrativeAreaLevel2;
 
         return $this;
     }
 
-    public function getLocality(): ?string
+    public function getAdministrativeAreaLevel3(): ?string
     {
-        return $this->locality;
+        return $this->administrativeAreaLevel3;
     }
 
-    public function setLocality(string $locality = null): self
+    public function setAdministrativeAreaLevel3(string $administrativeAreaLevel3 = null): self
     {
-        $this->locality = $locality;
+        $this->administrativeAreaLevel3 = $administrativeAreaLevel3;
 
         return $this;
     }

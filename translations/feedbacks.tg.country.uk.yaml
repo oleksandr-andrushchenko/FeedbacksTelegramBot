@@ -10,7 +10,6 @@ reply:
   request_location_failed: Ми не змогли визначити Ваше місце розташування, спробуйте вибрати вручну.
   current_country: Ваша поточна країна - %country%.
   current_region: Регіон - %region%.
-  current_locality: Населений пункт - %locality%.
   current_timezone: Часовий пояс - %timezone%.
   unknown_timezone: Невідомо
   canceled: Діалог вибору країни скасовано.

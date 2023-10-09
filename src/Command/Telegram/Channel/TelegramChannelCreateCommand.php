@@ -45,9 +45,9 @@ class TelegramChannelCreateCommand extends Command
             ->addArgument('name', InputArgument::REQUIRED, 'Telegram Name')
             ->addArgument('country', InputArgument::REQUIRED, 'Country code')
             ->addArgument('locale', InputArgument::REQUIRED, 'Locale code')
-            ->addOption('region1', mode: InputOption::VALUE_REQUIRED, description: 'Google Region 1 short name')
-            ->addOption('region2', mode: InputOption::VALUE_REQUIRED, description: 'Google Region 2 (3) short name')
-            ->addOption('locality', mode: InputOption::VALUE_REQUIRED, description: 'Google Locality short name')
+            ->addOption('administrative-area-level-1', mode: InputOption::VALUE_REQUIRED, description: 'Google Administrative area level 1 short name')
+            ->addOption('administrative-area-level-2', mode: InputOption::VALUE_REQUIRED, description: 'Google Administrative area level 2 short name')
+            ->addOption('administrative-area-level-3', mode: InputOption::VALUE_REQUIRED, description: 'Google Administrative area level 3 short name')
             ->addOption('primary', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to make a channel primary or not, primary channels are unique across group, country, locale and address', default: true)
             ->setDescription('Create telegram channel (inner)')
         ;
@@ -89,9 +89,9 @@ class TelegramChannelCreateCommand extends Command
         }
 
         $channelTransfer->setLocale($locale);
-        $channelTransfer->setRegion1($input->getOption('region1'));
-        $channelTransfer->setRegion2($input->getOption('region2'));
-        $channelTransfer->setLocality($input->getOption('locality'));
+        $channelTransfer->setAdministrativeAreaLevel1($input->getOption('administrative-area-level-1'));
+        $channelTransfer->setAdministrativeAreaLevel2($input->getOption('administrative-area-level-2'));
+        $channelTransfer->setAdministrativeAreaLevel3($input->getOption('administrative-area-level-3'));
         $channelTransfer->setPrimary($input->getOption('primary'));
 
         $channel = $this->creator->createTelegramChannel($channelTransfer);

@@ -7,7 +7,6 @@
     <services>
         <service id="app.user_upserter" class="App\Service\User\UserUpserter" lazy="true">
             <argument type="service" id="doctrine.orm.entity_manager"/>
-            <argument type="service" id="app.repository.address"/>
         </service>
         <service id="app.user_data_purger" class="App\Service\User\UserDataPurger" lazy="true">
             <argument type="service" id="app.repository.messenger_user"/>

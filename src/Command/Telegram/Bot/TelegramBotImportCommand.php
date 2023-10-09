@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command\Telegram\Bot;
 
+use App\Service\Doctrine\DryRunner;
 use App\Service\Telegram\Bot\TelegramBotImporter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -19,6 +20,7 @@ class TelegramBotImportCommand extends Command
     public function __construct(
         private readonly string $dataDir,
         private readonly TelegramBotImporter $importer,
+        private readonly DryRunner $dryRunner,
         private readonly EntityManagerInterface $entityManager,
     )
     {
@@ -65,13 +67,12 @@ class TelegramBotImportCommand extends Command
         $countUpdated = 0;
 
         $logger = fn (string $message) => $io->note($message);
-
-        $this->importer->importTelegramBots($filename, $logger, $countCreated, $countUpdated);
+        $func = fn () => $this->importer->importTelegramBots($filename, $logger, $countCreated, $countUpdated);
 
         if ($dryRun) {
-            $this->entityManager->close();
+            $this->dryRunner->dryRun($func);
         } else {
-            $this->entityManager->flush();
+            $this->entityManager->wrapInTransaction($func);
         }
 
         $io->newLine();

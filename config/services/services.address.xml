@@ -3,7 +3,6 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services
         https://symfony.com/schema/dic/services/services-1.0.xsd">
-
     <services>
         <service id="app.address_upserter" class="App\Service\Address\AddressUpserter" lazy="true">
             <argument type="service" id="app.repository.address"/>
@@ -14,5 +13,6 @@
             <argument type="service" id="app.google_timezone_geocoder"/>
             <argument type="service" id="app.address_upserter"/>
         </service>
+        <service id="app.address_info_provider" class="App\Service\Address\AddressInfoProvider" lazy="true"/>
     </services>
 </container>
