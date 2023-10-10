@@ -46,6 +46,7 @@ class TelegramChannelImporter
         $result = new ImportResult();
 
         try {
+            $usernames = [];
             $mandatoryColumns = [
                 'skip',
                 'group',
@@ -58,7 +59,6 @@ class TelegramChannelImporter
                 'latitude',
                 'longitude',
                 'highest_address_component',
-                'delete',
             ];
             $addressComponents = [
                 'country',
@@ -149,21 +149,7 @@ class TelegramChannelImporter
                 $message = $transfer->getUsername();
                 $message .= ': [OK] ';
 
-                if ($data['delete'] === '1') {
-                    if ($channel === null) {
-                        $message .= 'unchanged (nothing to delete)';
-                        $result->incUnchangedCount();
-                    } else {
-                        if ($this->remover->telegramChannelRemoved($channel)) {
-                            $message .= 'unchanged (deleted already)';
-                            $result->incUnchangedCount();
-                        } else {
-                            $this->remover->removeTelegramChannel($channel);
-                            $message .= 'deleted';
-                            $result->incDeletedCount();
-                        }
-                    }
-                } elseif ($channel === null) {
+                if ($channel === null) {
                     $this->creator->createTelegramChannel($transfer);
                     $message .= 'created';
                     $result->incCreatedCount();
@@ -179,7 +165,21 @@ class TelegramChannelImporter
                     }
                 }
 
+                $usernames[] = $channel->getUsername();
+
                 $logger($message);
+            }
+
+            $channels = $this->repository->findAll();
+            foreach ($channels as $channel) {
+                if (!in_array($channel->getUsername(), $usernames, true) && !$this->remover->telegramChannelRemoved($channel)) {
+                    $this->remover->removeTelegramChannel($channel);
+                    $message = $channel->getUsername();
+                    $message .= ': [OK] ';
+                    $message .= 'deleted';
+                    $result->incDeletedCount();
+                    $logger($message);
+                }
             }
         } finally {
             fclose($handle);

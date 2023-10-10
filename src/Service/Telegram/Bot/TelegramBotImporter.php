@@ -48,6 +48,7 @@ class TelegramBotImporter
         $result = new ImportResult();
 
         try {
+            $usernames = [];
             $mandatoryColumns = [
                 'skip',
                 'group',
@@ -60,7 +61,6 @@ class TelegramBotImporter
                 'primary',
                 'admin_id',
                 'admin_only',
-                'delete',
             ];
 
             $logger = $logger ?? fn (string $message) => null;
@@ -115,21 +115,7 @@ class TelegramBotImporter
                 $message = $transfer->getUsername();
                 $message .= ': [OK] ';
 
-                if ($data['delete'] === '1') {
-                    if ($bot === null) {
-                        $message .= 'unchanged (nothing to delete)';
-                        $result->incUnchangedCount();
-                    } else {
-                        if ($this->remover->telegramBotRemoved($bot)) {
-                            $message .= 'unchanged (deleted already)';
-                            $result->incUnchangedCount();
-                        } else {
-                            $this->remover->removeTelegramBot($bot);
-                            $message .= 'deleted';
-                            $result->incDeletedCount();
-                        }
-                    }
-                } elseif ($bot === null) {
+                if ($bot === null) {
                     $bot = $this->creator->createTelegramBot($transfer);
                     $message .= 'created';
                     $result->incCreatedCount();
@@ -145,12 +131,14 @@ class TelegramBotImporter
                     }
                 }
 
+                $usernames[] = $bot->getUsername();
+
                 if ($bot !== null && !$bot->descriptionsSynced() && !$this->remover->telegramBotRemoved($bot)) {
                     try {
                         $this->textsUpdater->syncTelegramDescriptions($bot);
-                        $message .= '; [OK] texts';
+                        $message .= '; [OK] descriptions';
                     } catch (Throwable $exception) {
-                        $message .= '; [FAIL] texts - ' . $exception->getMessage();
+                        $message .= '; [FAIL] descriptions - ' . $exception->getMessage();
                     }
                 }
                 if ($bot !== null && !$bot->webhookSynced() && !$this->remover->telegramBotRemoved($bot)) {
@@ -163,6 +151,18 @@ class TelegramBotImporter
                 }
 
                 $logger($message);
+            }
+
+            $bots = $this->repository->findAll();
+            foreach ($bots as $bot) {
+                if (!in_array($bot->getUsername(), $usernames, true) && !$this->remover->telegramBotRemoved($bot)) {
+                    $this->remover->removeTelegramBot($bot);
+                    $message = $bot->getUsername();
+                    $message .= ': [OK] ';
+                    $message .= 'deleted';
+                    $result->incDeletedCount();
+                    $logger($message);
+                }
             }
         } finally {
             fclose($handle);
