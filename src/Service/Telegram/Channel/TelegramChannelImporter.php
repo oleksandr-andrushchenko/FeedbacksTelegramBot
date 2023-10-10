@@ -13,6 +13,7 @@ use App\Service\CsvFileWalker;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\LocaleProvider;
 use App\Transfer\Telegram\TelegramChannelTransfer;
+use Doctrine\ORM\EntityManagerInterface;
 
 class TelegramChannelImporter
 {
@@ -25,6 +26,7 @@ class TelegramChannelImporter
         private readonly CountryProvider $countryProvider,
         private readonly LocaleProvider $localeProvider,
         private readonly CsvFileWalker $walker,
+        private readonly EntityManagerInterface $entityManager,
         private readonly string $stage,
     )
     {
@@ -46,6 +48,8 @@ class TelegramChannelImporter
                 $logger($message);
             }
         }
+
+        $this->entityManager->flush();
 
         $logger = $logger ?? fn (string $message) => null;
 

@@ -13,6 +13,7 @@ use App\Service\Intl\LocaleProvider;
 use App\Service\Telegram\Bot\Api\TelegramBotDescriptionsSyncer;
 use App\Service\Telegram\Bot\Api\TelegramBotWebhookSyncer;
 use App\Transfer\Telegram\TelegramBotTransfer;
+use Doctrine\ORM\EntityManagerInterface;
 use Throwable;
 
 class TelegramBotImporter
@@ -27,6 +28,7 @@ class TelegramBotImporter
         private readonly CountryProvider $countryProvider,
         private readonly LocaleProvider $localeProvider,
         private readonly CsvFileWalker $walker,
+        private readonly EntityManagerInterface $entityManager,
         private readonly string $stage,
     )
     {
@@ -48,6 +50,8 @@ class TelegramBotImporter
                 $logger($message);
             }
         }
+
+        $this->entityManager->flush();
 
         $logger = $logger ?? fn (string $message) => null;
 

@@ -241,6 +241,7 @@
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.intl_locale_provider"/>
             <argument type="service" id="app.csv_file_walker"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument>%app.stage%</argument>
         </service>
         <service id="app.telegram_channel_remover" class="App\Service\Telegram\Channel\TelegramChannelRemover"
@@ -272,6 +273,7 @@
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.intl_locale_provider"/>
             <argument type="service" id="app.csv_file_walker"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument>%app.stage%</argument>
         </service>
         <service id="app.telegram_channel_matches_provider"
