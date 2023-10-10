@@ -45,6 +45,11 @@ doctrine:
 when@test:
   doctrine:
     dbal:
+      #      default_table_options:
+      #        charset: utf8mb4
+      #        collation: utf8mb4_0900_as_cs
+      #        collate: utf8mb4_0900_as_cs
+      #        engine: InnoDB
       # "TEST_TOKEN" is typically set by ParaTest
       #            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
 
