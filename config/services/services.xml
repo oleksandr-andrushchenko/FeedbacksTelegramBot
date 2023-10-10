@@ -28,5 +28,6 @@
         <service id="app.doctrine_dry_runner" class="App\Service\Doctrine\DryRunner" lazy="true">
             <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
+        <service id="app.csv_file_walker" class="App\Service\CsvFileWalker" lazy="true"/>
     </services>
 </container>
