@@ -13,7 +13,7 @@
         </service>
         <service id="app.telegram_channel_feedback_activity_publisher"
                  class="App\Service\Feedback\Telegram\Bot\Activity\TelegramChannelFeedbackActivityPublisher" lazy="true">
-            <argument type="service" id="app.repository.telegram_channel"/>
+            <argument type="service" id="app.telegram_channel_matches_provider"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>
             <argument type="service" id="app.feedback_telegram_view_provider"/>
             <argument type="service" id="logger"/>

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Service\Feedback\Telegram\Bot\Activity;
 
 use App\Entity\Feedback\Feedback;
-use App\Repository\Telegram\Channel\TelegramChannelRepository;
 use App\Service\Feedback\Telegram\Bot\View\FeedbackTelegramViewProvider;
 use App\Service\Telegram\Bot\Api\TelegramBotMessageSender;
 use App\Service\Telegram\Bot\TelegramBot;
+use App\Service\Telegram\Channel\TelegramChannelMatchesProvider;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Throwable;
@@ -16,7 +16,7 @@ use Throwable;
 class TelegramChannelFeedbackActivityPublisher
 {
     public function __construct(
-        private readonly TelegramChannelRepository $repository,
+        private readonly TelegramChannelMatchesProvider $channelMatchesProvider,
         private readonly TelegramBotMessageSender $messageSender,
         private readonly FeedbackTelegramViewProvider $viewProvider,
         private readonly LoggerInterface $logger,
@@ -26,9 +26,9 @@ class TelegramChannelFeedbackActivityPublisher
 
     public function publishTelegramChannelFeedbackActivity(TelegramBot $bot, Feedback $feedback): void
     {
-        $channels = $this->repository->findPrimaryByGroupAndCountry(
-            $bot->getEntity()->getGroup(),
-            $bot->getEntity()->getCountryCode()
+        $channels = $this->channelMatchesProvider->getTelegramChannelMatches(
+            $bot->getMessengerUser()->getUser(),
+            $bot->getEntity()
         );
 
         foreach ($channels as $channel) {
