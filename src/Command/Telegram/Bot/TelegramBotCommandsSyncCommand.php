@@ -6,8 +6,7 @@ namespace App\Command\Telegram\Bot;
 
 use App\Exception\Telegram\Bot\TelegramBotNotFoundException;
 use App\Repository\Telegram\Bot\TelegramBotRepository;
-use App\Service\Telegram\Bot\Api\TelegramBotTextsUpdater;
-use App\Service\Telegram\Bot\TelegramBotTextsInfoProvider;
+use App\Service\Telegram\Bot\Api\TelegramBotCommandsSyncer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -15,13 +14,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class TelegramBotTextsUpdateCommand extends Command
+class TelegramBotCommandsSyncCommand extends Command
 {
     public function __construct(
         private readonly TelegramBotRepository $repository,
-        private readonly TelegramBotTextsUpdater $updater,
+        private readonly TelegramBotCommandsSyncer $updater,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TelegramBotTextsInfoProvider $infoProvider,
     )
     {
         parent::__construct();
@@ -34,7 +32,7 @@ class TelegramBotTextsUpdateCommand extends Command
     {
         $this
             ->addArgument('username', InputArgument::REQUIRED, 'Telegram Username')
-            ->setDescription('Update telegram bot name, short and long descriptions')
+            ->setDescription('Update telegram bot commands')
         ;
     }
 
@@ -52,10 +50,26 @@ class TelegramBotTextsUpdateCommand extends Command
             throw new TelegramBotNotFoundException($username);
         }
 
-        $this->updater->updateTelegramDescriptions($bot);
+        $this->updater->syncTelegramCommands($bot);
         $this->entityManager->flush();
 
-        $row = $this->infoProvider->getTelegramBotTextsInfo($bot);
+        $row = [];
+        $myCommands = $this->updater->getMyCommands();
+
+        foreach ($myCommands as $myCommandsItem) {
+            $value = sprintf('%s + %s', $myCommandsItem->getLocaleCode(), $myCommandsItem->getScope()->toJson());
+            foreach ($myCommandsItem->getCommands() as $command) {
+                if (!isset($row[$command->getName()])) {
+                    $row[$command->getName()] = [];
+                }
+
+                $row[$command->getName()][] = $value;
+            }
+        }
+
+        foreach ($row as $k => $v) {
+            $row[$k] = implode('; ', $v);
+        }
 
         $io->createTable()
             ->setHeaders(array_keys($row))
@@ -65,7 +79,7 @@ class TelegramBotTextsUpdateCommand extends Command
         ;
 
         $io->newLine();
-        $io->success('Telegram bot texts have been updated');
+        $io->success(sprintf('"%s" Telegram bot\'s commands have been updated', $bot->getUsername()));
 
         return Command::SUCCESS;
     }

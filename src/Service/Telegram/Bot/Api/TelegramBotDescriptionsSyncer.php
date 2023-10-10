@@ -11,10 +11,9 @@ use App\Service\Telegram\Bot\TelegramBotRegistry;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class TelegramBotTextsUpdater
+class TelegramBotDescriptionsSyncer
 {
     public function __construct(
-        private readonly string $stage,
         private readonly TelegramBotRegistry $registry,
         private readonly SiteUrlGenerator $siteUrlGenerator,
         private readonly TranslatorInterface $translator,
@@ -22,7 +21,7 @@ class TelegramBotTextsUpdater
     {
     }
 
-    public function updateTelegramDescriptions(TelegramBot $botEntity): void
+    public function syncTelegramDescriptions(TelegramBot $botEntity): void
     {
         $bot = $this->registry->getTelegramBot($botEntity);
 
@@ -38,18 +37,12 @@ class TelegramBotTextsUpdater
             'short_description' => $this->getMyShortDescription($botEntity),
         ]);
 
-        $bot->getEntity()->setTextsSet(true);
+        $bot->getEntity()->setDescriptionsSynced(true);
     }
 
     private function getMyName(TelegramBot $bot): string
     {
-        $name = $bot->getName();
-
-        if ($this->stage === 'prod') {
-            return $name;
-        }
-
-        return sprintf('(%s, %s) %s', ucfirst($this->stage), strtoupper($bot->getCountryCode()), $name);
+        return $bot->getName();
     }
 
     private function getMyDescription(TelegramBot $botEntity): string

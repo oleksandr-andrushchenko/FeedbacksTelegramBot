@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command\Telegram\Bot;
 
+use App\Entity\ImportResult;
 use App\Service\Doctrine\DryRunner;
 use App\Service\Telegram\Bot\TelegramBotImporter;
 use Doctrine\ORM\EntityManagerInterface;
@@ -63,24 +64,25 @@ class TelegramBotImportCommand extends Command
             }
         }
 
-        $countCreated = 0;
-        $countUpdated = 0;
-
         $logger = fn (string $message) => $io->note($message);
-        $func = fn () => $this->importer->importTelegramBots($filename, $logger, $countCreated, $countUpdated);
+        $func = fn () => $this->importer->importTelegramBots($filename, $logger);
 
         if ($dryRun) {
-            $this->dryRunner->dryRun($func);
+            $result = $this->dryRunner->dryRun($func, readUncommitted: true);
         } else {
-            $this->entityManager->wrapInTransaction($func);
+            $result = $this->entityManager->wrapInTransaction($func);
         }
 
-        $io->newLine();
+        /** @var ImportResult $result */
+
         $io->success(
             sprintf(
-                'Telegram bots have been imported, created: %d, updated: %d',
-                $countCreated,
-                $countUpdated
+                'Telegram bots have been imported, created: %d, updated: %d, deleted: %d, restored: %d, unchanged: %d',
+                $result->getCreatedCount(),
+                $result->getUpdatedCount(),
+                $result->getDeletedCount(),
+                $result->getRestoredCount(),
+                $result->getUnchangedCount(),
             )
         );
 

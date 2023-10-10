@@ -25,6 +25,13 @@ class TelegramChannelRepository extends ServiceEntityRepository
         parent::__construct($registry, TelegramChannel::class);
     }
 
+    public function findAnyOneByUsername(string $username): ?TelegramChannel
+    {
+        return $this->findOneBy([
+            'username' => $username,
+        ]);
+    }
+
     public function findOneByUsername(string $username): ?TelegramChannel
     {
         return $this->findOneBy([

@@ -28,8 +28,9 @@ class TelegramBotUpdater
         }
 
         if ($botTransfer->namePassed()) {
+            $syncTexts = $bot->getName() !== $botTransfer->getName();
             $bot->setName($botTransfer->getName());
-            $bot->setTextsSet(false);
+            $bot->setDescriptionsSynced($syncTexts);
         }
 
         if ($botTransfer->tokenPassed()) {

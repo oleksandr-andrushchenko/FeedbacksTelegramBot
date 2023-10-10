@@ -12,7 +12,7 @@ App\Entity\Telegram\TelegramBot:
       acceptPayments: false
       adminIds: <([])>
       adminOnly: false
-      textsSet: false
-      webhookSet: false
-      commandsSet: false
+      descriptionsSynced: false
+      webhookSynced: false
+      commandsSynced: false
       primary: true

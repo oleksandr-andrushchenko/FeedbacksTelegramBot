@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram\Bot;
 
+use App\Entity\ImportResult;
 use App\Enum\Telegram\TelegramBotGroupName;
 use App\Repository\Telegram\Bot\TelegramBotRepository;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\LocaleProvider;
-use App\Service\Telegram\Bot\Api\TelegramBotCommandsUpdater;
-use App\Service\Telegram\Bot\Api\TelegramBotTextsUpdater;
-use App\Service\Telegram\Bot\Api\TelegramBotWebhookUpdater;
+use App\Service\Telegram\Bot\Api\TelegramBotDescriptionsSyncer;
+use App\Service\Telegram\Bot\Api\TelegramBotWebhookSyncer;
 use App\Transfer\Telegram\TelegramBotTransfer;
 use InvalidArgumentException;
 use LogicException;
@@ -23,21 +23,17 @@ class TelegramBotImporter
         private readonly TelegramBotRepository $repository,
         private readonly TelegramBotCreator $creator,
         private readonly TelegramBotUpdater $updater,
-        private readonly TelegramBotTextsUpdater $textsUpdater,
-        private readonly TelegramBotWebhookUpdater $webhookUpdater,
-        private readonly TelegramBotCommandsUpdater $commandsUpdater,
+        private readonly TelegramBotRemover $remover,
+        private readonly TelegramBotDescriptionsSyncer $textsUpdater,
+        private readonly TelegramBotWebhookSyncer $webhookUpdater,
         private readonly CountryProvider $countryProvider,
         private readonly LocaleProvider $localeProvider,
+        private readonly string $stage,
     )
     {
     }
 
-    public function importTelegramBots(
-        string $filename,
-        callable $logger = null,
-        int &$countCreated = 0,
-        int &$countUpdated = 0,
-    ): void
+    public function importTelegramBots(string $filename, callable $logger = null): ImportResult
     {
         if (!file_exists($filename)) {
             throw new InvalidArgumentException(sprintf('"%s" file is not exists', $filename));
@@ -49,15 +45,38 @@ class TelegramBotImporter
             throw new RuntimeException(sprintf('Unable to open "%s" file', $filename));
         }
 
-        $logger = $logger ?? fn (string $message) => null;
+        $result = new ImportResult();
 
         try {
+            $mandatoryColumns = [
+                'skip',
+                'group',
+                'username',
+                'name',
+                'token',
+                'stage',
+                'country',
+                'locale',
+                'primary',
+                'admin_id',
+                'admin_only',
+                'delete',
+            ];
+
+            $logger = $logger ?? fn (string $message) => null;
+
             $columns = fgetcsv($handle);
             $count = count($columns);
 
-            $index = 2;
+            $index = 1;
 
             while (($row = fgetcsv($handle)) !== false) {
+                $index++;
+
+                if (!isset($row[0]) || [null] === $row) {
+                    continue;
+                }
+
                 $rowCount = count($row);
 
                 if ($count !== $rowCount) {
@@ -66,73 +85,89 @@ class TelegramBotImporter
 
                 $data = array_combine($columns, $row);
 
-                if (isset($data['skip']) && $data['skip'] === '1') {
+                foreach ($mandatoryColumns as $mandatoryColumn) {
+                    if (!array_key_exists($mandatoryColumn, $data)) {
+                        throw new LogicException(sprintf('Row #%d has not "%s" column', $index, $mandatoryColumn));
+                    }
+                }
+
+                if ($data['stage'] !== $this->stage) {
                     continue;
                 }
 
-                if (!isset($data['username'])) {
-                    throw new LogicException(sprintf('Row #%d has not "username" column', $index));
+                if ($data['skip'] === '1') {
+                    continue;
                 }
 
                 $transfer = (new TelegramBotTransfer($data['username']))
-                    ->setGroup(empty($data['group']) ? null : TelegramBotGroupName::fromName($data['group']))
-                    ->setName(empty($data['name']) ? null : $data['name'])
-                    ->setToken(empty($data['token']) ? null : $data['token'])
-                    ->setCountry(empty($data['country']) ? null : $this->countryProvider->getCountry($data['country']))
-                    ->setLocale(empty($data['locale']) ? null : $this->localeProvider->getLocale($data['locale']))
+                    ->setGroup(TelegramBotGroupName::fromName($data['group']))
+                    ->setName($data['name'])
+                    ->setToken($data['token'])
+                    ->setCountry($this->countryProvider->getCountry($data['country']))
+                    ->setLocale($this->localeProvider->getLocale($data['locale']))
+                    ->setPrimary($data['primary'] === '1')
                     ->setAdminIds(empty($data['admin_id']) ? null : [$data['admin_id']])
-                    ->setSyncTexts(isset($data['sync_texts']) && $data['sync_texts'] === '1')
-                    ->setSyncWebhook(isset($data['sync_webhook']) && $data['sync_webhook'] === '1')
-                    ->setSyncCommands(isset($data['sync_commands']) && $data['sync_commands'] === '1')
-                    ->setPrimary(isset($data['primary']) && $data['primary'] === '1')
-                    ->setAdminOnly(isset($data['admin_only']) && $data['admin_only'] === '1')
+                    ->setAdminOnly($data['admin_only'] === '1')
                 ;
 
-                $bot = $this->repository->findOneByUsername($transfer->getUsername());
+                $bot = $this->repository->findAnyOneByUsername($transfer->getUsername());
 
-                if ($bot === null) {
+                $message = $transfer->getUsername();
+                $message .= ': [OK] ';
+
+                if ($data['delete'] === '1') {
+                    if ($bot === null) {
+                        $message .= 'unchanged (nothing to delete)';
+                        $result->incUnchangedCount();
+                    } else {
+                        if ($this->remover->telegramBotRemoved($bot)) {
+                            $message .= 'unchanged (deleted already)';
+                            $result->incUnchangedCount();
+                        } else {
+                            $this->remover->removeTelegramBot($bot);
+                            $message .= 'deleted';
+                            $result->incDeletedCount();
+                        }
+                    }
+                } elseif ($bot === null) {
                     $bot = $this->creator->createTelegramBot($transfer);
-                    $countCreated++;
+                    $message .= 'created';
+                    $result->incCreatedCount();
                 } else {
                     $this->updater->updateTelegramBot($bot, $transfer);
-                    $countUpdated++;
+                    $message .= 'updated';
+                    $result->incUpdatedCount();
+
+                    if ($this->remover->telegramBotRemoved($bot)) {
+                        $this->remover->undoTelegramBotRemove($bot);
+                        $message .= '; [OK] restored';
+                        $result->incRestoredCount();
+                    }
                 }
 
-                $message = $bot->getUsername();
-                $message .= ': [OK] ';
-                $message .= $bot->getId() === null ? 'created' : 'updated';
-
-                if ($transfer->syncTexts()) {
+                if ($bot !== null && !$bot->descriptionsSynced() && !$this->remover->telegramBotRemoved($bot)) {
                     try {
-                        $this->textsUpdater->updateTelegramDescriptions($bot);
+                        $this->textsUpdater->syncTelegramDescriptions($bot);
                         $message .= '; [OK] texts';
                     } catch (Throwable $exception) {
                         $message .= '; [FAIL] texts - ' . $exception->getMessage();
                     }
                 }
-                if ($transfer->syncWebhook()) {
+                if ($bot !== null && !$bot->webhookSynced() && !$this->remover->telegramBotRemoved($bot)) {
                     try {
-                        $this->webhookUpdater->updateTelegramWebhook($bot);
+                        $this->webhookUpdater->syncTelegramWebhook($bot);
                         $message .= '; [OK] webhook';
                     } catch (Throwable $exception) {
                         $message .= '; [FAIL] webhook - ' . $exception->getMessage();
                     }
                 }
-                if ($transfer->syncCommands()) {
-                    try {
-                        $this->commandsUpdater->updateTelegramCommands($bot);
-                        $message .= '; [OK] commands';
-                    } catch (Throwable $exception) {
-                        $message .= '; [FAIL] commands - ' . $exception->getMessage();
-                    }
-                }
 
                 $logger($message);
-
-                $index++;
             }
         } finally {
             fclose($handle);
         }
+
+        return $result;
     }
 }

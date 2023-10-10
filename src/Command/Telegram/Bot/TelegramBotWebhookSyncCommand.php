@@ -6,7 +6,8 @@ namespace App\Command\Telegram\Bot;
 
 use App\Exception\Telegram\Bot\TelegramBotNotFoundException;
 use App\Repository\Telegram\Bot\TelegramBotRepository;
-use App\Service\Telegram\Bot\Api\TelegramBotCommandsUpdater;
+use App\Service\Telegram\Bot\Api\TelegramBotWebhookSyncer;
+use App\Service\Telegram\Bot\TelegramBotWebhookInfoProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -14,12 +15,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class TelegramBotCommandsUpdateCommand extends Command
+class TelegramBotWebhookSyncCommand extends Command
 {
     public function __construct(
         private readonly TelegramBotRepository $repository,
-        private readonly TelegramBotCommandsUpdater $updater,
+        private readonly TelegramBotWebhookSyncer $updater,
         private readonly EntityManagerInterface $entityManager,
+        private readonly TelegramBotWebhookInfoProvider $infoProvider,
     )
     {
         parent::__construct();
@@ -32,7 +34,7 @@ class TelegramBotCommandsUpdateCommand extends Command
     {
         $this
             ->addArgument('username', InputArgument::REQUIRED, 'Telegram Username')
-            ->setDescription('Update telegram bot commands')
+            ->setDescription('Update telegram bot webhook')
         ;
     }
 
@@ -50,26 +52,10 @@ class TelegramBotCommandsUpdateCommand extends Command
             throw new TelegramBotNotFoundException($username);
         }
 
-        $this->updater->updateTelegramCommands($bot);
+        $this->updater->syncTelegramWebhook($bot);
         $this->entityManager->flush();
 
-        $row = [];
-        $myCommands = $this->updater->getMyCommands();
-
-        foreach ($myCommands as $myCommandsItem) {
-            $value = sprintf('%s + %s', $myCommandsItem->getLocaleCode(), $myCommandsItem->getScope()->toJson());
-            foreach ($myCommandsItem->getCommands() as $command) {
-                if (!isset($row[$command->getName()])) {
-                    $row[$command->getName()] = [];
-                }
-
-                $row[$command->getName()][] = $value;
-            }
-        }
-
-        foreach ($row as $k => $v) {
-            $row[$k] = implode('; ', $v);
-        }
+        $row = $this->infoProvider->getTelegramWebhookInfo($bot);
 
         $io->createTable()
             ->setHeaders(array_keys($row))
@@ -79,7 +65,7 @@ class TelegramBotCommandsUpdateCommand extends Command
         ;
 
         $io->newLine();
-        $io->success(sprintf('"%s" Telegram bot\'s commands have been updated', $bot->getUsername()));
+        $io->success('Telegram bot webhook has been updated');
 
         return Command::SUCCESS;
     }

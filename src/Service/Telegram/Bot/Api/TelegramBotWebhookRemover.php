@@ -21,6 +21,6 @@ class TelegramBotWebhookRemover
 
         $bot->deleteWebhook();
 
-        $bot->getEntity()->setWebhookSet(false);
+        $bot->getEntity()->setWebhookSynced(false);
     }
 }

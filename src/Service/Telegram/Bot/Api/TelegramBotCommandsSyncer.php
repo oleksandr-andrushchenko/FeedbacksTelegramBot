@@ -12,7 +12,7 @@ use App\Service\Telegram\Bot\TelegramBotMyCommandsProvider;
 use App\Service\Telegram\Bot\TelegramBotRegistry;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class TelegramBotCommandsUpdater
+class TelegramBotCommandsSyncer
 {
     public function __construct(
         private readonly TelegramBotRegistry $registry,
@@ -24,7 +24,7 @@ class TelegramBotCommandsUpdater
         $this->myCommands = null;
     }
 
-    public function updateTelegramCommands(TelegramBotEntity $botEntity): void
+    public function syncTelegramCommands(TelegramBotEntity $botEntity): void
     {
         $bot = $this->registry->getTelegramBot($botEntity);
         $this->myCommands = [];
@@ -46,7 +46,7 @@ class TelegramBotCommandsUpdater
             $bot->setMyCommands($data);
         }
 
-        $bot->getEntity()->setCommandsSet(true);
+        $bot->getEntity()->setCommandsSynced(true);
     }
 
     /**

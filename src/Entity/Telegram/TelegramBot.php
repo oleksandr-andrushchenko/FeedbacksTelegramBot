@@ -22,9 +22,9 @@ class TelegramBot
         private bool $acceptPayments = false,
         private array $adminIds = [],
         private bool $adminOnly = true,
-        private bool $textsSet = false,
-        private bool $webhookSet = false,
-        private bool $commandsSet = false,
+        private bool $descriptionsSynced = false,
+        private bool $webhookSynced = false,
+        private bool $commandsSynced = false,
         private bool $primary = true,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
@@ -174,38 +174,38 @@ class TelegramBot
         return $this;
     }
 
-    public function textsSet(): bool
+    public function descriptionsSynced(): bool
     {
-        return $this->textsSet;
+        return $this->descriptionsSynced;
     }
 
-    public function setTextsSet(bool $textsSet): self
+    public function setDescriptionsSynced(bool $descriptionsSynced): self
     {
-        $this->textsSet = $textsSet;
+        $this->descriptionsSynced = $descriptionsSynced;
 
         return $this;
     }
 
-    public function webhookSet(): bool
+    public function webhookSynced(): bool
     {
-        return $this->webhookSet;
+        return $this->webhookSynced;
     }
 
-    public function setWebhookSet(bool $webhookSet): self
+    public function setWebhookSynced(bool $webhookSynced): self
     {
-        $this->webhookSet = $webhookSet;
+        $this->webhookSynced = $webhookSynced;
 
         return $this;
     }
 
-    public function commandsSet(): bool
+    public function commandsSynced(): bool
     {
-        return $this->commandsSet;
+        return $this->commandsSynced;
     }
 
-    public function setCommandsSet(bool $commandsSet): self
+    public function setCommandsSynced(bool $commandsSynced): self
     {
-        $this->commandsSet = $commandsSet;
+        $this->commandsSynced = $commandsSynced;
 
         return $this;
     }

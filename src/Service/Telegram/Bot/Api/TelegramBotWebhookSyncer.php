@@ -8,7 +8,7 @@ use App\Entity\Telegram\TelegramBot;
 use App\Service\Telegram\Bot\TelegramBotRegistry;
 use App\Service\Telegram\Bot\TelegramBotWebhookUrlGenerator;
 
-class TelegramBotWebhookUpdater
+class TelegramBotWebhookSyncer
 {
     public function __construct(
         private readonly TelegramBotRegistry $registry,
@@ -17,13 +17,13 @@ class TelegramBotWebhookUpdater
     {
     }
 
-    public function updateTelegramWebhook(TelegramBot $botEntity): void
+    public function syncTelegramWebhook(TelegramBot $botEntity): void
     {
         $bot = $this->registry->getTelegramBot($botEntity);
         $url = $this->webhookUrlGenerator->generate($bot->getEntity()->getUsername());
 
         $bot->setWebhook($url);
 
-        $bot->getEntity()->setWebhookSet(true);
+        $bot->getEntity()->setWebhookSynced(true);
     }
 }

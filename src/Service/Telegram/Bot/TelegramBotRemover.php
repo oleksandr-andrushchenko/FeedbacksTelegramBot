@@ -13,4 +13,14 @@ class TelegramBotRemover
     {
         $bot->setDeletedAt(new DateTimeImmutable());
     }
+
+    public function undoTelegramBotRemove(TelegramBot $bot): void
+    {
+        $bot->setDeletedAt(null);
+    }
+
+    public function telegramBotRemoved(TelegramBot $bot): bool
+    {
+        return $bot->getDeletedAt() !== null;
+    }
 }

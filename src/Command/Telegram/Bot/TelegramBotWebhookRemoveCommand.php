@@ -51,7 +51,7 @@ class TelegramBotWebhookRemoveCommand extends Command
             throw new TelegramBotNotFoundException($username);
         }
 
-        if (!$bot->webhookSet()) {
+        if (!$bot->webhookSynced()) {
             $io->warning('No webhook found for remove');
 
             $confirmed = $io->askQuestion(

@@ -32,12 +32,6 @@ class TelegramBotTransfer
         private bool $adminOnlyPassed = false,
         private ?array $adminIds = null,
         private bool $adminIdsPassed = false,
-        private ?bool $syncTexts = null,
-        private bool $syncTextsPassed = false,
-        private ?bool $syncWebhook = null,
-        private bool $syncWebhookPassed = false,
-        private ?bool $syncCommands = null,
-        private bool $syncCommandsPassed = false,
         private ?bool $primary = null,
         private bool $primaryPassed = false,
     )
@@ -227,60 +221,6 @@ class TelegramBotTransfer
     public function adminIdsPassed(): bool
     {
         return $this->adminIdsPassed;
-    }
-
-    public function syncTexts(): ?bool
-    {
-        return $this->syncTexts;
-    }
-
-    public function setSyncTexts(bool $syncTexts): self
-    {
-        $this->syncTexts = $syncTexts;
-        $this->syncTextsPassed = true;
-
-        return $this;
-    }
-
-    public function syncTextsPassed(): bool
-    {
-        return $this->syncTextsPassed;
-    }
-
-    public function syncWebhook(): ?bool
-    {
-        return $this->syncWebhook;
-    }
-
-    public function setSyncWebhook(bool $syncWebhook): self
-    {
-        $this->syncWebhook = $syncWebhook;
-        $this->syncWebhookPassed = true;
-
-        return $this;
-    }
-
-    public function syncWebhookPassed(): bool
-    {
-        return $this->syncWebhookPassed;
-    }
-
-    public function syncCommands(): ?bool
-    {
-        return $this->syncCommands;
-    }
-
-    public function setSyncCommands(bool $syncCommands): self
-    {
-        $this->syncCommands = $syncCommands;
-        $this->syncCommandsPassed = true;
-
-        return $this;
-    }
-
-    public function syncCommandsPassed(): bool
-    {
-        return $this->syncCommandsPassed;
     }
 
     public function primary(): ?bool

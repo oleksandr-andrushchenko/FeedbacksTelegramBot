@@ -6,18 +6,18 @@ namespace App\Command\Telegram\Bot;
 
 use App\Exception\Telegram\Bot\TelegramBotNotFoundException;
 use App\Repository\Telegram\Bot\TelegramBotRepository;
-use App\Service\Telegram\Bot\TelegramBotTextsInfoProvider;
+use App\Service\Telegram\Bot\TelegramBotDescriptionsInfoProvider;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class TelegramBotTextsShowCommand extends Command
+class TelegramBotDescriptionsShowCommand extends Command
 {
     public function __construct(
         private readonly TelegramBotRepository $repository,
-        private readonly TelegramBotTextsInfoProvider $infoProvider,
+        private readonly TelegramBotDescriptionsInfoProvider $infoProvider,
     )
     {
         parent::__construct();
@@ -48,7 +48,7 @@ class TelegramBotTextsShowCommand extends Command
             throw new TelegramBotNotFoundException($username);
         }
 
-        $row = $this->infoProvider->getTelegramBotTextsInfo($bot);
+        $row = $this->infoProvider->getTelegramBotDescriptionsInfo($bot);
 
         $io->createTable()
             ->setHeaders(array_keys($row))

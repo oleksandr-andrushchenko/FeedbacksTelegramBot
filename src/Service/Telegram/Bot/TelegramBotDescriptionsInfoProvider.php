@@ -6,7 +6,7 @@ namespace App\Service\Telegram\Bot;
 
 use App\Entity\Telegram\TelegramBot;
 
-class TelegramBotTextsInfoProvider
+class TelegramBotDescriptionsInfoProvider
 {
     public function __construct(
         private readonly TelegramBotRegistry $registry,
@@ -14,7 +14,7 @@ class TelegramBotTextsInfoProvider
     {
     }
 
-    public function getTelegramBotTextsInfo(TelegramBot $botEntity): array
+    public function getTelegramBotDescriptionsInfo(TelegramBot $botEntity): array
     {
         $bot = $this->registry->getTelegramBot($botEntity);
 

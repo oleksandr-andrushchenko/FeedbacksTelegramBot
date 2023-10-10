@@ -39,7 +39,7 @@ class TelegramBotCommandsRemover
             $bot->deleteMyCommands($data);
         }
 
-        $bot->getEntity()->setCommandsSet(false);
+        $bot->getEntity()->setCommandsSynced(false);
     }
 
     /**

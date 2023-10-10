@@ -44,17 +44,17 @@
                 <option name="default">1</option>
             </options>
         </field>
-        <field name="textsSet" column="texts_set" type="boolean">
+        <field name="descriptionsSynced" column="descriptions_synced" type="boolean">
             <options>
                 <option name="default">0</option>
             </options>
         </field>
-        <field name="webhookSet" column="webhook_set" type="boolean">
+        <field name="webhookSynced" column="webhook_synced" type="boolean">
             <options>
                 <option name="default">0</option>
             </options>
         </field>
-        <field name="commandsSet" column="commands_set" type="boolean">
+        <field name="commandsSynced" column="commands_synced" type="boolean">
             <options>
                 <option name="default">0</option>
             </options>

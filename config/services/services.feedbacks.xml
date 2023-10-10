@@ -255,7 +255,7 @@
             <argument type="service" id="app.create_command_options"/>
             <argument type="service" id="app.search_command_options"/>
             <argument type="service" id="app.lookup_command_options"/>
-            <tag name="app.telegram_group" channel="feedbacks"/>
+            <tag name="app.telegram_group" group="feedbacks"/>
         </service>
         <service id="app.telegram_conversation_country"
                  class="App\Service\Feedback\Telegram\Bot\Conversation\CountryTelegramBotConversation" lazy="true">

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Doctrine;
 
+use Doctrine\DBAL\TransactionIsolationLevel;
 use Doctrine\ORM\EntityManagerInterface;
 use RuntimeException;
 use Throwable;
@@ -16,7 +17,7 @@ class DryRunner
     {
     }
 
-    public function dryRun(callable $func): mixed
+    public function dryRun(callable $func, bool $readUncommitted = false): mixed
     {
         $result = null;
         $exceptionFunc = function () use ($func, &$result) {
@@ -24,9 +25,18 @@ class DryRunner
             throw new RuntimeException('Dry run');
         };
 
+        if ($readUncommitted) {
+            $connection = $this->entityManager->getConnection();
+            $connection->setTransactionIsolation(TransactionIsolationLevel::READ_UNCOMMITTED);
+        }
+
         try {
             $this->entityManager->wrapInTransaction($exceptionFunc);
         } catch (Throwable $exception) {
+            if ($readUncommitted) {
+                $connection->setTransactionIsolation(TransactionIsolationLevel::REPEATABLE_READ);
+            }
+
             if ($exception->getMessage() !== 'Dry run') {
                 throw $exception;
             }

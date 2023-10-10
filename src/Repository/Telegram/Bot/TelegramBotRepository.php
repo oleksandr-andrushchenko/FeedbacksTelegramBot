@@ -24,6 +24,13 @@ class TelegramBotRepository extends ServiceEntityRepository
         parent::__construct($registry, TelegramBot::class);
     }
 
+    public function findAnyOneByUsername(string $username): ?TelegramBot
+    {
+        return $this->findOneBy([
+            'username' => $username,
+        ]);
+    }
+
     public function findOneByUsername(string $username): ?TelegramBot
     {
         return $this->findOneBy([

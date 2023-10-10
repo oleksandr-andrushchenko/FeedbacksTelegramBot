@@ -6,8 +6,8 @@ namespace App\Command\Telegram\Bot;
 
 use App\Exception\Telegram\Bot\TelegramBotNotFoundException;
 use App\Repository\Telegram\Bot\TelegramBotRepository;
-use App\Service\Telegram\Bot\Api\TelegramBotWebhookUpdater;
-use App\Service\Telegram\Bot\TelegramBotWebhookInfoProvider;
+use App\Service\Telegram\Bot\Api\TelegramBotDescriptionsSyncer;
+use App\Service\Telegram\Bot\TelegramBotDescriptionsInfoProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -15,13 +15,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class TelegramBotWebhookUpdateCommand extends Command
+class TelegramBotDescriptionsSyncCommand extends Command
 {
     public function __construct(
         private readonly TelegramBotRepository $repository,
-        private readonly TelegramBotWebhookUpdater $updater,
+        private readonly TelegramBotDescriptionsSyncer $updater,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TelegramBotWebhookInfoProvider $infoProvider,
+        private readonly TelegramBotDescriptionsInfoProvider $infoProvider,
     )
     {
         parent::__construct();
@@ -34,7 +34,7 @@ class TelegramBotWebhookUpdateCommand extends Command
     {
         $this
             ->addArgument('username', InputArgument::REQUIRED, 'Telegram Username')
-            ->setDescription('Update telegram bot webhook')
+            ->setDescription('Update telegram bot name, short and long descriptions')
         ;
     }
 
@@ -52,10 +52,10 @@ class TelegramBotWebhookUpdateCommand extends Command
             throw new TelegramBotNotFoundException($username);
         }
 
-        $this->updater->updateTelegramWebhook($bot);
+        $this->updater->syncTelegramDescriptions($bot);
         $this->entityManager->flush();
 
-        $row = $this->infoProvider->getTelegramWebhookInfo($bot);
+        $row = $this->infoProvider->getTelegramBotDescriptionsInfo($bot);
 
         $io->createTable()
             ->setHeaders(array_keys($row))
@@ -65,7 +65,7 @@ class TelegramBotWebhookUpdateCommand extends Command
         ;
 
         $io->newLine();
-        $io->success('Telegram bot webhook has been updated');
+        $io->success('Telegram bot texts have been updated');
 
         return Command::SUCCESS;
     }
