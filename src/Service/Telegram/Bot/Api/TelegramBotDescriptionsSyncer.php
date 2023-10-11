@@ -48,7 +48,7 @@ class TelegramBotDescriptionsSyncer
     private function getMyDescription(TelegramBot $botEntity): string
     {
         $localeCode = $botEntity->getLocaleCode();
-        $domain = 'tg.texts';
+        $domain = 'tg.descriptions';
 
         $privacyPolicyLink = $this->siteUrlGenerator->generate(
             'app.telegram_site_page',
@@ -101,8 +101,8 @@ class TelegramBotDescriptionsSyncer
         $localeCode = $botEntity->getLocaleCode();
 
         return $this->translator->trans(
-            sprintf('%s_short', $group->name),
-            domain: 'tg.texts',
+            'short',
+            domain: sprintf('%s.tg.descriptions', $group->name),
             locale: $localeCode
         );
     }

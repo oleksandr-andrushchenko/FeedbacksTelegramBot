@@ -213,11 +213,6 @@ class User
         return $this;
     }
 
-    public function getPurgedAt(): ?DateTimeInterface
-    {
-        return $this->purgedAt;
-    }
-
     public function setPurgedAt(?DateTimeInterface $purgedAt): self
     {
         $this->purgedAt = $purgedAt;

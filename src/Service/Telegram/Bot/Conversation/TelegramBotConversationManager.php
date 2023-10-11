@@ -151,7 +151,7 @@ class TelegramBotConversationManager
         $state = $this->denormalizeState($entity->getState(), get_class($conversation->getState()));
         $conversation->setState($state);
 
-        $tg = $this->awareHelper->withTelegram($bot);
+        $tg = $this->awareHelper->withTelegramBot($bot);
 
         $conversation->$method($tg, $entity);
 

@@ -35,7 +35,7 @@ class TelegramBotAwareHelper
     {
     }
 
-    public function withTelegram(TelegramBot $bot): static
+    public function withTelegramBot(TelegramBot $bot): static
     {
         $new = clone $this;
         $new->bot = $bot;

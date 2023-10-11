@@ -58,7 +58,7 @@ class TelegramBotDescriptionsShowCommand extends Command
         ;
 
         $io->newLine();
-        $io->success('Telegram bot texts info has been shown');
+        $io->success('Telegram bot descriptions info has been shown');
 
         return Command::SUCCESS;
     }

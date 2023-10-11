@@ -43,7 +43,7 @@ class TelegramController
     public function webhook(string $username, Request $request): Response
     {
         try {
-            $bot = $this->repository->findOneByUsername($username);
+            $bot = $this->repository->findAnyOneByUsername($username);
 
             if ($bot === null) {
                 throw new TelegramBotNotFoundException($username);

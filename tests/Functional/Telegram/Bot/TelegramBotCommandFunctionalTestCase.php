@@ -87,7 +87,7 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
     protected function getBot(): TelegramBot
     {
         if ($this->bot === null) {
-            $bot = $this->getTelegramBotRepository()->findOneByUsername(Fixtures::BOT_USERNAME_1);
+            $bot = $this->getTelegramBotRepository()->findAnyOneByUsername(Fixtures::BOT_USERNAME_1);
             $this->bot = $this->getTelegramBotRegistry()->getTelegramBot($bot);
         }
 
@@ -97,7 +97,7 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
     protected function getTg(): TelegramBotAwareHelper
     {
         if ($this->tg === null) {
-            $this->tg = $this->getTelegramBotAwareHelper()->withTelegram($this->getBot());
+            $this->tg = $this->getTelegramBotAwareHelper()->withTelegramBot($this->getBot());
         }
 
         return $this->tg;

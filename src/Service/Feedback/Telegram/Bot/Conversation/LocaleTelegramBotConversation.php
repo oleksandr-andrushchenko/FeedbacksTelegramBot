@@ -27,7 +27,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
         private readonly LocaleProvider $provider,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly TelegramBotLocaleSwitcher $localeSwitcher,
-        private readonly TelegramBotMatchesChatSender $betterMatchBotSender,
+        private readonly TelegramBotMatchesChatSender $botMatchesChatSender,
     )
     {
         parent::__construct(new TelegramBotConversationState());
@@ -264,7 +264,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
         $this->chooseActionChatSender->sendActions($tg, $message);
 
         $keyboard = $this->chooseActionChatSender->getKeyboard($tg);
-        $this->betterMatchBotSender->sendTelegramBotMatchesIfNeed($tg, $keyboard);
+        $this->botMatchesChatSender->sendTelegramBotMatchesIfNeed($tg, $keyboard);
 
         return null;
     }

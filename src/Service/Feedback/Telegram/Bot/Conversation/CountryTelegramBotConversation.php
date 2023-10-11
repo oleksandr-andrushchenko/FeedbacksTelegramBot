@@ -30,7 +30,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
     public function __construct(
         private readonly CountryProvider $provider,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
-        private readonly TelegramBotMatchesChatSender $betterMatchBotSender,
+        private readonly TelegramBotMatchesChatSender $botMatchesChatSender,
         private readonly AddressProvider $addressProvider,
         private readonly bool $requestLocationStep,
     )
@@ -414,7 +414,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
         $this->chooseActionChatSender->sendActions($tg, $message);
 
         $keyboard = $this->chooseActionChatSender->getKeyboard($tg);
-        $this->betterMatchBotSender->sendTelegramBotMatchesIfNeed($tg, $keyboard);
+        $this->botMatchesChatSender->sendTelegramBotMatchesIfNeed($tg, $keyboard);
 
         return null;
     }

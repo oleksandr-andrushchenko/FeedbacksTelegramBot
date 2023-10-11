@@ -65,7 +65,7 @@ class TelegramBotDescriptionsSyncCommand extends Command
         ;
 
         $io->newLine();
-        $io->success('Telegram bot texts have been updated');
+        $io->success('Telegram bot descriptions have been updated');
 
         return Command::SUCCESS;
     }

@@ -22,7 +22,6 @@ class TelegramBotChatProvider
             'getChatJoinRequest',
             'getChannelPost',
             'getSenderChat',
-            'getSenderChat',
         ];
         foreach ($updateMethods as $updateMethod) {
             $object = call_user_func([$update, $updateMethod]);
@@ -31,7 +30,7 @@ class TelegramBotChatProvider
                 continue;
             }
 
-            return $object?->getChat();
+            return $object->getChat();
         }
 
         return null;

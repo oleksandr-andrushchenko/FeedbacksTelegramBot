@@ -47,9 +47,8 @@ class TelegramChannelMatchesProvider
         asort($points);
 
         $points = array_filter($points);
-//        var_dump($points);die;
 
-        $channels = array_filter($channels, fn (TelegramChannel $channel) => array_key_exists($channel->getId(), $points));
+        $channels = array_filter($channels, static fn (TelegramChannel $channel): bool => array_key_exists($channel->getId(), $points));
 
         return array_values($channels);
     }
@@ -86,19 +85,19 @@ class TelegramChannelMatchesProvider
 
         $points += 2;
 
-//        if ($channel->getAdministrativeAreaLevel2() === null && $channel->getAdministrativeAreaLevel3() === null) {
-//            if ($user->getAddress()->getAdministrativeAreaLevel2() !== null || $user->getAddress()->getAdministrativeAreaLevel3() !== null) {
-//                return $points;
-//            }
-//        }
-
-        if ($channel->getAdministrativeAreaLevel2() !== null && $user->getAddress()->getAdministrativeAreaLevel2() !== $channel->getAdministrativeAreaLevel2()) {
+        if (
+            $channel->getAdministrativeAreaLevel2() !== null
+            && $user->getAddress()->getAdministrativeAreaLevel2() !== $channel->getAdministrativeAreaLevel2()
+        ) {
             return 0;
         }
 
         $points += 4;
 
-        if ($channel->getAdministrativeAreaLevel3() !== null && $user->getAddress()->getAdministrativeAreaLevel3() !== $channel->getAdministrativeAreaLevel3()) {
+        if (
+            $channel->getAdministrativeAreaLevel3() !== null
+            && $user->getAddress()->getAdministrativeAreaLevel3() !== $channel->getAdministrativeAreaLevel3()
+        ) {
             return 0;
         }
 

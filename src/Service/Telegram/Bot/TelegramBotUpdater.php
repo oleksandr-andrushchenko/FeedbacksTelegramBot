@@ -16,11 +16,6 @@ class TelegramBotUpdater
     {
     }
 
-    /**
-     * @param TelegramBot $bot
-     * @param TelegramBotTransfer $botTransfer
-     * @return void
-     */
     public function updateTelegramBot(TelegramBot $bot, TelegramBotTransfer $botTransfer): void
     {
         if ($botTransfer->groupPassed()) {
@@ -30,7 +25,7 @@ class TelegramBotUpdater
         if ($botTransfer->namePassed()) {
             $syncTexts = $bot->getName() !== $botTransfer->getName();
             $bot->setName($botTransfer->getName());
-            $bot->setDescriptionsSynced($syncTexts);
+            $bot->setDescriptionsSynced(!$syncTexts);
         }
 
         if ($botTransfer->tokenPassed()) {

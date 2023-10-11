@@ -31,7 +31,7 @@ abstract class TelegramBotGroup implements TelegramBotGroupInterface
      */
     final public function getTelegramCommands(TelegramBot $bot): array
     {
-        $tg = $this->awareHelper->withTelegram($bot);
+        $tg = $this->awareHelper->withTelegramBot($bot);
 
         return iterator_to_array($this->getCommands($tg));
     }
@@ -45,7 +45,7 @@ abstract class TelegramBotGroup implements TelegramBotGroupInterface
 
     final public function acceptTelegramPayment(TelegramBot $bot, TelegramBotPayment $payment): void
     {
-        $tg = $this->awareHelper->withTelegram($bot);
+        $tg = $this->awareHelper->withTelegramBot($bot);
         $this->acceptPayment($payment, $tg);
     }
 
@@ -53,7 +53,7 @@ abstract class TelegramBotGroup implements TelegramBotGroupInterface
 
     final public function supportsTelegramUpdate(TelegramBot $bot): bool
     {
-        $tg = $this->awareHelper->withTelegram($bot);
+        $tg = $this->awareHelper->withTelegramBot($bot);
 
         return $this->supportsUpdate($tg);
     }

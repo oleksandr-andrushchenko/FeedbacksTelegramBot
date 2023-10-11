@@ -86,6 +86,16 @@ class TelegramBot
         return $this;
     }
 
+    public function primary(): bool
+    {
+        return $this->getEntity()->primary();
+    }
+
+    public function deleted(): bool
+    {
+        return $this->getEntity()->getDeletedAt() !== null;
+    }
+
     /**
      * @param string $name
      * @param array $arguments

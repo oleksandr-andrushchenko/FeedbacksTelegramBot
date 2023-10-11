@@ -42,8 +42,7 @@ class TelegramChannelImporter
             if (!in_array($channel->getUsername(), $usernames, true) && !$this->remover->telegramChannelRemoved($channel)) {
                 $this->remover->removeTelegramChannel($channel);
                 $message = $channel->getUsername();
-                $message .= ': [OK] ';
-                $message .= 'deleted';
+                $message .= ': [OK] deleted';
                 $result->incDeletedCount();
                 $logger($message);
             }

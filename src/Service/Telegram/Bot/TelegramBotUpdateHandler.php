@@ -8,9 +8,11 @@ use App\Entity\Telegram\TelegramBot;
 use App\Exception\Telegram\Bot\Payment\TelegramBotPaymentNotFoundException;
 use App\Exception\Telegram\Bot\Payment\TelegramBotUnknownPaymentException;
 use App\Exception\Telegram\Bot\TelegramBotInvalidUpdateException;
+use App\Repository\Telegram\Bot\TelegramBotRepository;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationManager;
 use App\Service\Telegram\Bot\Group\TelegramBotGroupRegistry;
 use App\Service\Telegram\Bot\Payment\TelegramBotPaymentManager;
+use App\Service\Telegram\Bot\View\TelegramBotLinkViewProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\TelegramLog;
 use Psr\Log\LoggerInterface;
@@ -33,6 +35,9 @@ class TelegramBotUpdateHandler
         private readonly TelegramBotInputProvider $inputProvider,
         private readonly EntityManagerInterface $entityManager,
         private readonly TelegramBotRegistry $registry,
+        private readonly TelegramBotRepository $botRepository,
+        private readonly TelegramBotAwareHelper $awareHelper,
+        private readonly TelegramBotLinkViewProvider $botLinkViewProvider,
         private readonly LoggerInterface $logger,
     )
     {
@@ -73,12 +78,12 @@ class TelegramBotUpdateHandler
             $group = $this->groupRegistry->getTelegramGroup($bot->getEntity()->getGroup());
 
             if ($update->getPreCheckoutQuery() !== null) {
-                if ($bot->getEntity()->acceptPayments()) {
+                if (!$bot->deleted() && $bot->getEntity()->acceptPayments()) {
                     $this->paymentManager->acceptPreCheckoutQuery($bot, $update->getPreCheckoutQuery());
                 }
                 return;
             } elseif ($update->getMessage()?->getSuccessfulPayment() !== null) {
-                if ($bot->getEntity()->acceptPayments()) {
+                if (!$bot->deleted() && $bot->getEntity()->acceptPayments()) {
                     $payment = $this->paymentManager->acceptSuccessfulPayment($bot, $update->getMessage()->getSuccessfulPayment());
                     $group->acceptTelegramPayment($bot, $payment);
                 }
@@ -86,6 +91,25 @@ class TelegramBotUpdateHandler
             }
 
             if (!$group->supportsTelegramUpdate($bot)) {
+                return;
+            }
+
+            if ($bot->deleted() || !$bot->primary()) {
+                $newBot = $this->botRepository->findOnePrimaryByBot($bot->getEntity());
+
+                if ($newBot === null) {
+                    $this->logger->warning('Primary bot has not been found to replace deleted/non-primary one', [
+                        'bot_id' => $bot->getEntity()->getId(),
+                    ]);
+                } else {
+                    $tg = $this->awareHelper->withTelegramBot($bot);
+                    $message = $tg->trans('reply.use_primary');
+                    $message .= ":\n\n";
+                    $message .= $this->botLinkViewProvider->getTelegramBotLinkView($newBot);
+                    $message = $tg->attentionText($message);
+                    $tg->reply($message);
+                }
+
                 return;
             }
 

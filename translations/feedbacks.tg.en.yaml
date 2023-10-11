@@ -32,3 +32,4 @@ reply:
   not_accept_payments: We do not accept payments now. Try again later or contact us please %contact_command%.
   better_bot_match: You may be interested in the following bots
   wrong: I don't understand you. Use input field or keyboard above please.
+  use_primary: This bot is no longer supported. Try
