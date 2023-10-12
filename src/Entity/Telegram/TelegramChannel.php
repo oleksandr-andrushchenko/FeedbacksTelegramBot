@@ -17,6 +17,7 @@ class TelegramChannel
         private string $countryCode,
         private string $localeCode,
         private ?int $level1RegionId = null,
+        private ?int $chatId = null,
         private bool $primary = true,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
@@ -92,6 +93,18 @@ class TelegramChannel
     public function setGroup(TelegramBotGroupName $group): self
     {
         $this->group = $group;
+
+        return $this;
+    }
+
+    public function getChatId(): ?int
+    {
+        return $this->chatId;
+    }
+
+    public function setChatId(?int $chatId): self
+    {
+        $this->chatId = $chatId;
 
         return $this;
     }

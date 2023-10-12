@@ -40,7 +40,7 @@ class TelegramChannelFeedbackActivityPublisher
                     showTime: false,
                     channel: $channel,
                 );
-                $chatId = '@' . $channel->getUsername();
+                $chatId = $channel->getChatId() ?? ('@' . $channel->getUsername());
 
                 $response = $this->messageSender->sendTelegramMessage(
                     $bot->getEntity(),

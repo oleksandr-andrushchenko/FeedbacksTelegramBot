@@ -23,6 +23,8 @@ class TelegramChannelTransfer
         private bool $localePassed = false,
         private ?Level1Region $level1Region = null,
         private bool $level1RegionPassed = false,
+        private ?int $chatId = null,
+        private bool $chatIdPassed = false,
         private ?bool $primary = null,
         private bool $primaryPassed = false,
     )
@@ -123,6 +125,24 @@ class TelegramChannelTransfer
     public function getGroup(): ?TelegramBotGroupName
     {
         return $this->group;
+    }
+
+    public function getChatId(): ?int
+    {
+        return $this->chatId;
+    }
+
+    public function setChatId(?int $chatId): self
+    {
+        $this->chatId = $chatId;
+        $this->chatIdPassed = true;
+
+        return $this;
+    }
+
+    public function chatIdPassed(): bool
+    {
+        return $this->chatIdPassed;
     }
 
     public function primary(): ?bool

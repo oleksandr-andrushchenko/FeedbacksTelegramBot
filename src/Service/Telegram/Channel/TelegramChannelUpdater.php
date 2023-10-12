@@ -43,6 +43,9 @@ class TelegramChannelUpdater
         if ($channelTransfer->primaryPassed()) {
             $channel->setPrimary($channelTransfer->primary());
         }
+        if ($channelTransfer->chatIdPassed()) {
+            $channel->setChatId($channelTransfer->getChatId());
+        }
 
         $channel->setUpdatedAt(new DateTimeImmutable());
 

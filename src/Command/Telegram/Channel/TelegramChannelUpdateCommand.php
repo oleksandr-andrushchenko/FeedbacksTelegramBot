@@ -53,6 +53,7 @@ class TelegramChannelUpdateCommand extends Command
             ->addOption('locale', mode: InputOption::VALUE_REQUIRED, description: 'Locale code')
             ->addOption('level-1-region', mode: InputOption::VALUE_REQUIRED, description: 'Google Administrative area level 1 short name')
             ->addOption('no-level-1-region', mode: InputOption::VALUE_NONE, description: 'Whether to unset level 1 region')
+            ->addOption('chat-id', mode: InputOption::VALUE_REQUIRED, description: 'Telegram Chat id (in case Channel is private, e.g. username starts with "+")')
             ->addOption('primary', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to make a channel primary or not, primary channels are unique across group, country, locale and address', default: true)
             ->setDescription('Update telegram channel (inner)')
         ;
@@ -132,6 +133,10 @@ class TelegramChannelUpdateCommand extends Command
 
         if ($input->hasOption('no-level-1-region')) {
             $channelTransfer->setLevel1Region(null);
+        }
+
+        if ($input->hasOption('chat-id')) {
+            $channelTransfer->setChatId($input->getOption('chat-id'));
         }
 
         if ($input->hasOption('primary')) {

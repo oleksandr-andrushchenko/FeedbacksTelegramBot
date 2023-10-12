@@ -53,6 +53,12 @@ class TelegramChannelImporter
         $this->entityManager->flush();
 
         $this->walk($filename, $result, $logger, function (array $data, ImportResult $result, callable $logger): void {
+            if ($data['skip'] === '1') {
+                $result->incSkippedCount();
+
+                return;
+            }
+
             $transfer = new TelegramChannelTransfer($data['username']);
 
             $group = TelegramBotGroupName::fromName($data['group']);
@@ -132,6 +138,7 @@ class TelegramChannelImporter
                 ->setCountry($country)
                 ->setLocale($locale)
                 ->setLevel1Region($level1Region)
+                ->setChatId(empty($data['chat_id']) ? null : (int) $data['chat_id'])
                 ->setPrimary($data['primary'] === '1')
             ;
 
@@ -174,6 +181,7 @@ class TelegramChannelImporter
             'skip',
             'group',
             'username',
+            'chat_id',
             'name',
             'stage',
             'country',
@@ -189,13 +197,6 @@ class TelegramChannelImporter
         $this->walker->walk($filename, function (array $data) use ($result, $logger, $func): void {
             if ($data['stage'] !== $this->stage) {
 //                $logger && $logger(sprintf('%s: [OK] skipped - stage filter', $data['username']));
-                $result && $result->incSkippedCount();
-
-                return;
-            }
-
-            if ($data['skip'] === '1') {
-//                $logger && $logger(sprintf('%s: [OK] skipped - skip filter', $data['username']));
                 $result && $result->incSkippedCount();
 
                 return;

@@ -17,6 +17,7 @@ class TelegramChannelInfoProvider
             'country' => $channel->getCountryCode(),
             'locale' => $channel->getLocaleCode(),
             'level_1_region_id' => $channel->getLevel1RegionId() ?? 'N/A',
+            'chat_id' => $channel->getChatId() ?? 'N/A',
             'primary' => $channel->primary() ? 'Yes' : 'No',
             'created_at' => $channel->getCreatedAt()->format('Y-m-d H:i'),
             'updated_at' => $channel->getUpdatedAt() === null ? 'N/A' : $channel->getUpdatedAt()->format('Y-m-d H:i'),

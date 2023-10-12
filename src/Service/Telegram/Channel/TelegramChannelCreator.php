@@ -26,6 +26,7 @@ class TelegramChannelCreator
             $channelTransfer->getCountry()->getCode(),
             $channelTransfer->getLocale()?->getCode() ?? $channelTransfer->getCountry()->getLocaleCodes()[0],
             level1RegionId: $channelTransfer->getLevel1Region()?->getId(),
+            chatId: $channelTransfer->getChatId(),
             primary: $channelTransfer->primary(),
         );
 

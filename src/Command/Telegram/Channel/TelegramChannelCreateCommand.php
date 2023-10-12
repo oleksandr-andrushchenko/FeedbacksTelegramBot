@@ -49,6 +49,7 @@ class TelegramChannelCreateCommand extends Command
             ->addArgument('country', InputArgument::REQUIRED, 'Country code')
             ->addArgument('locale', InputArgument::REQUIRED, 'Locale code')
             ->addOption('level-1-region', mode: InputOption::VALUE_REQUIRED, description: 'Google Administrative area level 1 short name')
+            ->addOption('chat-id', mode: InputOption::VALUE_REQUIRED, description: 'Telegram Chat id (in case Channel is private, e.g. username starts with "+")')
             ->addOption('primary', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to make a channel primary or not, primary channels are unique across group, country, locale and address', default: true)
             ->setDescription('Create telegram channel (inner)')
         ;
@@ -106,6 +107,7 @@ class TelegramChannelCreateCommand extends Command
         }
 
         $channelTransfer->setLevel1Region($level1Region);
+        $channelTransfer->setChatId($input->getOption('chat-id'));
         $channelTransfer->setPrimary($input->getOption('primary'));
 
         $channel = $this->creator->createTelegramChannel($channelTransfer);
