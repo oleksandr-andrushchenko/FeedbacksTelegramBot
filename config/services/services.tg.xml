@@ -287,5 +287,9 @@
             <argument type="service" id="app.intl_locale_provider"/>
             <argument type="service" id="app.telegram_link_provider"/>
         </service>
+        <service id="app.telegram_channel_link_view_provider"
+                 class="App\Service\Telegram\Channel\View\TelegramChannelLinkViewProvider" lazy="true">
+            <argument type="service" id="app.telegram_link_provider"/>
+        </service>
     </services>
 </container>

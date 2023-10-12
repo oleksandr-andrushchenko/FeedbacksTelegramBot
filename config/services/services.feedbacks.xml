@@ -290,6 +290,7 @@
             <argument type="service" id="app.repository.feedback"/>
             <argument type="service" id="app.feedback_telegram_view_provider"/>
             <argument type="service" id="app.telegram_channel_matches_provider"/>
+            <argument type="service" id="app.telegram_channel_link_view_provider"/>
             <argument>%app.create.search_term_type_step%</argument>
             <argument>%app.create.description_step%</argument>
             <argument>%app.create.change_search_term_button%</argument>

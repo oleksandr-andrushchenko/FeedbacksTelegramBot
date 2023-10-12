@@ -27,6 +27,7 @@ use App\Service\Telegram\Bot\Conversation\TelegramBotConversation;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
 use App\Service\Telegram\Channel\TelegramChannelMatchesProvider;
+use App\Service\Telegram\Channel\View\TelegramChannelLinkViewProvider;
 use App\Service\Validator;
 use App\Transfer\Feedback\FeedbackTransfer;
 use App\Transfer\Feedback\SearchTermTransfer;
@@ -60,6 +61,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         private readonly FeedbackRepository $feedbackRepository,
         private readonly FeedbackTelegramViewProvider $feedbackViewProvider,
         private readonly TelegramChannelMatchesProvider $channelMatchesProvider,
+        private readonly TelegramChannelLinkViewProvider $channelLinkViewProvider,
         private readonly bool $searchTermTypeStep,
         private readonly bool $descriptionStep,
         private readonly bool $changeSearchTermButton,
@@ -716,10 +718,13 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $tg->getBot()->getMessengerUser()->getUser(),
             $tg->getBot()->getEntity()
         );
-        $channelNames = implode(', ', array_map(fn (TelegramChannel $channel) => '@' . $channel->getUsername(), $channels));
+        $channelNames = array_map(
+            fn (TelegramChannel $channel): string => $this->channelLinkViewProvider->getTelegramChannelLinkView($channel),
+            $channels
+        );
 
         $parameters = [
-            'channels' => $channelNames,
+            'channels' => implode(', ', $channelNames),
         ];
         $query = $tg->trans('query.send_to_channel_confirm', parameters: $parameters, domain: 'create');
 
