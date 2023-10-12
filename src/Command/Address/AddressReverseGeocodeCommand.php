@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Command\Address;
 
 use App\Entity\Location;
+use App\Exception\AddressGeocodeFailedException;
+use App\Exception\TimezoneGeocodeFailedException;
 use App\Service\Address\AddressInfoProvider;
-use App\Service\Address\AddressProvider;
+use App\Service\AddressGeocoderInterface;
 use App\Service\Doctrine\DryRunner;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -19,7 +21,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class AddressReverseGeocodeCommand extends Command
 {
     public function __construct(
-        private readonly AddressProvider $provider,
+        private readonly AddressGeocoderInterface $geocoder,
         private readonly AddressInfoProvider $infoProvider,
         private readonly DryRunner $dryRunner,
         private readonly EntityManagerInterface $entityManager,
@@ -54,17 +56,22 @@ class AddressReverseGeocodeCommand extends Command
         $location = new Location($latitude, $longitude);
         $dryRun = $input->getOption('dry-run');
 
-        $func = fn () => $this->provider->getAddress($location);
+        try {
+            $func = fn () => $this->geocoder->geocodeAddress($location);
 
-        if ($dryRun) {
-            $address = $this->dryRunner->dryRun($func);
-        } else {
-            $address = $func();
-            $this->entityManager->flush();
+            if ($dryRun) {
+                $address = $this->dryRunner->dryRun($func);
+            } else {
+                $address = $func();
+                $this->entityManager->flush();
+            }
+        } catch (AddressGeocodeFailedException|TimezoneGeocodeFailedException $exception) {
+            $io->warning(sprintf('Address Location has not been reverse-geocoded, content: %s', $exception->getContent()));
+
+            return Command::SUCCESS;
         }
 
         $row = $this->infoProvider->getAddressInfo($address);
-
         $io->createTable()
             ->setHeaders(array_keys($row))
             ->setRows([$row])
@@ -72,7 +79,6 @@ class AddressReverseGeocodeCommand extends Command
             ->render()
         ;
 
-        $io->newLine();
         $io->success('Address Location has been reverse-geocoded');
 
         return Command::SUCCESS;

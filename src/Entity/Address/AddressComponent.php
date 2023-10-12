@@ -8,6 +8,7 @@ readonly class AddressComponent
 {
     public function __construct(
         private string $shortName,
+        private string $longName,
     )
     {
     }
@@ -15,5 +16,10 @@ readonly class AddressComponent
     public function getShortName(): string
     {
         return $this->shortName;
+    }
+
+    public function getLongName(): string
+    {
+        return $this->longName;
     }
 }

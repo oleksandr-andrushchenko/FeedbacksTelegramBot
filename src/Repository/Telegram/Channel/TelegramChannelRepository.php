@@ -40,30 +40,13 @@ class TelegramChannelRepository extends ServiceEntityRepository
         ]);
     }
 
-    /**
-     * @param TelegramBotGroupName $group
-     * @param string $countryCode
-     * @return TelegramChannel[]
-     */
-    public function findPrimaryByGroupAndCountry(TelegramBotGroupName $group, string $countryCode): array
-    {
-        return $this->findBy([
-            'group' => $group,
-            'countryCode' => $countryCode,
-            'primary' => true,
-            'deletedAt' => null,
-        ]);
-    }
-
     public function findOnePrimaryByBot(TelegramBot $bot): ?TelegramChannel
     {
         return $this->findOneBy([
             'group' => $bot->getGroup(),
             'countryCode' => $bot->getCountryCode(),
             'localeCode' => $bot->getLocaleCode(),
-            'administrativeAreaLevel1' => null,
-            'administrativeAreaLevel2' => null,
-            'administrativeAreaLevel3' => null,
+            'level1RegionId' => null,
             'primary' => true,
             'deletedAt' => null,
         ]);
@@ -75,9 +58,7 @@ class TelegramChannelRepository extends ServiceEntityRepository
             'group' => $channel->getGroup(),
             'countryCode' => $channel->getCountryCode(),
             'localeCode' => $channel->getLocaleCode(),
-            'administrativeAreaLevel1' => $channel->getAdministrativeAreaLevel1(),
-            'administrativeAreaLevel2' => $channel->getAdministrativeAreaLevel2(),
-            'administrativeAreaLevel3' => $channel->getAdministrativeAreaLevel3(),
+            'level1RegionId' => $channel->getLevel1RegionId(),
             'primary' => true,
             'deletedAt' => null,
         ]);

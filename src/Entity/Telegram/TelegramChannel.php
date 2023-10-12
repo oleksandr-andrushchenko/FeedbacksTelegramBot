@@ -16,9 +16,7 @@ class TelegramChannel
         private string $name,
         private string $countryCode,
         private string $localeCode,
-        private ?string $administrativeAreaLevel1 = null,
-        private ?string $administrativeAreaLevel2 = null,
-        private ?string $administrativeAreaLevel3 = null,
+        private ?int $level1RegionId = null,
         private bool $primary = true,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
@@ -74,38 +72,14 @@ class TelegramChannel
         return $this;
     }
 
-    public function getAdministrativeAreaLevel1(): ?string
+    public function getLevel1RegionId(): ?int
     {
-        return $this->administrativeAreaLevel1;
+        return $this->level1RegionId;
     }
 
-    public function setAdministrativeAreaLevel1(string $administrativeAreaLevel1 = null): self
+    public function setLevel1RegionId(?int $level1RegionId): self
     {
-        $this->administrativeAreaLevel1 = $administrativeAreaLevel1;
-
-        return $this;
-    }
-
-    public function getAdministrativeAreaLevel2(): ?string
-    {
-        return $this->administrativeAreaLevel2;
-    }
-
-    public function setAdministrativeAreaLevel2(string $administrativeAreaLevel2 = null): self
-    {
-        $this->administrativeAreaLevel2 = $administrativeAreaLevel2;
-
-        return $this;
-    }
-
-    public function getAdministrativeAreaLevel3(): ?string
-    {
-        return $this->administrativeAreaLevel3;
-    }
-
-    public function setAdministrativeAreaLevel3(string $administrativeAreaLevel3 = null): self
-    {
-        $this->administrativeAreaLevel3 = $administrativeAreaLevel3;
+        $this->level1RegionId = $level1RegionId;
 
         return $this;
     }

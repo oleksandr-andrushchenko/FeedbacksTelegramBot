@@ -2,6 +2,7 @@ query:
   change_confirm: Would you like to change it?
   request_location: Determine automatically or set manually?
   country: Select your country please.
+  level_1_region: Select your region please.
   timezone: Select your timezone please.
 keyboard:
   request_location: Determine automatically

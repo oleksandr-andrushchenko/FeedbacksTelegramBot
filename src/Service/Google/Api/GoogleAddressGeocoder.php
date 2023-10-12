@@ -7,20 +7,18 @@ namespace App\Service\Google\Api;
 use App\Entity\Address\AddressComponent;
 use App\Entity\Address\Address;
 use App\Entity\Location;
+use App\Exception\AddressGeocodeFailedException;
 use App\Service\AddressGeocoderInterface;
-use Psr\Log\LoggerInterface;
-use Throwable;
 
 class GoogleAddressGeocoder implements AddressGeocoderInterface
 {
     public function __construct(
         private readonly string $apiKey,
-        private readonly LoggerInterface $logger,
     )
     {
     }
 
-    public function geocodeAddress(Location $location): ?Address
+    public function geocodeAddress(Location $location): Address
     {
         $url = sprintf(
             'https://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&result_type=%s&key=%s',
@@ -29,23 +27,17 @@ class GoogleAddressGeocoder implements AddressGeocoderInterface
             implode('|', [
                 'country',
                 'administrative_area_level_1',
-                'administrative_area_level_2',
-                'administrative_area_level_3',
             ]),
             $this->apiKey
         );
 
-        try {
-            $json = file_get_contents($url);
-            $data = json_decode($json, true);
-        } catch (Throwable $exception) {
-            $this->logger->error($exception, [
-                'latitude' => $location->getLatitude(),
-                'longitude' => $location->getLongitude(),
-            ]);
+        $json = file_get_contents($url);
 
-            return null;
+        if ($json === false) {
+            throw new AddressGeocodeFailedException($location);
         }
+
+        $data = json_decode($json, true);
 
         if (
             !is_array($data)
@@ -55,25 +47,19 @@ class GoogleAddressGeocoder implements AddressGeocoderInterface
             || !is_array($data['results'])
             || count($data['results']) === 0
         ) {
-            return null;
+            throw new AddressGeocodeFailedException($location, $json);
         }
 
-        $withAdministrativeAreaLevel1 = $this->findByAddressComponents($data['results'], 'administrative_area_level_3');
+        $address = $this->findByAddressComponents($data['results']);
 
-        if ($withAdministrativeAreaLevel1 !== null) {
-            return $withAdministrativeAreaLevel1;
+        if ($address === null) {
+            throw new AddressGeocodeFailedException($location, $json);
         }
 
-        $withAdministrativeAreaLevel2 = $this->findByAddressComponents($data['results'], 'administrative_area_level_2');
-
-        if ($withAdministrativeAreaLevel2 !== null) {
-            return $withAdministrativeAreaLevel2;
-        }
-
-        return $this->findByAddressComponents($data['results']);
+        return $address;
     }
 
-    private function findByAddressComponents(array $results, string $keyShouldExists = null): ?Address
+    private function findByAddressComponents(array $results): ?Address
     {
         foreach ($results as $result) {
             if (
@@ -92,29 +78,31 @@ class GoogleAddressGeocoder implements AddressGeocoderInterface
                 continue;
             }
 
+            $countryCode = $country->getShortName();
+
+            if ($this->hasNonAlpha($countryCode)) {
+                continue;
+            }
+
             $administrativeAreaLevel1 = $this->findAddressComponent('administrative_area_level_1', $addressComponents);
 
             if ($administrativeAreaLevel1 === null) {
                 continue;
             }
 
-            $administrativeAreaLevel2 = $this->findAddressComponent('administrative_area_level_2', $addressComponents);
+            $level1RegionCode = $administrativeAreaLevel1->getShortName();
 
-            if ($keyShouldExists === 'administrative_area_level_2' && $administrativeAreaLevel2 === null) {
-                continue;
+            if ($this->hasNonAlpha($level1RegionCode)) {
+                $level1RegionCode = $administrativeAreaLevel1->getLongName();
             }
 
-            $administrativeAreaLevel3 = $this->findAddressComponent('administrative_area_level_3', $addressComponents);
-
-            if ($keyShouldExists === 'administrative_area_level_3' && $administrativeAreaLevel3 === null) {
+            if ($this->hasNonAlpha($level1RegionCode)) {
                 continue;
             }
 
             return new Address(
-                strtolower($country->getShortName()),
-                $administrativeAreaLevel1->getShortName(),
-                $administrativeAreaLevel2?->getShortName(),
-                $administrativeAreaLevel3?->getShortName(),
+                strtolower($countryCode),
+                $this->keepAlphaOnly($level1RegionCode),
             );
         }
 
@@ -125,10 +113,20 @@ class GoogleAddressGeocoder implements AddressGeocoderInterface
     {
         foreach ($addressComponents as $addressComponent) {
             if (in_array($type, $addressComponent['types'], true)) {
-                return new AddressComponent($addressComponent['short_name']);
+                return new AddressComponent($addressComponent['short_name'], $addressComponent['long_name']);
             }
         }
 
         return null;
+    }
+
+    private function hasNonAlpha(string $text): bool
+    {
+        return preg_match('/[^a-zA-Z-\s\–]/i', $text) > 0;
+    }
+
+    private function keepAlphaOnly(string $text): string
+    {
+        return preg_replace('/[\–]/i', '-', $text);
     }
 }

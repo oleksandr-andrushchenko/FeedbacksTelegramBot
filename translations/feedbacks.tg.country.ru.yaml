@@ -2,6 +2,7 @@ query:
   change_confirm: Желаете изменить настройки?
   request_location: Определить автоматически или выставить вручную?
   country: Выберите Вашу страну.
+  level_1_region: Выберите Ваш регион.
   timezone: Выберите Ваш часовой пояс.
 keyboard:
   request_location: Определить автоматически

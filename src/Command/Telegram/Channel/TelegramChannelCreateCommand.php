@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Command\Telegram\Channel;
 
 use App\Enum\Telegram\TelegramBotGroupName;
+use App\Exception\Address\Level1RegionNotFoundException;
 use App\Exception\Intl\CountryNotFoundException;
 use App\Exception\Intl\LocaleNotFoundException;
 use App\Exception\Telegram\Bot\TelegramBotGroupNotFoundException;
+use App\Service\Address\Level1RegionProvider;
 use App\Transfer\Telegram\TelegramChannelTransfer;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\LocaleProvider;
@@ -29,6 +31,7 @@ class TelegramChannelCreateCommand extends Command
         private readonly TelegramChannelInfoProvider $infoProvider,
         private readonly CountryProvider $countryProvider,
         private readonly LocaleProvider $localeProvider,
+        private readonly Level1RegionProvider $level1RegionProvider,
     )
     {
         parent::__construct();
@@ -45,9 +48,7 @@ class TelegramChannelCreateCommand extends Command
             ->addArgument('name', InputArgument::REQUIRED, 'Telegram Name')
             ->addArgument('country', InputArgument::REQUIRED, 'Country code')
             ->addArgument('locale', InputArgument::REQUIRED, 'Locale code')
-            ->addOption('administrative-area-level-1', mode: InputOption::VALUE_REQUIRED, description: 'Google Administrative area level 1 short name')
-            ->addOption('administrative-area-level-2', mode: InputOption::VALUE_REQUIRED, description: 'Google Administrative area level 2 short name')
-            ->addOption('administrative-area-level-3', mode: InputOption::VALUE_REQUIRED, description: 'Google Administrative area level 3 short name')
+            ->addOption('level-1-region', mode: InputOption::VALUE_REQUIRED, description: 'Google Administrative area level 1 short name')
             ->addOption('primary', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to make a channel primary or not, primary channels are unique across group, country, locale and address', default: true)
             ->setDescription('Create telegram channel (inner)')
         ;
@@ -89,9 +90,22 @@ class TelegramChannelCreateCommand extends Command
         }
 
         $channelTransfer->setLocale($locale);
-        $channelTransfer->setAdministrativeAreaLevel1($input->getOption('administrative-area-level-1'));
-        $channelTransfer->setAdministrativeAreaLevel2($input->getOption('administrative-area-level-2'));
-        $channelTransfer->setAdministrativeAreaLevel3($input->getOption('administrative-area-level-3'));
+
+        $level1Region = null;
+
+        if ($input->hasOption('level-1-region')) {
+            $level1RegionName = $input->getOption('level-1-region');
+            $level1Region = $this->level1RegionProvider->getLevel1RegionByCountryAndName(
+                $country->getCode(),
+                $level1RegionName
+            );
+
+            if ($level1Region === null) {
+                throw new Level1RegionNotFoundException($level1RegionName);
+            }
+        }
+
+        $channelTransfer->setLevel1Region($level1Region);
         $channelTransfer->setPrimary($input->getOption('primary'));
 
         $channel = $this->creator->createTelegramChannel($channelTransfer);

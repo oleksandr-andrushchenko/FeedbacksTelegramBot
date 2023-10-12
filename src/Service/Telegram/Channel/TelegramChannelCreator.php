@@ -25,9 +25,7 @@ class TelegramChannelCreator
             $channelTransfer->getName(),
             $channelTransfer->getCountry()->getCode(),
             $channelTransfer->getLocale()?->getCode() ?? $channelTransfer->getCountry()->getLocaleCodes()[0],
-            administrativeAreaLevel1: $channelTransfer->getAdministrativeAreaLevel1(),
-            administrativeAreaLevel2: $channelTransfer->getAdministrativeAreaLevel2(),
-            administrativeAreaLevel3: $channelTransfer->getAdministrativeAreaLevel3(),
+            level1RegionId: $channelTransfer->getLevel1Region()?->getId(),
             primary: $channelTransfer->primary(),
         );
 

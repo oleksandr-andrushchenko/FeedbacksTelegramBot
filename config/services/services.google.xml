@@ -7,11 +7,9 @@
     <services>
         <service id="app.google_address_geocoder" class="App\Service\Google\Api\GoogleAddressGeocoder" lazy="true">
             <argument>%app.google_api_key%</argument>
-            <argument type="service" id="logger"/>
         </service>
         <service id="app.google_timezone_geocoder" class="App\Service\Google\Api\GoogleTimezoneGeocoder" lazy="true">
             <argument>%app.google_api_key%</argument>
-            <argument type="service" id="logger"/>
         </service>
     </services>
 </container>

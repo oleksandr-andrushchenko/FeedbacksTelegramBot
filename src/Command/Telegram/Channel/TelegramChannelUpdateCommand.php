@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Command\Telegram\Channel;
 
 use App\Enum\Telegram\TelegramBotGroupName;
+use App\Exception\Address\Level1RegionNotFoundException;
 use App\Exception\Intl\CountryNotFoundException;
 use App\Exception\Intl\LocaleNotFoundException;
 use App\Exception\Telegram\Bot\TelegramBotGroupNotFoundException;
 use App\Exception\Telegram\Bot\TelegramBotNotFoundException;
 use App\Repository\Telegram\Channel\TelegramChannelRepository;
+use App\Service\Address\Level1RegionProvider;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\LocaleProvider;
 use App\Service\Telegram\Channel\TelegramChannelInfoProvider;
@@ -32,6 +34,7 @@ class TelegramChannelUpdateCommand extends Command
         private readonly TelegramChannelInfoProvider $infoProvider,
         private readonly CountryProvider $countryProvider,
         private readonly LocaleProvider $localeProvider,
+        private readonly Level1RegionProvider $level1RegionProvider,
     )
     {
         parent::__construct();
@@ -48,9 +51,8 @@ class TelegramChannelUpdateCommand extends Command
             ->addOption('name', mode: InputOption::VALUE_REQUIRED, description: 'Telegram Name')
             ->addOption('country', mode: InputOption::VALUE_REQUIRED, description: 'Country code')
             ->addOption('locale', mode: InputOption::VALUE_REQUIRED, description: 'Locale code')
-            ->addOption('administrative-area-level-1', mode: InputOption::VALUE_REQUIRED, description: 'Google Administrative area level 1 short name')
-            ->addOption('administrative-area-level-2', mode: InputOption::VALUE_REQUIRED, description: 'Google Administrative area level 2 short name')
-            ->addOption('administrative-area-level-3', mode: InputOption::VALUE_REQUIRED, description: 'Google Administrative area level 3 short name')
+            ->addOption('level-1-region', mode: InputOption::VALUE_REQUIRED, description: 'Google Administrative area level 1 short name')
+            ->addOption('no-level-1-region', mode: InputOption::VALUE_NONE, description: 'Whether to unset level 1 region')
             ->addOption('primary', mode: InputOption::VALUE_NEGATABLE, description: 'Whether to make a channel primary or not, primary channels are unique across group, country, locale and address', default: true)
             ->setDescription('Update telegram channel (inner)')
         ;
@@ -114,22 +116,22 @@ class TelegramChannelUpdateCommand extends Command
             $channelTransfer->setLocale($locale);
         }
 
-        $administrativeAreaLevel1 = $input->getOption('administrative-area-level-1');
+        if ($input->hasOption('level-1-region')) {
+            $level1RegionName = $input->getOption('level-1-region');
+            $level1Region = $this->level1RegionProvider->getLevel1RegionByCountryAndName(
+                $country->getCode(),
+                $level1RegionName
+            );
 
-        if ($administrativeAreaLevel1 !== null) {
-            $channelTransfer->setAdministrativeAreaLevel1($administrativeAreaLevel1);
+            if ($level1Region === null) {
+                throw new Level1RegionNotFoundException($level1RegionName);
+            }
+
+            $channelTransfer->setLevel1Region($level1Region);
         }
 
-        $administrativeAreaLevel2 = $input->getOption('administrative-area-level-2');
-
-        if ($administrativeAreaLevel2 !== null) {
-            $channelTransfer->setAdministrativeAreaLevel1($administrativeAreaLevel2);
-        }
-
-        $administrativeAreaLevel3 = $input->getOption('administrative-area-level-3');
-
-        if ($administrativeAreaLevel3 !== null) {
-            $channelTransfer->setAdministrativeAreaLevel1($administrativeAreaLevel3);
+        if ($input->hasOption('no-level-1-region')) {
+            $channelTransfer->setLevel1Region(null);
         }
 
         if ($input->hasOption('primary')) {

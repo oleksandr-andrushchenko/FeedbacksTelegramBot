@@ -64,44 +64,26 @@ class TelegramChannelMatchesProvider
         $points += 1;
 
         if ($user->getCountryCode() !== null && $user->getCountryCode() !== $bot->getCountryCode()) {
-            if ($channel->getAdministrativeAreaLevel1() !== null) {
+            if ($channel->getLevel1RegionId() !== null) {
                 return 0;
             }
 
             return $points;
         }
 
-        if ($user->getAddress() === null && $channel->getAdministrativeAreaLevel1() !== null) {
+        if ($user->getLevel1RegionId() === null && $channel->getLevel1RegionId() !== null) {
             return 0;
         }
 
-        if ($channel->getAdministrativeAreaLevel1() === null) {
+        if ($channel->getLevel1RegionId() === null) {
             return $points;
         }
 
-        if ($user->getAddress()->getAdministrativeAreaLevel1() !== $channel->getAdministrativeAreaLevel1()) {
+        if ($user->getLevel1RegionId() !== $channel->getLevel1RegionId()) {
             return 0;
         }
 
         $points += 2;
-
-        if (
-            $channel->getAdministrativeAreaLevel2() !== null
-            && $user->getAddress()->getAdministrativeAreaLevel2() !== $channel->getAdministrativeAreaLevel2()
-        ) {
-            return 0;
-        }
-
-        $points += 4;
-
-        if (
-            $channel->getAdministrativeAreaLevel3() !== null
-            && $user->getAddress()->getAdministrativeAreaLevel3() !== $channel->getAdministrativeAreaLevel3()
-        ) {
-            return 0;
-        }
-
-        $points += 8;
 
         return $points;
     }

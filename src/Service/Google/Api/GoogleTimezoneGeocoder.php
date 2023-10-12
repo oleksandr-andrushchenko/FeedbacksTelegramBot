@@ -5,20 +5,18 @@ declare(strict_types=1);
 namespace App\Service\Google\Api;
 
 use App\Entity\Location;
+use App\Exception\TimezoneGeocodeFailedException;
 use App\Service\TimezoneGeocoderInterface;
-use Psr\Log\LoggerInterface;
-use Throwable;
 
 class GoogleTimezoneGeocoder implements TimezoneGeocoderInterface
 {
     public function __construct(
         private readonly string $apiKey,
-        private readonly LoggerInterface $logger,
     )
     {
     }
 
-    public function geocodeTimezone(Location $location, int $timestamp = null): ?string
+    public function geocodeTimezone(Location $location, int $timestamp = null): string
     {
         $url = sprintf(
             'https://maps.googleapis.com/maps/api/timezone/json?location=%s%s%s&timestamp=%s&key=%s',
@@ -29,18 +27,23 @@ class GoogleTimezoneGeocoder implements TimezoneGeocoderInterface
             $this->apiKey
         );
 
-        try {
-            $json = file_get_contents($url);
-            $data = json_decode($json, true);
-        } catch (Throwable $exception) {
-            $this->logger->error($exception, [
-                'latitude' => $location->getLatitude(),
-                'longitude' => $location->getLongitude(),
-            ]);
+        $json = file_get_contents($url);
 
-            return null;
+        if ($json === false) {
+            throw new TimezoneGeocodeFailedException($location);
         }
 
-        return $data['timeZoneId'] ?? null;
+        $data = json_decode($json, true);
+
+        if (
+            !is_array($data)
+            || !isset($data['status'])
+            || $data['status'] !== 'OK'
+            || !isset($data['timeZoneId'])
+        ) {
+            throw new TimezoneGeocodeFailedException($location, $json);
+        }
+
+        return $data['timeZoneId'];
     }
 }

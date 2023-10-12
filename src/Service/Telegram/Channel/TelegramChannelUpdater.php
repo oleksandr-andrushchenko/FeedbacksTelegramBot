@@ -37,14 +37,8 @@ class TelegramChannelUpdater
         if ($channelTransfer->localePassed()) {
             $channel->setLocaleCode($channelTransfer->getLocale()->getCode());
         }
-        if ($channelTransfer->administrativeAreaLevel1Passed()) {
-            $channel->setAdministrativeAreaLevel1($channelTransfer->getAdministrativeAreaLevel1());
-        }
-        if ($channelTransfer->administrativeAreaLevel2Passed()) {
-            $channel->setAdministrativeAreaLevel2($channelTransfer->getAdministrativeAreaLevel2());
-        }
-        if ($channelTransfer->administrativeAreaLevel3Passed()) {
-            $channel->setAdministrativeAreaLevel3($channelTransfer->getAdministrativeAreaLevel3());
+        if ($channelTransfer->level1RegionPassed()) {
+            $channel->setLevel1RegionId($channelTransfer->getLevel1Region()?->getId());
         }
         if ($channelTransfer->primaryPassed()) {
             $channel->setPrimary($channelTransfer->primary());

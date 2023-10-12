@@ -5,7 +5,7 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <service id="app.address_reverse_geocode" class="App\Command\Address\AddressReverseGeocodeCommand" lazy="true">
-            <argument type="service" id="app.address_provider"/>
+            <argument type="service" id="app.google_address_geocoder"/>
             <argument type="service" id="app.address_info_provider"/>
             <argument type="service" id="app.doctrine_dry_runner"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>

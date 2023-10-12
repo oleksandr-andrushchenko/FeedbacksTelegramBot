@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Service\Telegram\Channel;
 
-use App\Entity\Address\Address;
 use App\Entity\Telegram\TelegramBot;
 use App\Entity\Telegram\TelegramChannel;
 use App\Entity\User\User;
@@ -71,37 +70,30 @@ class TelegramChannelMatchesProviderTest extends TestCase
         ];
 
         yield 'c+a1 & cc & cc' => [
-            'user' => ['ua', 'Lviv Oblast'],
+            'user' => ['ua', 1],
             'bot' => ['au'],
             'channel' => ['au'],
             'expected' => 1,
         ];
 
         yield 'c+a1 & c & c' => [
-            'user' => ['ua', 'Lviv Oblast'],
+            'user' => ['ua', 1],
             'bot' => ['ua'],
             'channel' => ['ua'],
             'expected' => 1,
         ];
 
         yield 'c+a1 & c & c+a1' => [
-            'user' => ['ua', 'Lviv Oblast'],
+            'user' => ['ua', 1],
             'bot' => ['ua'],
-            'channel' => ['ua', 'Lviv Oblast'],
-            'expected' => 1 + 2 + 4 + 8,
-        ];
-
-        yield 'c+a1+a2 & c & c+a1' => [
-            'user' => ['ua', 'Lviv Oblast', 'Zhovkivs\'kyi district'],
-            'bot' => ['ua'],
-            'channel' => ['ua', 'Lviv Oblast'],
-            'expected' => 1 + 2 + 4 + 8,
+            'channel' => ['ua', 1],
+            'expected' => 1 + 2,
         ];
 
         yield 'c & c & c+a1' => [
             'user' => ['ua'],
             'bot' => ['ua'],
-            'channel' => ['ua', 'Lviv Oblast'],
+            'channel' => ['ua', 1],
             'expected' => 0,
         ];
     }
@@ -185,7 +177,7 @@ class TelegramChannelMatchesProviderTest extends TestCase
             'bot' => ['ua'],
             'channels' => [
                 [1, 'ua'],
-                [2, 'ua', 'Lviv Oblast'],
+                [2, 'ua', 1],
                 ...$notMatchedChannels,
             ],
             'expected' => [
@@ -193,27 +185,12 @@ class TelegramChannelMatchesProviderTest extends TestCase
             ],
         ];
 
-        yield 'c & c & c, c+a1, c+a1+a2' => [
-            'user' => ['ua'],
+        yield 'c+a1 & c & c, c+a1' => [
+            'user' => ['ua', 1],
             'bot' => ['ua'],
             'channels' => [
                 [1, 'ua'],
-                [2, 'ua', 'Lviv Oblast'],
-                [2, 'ua', 'Lviv Oblast', 'Zhovkivs\'kyi district'],
-                ...$notMatchedChannels,
-            ],
-            'expected' => [
-                1,
-            ],
-        ];
-
-        yield 'c+a1 & c & c, c+a1, c+a1+a2' => [
-            'user' => ['ua', 'Lviv Oblast'],
-            'bot' => ['ua'],
-            'channels' => [
-                [1, 'ua'],
-                [2, 'ua', 'Lviv Oblast'],
-                [3, 'ua', 'Lviv Oblast', 'Zhovkivs\'kyi district'],
+                [2, 'ua', 1],
                 ...$notMatchedChannels,
             ],
             'expected' => [
@@ -222,44 +199,13 @@ class TelegramChannelMatchesProviderTest extends TestCase
             ],
         ];
 
-        yield 'c+a1+a2 & c & c, c+a1, c+a1+a2' => [
-            'user' => ['ua', 'Lviv Oblast', 'Zhovkivs\'kyi district'],
+        yield 'c+a1 & c & c, c+a1a1, c+a1a1' => [
+            'user' => ['ua', 1],
             'bot' => ['ua'],
             'channels' => [
                 [1, 'ua'],
-                [2, 'ua', 'Lviv Oblast'],
-                [3, 'ua', 'Lviv Oblast', 'Zhovkivs\'kyi district'],
-                ...$notMatchedChannels,
-            ],
-            'expected' => [
-                1,
-                2,
-                3,
-            ],
-        ];
-
-        yield 'c+a1+a2 & c & c, c+a1, c+a1+a2a2' => [
-            'user' => ['ua', 'Lviv Oblast', 'Kam\'yanka-Buz\'kyi district'],
-            'bot' => ['ua'],
-            'channels' => [
-                [1, 'ua'],
-                [2, 'ua', 'Lviv Oblast'],
-                [3, 'ua', 'Lviv Oblast', 'Zhovkivs\'kyi district'],
-                ...$notMatchedChannels,
-            ],
-            'expected' => [
-                1,
-                2,
-            ],
-        ];
-
-        yield 'c+a1 & c & c, c+a1a1, c+a1a1+a2' => [
-            'user' => ['ua', 'Chernihiv Oblast'],
-            'bot' => ['ua'],
-            'channels' => [
-                [1, 'ua'],
-                [2, 'ua', 'Lviv Oblast'],
-                [3, 'ua', 'Lviv Oblast', 'Zhovkivs\'kyi district'],
+                [2, 'ua', 2],
+                [3, 'ua', 2],
                 ...$notMatchedChannels,
             ],
             'expected' => [
@@ -267,13 +213,12 @@ class TelegramChannelMatchesProviderTest extends TestCase
             ],
         ];
 
-        yield 'c & cc & cc, cc+a1a1, cc+a1a1+a2' => [
+        yield 'c & cc & cc, cc+a1a1' => [
             'user' => ['us'],
             'bot' => ['ua'],
             'channels' => [
                 [1, 'ua'],
-                [2, 'ua', 'Lviv Oblast'],
-                [3, 'ua', 'Lviv Oblast', 'Zhovkivs\'kyi district'],
+                [2, 'ua', 1],
                 ...$notMatchedChannels,
             ],
             'expected' => [
@@ -281,13 +226,12 @@ class TelegramChannelMatchesProviderTest extends TestCase
             ],
         ];
 
-        yield 'c+a1 & cc & cc, cc+a1a1, cc+a1a1+a2' => [
-            'user' => ['us', 'MT'],
+        yield 'c+a1 & cc & cc, cc+a1a1' => [
+            'user' => ['us', 1],
             'bot' => ['ua'],
             'channels' => [
                 [1, 'ua'],
-                [2, 'ua', 'Lviv Oblast'],
-                [3, 'ua', 'Lviv Oblast', 'Zhovkivs\'kyi district'],
+                [2, 'ua', 2],
                 ...$notMatchedChannels,
             ],
             'expected' => [
@@ -298,25 +242,12 @@ class TelegramChannelMatchesProviderTest extends TestCase
 
     private function makeUser(
         string $countryCode = null,
-        string $administrativeAreaLevel1 = null,
-        string $administrativeAreaLevel2 = null,
-        string $administrativeAreaLevel3 = null,
+        int $level1RegionId = null,
     ): User
     {
-        if ($countryCode === null || $administrativeAreaLevel1 === null) {
-            $address = null;
-        } else {
-            $address = new Address(
-                $countryCode,
-                $administrativeAreaLevel1,
-                $administrativeAreaLevel2,
-                $administrativeAreaLevel3,
-            );
-        }
-
         return $this->createConfiguredMock(User::class, [
             'getCountryCode' => $countryCode,
-            'getAddress' => $address,
+            'getLevel1RegionId' => $level1RegionId,
         ]);
     }
 
@@ -334,18 +265,14 @@ class TelegramChannelMatchesProviderTest extends TestCase
 
     private function makeChannel(
         string $countryCode = '',
-        string $administrativeAreaLevel1 = null,
-        string $administrativeAreaLevel2 = null,
-        string $administrativeAreaLevel3 = null,
+        int $level1RegionId = null,
         int $id = null
     ): TelegramChannel
     {
         return $this->createConfiguredMock(TelegramChannel::class, [
             'getId' => $id,
             'getCountryCode' => $countryCode,
-            'getAdministrativeAreaLevel1' => $administrativeAreaLevel1,
-            'getAdministrativeAreaLevel2' => $administrativeAreaLevel2,
-            'getAdministrativeAreaLevel3' => $administrativeAreaLevel3,
+            'getLevel1RegionId' => $level1RegionId,
         ]);
     }
 }

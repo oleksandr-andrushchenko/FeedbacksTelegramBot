@@ -262,7 +262,8 @@
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
             <argument type="service" id="app.telegram_bot_matches_chat_sender"/>
-            <argument type="service" id="app.address_provider"/>
+            <argument type="service" id="app.level_1_region_provider"/>
+            <argument type="service" id="logger"/>
             <argument>%app.country.request_location_step%</argument>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>

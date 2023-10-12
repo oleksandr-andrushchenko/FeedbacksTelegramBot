@@ -4,19 +4,22 @@ declare(strict_types=1);
 
 namespace App\Service\Feedback\Telegram\Bot\Conversation;
 
+use App\Entity\Address\Level1Region;
 use App\Entity\Intl\Country;
 use App\Entity\Location;
 use App\Entity\Telegram\TelegramBotConversation as Entity;
 use App\Entity\Telegram\TelegramBotConversationState;
-use App\Service\Address\AddressProvider;
+use App\Exception\AddressGeocodeFailedException;
+use App\Exception\TimezoneGeocodeFailedException;
+use App\Service\Address\Level1RegionProvider;
 use App\Service\Feedback\Telegram\Bot\Chat\ChooseActionTelegramChatSender;
 use App\Service\Intl\CountryProvider;
 use App\Service\Telegram\Bot\Chat\TelegramBotMatchesChatSender;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversation;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
-use DateTimeImmutable;
 use Longman\TelegramBot\Entities\KeyboardButton;
+use Psr\Log\LoggerInterface;
 
 class CountryTelegramBotConversation extends TelegramBotConversation implements TelegramBotConversationInterface
 {
@@ -24,6 +27,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
     public const STEP_REQUEST_LOCATION_QUERIED = 7;
     public const STEP_GUESS_COUNTRY_QUERIED = 10;
     public const STEP_COUNTRY_QUERIED = 20;
+    public const STEP_LEVEL_1_REGION_QUERIED = 25;
     public const STEP_TIMEZONE_QUERIED = 30;
     public const STEP_CANCEL_PRESSED = 40;
 
@@ -31,7 +35,8 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
         private readonly CountryProvider $provider,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly TelegramBotMatchesChatSender $botMatchesChatSender,
-        private readonly AddressProvider $addressProvider,
+        private readonly Level1RegionProvider $level1RegionProvider,
+        private readonly LoggerInterface $logger,
         private readonly bool $requestLocationStep,
     )
     {
@@ -46,6 +51,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
             self::STEP_REQUEST_LOCATION_QUERIED => $this->gotRequestLocation($tg, $entity),
             self::STEP_GUESS_COUNTRY_QUERIED => $this->gotCountry($tg, $entity, true),
             self::STEP_COUNTRY_QUERIED => $this->gotCountry($tg, $entity, false),
+            self::STEP_LEVEL_1_REGION_QUERIED => $this->gotLevel1Region($tg, $entity),
             self::STEP_TIMEZONE_QUERIED => $this->gotTimezone($tg, $entity),
         };
     }
@@ -63,6 +69,15 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
     public function getCountries(): array
     {
         return $this->provider->getCountries();
+    }
+
+    /**
+     * @param TelegramBotAwareHelper $tg
+     * @return Level1Region[]
+     */
+    public function getLevel1Regions(TelegramBotAwareHelper $tg): array
+    {
+        return $this->level1RegionProvider->getLevel1Regions($tg->getCountryCode());
     }
 
     public function gotCancel(TelegramBotAwareHelper $tg, Entity $entity): null
@@ -115,7 +130,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
         return $tg->reply($message, $tg->keyboard(...$buttons))->null();
     }
 
-    public function queryCustomLocation(TelegramBotAwareHelper $tg): null
+    public function queryCustomCountry(TelegramBotAwareHelper $tg): null
     {
         $countries = $this->getGuessCountries($tg);
 
@@ -151,7 +166,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
             return $this->queryRequestLocation($tg);
         }
 
-        return $this->queryCustomLocation($tg);
+        return $this->queryCustomCountry($tg);
     }
 
     public function getRequestLocationButton(TelegramBotAwareHelper $tg): KeyboardButton
@@ -208,12 +223,12 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
         }
 
         if ($tg->matchText($this->getCustomLocationButton($tg)->getText())) {
-            return $this->queryCustomLocation($tg);
+            return $this->queryCustomCountry($tg);
         }
 
-        $locationResponse = $tg->getLocation();
+        $location = $tg->getLocation();
 
-        if ($locationResponse === null) {
+        if ($location === null) {
             $message = $tg->trans('reply.wrong');
             $message = $tg->wrongText($message);
 
@@ -222,28 +237,31 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
             return $this->queryRequestLocation($tg);
         }
 
+        return $this->saveLocationAndReply($location, $tg, $entity);
+    }
+
+    public function saveLocationAndReply(Location $location, TelegramBotAwareHelper $tg, Entity $entity): null
+    {
         $user = $tg->getBot()->getMessengerUser()->getUser();
-        $location = new Location($locationResponse->getLatitude(), $locationResponse->getLongitude());
         $user->setLocation($location);
 
-        $address = $this->addressProvider->getAddress($user->getLocation());
+        try {
+            $level1Region = $this->level1RegionProvider->getLevel1RegionByLocation($user->getLocation());
+        } catch (AddressGeocodeFailedException|TimezoneGeocodeFailedException $exception) {
+            $this->logger->error($exception);
 
-        if ($address === null) {
             $message = $tg->trans('reply.request_location_failed', domain: 'country');
             $message = $tg->wrongText($message);
 
             $tg->reply($message);
 
-            return $this->queryCustomLocation($tg);
+            return $this->queryCustomCountry($tg);
         }
 
-        $address->incCount();
-        $address->setUpdatedAt(new DateTimeImmutable());
-
         $user
-            ->setCountryCode($address->getCountryCode())
-            ->setAddress($address)
-            ->setTimezone($address->getTimezone())
+            ->setCountryCode($level1Region->getCountryCode())
+            ->setLevel1RegionId($level1Region->getId())
+            ->setTimezone($level1Region->getTimezone())
         ;
 
         if ($user->getTimezone() === null) {
@@ -341,10 +359,114 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
 
         $user = $tg->getBot()->getMessengerUser()?->getUser();
 
+        if ($user->getCountryCode() !== $country->getCode()) {
+            $user
+                ->setCountryCode($country->getCode())
+                ->setLevel1RegionId(null)
+                ->setTimezone($country->getTimezones()[0])
+            ;
+        }
+
+        return $this->queryLevel1Region($tg);
+    }
+
+    public function getLevel1RegionQuery(TelegramBotAwareHelper $tg, bool $help = false): string
+    {
+        $query = $tg->trans('query.level_1_region', domain: 'country');
+
+        if ($help) {
+            $query = $tg->view('country_level_1_region_help', [
+                'query' => $query,
+            ]);
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param TelegramBotAwareHelper $tg
+     * @return KeyboardButton[]
+     */
+    public function getLevel1RegionButtons(TelegramBotAwareHelper $tg): array
+    {
+        return array_map(
+            fn (Level1Region $level1Region) => $this->getLevel1RegionButton($level1Region, $tg),
+            $this->getLevel1Regions($tg)
+        );
+    }
+
+    public function getLevel1RegionButton(Level1Region $level1Region, TelegramBotAwareHelper $tg): KeyboardButton
+    {
+        $name = $this->level1RegionProvider->getLevel1RegionName($level1Region);
+
+        return $tg->button($name);
+    }
+
+    public function getLevel1RegionByButton(string $button, TelegramBotAwareHelper $tg): ?Level1Region
+    {
+        foreach ($this->getLevel1Regions($tg) as $level1Region) {
+            if ($this->getLevel1RegionButton($level1Region, $tg)->getText() === $button) {
+                return $level1Region;
+            }
+        }
+
+        return null;
+    }
+
+    public function queryLevel1Region(TelegramBotAwareHelper $tg, bool $help = false): null
+    {
+        $this->state->setStep(self::STEP_LEVEL_1_REGION_QUERIED);
+
+        $message = $this->getLevel1RegionQuery($tg, $help);
+        $buttons = $this->getLevel1RegionButtons($tg);
+        $buttons[] = $this->getRequestLocationButton($tg);
+
+        if ($this->state->hasNotSkipHelpButton('level_1_region')) {
+            $buttons[] = $tg->helpButton();
+        }
+
+        $buttons[] = $tg->cancelButton();
+
+        return $tg->reply($message, $tg->keyboard(...$buttons))->null();
+    }
+
+    public function gotLevel1Region(TelegramBotAwareHelper $tg, Entity $entity): null
+    {
+        if ($tg->matchText($tg->helpButton()->getText())) {
+            $this->state->addSkipHelpButton('level_1_region');
+
+            return $this->queryLevel1Region($tg, true);
+        }
+        if ($tg->matchText($tg->cancelButton()->getText())) {
+            return $this->gotCancel($tg, $entity);
+        }
+
+        if ($tg->matchText(null)) {
+            $level1Region = null;
+        } else {
+            $level1Region = $this->getLevel1RegionByButton($tg->getText(), $tg);
+        }
+
+        $location = $tg->getLocation();
+
+        if ($location !== null) {
+            return $this->saveLocationAndReply($location, $tg, $entity);
+        }
+
+        if ($level1Region === null) {
+            $message = $tg->trans('reply.wrong');
+            $message = $tg->wrongText($message);
+
+            $tg->reply($message);
+
+            return $this->queryLevel1Region($tg);
+        }
+
+        $user = $tg->getBot()->getMessengerUser()?->getUser();
+
         $user
-            ->setCountryCode($country->getCode())
-            ->setAddress(null)
-            ->setTimezone($country->getTimezones()[0])
+            ->setLevel1RegionId($level1Region->getId())
+            ->setTimezone($level1Region->getTimezone())
         ;
 
         $timezones = $this->getTimezones($tg);
@@ -373,18 +495,11 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
         ];
         $message = $tg->trans('reply.current_country', $parameters, domain: $domain);
 
-        $address = $user->getAddress();
+        $level1RegionId = $user->getLevel1RegionId();
 
-        if ($address !== null) {
+        if ($level1RegionId !== null) {
             $message .= "\n";
-            $regionName = sprintf(
-                '<u>%s</u>',
-                implode(', ', array_filter([
-                    $address->getAdministrativeAreaLevel3(),
-                    $address->getAdministrativeAreaLevel2(),
-                    $address->getAdministrativeAreaLevel1(),
-                ]))
-            );
+            $regionName = sprintf('<u>%s</u>', $this->level1RegionProvider->getLevel1RegionNameById($level1RegionId));
             $parameters = [
                 'region' => $regionName,
             ];

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Service\Telegram\Bot;
 
-use App\Entity\Address\Address;
 use App\Entity\Telegram\TelegramBot;
 use App\Entity\User\User;
 use App\Enum\Telegram\TelegramBotGroupName;
@@ -146,8 +145,8 @@ class TelegramBotMatchesProviderTest extends TestCase
             'expected' => [],
         ];
 
-        yield 'c+l+a1+a2 & c+l' => [
-            'user' => ['us', 'en', 'MT', 'Missoula County'],
+        yield 'c+l+a1 & c+l' => [
+            'user' => ['us', 'en', 1],
             'bots' => [
                 [1, 'us', 'en'],
                 ...$notMatchedBots,
@@ -195,26 +194,13 @@ class TelegramBotMatchesProviderTest extends TestCase
     private function makeUser(
         string $countryCode = null,
         string $localeCode = null,
-        string $administrativeAreaLevel1 = null,
-        string $administrativeAreaLevel2 = null,
-        string $administrativeAreaLevel3 = null,
+        int $level1RegionId = null,
     ): User
     {
-        if ($countryCode === null || $administrativeAreaLevel1 === null) {
-            $address = null;
-        } else {
-            $address = new Address(
-                $countryCode,
-                $administrativeAreaLevel1,
-                $administrativeAreaLevel2,
-                $administrativeAreaLevel3,
-            );
-        }
-
         return $this->createConfiguredMock(User::class, [
             'getCountryCode' => $countryCode,
             'getLocaleCode' => $localeCode,
-            'getAddress' => $address,
+            'getLevel1RegionId' => $level1RegionId,
         ]);
     }
 

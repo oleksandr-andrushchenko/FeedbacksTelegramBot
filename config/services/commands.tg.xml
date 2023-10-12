@@ -126,6 +126,7 @@
             <argument type="service" id="app.telegram_channel_info_provider"/>
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.intl_locale_provider"/>
+            <argument type="service" id="app.level_1_region_provider"/>
             <tag name="console.command" command="telegram:channel:create"/>
         </service>
         <service id="app.command.telegram_channel_update"
@@ -136,6 +137,7 @@
             <argument type="service" id="app.telegram_channel_info_provider"/>
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.intl_locale_provider"/>
+            <argument type="service" id="app.level_1_region_provider"/>
             <tag name="console.command" command="telegram:channel:update"/>
         </service>
         <service id="app.command.telegram_channel_show_all"

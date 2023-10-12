@@ -5,9 +5,9 @@ App\Entity\User\User:
       name: User 1 First Last
       countryCode: ua
       localeCode: uk
+      level1RegionId: null
       currencyCode: UAH
       timezone: Europe/Kiev
-      rating: null
       phoneNumber: null
       email: null
   user_2:
@@ -16,9 +16,9 @@ App\Entity\User\User:
       name: User 2 First Last
       countryCode: ua
       localeCode: uk
+      level1RegionId: null
       currencyCode: UAH
       timezone: Europe/Kiev
-      rating: null
       phoneNumber: null
       email: null
   user_3:
@@ -27,8 +27,8 @@ App\Entity\User\User:
       name: User 3 First Last
       countryCode: ua
       localeCode: uk
+      level1RegionId: null
       currencyCode: UAH
       timezone: Europe/Kiev
-      rating: null
       phoneNumber: null
       email: null

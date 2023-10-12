@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\User;
 
-use App\Entity\Address\Address;
 use App\Entity\Location;
-use App\Enum\Feedback\Rating;
 use DateTimeImmutable;
 use DateTimeInterface;
 
@@ -20,11 +18,10 @@ class User
         private ?string $name = null,
         private ?string $countryCode = null,
         ?Location $location = null,
-        private ?Address $address = null,
+        private ?int $level1RegionId = null,
         private ?string $localeCode = null,
         private ?string $currencyCode = null,
         private ?string $timezone = null,
-        private ?Rating $rating = null,
         private ?int $phoneNumber = null,
         private ?string $email = null,
         private ?DateTimeInterface $subscriptionExpireAt = null,
@@ -102,18 +99,6 @@ class User
         return $this;
     }
 
-    public function getRating(): ?Rating
-    {
-        return $this->rating;
-    }
-
-    public function setRating(?Rating $rating): self
-    {
-        $this->rating = $rating;
-
-        return $this;
-    }
-
     public function getPhoneNumber(): ?int
     {
         return $this->phoneNumber;
@@ -160,14 +145,14 @@ class User
         return $this;
     }
 
-    public function getAddress(): ?Address
+    public function getLevel1RegionId(): ?int
     {
-        return $this->address;
+        return $this->level1RegionId;
     }
 
-    public function setAddress(?Address $address): self
+    public function setLevel1RegionId(?int $level1RegionId): self
     {
-        $this->address = $address;
+        $this->level1RegionId = $level1RegionId;
 
         return $this;
     }
@@ -211,6 +196,11 @@ class User
         $this->updatedAt = $updatedAt;
 
         return $this;
+    }
+
+    public function getPurgedAt(): ?DateTimeInterface
+    {
+        return $this->purgedAt;
     }
 
     public function setPurgedAt(?DateTimeInterface $purgedAt): self

@@ -12,6 +12,8 @@ class ImportResult
         private int $deletedCount = 0,
         private int $restoredCount = 0,
         private int $unchangedCount = 0,
+        private int $skippedCount = 0,
+        private int $failedCount = 0,
     )
     {
     }
@@ -66,4 +68,23 @@ class ImportResult
         $this->unchangedCount++;
     }
 
+    public function getSkippedCount(): int
+    {
+        return $this->skippedCount;
+    }
+
+    public function incSkippedCount(): void
+    {
+        $this->skippedCount++;
+    }
+
+    public function getFailedCount(): int
+    {
+        return $this->failedCount;
+    }
+
+    public function incFailedCount(): void
+    {
+        $this->failedCount++;
+    }
 }
