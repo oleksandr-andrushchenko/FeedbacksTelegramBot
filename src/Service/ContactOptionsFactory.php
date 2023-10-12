@@ -8,6 +8,7 @@ use App\Entity\ContactOptions;
 use App\Entity\Telegram\TelegramBot;
 use App\Exception\ContactOptionsNotFoundException;
 use App\Service\Telegram\Bot\View\TelegramBotLinkViewProvider;
+use App\Service\Telegram\TelegramLinkProvider;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ContactOptionsFactory
@@ -15,7 +16,7 @@ class ContactOptionsFactory
     public function __construct(
         private readonly array $options,
         private readonly TranslatorInterface $translator,
-        private readonly TelegramBotLinkViewProvider $telegramBotLinkViewProvider,
+        private readonly TelegramLinkProvider $telegramLinkProvider,
     )
     {
     }
@@ -44,7 +45,7 @@ class ContactOptionsFactory
             $this->translator->trans('tax', domain: $domain, locale: $localeCode),
             $bot->getUsername(),
             $bot->getName(),
-            $this->telegramBotLinkViewProvider->getTelegramBotLinkView($bot),
+            $this->telegramLinkProvider->getTelegramLink($bot->getUsername()),
             $options['website'],
             $this->translator->trans('phone', domain: $domain, locale: $localeCode),
             $this->translator->trans('email', domain: $domain, locale: $localeCode),

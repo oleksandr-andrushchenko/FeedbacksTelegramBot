@@ -8,7 +8,7 @@
         <service id="app.contact_options_factory" class="App\Service\ContactOptionsFactory" lazy="true">
             <argument>%app.contact_options%</argument>
             <argument type="service" id="app.translator"/>
-            <argument type="service" id="app.telegram_bot_link_view_provider"/>
+            <argument type="service" id="app.telegram_link_provider"/>
         </service>
         <service id="app.translator" class="App\Service\Translator" lazy="true">
             <argument type="service" id="translator"/>
