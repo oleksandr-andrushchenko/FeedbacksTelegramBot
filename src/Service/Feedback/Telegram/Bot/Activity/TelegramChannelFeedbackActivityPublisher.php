@@ -36,7 +36,7 @@ class TelegramChannelFeedbackActivityPublisher
                 $message = $this->viewProvider->getFeedbackTelegramView(
                     $bot,
                     $feedback,
-                    localeCode: $bot->getEntity()->getLocaleCode(),
+                    localeCode: $channel->getLocaleCode(),
                     showTime: false,
                     channel: $channel,
                 );
