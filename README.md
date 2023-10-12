@@ -56,4 +56,5 @@
 * Create groups
 * Create adv
 
-* Country Conversation
+* DO not delete skipped records (imports)
+* Sync groups automatically
