@@ -63,10 +63,10 @@ class ChooseActionTelegramChatSender
         if ($messengerUser?->showExtendedKeyboard()) {
             $buttons[] = $this->getCountryButton($tg);
             $buttons[] = $this->getLocaleButton($tg);
-            $buttons[] = $this->getCommandsButton($tg);
-            $buttons[] = $this->getLimitsButton($tg);
-            $buttons[] = $this->getPurgeButton($tg);
-            $buttons[] = $this->getRestartButton($tg);
+//            $buttons[] = $this->getCommandsButton($tg);
+//            $buttons[] = $this->getLimitsButton($tg);
+//            $buttons[] = $this->getPurgeButton($tg);
+//            $buttons[] = $this->getRestartButton($tg);
             $buttons[] = $this->getContactButton($tg);
             $buttons[] = $this->getShowLessButton($tg);
         } else {
