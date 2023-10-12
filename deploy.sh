@@ -4,8 +4,8 @@ docker compose run php composer install --prefer-dist --optimize-autoloader --no
 docker compose run php php bin/console cache:clear --env=prod
 docker compose run php php bin/console cache:warmup --env=prod
 
-#serverless deploy --stage=prod
-serverless deploy
+serverless deploy --stage=prod
+#serverless deploy
 
 #get back dev env
 docker compose run php composer install

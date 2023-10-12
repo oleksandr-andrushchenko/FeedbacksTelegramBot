@@ -58,3 +58,4 @@
 
 * DO not delete skipped records (imports)
 * Sync groups automatically
+* Share link on channel's message with feedbacks (give a chance to discuss the feedback)

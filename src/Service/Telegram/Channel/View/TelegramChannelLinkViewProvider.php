@@ -25,6 +25,6 @@ class TelegramChannelLinkViewProvider
             $anchor = '@' . $channel->getUsername();
         }
 
-        return sprintf('<u><b><a href="%s">%s</a></b>></u>', $link, $anchor);
+        return sprintf('<u><b><a href="%s">%s</a></b></u>', $link, $anchor);
     }
 }
