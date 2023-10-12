@@ -23,8 +23,8 @@ keyboard:
   help: Потрібна домомога
 
 sign:
-  create: ДОДАТИ
-  search: ЗНАЙТИ
+  create: ДОДАТИ Відгук
+  search: ЗНАЙТИ Відгуки
   channel: ПІДПИСАТИСЯ
 
 reply:

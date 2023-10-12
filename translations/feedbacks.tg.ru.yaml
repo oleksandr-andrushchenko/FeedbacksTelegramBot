@@ -23,8 +23,8 @@ keyboard:
   help: Нужна помощь
 
 sign:
-  create: ДОБАВИТЬ
-  search: НАЙТИ
+  create: ДОБАВИТЬ Отзыв
+  search: НАЙТИ Отзывы
   channel: ПОДПИСАТЬСЯ
 
 reply:

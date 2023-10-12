@@ -23,8 +23,8 @@ keyboard:
   help: Need help
 
 sign:
-  create: ADD
-  search: FIND
+  create: ADD Feedback
+  search: FIND Feedbacks
   channel: SUBSCRIBE
 
 reply:

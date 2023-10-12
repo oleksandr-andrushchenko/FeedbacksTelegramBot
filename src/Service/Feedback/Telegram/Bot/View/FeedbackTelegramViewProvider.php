@@ -97,7 +97,7 @@ class FeedbackTelegramViewProvider
         if ($showSign) {
             $message .= "\n\n";
 
-            $message .= $this->signViewProvider->getFeedbackTelegramReplySignView($bot, $channel);
+            $message .= $this->signViewProvider->getFeedbackTelegramReplySignView($bot, $channel, localeCode: $localeCode);
         }
 
         return $message;

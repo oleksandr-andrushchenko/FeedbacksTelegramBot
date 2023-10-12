@@ -21,16 +21,20 @@ class FeedbackTelegramReplySignViewProvider
     {
     }
 
-    public function getFeedbackTelegramReplySignView(TelegramBot $bot, TelegramChannel $channel = null): string
+    public function getFeedbackTelegramReplySignView(
+        TelegramBot $bot,
+        TelegramChannel $channel = null,
+        string $localeCode = null,
+    ): string
     {
-        $localeCode = $bot->getEntity()->getLocaleCode();
+        $localeCode = $localeCode ?? $bot->getEntity()->getLocaleCode();
         $text = fn ($key) => $this->translator->trans('sign.' . $key, domain: 'feedbacks.tg', locale: $localeCode);
 
         $botLink = $this->messengerUserProfileUrlProvider->getMessengerUserProfileUrl(
             Messenger::telegram,
             $bot->getEntity()->getUsername()
         );
-        $message = in_array($localeCode, ['ru'], true) ? '' : '➡️ ';
+        $message = '➡️ ';
         $message .= sprintf('<a href="%s">%s</a>', $botLink, $text('create'));
         $message .= ' • ';
         $message .= sprintf('<a href="%s">%s</a>', $botLink, $text('search'));
