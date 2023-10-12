@@ -127,6 +127,14 @@ class GoogleAddressGeocoder implements AddressGeocoderInterface
 
     private function keepAlphaOnly(string $text): string
     {
-        return preg_replace('/[\–]/i', '-', $text);
+        return preg_replace(
+            '/-+/i',
+            '-',
+            preg_replace(
+                '/[\–]/i',
+                '-',
+                $text
+            )
+        );
     }
 }
