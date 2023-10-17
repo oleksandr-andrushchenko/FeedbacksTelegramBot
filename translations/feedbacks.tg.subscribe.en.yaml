@@ -1,7 +1,7 @@
 query:
-  currency: Select currency please.
-  subscription_plan: Select subscription plan please.
-  payment_method: Select payment method please.
+  currency: Select a currency please.
+  subscription_plan: Select a subscription plan please.
+  payment_method: Select a payment method please.
   payment: To complete the operation - click the "%pay_button%" button and follow the instructions.
   pay_button: Pay %price%
   payment_invoice_title: Premium subscription "%plan%"

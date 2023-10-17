@@ -47,7 +47,7 @@ class SubscribeTelegramBotConversationState extends TelegramBotConversationState
         return $this;
     }
 
-    public function isPaymentMethodStep(): ?bool
+    public function paymentMethodStep(): ?bool
     {
         return $this->paymentMethodStep;
     }
@@ -59,7 +59,7 @@ class SubscribeTelegramBotConversationState extends TelegramBotConversationState
         return $this;
     }
 
-    public function isCurrencyStep(): ?bool
+    public function currencyStep(): ?bool
     {
         return $this->currencyStep;
     }

@@ -36,10 +36,10 @@ class SubscribeTelegramBotConversationStateNormalizer implements NormalizerInter
     {
         return array_merge($this->baseConversationStateNormalizer->normalize($object, $format, $context), [
             'currency' => $object->getCurrency() === null ? null : $object->getCurrency()->getCode(),
-            'currency_step' => $object->isCurrencyStep(),
+            'currency_step' => $object->currencyStep(),
             'subscription_plan' => $object->getSubscriptionPlan() === null ? null : $this->subscriptionPlanNormalizer->normalize($object->getSubscriptionPlan(), $format, $context),
             'payment_method' => $object->getPaymentMethod() === null ? null : $object->getPaymentMethod()->getId(),
-            'payment_method_step' => $object->isPaymentMethodStep(),
+            'payment_method_step' => $object->paymentMethodStep(),
         ]);
     }
 

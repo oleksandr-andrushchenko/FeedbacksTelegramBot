@@ -33,7 +33,7 @@ class FeedbackSubscriptionPlanProvider
                     FeedbackSubscriptionPlanName::fromName($subscriptionPlanName),
                     $subscriptionPlan['duration'],
                     $subscriptionPlan['default_price'],
-                    $subscriptionPlan['prices'],
+                    $subscriptionPlan['prices'] ?? [],
                     $subscriptionPlan['countries'] ?? [],
                 );
             }
