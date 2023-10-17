@@ -92,18 +92,18 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
     public function getStep(int $num): string
     {
         $originalNum = $num;
-        $total = 6;
+        $total = 5;
 
-        if (!$this->extraSearchTermStep) {
-            if ($originalNum > 1) {
-                $num--;
-            }
-
-            $total--;
-        }
+//        if (!$this->extraSearchTermStep) {
+//            if ($originalNum > 1) {
+//                $num--;
+//            }
+//
+//            $total--;
+//        }
 
         if (!$this->descriptionStep) {
-            if ($originalNum > 3) {
+            if ($originalNum > 2) {
                 $num--;
             }
 
@@ -111,7 +111,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         }
 
         if (!$this->confirmStep) {
-            if ($originalNum > 4) {
+            if ($originalNum > 3) {
                 $num--;
             }
 
@@ -119,7 +119,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         }
 
         if (!$this->sendToChannelConfirmStep) {
-            if ($originalNum > 5) {
+            if ($originalNum > 4) {
                 $num--;
             }
 
@@ -145,7 +145,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
     public function getExtraSearchTermQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
-        $query = $this->getStep(2);
+        $query = $this->getStep(1);
 
         $searchTerms = $this->state->getSearchTerms();
         $primarySearchTerm = array_shift($searchTerms);
@@ -323,12 +323,13 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
     public function getSearchTermTypeQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
+        $query = $this->getStep(1);
         $searchTerm = $this->state->getLastSearchTerm();
         $searchTermView = $searchTerm->getText();
         $parameters = [
             'search_term' => sprintf('<u>%s</u>', $searchTermView),
         ];
-        $query = $tg->trans('query.search_term_type', parameters: $parameters, domain: 'create');
+        $query .= $tg->trans('query.search_term_type', parameters: $parameters, domain: 'create');
 
         if ($help) {
             return $tg->view('create_search_term_type_help', [
@@ -456,7 +457,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
     public function getRatingQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
-        $query = $this->getStep(3);
+        $query = $this->getStep(2);
         $searchTermView = $this->searchTermViewProvider->getSearchTermTelegramMainView($this->state->getFirstSearchTerm());
         $parameters = [
             'search_term' => $searchTermView,
@@ -588,7 +589,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
     public function getDescriptionQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
-        $query = $this->getStep(4);
+        $query = $this->getStep(3);
         $searchTermView = $this->searchTermViewProvider->getSearchTermTelegramMainView($this->state->getFirstSearchTerm());
         $parameters = [
             'search_term' => $searchTermView,
@@ -689,7 +690,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
     public function getConfirmQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
-        $query = $this->getStep(5);
+        $query = $this->getStep(4);
         $feedbackView = $this->feedbackViewProvider->getFeedbackTelegramView(
             $tg->getBot(),
             $this->creator->constructFeedback($this->constructTransfer($tg)),
@@ -747,7 +748,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
     public function getSendToChannelConfirmQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
-        $query = $this->getStep(6);
+        $query = $this->getStep(5);
         $channels = $this->channelMatchesProvider->getTelegramChannelMatches(
             $tg->getBot()->getMessengerUser()->getUser(),
             $tg->getBot()->getEntity()
