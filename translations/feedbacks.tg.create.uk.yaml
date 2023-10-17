@@ -1,15 +1,14 @@
 query:
-  search_term: Про кого чи про що ви хочете залишити відгук?
+  search_term: Про кого чи про що цей відгук?
   search_term_type: Ким або чим є %search_term%?
+  extra_search_term: Додайте більше інформації про %search_term%.
+  added_extra_search_terms: 'Вже додано: %search_terms%'
   rating: Оцініть ваш досвід з %search_term%.
-  description: Залиште коментар або добавте любу інформацію про %search_term%.
-  confirm: Створити відгук про %search_term%?
+  description: Опишіть ваш досвід з %search_term%.
+  confirm: "Ваш вудгук буде мати такий вигляд:\n\n%feedback%\n\nДодати відгук?"
   send_to_channel_confirm: Бажаєте анонімно опубліківати Ваш відгук на каналах %channels%?
 keyboard:
-  change_search_term: Змінити пошуковий термін
-  change_rating: Змінити оцінку
-  add_description: Додати подробиці
-  change_description: Змінити подробиці
+  create_confirm: Додати відгук
 reply:
   canceled: Діалог додавання відгуку скасовано.
   created: Відгук успішно додано.

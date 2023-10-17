@@ -6,7 +6,7 @@ namespace App\Service\Feedback\Telegram\Bot\View;
 
 use App\Entity\Feedback\FeedbackSearch;
 use App\Entity\Telegram\TelegramChannel;
-use App\Service\Feedback\SearchTerm\SearchTermByFeedbackSearchProvider;
+use App\Service\Feedback\SearchTerm\SearchTermProvider;
 use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\TimeProvider;
@@ -16,7 +16,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class FeedbackSearchTelegramViewProvider
 {
     public function __construct(
-        private readonly SearchTermByFeedbackSearchProvider $searchTermProvider,
+        private readonly SearchTermProvider $searchTermProvider,
         private readonly SearchTermTelegramViewProvider $searchTermViewProvider,
         private readonly CountryProvider $countryProvider,
         private readonly TimeProvider $timeProvider,
@@ -34,8 +34,6 @@ class FeedbackSearchTelegramViewProvider
         TelegramChannel $channel = null,
     ): string
     {
-        $searchTerm = $this->searchTermProvider->getSearchTermByFeedbackSearch($feedbackSearch);
-
         $country = null;
 
         if ($feedbackSearch->getCountryCode() !== null) {
@@ -64,13 +62,11 @@ class FeedbackSearchTelegramViewProvider
         $message .= ' ';
         $country = $this->countryProvider->getCountryComposeName($country, localeCode: $localeCode);
         $message .= sprintf('<u>%s</u>', $country);
-        $message .= $country;
         $message .= ' ';
         $message .= $this->translator->trans('searched_for', domain: 'feedbacks.tg.feedback_search', locale: $localeCode);
         $message .= ' ';
-        $searchTerm = $this->searchTermViewProvider->getSearchTermTelegramView($searchTerm, localeCode: $localeCode);
-//        $message .= sprintf('<u>%s</u>', $searchTerm);
-        $message .= $searchTerm;
+        $searchTerm = $this->searchTermProvider->getSearchTermByFeedbackSearchTerm($feedbackSearch->getSearchTerm());
+        $message .= $this->searchTermViewProvider->getSearchTermTelegramView($searchTerm, localeCode: $localeCode);
 
         $message .= "\n\n";
 

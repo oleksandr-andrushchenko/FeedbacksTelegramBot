@@ -13,7 +13,6 @@ class SubscribeTelegramBotConversationState extends TelegramBotConversationState
 {
     public function __construct(
         ?int $step = null,
-        ?array $skipHelpButtons = null,
         private ?bool $currencyStep = null,
         private ?bool $paymentMethodStep = null,
         private ?FeedbackSubscriptionPlan $subscriptionPlan = null,
@@ -21,7 +20,7 @@ class SubscribeTelegramBotConversationState extends TelegramBotConversationState
         private ?Currency $currency = null,
     )
     {
-        parent::__construct($step, $skipHelpButtons);
+        parent::__construct($step);
     }
 
     public function getSubscriptionPlan(): ?FeedbackSubscriptionPlan

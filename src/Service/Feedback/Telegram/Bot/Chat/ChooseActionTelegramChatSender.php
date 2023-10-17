@@ -52,20 +52,19 @@ class ChooseActionTelegramChatSender
         $buttons[] = $this->getLookupButton($tg);
 
         $messengerUser = $tg->getBot()->getMessengerUser();
-        $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($messengerUser);
-
-        if ($tg->getBot()->getEntity()->acceptPayments() && !$hasActiveSubscription) {
-            $buttons[] = $this->getSubscribeButton($tg);
-        } elseif ($this->subscriptionManager->hasSubscription($messengerUser)) {
-            $buttons[] = $this->getSubscriptionsButton($tg);
-        }
 
         if ($messengerUser?->showExtendedKeyboard()) {
+            if (!$this->subscriptionManager->hasActiveSubscription($messengerUser)) {
+                $buttons[] = $this->getSubscribeButton($tg);
+            } elseif ($this->subscriptionManager->hasSubscription($messengerUser)) {
+                $buttons[] = $this->getSubscriptionsButton($tg);
+            }
+
             $buttons[] = $this->getCountryButton($tg);
             $buttons[] = $this->getLocaleButton($tg);
 //            $buttons[] = $this->getCommandsButton($tg);
-//            $buttons[] = $this->getLimitsButton($tg);
-//            $buttons[] = $this->getPurgeButton($tg);
+            $buttons[] = $this->getLimitsButton($tg);
+            $buttons[] = $this->getPurgeButton($tg);
 //            $buttons[] = $this->getRestartButton($tg);
             $buttons[] = $this->getContactButton($tg);
             $buttons[] = $this->getShowLessButton($tg);
@@ -106,7 +105,7 @@ class ChooseActionTelegramChatSender
         $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($tg->getBot()->getMessengerUser());
         $key = 'subscriptions';
 
-        $text = $tg->trans($hasActiveSubscription ? $key : 'subscribe', domain: 'command_icon');
+        $text = $tg->trans($hasActiveSubscription ? $key : 'subscribe', domain: 'command_icon', locale: 'en');
         $text .= ' ';
         $text .= $tg->trans($key, domain: 'command');
 

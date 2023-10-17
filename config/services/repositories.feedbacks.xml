@@ -19,5 +19,9 @@
                  class="App\Repository\Feedback\FeedbackUserSubscriptionRepository">
             <argument type="service" id="doctrine"/>
         </service>
+        <service id="app.repository.feedback_search_term"
+                 class="App\Repository\Feedback\FeedbackSearchTermRepository">
+            <argument type="service" id="doctrine"/>
+        </service>
     </services>
 </container>

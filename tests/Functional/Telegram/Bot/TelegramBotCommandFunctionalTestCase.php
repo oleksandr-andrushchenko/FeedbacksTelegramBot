@@ -8,6 +8,7 @@ use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBotConversation;
 use App\Entity\Telegram\TelegramBotConversationState;
 use App\Entity\Telegram\TelegramBotPaymentMethod;
+use App\Enum\Feedback\Rating;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
 use App\Enum\Telegram\TelegramBotPaymentMethodName;
@@ -187,12 +188,18 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
         return $this->shouldSeeConversation($expectedClass, $expectedState, false);
     }
 
-    protected function shouldSeeConversation(?string $expectedClass, ?TelegramBotConversationState $expectedState, bool $active): static
+    protected function getConversation(): ?TelegramBotConversation
     {
         $messengerUserId = $this->getUpdateMessengerUser()->getId();
         $chatId = $this->getUpdateChatId();
         $botId = $this->getBot()->getEntity()->getId();
-        $conversation = $this->getTelegramBotConversationRepository()->findOneByHash($messengerUserId . '-' . $chatId . '-' . $botId);
+
+        return $this->getTelegramBotConversationRepository()->findOneByHash($messengerUserId . '-' . $chatId . '-' . $botId);
+    }
+
+    protected function shouldSeeConversation(?string $expectedClass, ?TelegramBotConversationState $expectedState, bool $active): static
+    {
+        $conversation = $this->getConversation();
 
         if ($active) {
             $this->assertConversationActive($conversation);
@@ -215,17 +222,26 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
         return $this;
     }
 
-    protected function shouldSeeReply(string ...$expectedReplies): static
+    protected function shouldSeeStateStep(TelegramBotConversation $conversation, ?int $shouldSeeStep): static
+    {
+        if ($shouldSeeStep !== null) {
+            $this->assertEquals($shouldSeeStep, $conversation->getState()['step']);
+        }
+
+        return $this;
+    }
+
+    protected function shouldSeeReply(string ...$shouldSeeReplies): static
     {
         /** @var string[] $actualReplies */
-        /** @var string[] $expectedReplies */
+        /** @var string[] $shouldSeeReplies */
         $actualReplies = array_map(
             fn (array $call) => $call[2],
             $this->getTelegramBotMessageSender()->getCalls()
         );
 
         // todo: check order
-        foreach ($expectedReplies as $expectedReply) {
+        foreach ($shouldSeeReplies as $expectedReply) {
             $contains = false;
             foreach ($actualReplies as $actualReply) {
                 if (str_contains($actualReply, $expectedReply)) {
@@ -243,10 +259,10 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
         return $this;
     }
 
-    protected function shouldSeeButtons(...$expectedButtons): static
+    protected function shouldSeeButtons(...$shouldSeeButtons): static
     {
         /** @var Keyboard[] $actualKeyboards */
-        /** @var KeyboardButton[]|string[] $expectedButtons */
+        /** @var KeyboardButton[]|string[] $shouldSeeButtons */
         $actualKeyboards = array_map(
             fn (array $call) => $call[3],
             $this->getTelegramBotMessageSender()->getCalls()
@@ -264,13 +280,13 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
             }
         }
 
-        $expectedButtons = array_map(
+        $shouldSeeButtons = array_map(
             fn ($button) => is_string($button) ? $button : $button->getText(),
-            $expectedButtons
+            $shouldSeeButtons
         );
 
         // todo: check order
-        foreach ($expectedButtons as $expectedButton) {
+        foreach ($shouldSeeButtons as $expectedButton) {
             $contains = false;
             foreach ($actualButtons as $actualButton) {
                 if (str_contains($actualButton, $expectedButton)) {
@@ -360,14 +376,14 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
         ;
     }
 
-    protected function confirmButton(): string
+    protected function prevButton(): string
     {
-        return $this->yesButton();
+        return '⬅️ keyboard.prev';
     }
 
-    protected function backButton(): string
+    protected function nextButton(): string
     {
-        return '⬅️ keyboard.back';
+        return 'keyboard.next ➡️';
     }
 
     protected function helpButton(): string
@@ -380,24 +396,49 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
         return '❌ keyboard.cancel';
     }
 
-    protected function leaveAsButton(): string
-    {
-        return 'keyboard.leave_as';
-    }
-
     protected function yesButton(): string
     {
-        return '👌 keyboard.yes';
+        return '✅ keyboard.yes';
     }
 
     protected function noButton(): string
     {
-        return 'keyboard.no';
+        return '⭕️ keyboard.no';
     }
 
     protected function command(string $name): string
     {
         return $name . ' ' . $name;
+    }
+
+    protected function commandButton(string $name): string
+    {
+        return $name . ' ' . $name;
+    }
+
+    public function removeButton(string $text): string
+    {
+        return '❌ ' . $text;
+    }
+
+    public function ratingButton(Rating $rating): string
+    {
+        return $rating->name . ' ' . $rating->name;
+    }
+
+    public function searchTermTypeButton(SearchTermType $type): string
+    {
+        return $type->name . ' ' . $type->name;
+    }
+
+    public function searchTermTypeTrans(SearchTermType $type): string
+    {
+        return $type->name;
+    }
+
+    public function selectedText(string $text): string
+    {
+        return '*' . $text;
     }
 
     protected function assertConversationActive(?TelegramBotConversation $conversation): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Feedback\SearchTerm;
 
+use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Messenger\MessengerUser;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
@@ -56,5 +57,16 @@ class SearchTermProvider
             ->setMessengerUsername($messengerUsername)
             ->setMessengerUser($messengerUserTransfer)
         ;
+    }
+
+    public function getSearchTermByFeedbackSearchTerm(FeedbackSearchTerm $searchTerm): SearchTermTransfer
+    {
+        return $this->getSearchTerm(
+            $searchTerm->getText(),
+            $searchTerm->getType(),
+            $searchTerm->getMessenger(),
+            $searchTerm->getMessengerUsername(),
+            $searchTerm->getMessengerUser()
+        );
     }
 }

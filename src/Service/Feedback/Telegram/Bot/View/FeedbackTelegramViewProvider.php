@@ -5,20 +5,22 @@ declare(strict_types=1);
 namespace App\Service\Feedback\Telegram\Bot\View;
 
 use App\Entity\Feedback\Feedback;
+use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Telegram\TelegramChannel;
 use App\Service\Feedback\Rating\FeedbackRatingProvider;
-use App\Service\Feedback\SearchTerm\SearchTermByFeedbackProvider;
-use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
+use App\Service\Feedback\SearchTerm\SearchTermProvider;
+use App\Service\Feedback\Telegram\View\MultipleSearchTermTelegramViewProvider;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\TimeProvider;
 use App\Service\Telegram\Bot\TelegramBot;
+use App\Transfer\Feedback\SearchTermTransfer;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FeedbackTelegramViewProvider
 {
     public function __construct(
-        private readonly SearchTermByFeedbackProvider $searchTermProvider,
-        private readonly SearchTermTelegramViewProvider $searchTermViewProvider,
+        private readonly SearchTermProvider $searchTermProvider,
+        private readonly MultipleSearchTermTelegramViewProvider $multipleSearchTermViewProvider,
         private readonly CountryProvider $countryProvider,
         private readonly TimeProvider $timeProvider,
         private readonly FeedbackRatingProvider $ratingProvider,
@@ -38,8 +40,6 @@ class FeedbackTelegramViewProvider
         TelegramChannel $channel = null,
     ): string
     {
-        $searchTerm = $this->searchTermProvider->getSearchTermByFeedback($feedback);
-
         $country = null;
 
         if ($feedback->getCountryCode() !== null) {
@@ -71,13 +71,15 @@ class FeedbackTelegramViewProvider
         $message .= ' ';
         $country = $this->countryProvider->getCountryComposeName($country, localeCode: $localeCode);
         $message .= sprintf('<u>%s</u>', $country);
-//        $message .= $country;
         $message .= ' ';
         $message .= $this->translator->trans('wrote_about', domain: 'feedbacks.tg.feedback', locale: $localeCode);
         $message .= ' ';
-        $searchTerm = $this->searchTermViewProvider->getSearchTermTelegramView($searchTerm, localeCode: $localeCode);
-//        $message .= sprintf('<u>%s</u>', $searchTerm);
-        $message .= $searchTerm;
+        $message .= $this->multipleSearchTermViewProvider->getMultipleSearchTermTelegramView(
+            array_map(
+                fn (FeedbackSearchTerm $searchTerm): SearchTermTransfer => $this->searchTermProvider->getSearchTermByFeedbackSearchTerm($searchTerm),
+                $feedback->getSearchTerms()->toArray()
+            )
+        );
         $message .= ':';
 
         $message .= "\n\n";

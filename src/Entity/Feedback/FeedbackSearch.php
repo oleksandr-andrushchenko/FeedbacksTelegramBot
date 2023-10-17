@@ -7,8 +7,6 @@ namespace App\Entity\Feedback;
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBot;
 use App\Entity\User\User;
-use App\Enum\Feedback\SearchTermType;
-use App\Enum\Messenger\Messenger;
 use DateTimeImmutable;
 use DateTimeInterface;
 
@@ -17,12 +15,7 @@ class FeedbackSearch
     public function __construct(
         private readonly User $user,
         private readonly MessengerUser $messengerUser,
-        private readonly string $searchTermText,
-        private readonly string $searchTermNormalizedText,
-        private readonly SearchTermType $searchTermType,
-        private readonly ?MessengerUser $searchTermMessengerUser,
-        private readonly ?Messenger $searchTermMessenger,
-        private readonly ?string $searchTermMessengerUsername,
+        private readonly FeedbackSearchTerm $searchTerm,
         private readonly bool $hasActiveSubscription,
         private readonly ?string $countryCode = null,
         private readonly ?string $localeCode = null,
@@ -48,34 +41,9 @@ class FeedbackSearch
         return $this->messengerUser;
     }
 
-    public function getSearchTermText(): string
+    public function getSearchTerm(): FeedbackSearchTerm
     {
-        return $this->searchTermText;
-    }
-
-    public function getSearchTermNormalizedText(): string
-    {
-        return $this->searchTermNormalizedText;
-    }
-
-    public function getSearchTermType(): SearchTermType
-    {
-        return $this->searchTermType;
-    }
-
-    public function getSearchTermMessengerUser(): ?MessengerUser
-    {
-        return $this->searchTermMessengerUser;
-    }
-
-    public function getSearchTermMessenger(): ?Messenger
-    {
-        return $this->searchTermMessenger;
-    }
-
-    public function getSearchTermMessengerUsername(): ?string
-    {
-        return $this->searchTermMessengerUsername;
+        return $this->searchTerm;
     }
 
     public function hasActiveSubscription(): bool
@@ -91,6 +59,11 @@ class FeedbackSearch
     public function getLocaleCode(): ?string
     {
         return $this->localeCode;
+    }
+
+    public function getTelegramBot(): ?TelegramBot
+    {
+        return $this->telegramBot;
     }
 
     public function getCreatedAt(): DateTimeInterface

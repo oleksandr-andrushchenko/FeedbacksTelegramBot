@@ -5,49 +5,55 @@ declare(strict_types=1);
 namespace App\Service\Feedback\Telegram\View;
 
 use App\Enum\Feedback\SearchTermType;
+use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Transfer\Feedback\SearchTermTransfer;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SearchTermTelegramViewProvider
 {
     public function __construct(
-        private readonly TranslatorInterface $translator,
+        private readonly SearchTermTypeProvider $termTypeProvider,
     )
     {
     }
 
-    public function getSearchTermTelegramView(SearchTermTransfer $searchTermTransfer, string $localeCode = null): string
+    public function getSearchTermTelegramMainView(SearchTermTransfer $searchTerm): string
     {
         $message = '<u><b>';
 
-        if ($searchTermTransfer->getMessengerProfileUrl() !== null) {
+        if ($searchTerm->getMessengerProfileUrl() !== null) {
             $message .= sprintf(
                 '<a href="%s">%s</a>',
-                $searchTermTransfer->getMessengerProfileUrl(),
-                $searchTermTransfer->getMessengerUsername() ?? $searchTermTransfer->getMessengerProfileUrl()
+                $searchTerm->getMessengerProfileUrl(),
+                $searchTerm->getMessengerUsername() ?? $searchTerm->getMessengerProfileUrl()
             );
-        } elseif ($searchTermTransfer->getMessengerUsername() !== null) {
-            $message .= $searchTermTransfer->getMessengerUsername();
-        } elseif ($searchTermTransfer->getType() === SearchTermType::url) {
+        } elseif ($searchTerm->getMessengerUsername() !== null) {
+            $message .= $searchTerm->getMessengerUsername();
+        } elseif ($searchTerm->getType() === SearchTermType::url) {
             $message .= sprintf(
                 '<a href="%s">%s</a>',
-                $searchTermTransfer->getText(),
-                $searchTermTransfer->getNormalizedText() ?? $searchTermTransfer->getText()
+                $searchTerm->getText(),
+                $searchTerm->getNormalizedText() ?? $searchTerm->getText()
             );
-        } elseif ($searchTermTransfer->getType() === SearchTermType::phone_number) {
-            $message .= $searchTermTransfer->getNormalizedText() ?? $searchTermTransfer->getText();
-        } elseif ($searchTermTransfer->getType() === SearchTermType::email) {
-            $message .= $searchTermTransfer->getNormalizedText() ?? $searchTermTransfer->getText();
+        } elseif ($searchTerm->getType() === SearchTermType::phone_number) {
+            $message .= $searchTerm->getNormalizedText() ?? $searchTerm->getText();
+        } elseif ($searchTerm->getType() === SearchTermType::email) {
+            $message .= $searchTerm->getNormalizedText() ?? $searchTerm->getText();
         } else {
-            $message .= $searchTermTransfer->getText();
+            $message .= $searchTerm->getText();
         }
 
         $message .= '</b></u>';
 
-        if ($searchTermTransfer->getType() !== null && $searchTermTransfer->getType() !== SearchTermType::unknown) {
-            $message .= ' ';
-            $searchTermTypeTrans = $this->translator->trans($searchTermTransfer->getType()->name, domain: 'feedbacks.search_term_type', locale: $localeCode);
-            $message .= '(' . $searchTermTypeTrans . ')';
+        return $message;
+    }
+
+    public function getSearchTermTelegramView(SearchTermTransfer $searchTerm, string $localeCode = null): string
+    {
+        $message = $this->getSearchTermTelegramMainView($searchTerm);
+
+        if ($searchTerm->getType() !== null && $searchTerm->getType() !== SearchTermType::unknown) {
+            $searchTermTypeView = $this->termTypeProvider->getSearchTermTypeName($searchTerm->getType(), $localeCode);
+            $message .= ' (' . $searchTermTypeView . ')';
         }
 
         return $message;

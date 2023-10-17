@@ -30,18 +30,16 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
     use TelegramBotInvoiceSenderProviderTrait;
 
     /**
+     * @param array $paymentMethodNames
      * @param string $command
-     * @param TelegramBotPaymentMethodName[] $paymentMethodNames
-     * @param SubscribeTelegramBotConversationState $expectedState
      * @param array $shouldSeeReply
      * @param array $shouldSeeButtons
      * @return void
      * @dataProvider startSuccessDataProvider
      */
     public function testStartSuccess(
-        string $command,
         array $paymentMethodNames,
-        SubscribeTelegramBotConversationState $expectedState,
+        string $command,
         array $shouldSeeReply,
         array $shouldSeeButtons
     ): void
@@ -52,12 +50,17 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
             TelegramBot::class,
         ]);
 
-        $this->getBot()->getEntity()->setAcceptPayments(true);
-        array_map(fn (TelegramBotPaymentMethodName $name) => $this->createPaymentMethod($name), $paymentMethodNames);
+        array_map(
+            fn (TelegramBotPaymentMethodName $name): TelegramBotPaymentMethod => $this->createPaymentMethod($name),
+            $paymentMethodNames
+        );
 
         $this
             ->type($command)
-            ->shouldSeeActiveConversation(SubscribeTelegramBotConversation::class, $expectedState)
+            ->shouldSeeStateStep(
+                $this->getConversation(),
+                SubscribeTelegramBotConversation::STEP_SUBSCRIPTION_PLAN_QUERIED
+            )
             ->shouldSeeReply(...$shouldSeeReply)
             ->shouldSeeButtons(...$shouldSeeButtons)
         ;
@@ -65,68 +68,102 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
 
     public function startSuccessDataProvider(): Generator
     {
-        $commands = [
-            'button & one payment method' => [
-                $this->command('subscribe'),
-                [TelegramBotPaymentMethodName::portmone],
-                false,
+        yield 'button & one payment method' => [
+            'paymentMethodNames' => [
+                TelegramBotPaymentMethodName::portmone,
             ],
-            'button & two payment methods' => [
-                $this->command('subscribe'),
-                [TelegramBotPaymentMethodName::portmone, TelegramBotPaymentMethodName::liqpay],
-                true,
+            'command' => $this->command('subscribe'),
+            'shouldSeeReply' => [
+                'query.subscription_plan',
             ],
-            'command & one payment method' => [
-                FeedbackTelegramBotGroup::SUBSCRIBE,
-                [TelegramBotPaymentMethodName::portmone],
-                false,
-            ],
-            'command & two payment methods' => [
-                FeedbackTelegramBotGroup::SUBSCRIBE,
-                [TelegramBotPaymentMethodName::portmone, TelegramBotPaymentMethodName::liqpay],
-                true,
+            'shouldSeeButtons' => [
+                ...array_map(
+                    fn (FeedbackSubscriptionPlanName $plan) => $plan->name,
+                    FeedbackSubscriptionPlanName::cases()
+                ),
+                'keyboard.change_currency',
+                $this->helpButton(),
+                $this->cancelButton(),
             ],
         ];
 
-        foreach ($commands as $key => [$command, $paymentMethodNames, $expectedPaymentMethodStep]) {
-            yield $key => [
-                'command' => $command,
-                'paymentMethodNames' => $paymentMethodNames,
-                'expectedState' => (new SubscribeTelegramBotConversationState())
-                    ->setCurrencyStep(false)
-                    ->setPaymentMethodStep($expectedPaymentMethodStep)
-                    ->setStep(SubscribeTelegramBotConversation::STEP_SUBSCRIPTION_PLAN_QUERIED),
-                'shouldSeeReply' => [
-                    'query.subscription_plan',
-                ],
-                'shouldSeeButtons' => [
-                    ...array_map(
-                        fn (FeedbackSubscriptionPlanName $plan) => $plan->name,
-                        FeedbackSubscriptionPlanName::cases()
-                    ),
-                    'keyboard.change_currency',
-                    $this->helpButton(),
-                    $this->cancelButton(),
-                ],
-            ];
-        }
+        yield 'button & two payment methods' => [
+            'paymentMethodNames' => [
+                TelegramBotPaymentMethodName::portmone,
+                TelegramBotPaymentMethodName::liqpay,
+            ],
+            'command' => $this->command('subscribe'),
+            'shouldSeeReply' => [
+                'query.subscription_plan',
+            ],
+            'shouldSeeButtons' => [
+                ...array_map(
+                    fn (FeedbackSubscriptionPlanName $plan) => $plan->name,
+                    FeedbackSubscriptionPlanName::cases()
+                ),
+                'keyboard.change_currency',
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+        ];
+
+        yield 'command & one payment method' => [
+            'paymentMethodNames' => [
+                TelegramBotPaymentMethodName::portmone,
+            ],
+            'command' => FeedbackTelegramBotGroup::SUBSCRIBE,
+            'shouldSeeReply' => [
+                'query.subscription_plan',
+            ],
+            'shouldSeeButtons' => [
+                ...array_map(
+                    fn (FeedbackSubscriptionPlanName $plan) => $plan->name,
+                    FeedbackSubscriptionPlanName::cases()
+                ),
+                'keyboard.change_currency',
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+        ];
+
+        yield 'command & two payment methods' => [
+            'paymentMethodNames' => [
+                TelegramBotPaymentMethodName::portmone,
+                TelegramBotPaymentMethodName::liqpay,
+            ],
+            'command' => FeedbackTelegramBotGroup::SUBSCRIBE,
+            'shouldSeeReply' => [
+                'query.subscription_plan',
+            ],
+            'shouldSeeButtons' => [
+                ...array_map(
+                    fn (FeedbackSubscriptionPlanName $plan) => $plan->name,
+                    FeedbackSubscriptionPlanName::cases()
+                ),
+                'keyboard.change_currency',
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+        ];
     }
 
     /**
+     * @param bool $currencyStep
+     * @param bool $paymentMethodStep
      * @param string $command
-     * @param SubscribeTelegramBotConversationState $state
-     * @param SubscribeTelegramBotConversationState $expectedState
      * @param array $shouldSeeReply
      * @param array $shouldSeeButtons
+     * @param int|null $shouldSeeStep
      * @return void
-     * @dataProvider gotCurrencySuccessDataProvider
+     * @dataProvider currencyStepSuccessDataProvider
      */
-    public function testGotCurrencySuccess(
+    public function testCurrencyStepSuccess(
+        bool $currencyStep,
+        bool $paymentMethodStep,
         string $command,
-        SubscribeTelegramBotConversationState $state,
-        SubscribeTelegramBotConversationState $expectedState,
         array $shouldSeeReply,
-        array $shouldSeeButtons
+        array $shouldSeeButtons,
+        ?int $shouldSeeStep
     ): void
     {
         $this->bootFixtures([
@@ -135,83 +172,119 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
             TelegramBot::class,
             TelegramBotPaymentMethod::class,
         ]);
+
+        $state = (new SubscribeTelegramBotConversationState())
+            ->setCurrencyStep($currencyStep)
+            ->setPaymentMethodStep($paymentMethodStep)
+            ->setStep(SubscribeTelegramBotConversation::STEP_CURRENCY_QUERIED)
+        ;
 
         $conversation = $this->createConversation(SubscribeTelegramBotConversation::class, $state);
 
         $this
             ->type($command)
-            ->shouldSeeActiveConversation($conversation->getClass(), $expectedState)
+            ->shouldSeeStateStep($conversation, $shouldSeeStep)
             ->shouldSeeReply(...$shouldSeeReply)
             ->shouldSeeButtons(...$shouldSeeButtons)
         ;
     }
 
-    public function gotCurrencySuccessDataProvider(): Generator
+    public function currencyStepSuccessDataProvider(): Generator
     {
-        $commands = [
-            'no currency step & no payment method step' => [
-                false,
-                false,
+        yield 'select currency & no currency step & no payment method step' => [
+            'currencyStep' => false,
+            'paymentMethodStep' => false,
+            'command' => '🇺🇸 USD',
+            'shouldSeeReply' => [
+                'query.subscription_plan',
+            ],
+            'shouldSeeButtons' => [
+                ...array_map(
+                    fn (FeedbackSubscriptionPlanName $plan) => $plan->name,
+                    FeedbackSubscriptionPlanName::cases()
+                ),
                 'keyboard.change_currency',
+                $this->helpButton(),
+                $this->cancelButton(),
             ],
-            'no currency step & payment method step' => [
-                false,
-                true,
-                'keyboard.change_currency',
-            ],
-            'currency step & payment method step' => [
-                true,
-                true,
-                $this->backButton(),
-            ],
-            'currency step & no payment method step' => [
-                true,
-                false,
-                $this->backButton(),
-            ],
+            'shouldSeeStep' => SubscribeTelegramBotConversation::STEP_SUBSCRIPTION_PLAN_QUERIED,
         ];
 
-        foreach ($commands as $key => [$currencyStep, $paymentMethodStep, $shouldSeeButton]) {
-            yield $key => [
-                'command' => '🇺🇸 USD',
-                'state' => $state = (new SubscribeTelegramBotConversationState())
-                    ->setCurrencyStep($currencyStep)
-                    ->setPaymentMethodStep($paymentMethodStep)
-                    ->setStep(SubscribeTelegramBotConversation::STEP_CURRENCY_QUERIED),
-                'expectedState' => (clone $state)
-                    ->setCurrency($this->getCurrencyProvider()->getCurrency('USD'))
-                    ->setStep(SubscribeTelegramBotConversation::STEP_SUBSCRIPTION_PLAN_QUERIED),
-                'shouldSeeReply' => [
-                    'query.subscription_plan',
-                ],
-                'shouldSeeButtons' => [
-                    ...array_map(
-                        fn (FeedbackSubscriptionPlanName $plan) => $plan->name,
-                        FeedbackSubscriptionPlanName::cases()
-                    ),
-                    $shouldSeeButton,
-                    $this->helpButton(),
-                    $this->cancelButton(),
-                ],
-            ];
-        }
+        yield 'select currency & no currency step & payment method step' => [
+            'currencyStep' => false,
+            'paymentMethodStep' => true,
+            'command' => '🇺🇸 USD',
+            'shouldSeeReply' => [
+                'query.subscription_plan',
+            ],
+            'shouldSeeButtons' => [
+                ...array_map(
+                    fn (FeedbackSubscriptionPlanName $plan) => $plan->name,
+                    FeedbackSubscriptionPlanName::cases()
+                ),
+                'keyboard.change_currency',
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => SubscribeTelegramBotConversation::STEP_SUBSCRIPTION_PLAN_QUERIED,
+        ];
+
+        yield 'select currency & currency step & payment method step' => [
+            'currencyStep' => true,
+            'paymentMethodStep' => true,
+            'command' => '🇺🇸 USD',
+            'shouldSeeReply' => [
+                'query.subscription_plan',
+            ],
+            'shouldSeeButtons' => [
+                ...array_map(
+                    fn (FeedbackSubscriptionPlanName $plan) => $plan->name,
+                    FeedbackSubscriptionPlanName::cases()
+                ),
+                $this->prevButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => SubscribeTelegramBotConversation::STEP_SUBSCRIPTION_PLAN_QUERIED,
+        ];
+
+        yield 'select currency & currency step & no payment method step' => [
+            'currencyStep' => true,
+            'paymentMethodStep' => false,
+            'command' => '🇺🇸 USD',
+            'shouldSeeReply' => [
+                'query.subscription_plan',
+            ],
+            'shouldSeeButtons' => [
+                ...array_map(
+                    fn (FeedbackSubscriptionPlanName $plan) => $plan->name,
+                    FeedbackSubscriptionPlanName::cases()
+                ),
+                $this->prevButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => SubscribeTelegramBotConversation::STEP_SUBSCRIPTION_PLAN_QUERIED,
+        ];
     }
 
     /**
+     * @param bool $currencyStep
+     * @param bool $paymentMethodStep
      * @param string $command
-     * @param SubscribeTelegramBotConversationState $state
-     * @param SubscribeTelegramBotConversationState $expectedState
      * @param array $shouldSeeReply
      * @param array $shouldSeeButtons
+     * @param int|null $shouldSeeStep
      * @return void
-     * @dataProvider gotSubscriptionPlanWithPaymentMethodStepSuccessDataProvider
+     * @dataProvider subscriptionPlanStepSuccessDataProvider
      */
-    public function testGotSubscriptionPlanWithPaymentMethodStepSuccess(
+    public function testSubscriptionPlanStepSuccess(
+        bool $currencyStep,
+        bool $paymentMethodStep,
         string $command,
-        SubscribeTelegramBotConversationState $state,
-        SubscribeTelegramBotConversationState $expectedState,
         array $shouldSeeReply,
-        array $shouldSeeButtons
+        array $shouldSeeButtons,
+        ?int $shouldSeeStep
     ): void
     {
         $this->bootFixtures([
@@ -220,64 +293,77 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
             TelegramBot::class,
             TelegramBotPaymentMethod::class,
         ]);
+
+        $state = (new SubscribeTelegramBotConversationState())
+            ->setCurrencyStep($currencyStep)
+            ->setPaymentMethodStep($paymentMethodStep)
+            ->setCurrency($this->getCurrencyProvider()->getCurrency('USD'))
+            ->setStep(SubscribeTelegramBotConversation::STEP_SUBSCRIPTION_PLAN_QUERIED)
+        ;
 
         $conversation = $this->createConversation(SubscribeTelegramBotConversation::class, $state);
 
         $this
             ->type($command)
-            ->shouldSeeActiveConversation($conversation->getClass(), $expectedState)
+            ->shouldSeeStateStep($conversation, $shouldSeeStep)
             ->shouldSeeReply(...$shouldSeeReply)
             ->shouldSeeButtons(...$shouldSeeButtons)
         ;
     }
 
-    public function gotSubscriptionPlanWithPaymentMethodStepSuccessDataProvider(): Generator
+    public function subscriptionPlanStepSuccessDataProvider(): Generator
     {
-        $commands = [
-            'no currency step' => [
-                false,
+        yield 'select plan & no currency step & payment method step' => [
+            'currencyStep' => false,
+            'paymentMethodStep' => true,
+            'command' => 'one_year - $20,00',
+            'shouldSeeReply' => [
+                'query.payment_method',
             ],
-            'currency step' => [
-                true,
+            'shouldSeeButtons' => [
+                'payment_method.portmone',
+                $this->prevButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
             ],
+            'shouldSeeStep' => SubscribeTelegramBotConversation::STEP_PAYMENT_METHOD_QUERIED,
         ];
 
-        foreach ($commands as $key => [$currencyStep]) {
-            yield $key => [
-                'command' => 'one_year - $20,00',
-                'state' => $state = (new SubscribeTelegramBotConversationState())
-                    ->setCurrencyStep($currencyStep)
-                    ->setPaymentMethodStep(true)
-                    ->setCurrency($this->getCurrencyProvider()->getCurrency('USD'))
-                    ->setStep(SubscribeTelegramBotConversation::STEP_SUBSCRIPTION_PLAN_QUERIED),
-                'expectedState' => (clone $state)
-                    ->setSubscriptionPlan($this->getFeedbackSubscriptionPlanProvider()->getSubscriptionPlan(FeedbackSubscriptionPlanName::one_year))
-                    ->setStep(SubscribeTelegramBotConversation::STEP_PAYMENT_METHOD_QUERIED),
-                'shouldSeeReply' => [
-                    'query.payment_method',
-                ],
-                'shouldSeeButtons' => [
-                    'payment_method.portmone',
-                    $this->backButton(),
-                    $this->helpButton(),
-                    $this->cancelButton(),
-                ],
-            ];
-        }
+        yield 'select plan & currency step & payment method step' => [
+            'currencyStep' => true,
+            'paymentMethodStep' => true,
+            'command' => 'one_year - $20,00',
+            'shouldSeeReply' => [
+                'query.payment_method',
+            ],
+            'shouldSeeButtons' => [
+                'payment_method.portmone',
+                $this->prevButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => SubscribeTelegramBotConversation::STEP_PAYMENT_METHOD_QUERIED,
+        ];
     }
 
 
     /**
+     * @param bool $currencyStep
+     * @param bool $paymentMethodStep
      * @param string $command
-     * @param SubscribeTelegramBotConversationState $state
-     * @param SubscribeTelegramBotConversationState $expectedState
+     * @param array $shouldSeeReply
+     * @param array $shouldSeeButtons
+     * @param int|null $shouldSeeStep
      * @return void
-     * @dataProvider gotPaymentMethodSuccessDataProvider
+     * @dataProvider paymentMethodStepSuccessDataProvider
      */
-    public function testGotPaymentMethodSuccess(
+    public function testPaymentMethodStepSuccess(
+        bool $currencyStep,
+        bool $paymentMethodStep,
         string $command,
-        SubscribeTelegramBotConversationState $state,
-        SubscribeTelegramBotConversationState $expectedState
+        array $shouldSeeReply,
+        array $shouldSeeButtons,
+        ?int $shouldSeeStep
     ): void
     {
         $this->bootFixtures([
@@ -286,6 +372,14 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
             TelegramBot::class,
             TelegramBotPaymentMethod::class,
         ]);
+
+        $state = (new SubscribeTelegramBotConversationState())
+            ->setCurrencyStep($currencyStep)
+            ->setPaymentMethodStep(true)
+            ->setCurrency($this->getCurrencyProvider()->getCurrency('USD'))
+            ->setSubscriptionPlan($this->getFeedbackSubscriptionPlanProvider()->getSubscriptionPlan(FeedbackSubscriptionPlanName::one_year))
+            ->setStep(SubscribeTelegramBotConversation::STEP_PAYMENT_METHOD_QUERIED)
+        ;
 
         $conversation = $this->createConversation(SubscribeTelegramBotConversation::class, $state);
 
@@ -294,37 +388,45 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
 
         $this
             ->type($command)
-            ->shouldNotSeeActiveConversation($conversation->getClass(), $expectedState)
-            ->shouldSeeChooseAction('query.payment')
+            ->shouldSeeStateStep($conversation, $shouldSeeStep)
+            ->shouldSeeReply(...$shouldSeeReply)
+            ->shouldSeeButtons(...$shouldSeeButtons)
         ;
 
         $this->assertEquals($previousPaymentCount + 1, $paymentRepository->count([]));
         $this->assertCount(1, $this->getTelegramBotInvoiceSender()->getCalls());
     }
 
-    public function gotPaymentMethodSuccessDataProvider(): Generator
+    public function paymentMethodStepSuccessDataProvider(): Generator
     {
-        $commands = [
-            'no currency step' => [
-                false,
+        yield 'select method & no currency step & payment method step' => [
+            'currencyStep' => false,
+            'paymentMethodStep' => true,
+            'command' => 'payment_method.portmone',
+            'shouldSeeReply' => [
+                'query.payment',
             ],
-            'currency step' => [
-                true,
+            'shouldSeeButtons' => [
+                $this->command('create'),
+                $this->command('search'),
+                $this->command('lookup'),
             ],
+            'shouldSeeStep' => SubscribeTelegramBotConversation::STEP_PAYMENT_QUERIED,
         ];
 
-        foreach ($commands as $key => [$currencyStep]) {
-            yield $key => [
-                'command' => 'payment_method.portmone',
-                'state' => $state = (new SubscribeTelegramBotConversationState())
-                    ->setCurrencyStep($currencyStep)
-                    ->setPaymentMethodStep(true)
-                    ->setCurrency($this->getCurrencyProvider()->getCurrency('USD'))
-                    ->setSubscriptionPlan($this->getFeedbackSubscriptionPlanProvider()->getSubscriptionPlan(FeedbackSubscriptionPlanName::one_year))
-                    ->setStep(SubscribeTelegramBotConversation::STEP_PAYMENT_METHOD_QUERIED),
-                'expectedState' => (clone $state)
-                    ->setStep(SubscribeTelegramBotConversation::STEP_PAYMENT_QUERIED),
-            ];
-        }
+        yield 'select method & currency step & payment method step' => [
+            'currencyStep' => true,
+            'paymentMethodStep' => true,
+            'command' => 'payment_method.portmone',
+            'shouldSeeReply' => [
+                'query.payment',
+            ],
+            'shouldSeeButtons' => [
+                $this->command('create'),
+                $this->command('search'),
+                $this->command('lookup'),
+            ],
+            'shouldSeeStep' => SubscribeTelegramBotConversation::STEP_PAYMENT_QUERIED,
+        ];
     }
 }

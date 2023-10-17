@@ -11,11 +11,9 @@ query:
 keyboard:
   yes: Yes
   no: No
-  back: Get back
+  prev: Previous step
+  next: Next step
   cancel: Cancel
-  leave_as: Leave as "%text%"
-  make_empty: Make empty
-  leave_empty: Skip
   other: Other
   absent: Not in the list
   more: Show more
@@ -23,13 +21,13 @@ keyboard:
   help: Need help
 
 sign:
-  create: ADD Feedback
-  search: FIND Feedbacks
-  channel: SUBSCRIBE
+  create: Add Feedback
+  search: Find Feedbacks
+  channel: Subscribe
 
 reply:
   fail: "Unknown error has occurred,\n1) Make sure everything properly filled and repeat; or\n2) Try %contact_command% command; or\n3) Try again later please."
-  not_accept_payments: We do not accept payments now. Try again later or contact us please %contact_command%.
+  not_accept_payments: To purchase a subscription, contact us %contact_command% or try again later.
   better_bot_match: You may be interested in the following bots
   wrong: I don't understand you. Use input field or keyboard above please.
   use_primary: This bot is no longer supported. Try

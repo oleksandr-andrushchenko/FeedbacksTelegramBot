@@ -7,7 +7,7 @@
 {% block h1 %}{{ contacts.botName }}{% endblock %}
 
 {% block content %}
-    <p class="fs-5">{{ 'headline'|trans({'%create_command%': '<a href="' ~ contacts.botLink ~ '" target="_blank">' ~ 'create'|trans({}, 'feedbacks.tg.command_icon') ~ ' <u><b>' ~ 'create'|trans({}, 'feedbacks.tg.command') ~ '</b></u></a>'})|raw }}</p>
-    <p>{{ 'list_headline'|trans({'%search_command%': '<a href="' ~ contacts.botLink ~ '" target="_blank">' ~ 'search'|trans({}, 'feedbacks.tg.command_icon') ~ ' <u><b>' ~ 'search'|trans({}, 'feedbacks.tg.command') ~ '</b></u></a>'})|raw }}</p>
+    <p class="fs-5">{{ 'headline'|trans({'%create_command%': '<a href="' ~ contacts.botLink ~ '" target="_blank">' ~ 'create'|trans({}, 'feedbacks.tg.command_icon', 'en') ~ ' <u><b>' ~ 'create'|trans({}, 'feedbacks.tg.command') ~ '</b></u></a>'})|raw }}</p>
+    <p>{{ 'list_headline'|trans({'%search_command%': '<a href="' ~ contacts.botLink ~ '" target="_blank">' ~ 'search'|trans({}, 'feedbacks.tg.command_icon', 'en') ~ ' <u><b>' ~ 'search'|trans({}, 'feedbacks.tg.command') ~ '</b></u></a>'})|raw }}</p>
     <br>
 {% endblock %}

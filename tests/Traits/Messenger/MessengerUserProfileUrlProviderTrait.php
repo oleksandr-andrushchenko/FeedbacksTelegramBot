@@ -9,7 +9,7 @@ use App\Transfer\Messenger\MessengerUserTransfer;
 
 trait MessengerUserProfileUrlProviderTrait
 {
-    public function getMessengerUserProfileUrl(MessengerUserTransfer $messengerUser): ?string
+    public static function getMessengerUserProfileUrl(MessengerUserTransfer $messengerUser): ?string
     {
         return match ($messengerUser->getMessenger()) {
             Messenger::instagram => sprintf('https://instagram.com/%s', $messengerUser->getUsername()),

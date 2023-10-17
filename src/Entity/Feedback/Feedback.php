@@ -8,22 +8,19 @@ use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBot;
 use App\Entity\User\User;
 use App\Enum\Feedback\Rating;
-use App\Enum\Feedback\SearchTermType;
-use App\Enum\Messenger\Messenger;
 use DateTimeImmutable;
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 class Feedback
 {
+    private Collection $searchTerms;
+
     public function __construct(
         private readonly User $user,
         private readonly MessengerUser $messengerUser,
-        private readonly string $searchTermText,
-        private readonly string $searchTermNormalizedText,
-        private readonly SearchTermType $searchTermType,
-        private readonly ?MessengerUser $searchTermMessengerUser,
-        private readonly ?Messenger $searchTermMessenger,
-        private readonly ?string $searchTermMessengerUsername,
+        array $searchTerms,
         private readonly Rating $rating,
         private readonly ?string $description,
         private readonly bool $hasActiveSubscription,
@@ -35,6 +32,11 @@ class Feedback
         private ?int $id = null,
     )
     {
+        $this->searchTerms = new ArrayCollection();
+
+        foreach ($searchTerms as $searchTerm) {
+            $this->addSearchTerm($searchTerm);
+        }
     }
 
     public function getId(): ?int
@@ -52,34 +54,21 @@ class Feedback
         return $this->messengerUser;
     }
 
-    public function getSearchTermText(): string
+    /**
+     * @return ArrayCollection|FeedbackSearchTerm[]
+     */
+    public function getSearchTerms(): iterable
     {
-        return $this->searchTermText;
+        return $this->searchTerms;
     }
 
-    public function getSearchTermNormalizedText(): string
+    public function addSearchTerm(FeedbackSearchTerm $searchTerm): self
     {
-        return $this->searchTermNormalizedText;
-    }
+        if (!$this->searchTerms->contains($searchTerm)) {
+            $this->searchTerms->add($searchTerm);
+        }
 
-    public function getSearchTermType(): SearchTermType
-    {
-        return $this->searchTermType;
-    }
-
-    public function getSearchTermMessengerUser(): ?MessengerUser
-    {
-        return $this->searchTermMessengerUser;
-    }
-
-    public function getSearchTermMessenger(): ?Messenger
-    {
-        return $this->searchTermMessenger;
-    }
-
-    public function getSearchTermMessengerUsername(): ?string
-    {
-        return $this->searchTermMessengerUsername;
+        return $this;
     }
 
     public function getRating(): Rating

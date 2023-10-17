@@ -12,8 +12,8 @@ class SearchTermTransfer
 {
     public function __construct(
         private readonly string $text,
-        private ?string $normalizedText = null,
         private ?SearchTermType $type = null,
+        private ?string $normalizedText = null,
         private ?Messenger $messenger = null,
         private ?string $messengerProfileUrl = null,
         private ?string $messengerUsername = null,

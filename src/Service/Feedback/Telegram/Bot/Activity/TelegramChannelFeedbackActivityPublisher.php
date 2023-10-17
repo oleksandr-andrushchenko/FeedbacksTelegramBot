@@ -6,7 +6,7 @@ namespace App\Service\Feedback\Telegram\Bot\Activity;
 
 use App\Entity\Feedback\Feedback;
 use App\Service\Feedback\Telegram\Bot\View\FeedbackTelegramViewProvider;
-use App\Service\Telegram\Bot\Api\TelegramBotMessageSender;
+use App\Service\Telegram\Bot\Api\TelegramBotMessageSenderInterface;
 use App\Service\Telegram\Bot\TelegramBot;
 use App\Service\Telegram\Channel\TelegramChannelMatchesProvider;
 use Psr\Log\LoggerInterface;
@@ -17,7 +17,7 @@ class TelegramChannelFeedbackActivityPublisher
 {
     public function __construct(
         private readonly TelegramChannelMatchesProvider $channelMatchesProvider,
-        private readonly TelegramBotMessageSender $messageSender,
+        private readonly TelegramBotMessageSenderInterface $messageSender,
         private readonly FeedbackTelegramViewProvider $viewProvider,
         private readonly LoggerInterface $logger,
     )

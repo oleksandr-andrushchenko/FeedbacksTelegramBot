@@ -10,6 +10,7 @@ use App\Exception\CommandLimitExceededException;
 use App\Exception\ValidatorException;
 use App\Service\Command\CommandLimitsChecker;
 use App\Service\Command\CommandStatisticProviderInterface;
+use App\Service\Feedback\SearchTerm\FeedbackSearchTermUpserter;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\Logger\ActivityLogger;
 use App\Service\Validator;
@@ -26,6 +27,7 @@ class FeedbackSearchSearchCreator
         private readonly CommandLimitsChecker $limitsChecker,
         private readonly FeedbackSubscriptionManager $subscriptionManager,
         private readonly ActivityLogger $activityLogger,
+        private readonly FeedbackSearchTermUpserter $termUpserter,
     )
     {
     }
@@ -52,23 +54,18 @@ class FeedbackSearchSearchCreator
             $this->limitsChecker->checkCommandLimits($messengerUser->getUser(), $this->statisticProvider);
         }
 
-        $searchTermTransfer = $feedbackSearchLookupTransfer->getSearchTerm();
-        $searchTermMessengerUser = null;
+        $searchTerm = $this->termUpserter->upsertFeedbackSearchTerm($feedbackSearchLookupTransfer->getSearchTerm());
 
         $feedbackSearchSearch = new FeedbackSearchSearch(
             $messengerUser->getUser(),
             $messengerUser,
-            $searchTermTransfer->getText(),
-            $searchTermTransfer->getNormalizedText() ?? $searchTermTransfer->getText(),
-            $searchTermTransfer->getType(),
-            $searchTermMessengerUser,
-            $searchTermTransfer->getMessenger(),
-            $searchTermTransfer->getMessengerUsername(),
-            $hasActiveSubscription,
-            $messengerUser->getUser()->getCountryCode(),
-            $messengerUser->getUser()->getLocaleCode(),
+            $searchTerm,
+            hasActiveSubscription: $hasActiveSubscription,
+            countryCode: $messengerUser->getUser()->getCountryCode(),
+            localeCode: $messengerUser->getUser()->getLocaleCode(),
             telegramBot: $feedbackSearchLookupTransfer->getTelegramBot()
         );
+
         $this->entityManager->persist($feedbackSearchSearch);
 
         if ($this->options->shouldLogActivities()) {

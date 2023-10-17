@@ -4,13 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests;
 
+use App\Enum\Feedback\Rating;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
+use App\Tests\Traits\Messenger\MessengerUserProfileUrlProviderTrait;
+use App\Transfer\Feedback\SearchTermTransfer;
 use App\Transfer\Messenger\MessengerUserTransfer;
 use Closure;
+use Generator;
 
 class Fixtures
 {
+    use MessengerUserProfileUrlProviderTrait;
+
     public const BOT_USERNAME_1 = 'any_bot';
     public const INSTAGRAM_USER_ID_1 = 1;
     public const INSTAGRAM_USERNAME_1 = '1dmy.tro2811';
@@ -347,5 +353,137 @@ class Fixtures
             static::getNetworkMessengerUserProfileUrls($number),
             static::getNonNetworkMessengerUserProfileUrls($number),
         );
+    }
+
+
+    public static function getMessengerProfileUrlSearchTerm(MessengerUserTransfer $messengerUser): SearchTermTransfer
+    {
+        return (new SearchTermTransfer($url = self::getMessengerUserProfileUrl($messengerUser)))
+            ->setMessenger($messengerUser->getMessenger())
+            ->setMessengerProfileUrl($url)
+            ->setMessengerUsername($messengerUser->getUsername())
+        ;
+    }
+
+    public static function getMessengerUsernameSearchTerm(MessengerUserTransfer $messengerUser): SearchTermTransfer
+    {
+        return (new SearchTermTransfer($messengerUser->getUsername()))
+            ->setMessenger($messengerUser->getMessenger())
+            ->setMessengerProfileUrl($messengerUser->getMessenger() === Messenger::unknown ? null : self::getMessengerUserProfileUrl($messengerUser))
+            ->setMessengerUsername($messengerUser->getUsername())
+        ;
+    }
+
+    /**
+     * @param bool $single
+     * @return Generator|SearchTermTransfer[]
+     */
+    public static function searchTerms(bool $single = false): Generator
+    {
+        // unknown messenger profile url
+        yield 'unknown profile url' => (new SearchTermTransfer('https://unknown.com/me'))
+            ->setType(SearchTermType::messenger_profile_url)
+            ->setMessenger(Messenger::unknown)
+        ;
+
+        if ($single) {
+            return;
+        }
+
+        foreach (self::getMessengerUserProfileUrls() as $messengerProfileUrlKey => [$messengerUser, $searchTermType]) {
+            yield sprintf('%s profile url', $messengerProfileUrlKey) => self::getMessengerProfileUrlSearchTerm($messengerUser)
+                ->setType($searchTermType)
+            ;
+        }
+
+        // messenger usernames
+        foreach (self::getMessengerUserUsernames() as $messengerUsernameKey => [$messengerUser, $searchTermType, $mocks]) {
+            yield sprintf('%s username', $messengerUsernameKey) => self::getMessengerUsernameSearchTerm($messengerUser)
+                ->setType($searchTermType)
+            ;
+        }
+
+        // unknown messenger username
+        yield 'unknown username' => (new SearchTermTransfer('me'))
+            ->setType(SearchTermType::messenger_username)
+            ->setMessenger(Messenger::unknown)
+            ->setMessengerUsername('me')
+        ;
+
+        // non-messengers
+        foreach (self::NON_MESSENGER_SEARCH_TYPES as $simpleKey => [$searchTermType, $searchTermText, $searchTermNormalizedText]) {
+            yield $simpleKey => (new SearchTermTransfer($searchTermText))
+                ->setType($searchTermType)
+                ->setNormalizedText($searchTermNormalizedText)
+            ;
+        }
+
+        // empty
+        yield 'empty search term' => null;
+    }
+
+    /**
+     * @param bool $single
+     * @return Generator|Rating[]
+     */
+    public static function ratings(bool $single = false): Generator
+    {
+        foreach (Rating::cases() as $rating) {
+            yield $rating->name => $rating;
+
+            if ($single) {
+                return;
+            }
+        }
+
+        // empty
+        yield 'empty rating' => null;
+    }
+
+    public static function descriptions(bool $single = false): Generator
+    {
+        yield 'description' => 'any description';
+
+        if ($single) {
+            return;
+        }
+
+        yield 'empty description' => null;
+    }
+
+    public static function feedbackCases(bool $single, array $fixtures, callable $generator = null): Generator
+    {
+        foreach (Fixtures::searchTerms($single) as $searchTermKey => $searchTerm) {
+            foreach (Fixtures::ratings(true) as $ratingKey => $rating) {
+                foreach (Fixtures::descriptions($single) as $descriptionKey => $description) {
+                    foreach ($fixtures as $fixtureKey => $fixture) {
+                        if (is_callable($generator)) {
+                            $data = $generator($searchTerm, $rating, $description);
+
+                            if ($data === null) {
+                                continue;
+                            }
+                        }
+
+                        $replies = $fixture['shouldSeeReplies'];
+                        $replies = is_callable($replies) ? $replies($searchTerm, $rating, $description) : $replies;
+                        $buttons = $fixture['shouldSeeButtons'];
+                        $buttons = is_callable($buttons) ? $buttons($searchTerm, $rating, $description) : $buttons;
+
+                        yield implode(' & ', [$searchTermKey, $ratingKey, $descriptionKey, $fixtureKey]) => array_merge(
+                            [
+                                'command' => $fixture['command'],
+                                'searchTerm' => $searchTerm,
+                                'rating' => $rating,
+                                'description' => $description,
+                                'shouldSeeReplies' => $replies,
+                                'shouldSeeButtons' => $buttons,
+                            ],
+                            $data
+                        );
+                    }
+                }
+            }
+        }
     }
 }

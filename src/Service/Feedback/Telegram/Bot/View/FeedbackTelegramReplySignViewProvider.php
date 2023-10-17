@@ -34,9 +34,9 @@ class FeedbackTelegramReplySignViewProvider
             Messenger::telegram,
             $bot->getEntity()->getUsername()
         );
-        $message = '➡️ ';
+        $message = '➕ ';
         $message .= sprintf('<a href="%s">%s</a>', $botLink, $text('create'));
-        $message .= ' • ';
+        $message .= ' • 🔍 ';
         $message .= sprintf('<a href="%s">%s</a>', $botLink, $text('search'));
 
         if ($channel === null) {
@@ -44,7 +44,7 @@ class FeedbackTelegramReplySignViewProvider
         }
 
         if ($channel !== null) {
-            $message .= ' • ';
+            $message .= ' • ✅ ';
             $channelLink = $this->messengerUserProfileUrlProvider->getMessengerUserProfileUrl(
                 Messenger::telegram,
                 $channel->getUsername()

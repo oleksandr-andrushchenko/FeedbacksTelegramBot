@@ -12,7 +12,8 @@
             <argument type="service" id="translator"/>
         </service>
         <service id="app.telegram_channel_feedback_activity_publisher"
-                 class="App\Service\Feedback\Telegram\Bot\Activity\TelegramChannelFeedbackActivityPublisher" lazy="true">
+                 class="App\Service\Feedback\Telegram\Bot\Activity\TelegramChannelFeedbackActivityPublisher"
+                 lazy="true">
             <argument type="service" id="app.telegram_channel_matches_provider"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>
             <argument type="service" id="app.feedback_telegram_view_provider"/>
@@ -26,7 +27,7 @@
             <argument type="service" id="app.command_limits_checker"/>
             <argument type="service" id="app.feedback_subscription_manager"/>
             <argument type="service" id="app.logger_activity"/>
-            <argument type="service" id="app.messenger_user_upserter"/>
+            <argument type="service" id="app.feedback_search_term_upserter"/>
         </service>
         <service id="app.feedback_search_creator" class="App\Service\Feedback\FeedbackSearchCreator" lazy="true">
             <argument type="service" id="app.search_command_options"/>
@@ -36,6 +37,7 @@
             <argument type="service" id="app.command_limits_checker"/>
             <argument type="service" id="app.feedback_subscription_manager"/>
             <argument type="service" id="app.logger_activity"/>
+            <argument type="service" id="app.feedback_search_term_upserter"/>
         </service>
         <service id="app.feedback_search_search_creator" class="App\Service\Feedback\FeedbackSearchSearchCreator"
                  lazy="true">
@@ -46,6 +48,7 @@
             <argument type="service" id="app.command_limits_checker"/>
             <argument type="service" id="app.feedback_subscription_manager"/>
             <argument type="service" id="app.logger_activity"/>
+            <argument type="service" id="app.feedback_search_term_upserter"/>
         </service>
         <service id="app.feedback_searcher" class="App\Service\Feedback\FeedbackSearcher" lazy="true">
             <argument type="service" id="app.repository.feedback"/>
@@ -106,10 +109,6 @@
                  class="App\Service\Feedback\SearchTerm\UrlSearchTermParser" lazy="true">
             <tag name="app.feedback_search_term_parser"/>
         </service>
-        <service id="app.feedback_search_term_parser_unknown"
-                 class="App\Service\Feedback\SearchTerm\UnknownSearchTermParser" lazy="true">
-            <tag name="app.feedback_search_term_parser"/>
-        </service>
         <service id="app.feedback_search_term_parser_vkontakte"
                  class="App\Service\Feedback\SearchTerm\VkontakteSearchTermParser" lazy="true">
             <tag name="app.feedback_search_term_parser"/>
@@ -159,17 +158,9 @@
                  class="App\Service\Feedback\SearchTerm\SearchTermProvider" lazy="true">
             <argument type="service" id="app.messenger_user_profile_url_provider"/>
         </service>
-        <service id="app.search_term_by_feedback_provider"
-                 class="App\Service\Feedback\SearchTerm\SearchTermByFeedbackProvider" lazy="true">
-            <argument type="service" id="app.search_term_provider"/>
-        </service>
-        <service id="app.search_term_by_feedback_search_provider"
-                 class="App\Service\Feedback\SearchTerm\SearchTermByFeedbackSearchProvider" lazy="true">
-            <argument type="service" id="app.search_term_provider"/>
-        </service>
         <service id="app.feedback_search_telegram_view_provider"
                  class="App\Service\Feedback\Telegram\Bot\View\FeedbackSearchTelegramViewProvider" lazy="true">
-            <argument type="service" id="app.search_term_by_feedback_search_provider"/>
+            <argument type="service" id="app.search_term_provider"/>
             <argument type="service" id="app.search_term_telegram_view_provider"/>
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.intl_time_provider"/>
@@ -178,8 +169,8 @@
         </service>
         <service id="app.feedback_telegram_view_provider"
                  class="App\Service\Feedback\Telegram\Bot\View\FeedbackTelegramViewProvider" lazy="true">
-            <argument type="service" id="app.search_term_by_feedback_provider"/>
-            <argument type="service" id="app.search_term_telegram_view_provider"/>
+            <argument type="service" id="app.search_term_provider"/>
+            <argument type="service" id="app.multiple_search_term_telegram_view_provider"/>
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.intl_time_provider"/>
             <argument type="service" id="app.feedback_rating_provider"/>
@@ -188,7 +179,11 @@
         </service>
         <service id="app.search_term_telegram_view_provider"
                  class="App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider" lazy="true">
-            <argument type="service" id="translator"/>
+            <argument type="service" id="app.feedback_search_term_type_provider"/>
+        </service>
+        <service id="app.multiple_search_term_telegram_view_provider"
+                 class="App\Service\Feedback\Telegram\View\MultipleSearchTermTelegramViewProvider" lazy="true">
+            <argument type="service" id="app.search_term_telegram_view_provider"/>
         </service>
         <service id="app.subscription_telegram_view_provider"
                  class="App\Service\Feedback\Telegram\Bot\View\SubscriptionTelegramViewProvider" lazy="true">
@@ -211,9 +206,8 @@
             <argument>%app.lookup_command_options%</argument>
         </service>
         <service id="app.feedback_search_term_type_provider"
-                 class="App\Service\Feedback\SearchTerm\FeedbackSearchTermTypeProvider" lazy="true">
+                 class="App\Service\Feedback\SearchTerm\SearchTermTypeProvider" lazy="true">
             <argument type="service" id="translator"/>
-            <argument type="service" id="app.array_value_eraser"/>
         </service>
         <service id="app.feedback_rating_provider" class="App\Service\Feedback\Rating\FeedbackRatingProvider"
                  lazy="true">
@@ -263,8 +257,8 @@
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
             <argument type="service" id="app.telegram_bot_matches_chat_sender"/>
             <argument type="service" id="app.level_1_region_provider"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="logger"/>
-            <argument>%app.country.request_location_step%</argument>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.telegram_conversation_locale"
@@ -281,7 +275,7 @@
             <argument type="service" id="app.validator"/>
             <argument type="service" id="app.feedback_search_term_parser"/>
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
-            <argument type="service" id="app.search_term_telegram_view_provider"/>
+            <argument type="service" id="app.multiple_search_term_telegram_view_provider"/>
             <argument type="service" id="app.feedback_search_term_type_provider"/>
             <argument type="service" id="app.feedback_creator"/>
             <argument type="service" id="app.feedback_rating_provider"/>
@@ -292,11 +286,10 @@
             <argument type="service" id="app.telegram_channel_matches_provider"/>
             <argument type="service" id="app.telegram_channel_link_view_provider"/>
             <argument>%app.create.search_term_type_step%</argument>
+            <argument>%app.create.extra_search_term_step%</argument>
             <argument>%app.create.description_step%</argument>
-            <argument>%app.create.change_search_term_button%</argument>
-            <argument>%app.create.change_rating_button%</argument>
-            <argument>%app.create.change_description_button%</argument>
             <argument>%app.create.confirm_step%</argument>
+            <argument>%app.create.send_to_channel_confirm_step%</argument>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.telegram_conversation_search_feedback"
@@ -312,7 +305,6 @@
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.feedback_telegram_view_provider"/>
             <argument>%app.search.search_term_type_step%</argument>
-            <argument>%app.search.change_search_term_button%</argument>
             <argument>%app.search.confirm_step%</argument>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
@@ -328,7 +320,6 @@
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.feedback_search_telegram_view_provider"/>
             <argument>%app.lookup.search_term_type_step%</argument>
-            <argument>%app.lookup.change_search_term_button%</argument>
             <argument>%app.lookup.confirm_step%</argument>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
@@ -370,6 +361,12 @@
             <argument type="service" id="app.start_telegram_command_handler"/>
             <argument type="service" id="app.intl_country_provider"/>
             <tag name="app.telegram_conversation_feedbacks"/>
+        </service>
+        <service id="app.feedback_search_term_upserter"
+                 class="App\Service\Feedback\SearchTerm\FeedbackSearchTermUpserter" lazy="true">
+            <argument type="service" id="app.repository.feedback_search_term"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.messenger_user_upserter"/>
         </service>
     </services>
 </container>

@@ -10,8 +10,6 @@ use App\Service\Telegram\Bot\Api\TelegramBotChatActionSenderInterface;
 use App\Service\Telegram\Bot\Api\TelegramBotMessageSenderInterface;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationManager;
 use Longman\TelegramBot\ChatAction;
-use Longman\TelegramBot\Entities\InlineKeyboard;
-use Longman\TelegramBot\Entities\InlineKeyboardButton;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\KeyboardButton;
 use App\Entity\Location;
@@ -94,9 +92,9 @@ class TelegramBotAwareHelper
         return $this->getBot()->getMessengerUser()?->getUser()->getTimezone();
     }
 
-    public function startConversation(string $class, TelegramBotConversationState $state = null): static
+    public function startConversation(string $class): static
     {
-        $this->conversationManager->startTelegramConversation($this->getBot(), $class, $state);
+        $this->conversationManager->startTelegramConversation($this->getBot(), $class);
 
         return $this;
     }
@@ -133,6 +131,7 @@ class TelegramBotAwareHelper
         string $text,
         Keyboard $keyboard = null,
         string $parseMode = 'HTML',
+        int $replyToMessageId = null,
         bool $protectContent = null,
         bool $disableWebPagePreview = true,
         bool $keepKeyboard = false
@@ -149,6 +148,7 @@ class TelegramBotAwareHelper
             $text,
             keyboard: $keyboard,
             parseMode: $parseMode,
+            replyToMessageId: $replyToMessageId,
             protectContent: $protectContent,
             disableWebPagePreview: $disableWebPagePreview,
             keepKeyboard: $keepKeyboard
@@ -196,44 +196,44 @@ class TelegramBotAwareHelper
         return 'ℹ️ ' . $text;
     }
 
+    public function selectedText(string $text): string
+    {
+        return '*' . $text;
+    }
+
     public function keyboard(...$buttons): Keyboard
     {
         return $this->keyboardFactory->createTelegramKeyboard(...$buttons);
     }
 
-    public function button(string $text, bool $requestLocation = false): KeyboardButton
+    public function button(string $text): KeyboardButton
     {
-        return $this->keyboardFactory->createTelegramButton($text, $requestLocation);
+        return $this->keyboardFactory->createTelegramButton($text);
     }
 
-    public function inlineKeyboard(...$buttons): InlineKeyboard
+    public function locationButton(string $text): KeyboardButton
     {
-        return $this->keyboardFactory->createTelegramInlineKeyboard(...$buttons);
-    }
-
-    public function inlineButton(string $text): InlineKeyboardButton
-    {
-        return $this->keyboardFactory->createTelegramInlineButton($text);
+        return $this->keyboardFactory->createTelegramButton($text, requestLocation: true);
     }
 
     public function yesButton(): KeyboardButton
     {
-        return $this->button('👌 ' . $this->trans('keyboard.yes'));
+        return $this->button('✅ ' . $this->trans('keyboard.yes'));
     }
 
     public function noButton(): KeyboardButton
     {
-        return $this->button($this->trans('keyboard.no'));
+        return $this->button('⭕️ ' . $this->trans('keyboard.no'));
     }
 
-    public function confirmButton(): KeyboardButton
+    public function prevButton(): KeyboardButton
     {
-        return $this->yesButton();
+        return $this->button('⬅️ ' . $this->trans('keyboard.prev'));
     }
 
-    public function backButton(): KeyboardButton
+    public function nextButton(): KeyboardButton
     {
-        return $this->button('⬅️ ' . $this->trans('keyboard.back'));
+        return $this->button($this->trans('keyboard.next') . ' ➡️');
     }
 
     public function helpButton(): KeyboardButton
@@ -241,9 +241,9 @@ class TelegramBotAwareHelper
         return $this->button('🚨 ' . $this->trans('keyboard.help'));
     }
 
-    public function leaveAsButton(string $text): KeyboardButton
+    public function removeButton(string $text): KeyboardButton
     {
-        return $this->button($this->trans('keyboard.leave_as', ['text' => $text]));
+        return $this->button('❌ ' . $text);
     }
 
     public function cancelButton(): KeyboardButton
@@ -260,7 +260,7 @@ class TelegramBotAwareHelper
         }
 
         return join(' ', [
-            $locked ? '🔒' : $this->trans($name, domain: 'command_icon'),
+            $locked ? '🔒' : $this->trans($name, domain: 'command_icon', locale: 'en'),
             $this->trans($name, domain: 'command'),
         ]);
     }

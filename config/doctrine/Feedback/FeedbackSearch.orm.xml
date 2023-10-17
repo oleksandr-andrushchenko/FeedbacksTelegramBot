@@ -13,26 +13,17 @@
                 <option name="unsigned">true</option>
             </options>
         </id>
+
         <many-to-one field="user" target-entity="App\Entity\User\User"/>
         <many-to-one field="messengerUser" target-entity="App\Entity\Messenger\MessengerUser"/>
-        <field name="searchTermText" column="search_term_text"/>
-        <field name="searchTermNormalizedText" column="search_term_normalized_text"/>
-        <field name="searchTermType" column="search_term_type" type="smallint" enum-type="App\Enum\Feedback\SearchTermType">
-            <options>
-                <option name="unsigned">true</option>
-            </options>
-        </field>
-        <field name="searchTermMessenger" column="search_term_messenger" type="smallint" enum-type="App\Enum\Messenger\Messenger" nullable="true">
-            <options>
-                <option name="unsigned">true</option>
-            </options>
-        </field>
-        <field name="searchTermMessengerUsername" column="search_term_messenger_username" nullable="true"/>
-        <many-to-one field="searchTermMessengerUser" target-entity="App\Entity\Messenger\MessengerUser"/>
+        <many-to-one field="searchTerm" target-entity="App\Entity\Feedback\FeedbackSearchTerm"/>
+
         <field name="hasActiveSubscription" column="has_active_subscription" type="boolean"/>
         <field name="countryCode" column="country_code" length="2" nullable="true"/>
         <field name="localeCode" column="locale_code" length="2" nullable="true"/>
+
         <many-to-one field="telegramBot" target-entity="App\Entity\Telegram\TelegramBot"/>
+
         <field name="createdAt" column="created_at" type="datetime_immutable"/>
     </entity>
 </doctrine-mapping>

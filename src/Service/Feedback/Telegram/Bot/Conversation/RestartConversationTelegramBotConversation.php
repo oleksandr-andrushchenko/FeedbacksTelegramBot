@@ -16,6 +16,7 @@ use App\Service\Telegram\Bot\TelegramBotAwareHelper;
 class RestartConversationTelegramBotConversation extends TelegramBotConversation implements TelegramBotConversationInterface
 {
     public const STEP_CONFIRM_QUERIED = 10;
+    public const STEP_CANCEL_PRESSED = 20;
 
     public function __construct(
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
@@ -50,18 +51,28 @@ class RestartConversationTelegramBotConversation extends TelegramBotConversation
                 'query' => $query,
             ]);
         }
+
         $message = $query;
 
-        $buttons = [
-            $tg->yesButton(),
-            $tg->noButton(),
-        ];
-
-        if ($this->state->hasNotSkipHelpButton('confirm')) {
-            $buttons[] = $tg->helpButton();
-        }
+        $buttons = [];
+        $buttons[] = [$tg->yesButton(), $tg->noButton()];
+        $buttons[] = $tg->helpButton();
+        $buttons[] = $tg->cancelButton();
 
         return $tg->reply($message, $tg->keyboard(...$buttons))->null();
+    }
+
+    public function gotCancel(TelegramBotAwareHelper $tg, Entity $entity): null
+    {
+        $this->state->setStep(self::STEP_CANCEL_PRESSED);
+
+        $tg->stopConversation($entity);
+
+        $message = $tg->trans('reply.canceled', domain: 'restart');
+        $message = $tg->upsetText($message);
+        $message .= "\n\n";
+
+        return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
     }
 
     public function gotConfirm(TelegramBotAwareHelper $tg, Entity $entity): null
@@ -71,11 +82,15 @@ class RestartConversationTelegramBotConversation extends TelegramBotConversation
 
             return $this->chooseActionChatSender->sendActions($tg);
         }
-        if ($tg->matchText($tg->helpButton()->getText())) {
-            $this->state->addSkipHelpButton('confirm');
 
+        if ($tg->matchText($tg->helpButton()->getText())) {
             return $this->queryConfirm($tg, true);
         }
+
+        if ($tg->matchText($tg->cancelButton()->getText())) {
+            return $this->gotCancel($tg, $entity);
+        }
+
         if (!$tg->matchText($tg->yesButton()->getText())) {
             $message = $tg->trans('reply.wrong');
             $message = $tg->wrongText($message);

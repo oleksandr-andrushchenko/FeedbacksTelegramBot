@@ -6,18 +6,15 @@
 
     <parameters>
         <parameter key="app.create.search_term_type_step">true</parameter>
+        <parameter key="app.create.extra_search_term_step">true</parameter>
         <parameter key="app.create.description_step">true</parameter>
-        <parameter key="app.create.change_search_term_button">true</parameter>
-        <parameter key="app.create.change_rating_button">true</parameter>
-        <parameter key="app.create.change_description_button">true</parameter>
         <parameter key="app.create.confirm_step">true</parameter>
+        <parameter key="app.create.send_to_channel_confirm_step">true</parameter>
 
         <parameter key="app.search.search_term_type_step">true</parameter>
-        <parameter key="app.search.change_search_term_button">true</parameter>
         <parameter key="app.search.confirm_step">true</parameter>
 
         <parameter key="app.lookup.search_term_type_step">true</parameter>
-        <parameter key="app.lookup.change_search_term_button">true</parameter>
         <parameter key="app.lookup.confirm_step">true</parameter>
     </parameters>
 </container>

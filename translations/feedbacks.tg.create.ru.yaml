@@ -1,15 +1,14 @@
 query:
   search_term: О ком или о чем вы хотите оставить отзыв?
   search_term_type: Кем или чем является %search_term%?
+  extra_search_term: Добавьте больше информации о %search_term%.
+  added_extra_search_terms: 'Уже добавлено: %search_terms%'
   rating: Оцените ваш опыт с %search_term%.
   description: Оставьте комментарий или добавьте любую информацию о %search_term%.
   confirm: Создать отзыв о %search_term%?
   send_to_channel_confirm: Хотите анонимно опубликовать ваш отзыв на канале %channels%?
 keyboard:
-  change_search_term: Изменить поисковый запрос
-  change_rating: Изменить оценку
-  add_description: Добавить детали
-  change_description: Изменить детали
+  create_confirm: Добавить отзыв
 reply:
   canceled: Диалог добавления отзыва отменен.
   created: Отзыв успешно добавлен.

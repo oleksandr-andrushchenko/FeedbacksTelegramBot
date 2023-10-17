@@ -21,8 +21,8 @@ class FeedbackSearchNormalizer implements NormalizerInterface
             return [
                 'messenger_username' => sprintf('@%s', $object->getMessengerUser()->getUsername()),
                 'messenger' => $object->getMessengerUser()->getMessenger()->name,
-                'search_term' => $object->getSearchTermText(),
-                'search_term_type' => $object->getSearchTermType()->name,
+                'search_term' => $object->getSearchTerm()->getText(),
+                'search_term_type' => $object->getSearchTerm()->getType()->name,
                 'created_at' => $object->getCreatedAt()->getTimestamp(),
             ];
         }

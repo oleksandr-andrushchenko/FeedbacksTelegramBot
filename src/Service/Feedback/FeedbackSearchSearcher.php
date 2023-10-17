@@ -25,8 +25,9 @@ class FeedbackSearchSearcher
     public function searchFeedbackSearches(FeedbackSearchSearch $feedbackSearchSearch, int $limit = 20): array
     {
         $feedbackSearches = $this->repository->createQueryBuilder('fs')
-            ->andWhere('fs.searchTermNormalizedText = :searchTermNormalizedText')
-            ->setParameter('searchTermNormalizedText', $feedbackSearchSearch->getSearchTermNormalizedText())
+            ->innerJoin('fs.searchTerm', 't')
+            ->andWhere('t.normalizedText = :searchTermNormalizedText')
+            ->setParameter('searchTermNormalizedText', $feedbackSearchSearch->getSearchTerm()->getNormalizedText())
             ->setMaxResults(100)
             ->getQuery()
             ->getResult()
@@ -34,16 +35,16 @@ class FeedbackSearchSearcher
 
         $feedbackSearches = array_filter($feedbackSearches, function (FeedbackSearch $feedbackSearch) use ($feedbackSearchSearch) {
             if (
-                $feedbackSearchSearch->getSearchTermType() !== SearchTermType::unknown
-                && $feedbackSearch->getSearchTermType() !== SearchTermType::unknown
-                && $feedbackSearchSearch->getSearchTermType() !== $feedbackSearch->getSearchTermType()
+                $feedbackSearchSearch->getSearchTerm()->getType() !== SearchTermType::unknown
+                && $feedbackSearch->getSearchTerm()->getType() !== SearchTermType::unknown
+                && $feedbackSearchSearch->getSearchTerm()->getType() !== $feedbackSearch->getSearchTerm()->getType()
             ) {
                 return false;
             }
 
             if (
-                $feedbackSearchSearch->getSearchTermMessenger() !== null
-                && $feedbackSearchSearch->getSearchTermMessenger() !== $feedbackSearch->getSearchTermMessenger()
+                $feedbackSearchSearch->getSearchTerm()->getMessenger() !== null
+                && $feedbackSearchSearch->getSearchTerm()->getMessenger() !== $feedbackSearch->getSearchTerm()->getMessenger()
             ) {
                 return false;
             }

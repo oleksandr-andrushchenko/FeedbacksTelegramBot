@@ -6,7 +6,7 @@ namespace App\Command\Telegram\Bot;
 
 use App\Exception\Telegram\Bot\TelegramBotNotFoundException;
 use App\Repository\Telegram\Bot\TelegramBotRepository;
-use App\Service\Telegram\Bot\Api\TelegramBotMessageSender;
+use App\Service\Telegram\Bot\Api\TelegramBotMessageSenderInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,7 +17,7 @@ class TelegramBotMessageSendCommand extends Command
 {
     public function __construct(
         private readonly TelegramBotRepository $repository,
-        private readonly TelegramBotMessageSender $sender,
+        private readonly TelegramBotMessageSenderInterface $sender,
     )
     {
         parent::__construct();

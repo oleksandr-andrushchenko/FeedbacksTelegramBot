@@ -41,8 +41,10 @@
         <service id="app.normalizer.telegram_bot_conversation_state_create_feedback"
                  class="App\Serializer\Feedback\Telegram\Bot\CreateFeedbackTelegramBotConversationStateNormalizer"
                  lazy="true">
-            <argument type="service" id="app.normalizer.telegram_bot_conversation_state_search_feedback"/>
-            <argument type="service" id="app.normalizer.telegram_bot_conversation_state_search_feedback"/>
+            <argument type="service" id="app.normalizer.telegram_bot_conversation_state"/>
+            <argument type="service" id="app.normalizer.telegram_bot_conversation_state"/>
+            <argument type="service" id="app.normalizer.feedback_search_term_transfer"/>
+            <argument type="service" id="app.normalizer.feedback_search_term_transfer"/>
             <tag name="serializer.normalizer" priority="-967"/>
         </service>
         <service id="app.normalizer.telegram_bot_conversation_state_subscribe"

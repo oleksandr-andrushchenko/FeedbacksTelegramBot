@@ -3,12 +3,7 @@ App\Entity\Feedback\FeedbackSearch:
     __construct:
       user: '@user_1'
       messengerUser: '@messenger_user_1_telegram'
-      searchTermText: 'https://instagram.com/<(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>'
-      searchTermNormalizedText: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
-      searchTermType: <(\App\Enum\Feedback\SearchTermType::instagram_username)>
-      searchTermMessengerUser: null
-      searchTermMessenger: <(\App\Enum\Messenger\Messenger::instagram)>
-      searchTermMessengerUsername: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
+      searchTerm: '@feedback_search_term_instagram_profile_url_3'
       hasActiveSubscription: false
       countryCode: ua
       localeCode: uk
@@ -17,12 +12,7 @@ App\Entity\Feedback\FeedbackSearch:
     __construct:
       user: '@user_2'
       messengerUser: '@messenger_user_2_telegram'
-      searchTermText: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
-      searchTermNormalizedText: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
-      searchTermType: <(\App\Enum\Feedback\SearchTermType::instagram_username)>
-      searchTermMessengerUser: null
-      searchTermMessenger: <(\App\Enum\Messenger\Messenger::instagram)>
-      searchTermMessengerUsername: <(\App\Tests\Fixtures::INSTAGRAM_USERNAME_3)>
+      searchTerm: '@feedback_search_term_instagram_username_3'
       hasActiveSubscription: false
       countryCode: ua
       localeCode: uk

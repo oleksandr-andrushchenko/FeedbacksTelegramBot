@@ -11,12 +11,10 @@ abstract class SearchTermAwareTelegramBotConversationState extends TelegramBotCo
 {
     public function __construct(
         ?int $step = null,
-        ?array $skipHelpButtons = null,
         private ?SearchTermTransfer $searchTerm = null,
-        private ?bool $change = null,
     )
     {
-        parent::__construct($step, $skipHelpButtons);
+        parent::__construct($step);
     }
 
     public function getSearchTerm(): ?SearchTermTransfer
@@ -27,18 +25,6 @@ abstract class SearchTermAwareTelegramBotConversationState extends TelegramBotCo
     public function setSearchTerm(?SearchTermTransfer $searchTerm): static
     {
         $this->searchTerm = $searchTerm;
-
-        return $this;
-    }
-
-    public function isChange(): ?bool
-    {
-        return $this->change;
-    }
-
-    public function setChange(?bool $change): static
-    {
-        $this->change = $change;
 
         return $this;
     }

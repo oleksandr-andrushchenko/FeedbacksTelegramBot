@@ -15,31 +15,14 @@ class FeedbackRatingProvider
     {
     }
 
-    public function getRatingIcons(): iterable
-    {
-        static $icons = [
-            Rating::extremely_unsatisfied->name => '👎👎👎',
-            Rating::very_unsatisfied->name => '👎👎',
-            Rating::unsatisfied->name => '👎',
-            Rating::neutral->name => '🤔',
-            Rating::satisfied->name => '❤️',
-            Rating::very_satisfied->name => '❤️❤️',
-            Rating::extremely_satisfied->name => '❤️❤️❤️',
-        ];
-
-        return $icons;
-    }
-
     public function getRatingName(Rating $rating, string $localeCode = null): string
     {
-        $name = $this->translator->trans($rating->name, domain: 'feedbacks.rating', locale: $localeCode);
-
-        return ($rating->value > 0 ? '+' : '') . $rating->value . ' (' . $name . ')';
+        return $this->translator->trans($rating->name, domain: 'feedbacks.rating', locale: $localeCode);
     }
 
     public function getRatingIcon(Rating $rating): ?string
     {
-        return $this->getRatingIcons()[$rating->name] ?? null;
+        return $this->translator->trans($rating->name, domain: 'feedbacks.rating_icon', locale: 'en');
     }
 
     public function getRatingComposeName(Rating $rating, string $localeCode = null): string

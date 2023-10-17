@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace App\Service\Feedback\SearchTerm;
 
 use App\Enum\Feedback\SearchTermType;
-use App\Service\Util\Array\ArrayValueEraser;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class FeedbackSearchTermTypeProvider
+class SearchTermTypeProvider
 {
     public function __construct(
         private readonly TranslatorInterface $translator,
-        private readonly ArrayValueEraser $arrayValueEraser,
     )
     {
     }
@@ -53,15 +51,5 @@ class FeedbackSearchTermTypeProvider
         }
 
         return $sorted;
-    }
-
-    public function moveUnknownToEnd(array $types): array
-    {
-        if (in_array(SearchTermType::unknown, $types, true)) {
-            $types = $this->arrayValueEraser->eraseValue($types, SearchTermType::unknown);
-            $types[] = SearchTermType::unknown;
-        }
-
-        return $types;
     }
 }

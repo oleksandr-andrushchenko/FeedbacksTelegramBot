@@ -71,14 +71,11 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
 
         $message = $this->getLeftMessageConfirmQuery($tg, $help);
 
-        $buttons = [
-            $tg->yesButton(),
-            $tg->noButton(),
-        ];
+        $buttons = [];
 
-        if ($this->state->hasNotSkipHelpButton('left_message_confirm')) {
-            $buttons[] = $tg->helpButton();
-        }
+        $buttons[] = [$tg->yesButton(), $tg->noButton()];
+        $buttons[] = $tg->helpButton();
+        $buttons[] = $tg->cancelButton();
 
         return $tg->reply($message, $tg->keyboard(...$buttons))->null();
     }
@@ -90,11 +87,15 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
 
             return $this->chooseActionChatSender->sendActions($tg);
         }
-        if ($tg->matchText($tg->helpButton()->getText())) {
-            $this->state->addSkipHelpButton('left_message_confirm');
 
+        if ($tg->matchText($tg->helpButton()->getText())) {
             return $this->queryLeftMessageConfirm($tg, true);
         }
+
+        if ($tg->matchText($tg->cancelButton()->getText())) {
+            return $this->gotCancel($tg, $entity);
+        }
+
         if (!$tg->matchText($tg->yesButton()->getText())) {
             $message = $tg->trans('reply.wrong');
             $message = $tg->wrongText($message);
@@ -126,10 +127,8 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
 
         $message = $this->getMessageQuery($tg, $help);
 
-        if ($this->state->hasNotSkipHelpButton('message')) {
-            $buttons[] = $tg->helpButton();
-        }
-
+        $buttons = [];
+        $buttons[] = $tg->helpButton();
         $buttons[] = $tg->cancelButton();
 
         return $tg->reply($message, $tg->keyboard(...$buttons))->null();
@@ -139,12 +138,13 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
     {
         $this->state->setStep(self::STEP_CANCEL_PRESSED);
 
+        $tg->stopConversation($entity);
+
         $message = $tg->trans('reply.canceled', domain: 'contact');
         $message = $tg->upsetText($message);
+        $message .= "\n\n";
 
-        $tg->stopConversation($entity)->reply($message);
-
-        return $this->chooseActionChatSender->sendActions($tg);
+        return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
     }
 
     public function gotMessage(TelegramBotAwareHelper $tg, Entity $entity): null
@@ -157,11 +157,11 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
 
             return $this->queryMessage($tg);
         }
-        if ($tg->matchText($tg->helpButton()->getText())) {
-            $this->state->addSkipHelpButton('message');
 
+        if ($tg->matchText($tg->helpButton()->getText())) {
             return $this->queryMessage($tg, true);
         }
+
         if ($tg->matchText($tg->cancelButton()->getText())) {
             return $this->gotCancel($tg, $entity);
         }

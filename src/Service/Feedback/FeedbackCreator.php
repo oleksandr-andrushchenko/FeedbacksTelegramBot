@@ -6,14 +6,14 @@ namespace App\Service\Feedback;
 
 use App\Entity\CommandOptions;
 use App\Entity\Feedback\Feedback;
-use App\Exception\Messenger\SameMessengerUserException;
 use App\Exception\CommandLimitExceededException;
+use App\Exception\Messenger\SameMessengerUserException;
 use App\Exception\ValidatorException;
 use App\Service\Command\CommandLimitsChecker;
 use App\Service\Command\CommandStatisticProviderInterface;
+use App\Service\Feedback\SearchTerm\FeedbackSearchTermUpserter;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\Logger\ActivityLogger;
-use App\Service\Messenger\MessengerUserUpserter;
 use App\Service\Validator;
 use App\Transfer\Feedback\FeedbackTransfer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,7 +28,7 @@ class FeedbackCreator
         private readonly CommandLimitsChecker $limitsChecker,
         private readonly FeedbackSubscriptionManager $subscriptionManager,
         private readonly ActivityLogger $activityLogger,
-        private readonly MessengerUserUpserter $messengerUserUpserter,
+        private readonly FeedbackSearchTermUpserter $termUpserter,
     )
     {
     }
@@ -72,30 +72,22 @@ class FeedbackCreator
     {
         $messengerUser = $feedbackTransfer->getMessengerUser();
         $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($messengerUser);
-        $searchTermTransfer = $feedbackTransfer->getSearchTerm();
 
-        if ($searchTermTransfer->getMessengerUser() === null) {
-            $searchTermMessengerUser = null;
-        } else {
-            $searchTermMessengerUser = $this->messengerUserUpserter->upsertMessengerUser(
-                $searchTermTransfer->getMessengerUser()
-            );
+        $searchTerms = [];
+
+        foreach ($feedbackTransfer->getSearchTerms() as $termTransfer) {
+            $searchTerms[] = $this->termUpserter->upsertFeedbackSearchTerm($termTransfer);
         }
 
         return new Feedback(
             $messengerUser->getUser(),
             $messengerUser,
-            $searchTermTransfer->getText(),
-            $searchTermTransfer->getNormalizedText() ?? $searchTermTransfer->getText(),
-            $searchTermTransfer->getType(),
-            $searchTermMessengerUser,
-            $searchTermMessengerUser?->getMessenger() ?? $searchTermTransfer->getMessenger(),
-            $searchTermMessengerUser?->getUsername() ?? $searchTermTransfer->getMessengerUsername(),
+            $searchTerms,
             $feedbackTransfer->getRating(),
-            $feedbackTransfer->getDescription(),
-            $hasActiveSubscription,
-            $messengerUser->getUser()->getCountryCode(),
-            $messengerUser->getUser()->getLocaleCode(),
+            description: $feedbackTransfer->getDescription(),
+            hasActiveSubscription: $hasActiveSubscription,
+            countryCode: $messengerUser->getUser()->getCountryCode(),
+            localeCode: $messengerUser->getUser()->getLocaleCode(),
             telegramBot: $feedbackTransfer->getTelegramBot()
         );
     }
@@ -108,16 +100,17 @@ class FeedbackCreator
     private function checkSearchTermUser(FeedbackTransfer $feedbackTransfer): void
     {
         $messengerUser = $feedbackTransfer->getMessengerUser();
-        $searchTermTransfer = $feedbackTransfer->getSearchTerm();
 
-        if (
-            $messengerUser?->getUsername() !== null
-            && $messengerUser?->getMessenger() !== null
-            && $searchTermTransfer?->getMessengerUsername() !== null
-            && strcasecmp($messengerUser->getUsername(), $searchTermTransfer->getMessengerUsername()) === 0
-            && $messengerUser->getMessenger() === $searchTermTransfer->getMessenger()
-        ) {
-            throw new SameMessengerUserException($messengerUser);
+        foreach ($feedbackTransfer->getSearchTerms() as $searchTerm) {
+            if (
+                $messengerUser?->getUsername() !== null
+                && $messengerUser?->getMessenger() !== null
+                && $searchTerm?->getMessengerUsername() !== null
+                && strcasecmp($messengerUser->getUsername(), $searchTerm->getMessengerUsername()) === 0
+                && $messengerUser->getMessenger() === $searchTerm->getMessenger()
+            ) {
+                throw new SameMessengerUserException($messengerUser);
+            }
         }
     }
 

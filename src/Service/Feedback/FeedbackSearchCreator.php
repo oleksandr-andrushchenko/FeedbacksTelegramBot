@@ -10,6 +10,7 @@ use App\Exception\CommandLimitExceededException;
 use App\Exception\ValidatorException;
 use App\Service\Command\CommandLimitsChecker;
 use App\Service\Command\CommandStatisticProviderInterface;
+use App\Service\Feedback\SearchTerm\FeedbackSearchTermUpserter;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\Logger\ActivityLogger;
 use App\Service\Validator;
@@ -26,6 +27,7 @@ class FeedbackSearchCreator
         private readonly CommandLimitsChecker $limitsChecker,
         private readonly FeedbackSubscriptionManager $subscriptionManager,
         private readonly ActivityLogger $activityLogger,
+        private readonly FeedbackSearchTermUpserter $termUpserter,
     )
     {
     }
@@ -52,23 +54,18 @@ class FeedbackSearchCreator
             $this->limitsChecker->checkCommandLimits($messengerUser->getUser(), $this->statisticProvider);
         }
 
-        $searchTermTransfer = $feedbackSearchTransfer->getSearchTerm();
-        $searchTermMessengerUser = null;
+        $searchTerm = $this->termUpserter->upsertFeedbackSearchTerm($feedbackSearchTransfer->getSearchTerm());
 
         $feedbackSearch = new FeedbackSearch(
             $messengerUser->getUser(),
             $messengerUser,
-            $searchTermTransfer->getText(),
-            $searchTermTransfer->getNormalizedText() ?? $searchTermTransfer->getText(),
-            $searchTermTransfer->getType(),
-            $searchTermMessengerUser,
-            $searchTermTransfer->getMessenger(),
-            $searchTermTransfer->getMessengerUsername(),
-            $hasActiveSubscription,
-            $messengerUser->getUser()->getCountryCode(),
-            $messengerUser->getUser()->getLocaleCode(),
+            $searchTerm,
+            hasActiveSubscription: $hasActiveSubscription,
+            countryCode: $messengerUser->getUser()->getCountryCode(),
+            localeCode: $messengerUser->getUser()->getLocaleCode(),
             telegramBot: $feedbackSearchTransfer->getTelegramBot()
         );
+
         $this->entityManager->persist($feedbackSearch);
 
         if ($this->options->shouldLogActivities()) {

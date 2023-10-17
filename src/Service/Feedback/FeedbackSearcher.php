@@ -25,8 +25,9 @@ class FeedbackSearcher
     public function searchFeedbacks(FeedbackSearch $feedbackSearch, int $limit = 20): array
     {
         $feedbacks = $this->feedbackRepository->createQueryBuilder('f')
-            ->andWhere('f.searchTermNormalizedText = :searchTermNormalizedText')
-            ->setParameter('searchTermNormalizedText', $feedbackSearch->getSearchTermNormalizedText())
+            ->innerJoin('f.searchTerms', 't')
+            ->andWhere('t.normalizedText = :searchTermNormalizedText')
+            ->setParameter('searchTermNormalizedText', $feedbackSearch->getSearchTerm()->getNormalizedText())
             ->setMaxResults(100)
             ->getQuery()
             ->getResult()
@@ -36,23 +37,29 @@ class FeedbackSearcher
         // todo: for example: search term=+1 (561) 314-5672, its a phone number, stored as: 15613145672, but search with unknown type will give FALSE (+1 (561) 314-5672 === 15613145672)
         // todo: coz it wasnt parsed to selected seearch term type
 
-        $feedbacks = array_filter($feedbacks, function (Feedback $feedback) use ($feedbackSearch) {
-            if (
-                $feedbackSearch->getSearchTermType() !== SearchTermType::unknown
-                && $feedback->getSearchTermType() !== SearchTermType::unknown
-                && $feedbackSearch->getSearchTermType() !== $feedback->getSearchTermType()
-            ) {
-                return false;
+        $feedbacks = array_filter($feedbacks, static function (Feedback $feedback) use ($feedbackSearch): bool {
+            foreach ($feedback->getSearchTerms() as $searchTerm) {
+                if ($searchTerm->getNormalizedText() === $feedbackSearch->getSearchTerm()->getNormalizedText()) {
+                    if (
+                        $feedbackSearch->getSearchTerm()->getType() !== SearchTermType::unknown
+                        && $searchTerm->getType() !== SearchTermType::unknown
+                        && $feedbackSearch->getSearchTerm()->getType() !== $searchTerm->getType()
+                    ) {
+                        return false;
+                    }
+
+                    if (
+                        $feedbackSearch->getSearchTerm()->getMessenger() !== null
+                        && $feedbackSearch->getSearchTerm()->getMessenger() !== $searchTerm->getMessenger()
+                    ) {
+                        return false;
+                    }
+
+                    return true;
+                }
             }
 
-            if (
-                $feedbackSearch->getSearchTermMessenger() !== null
-                && $feedbackSearch->getSearchTermMessenger() !== $feedback->getSearchTermMessenger()
-            ) {
-                return false;
-            }
-
-            return true;
+            return false;
         });
 
         $feedbacks = array_values($feedbacks);

@@ -59,28 +59,16 @@ class SubscribeTelegramBotConversation extends TelegramBotConversation implement
     public function invoke(TelegramBotAwareHelper $tg, Entity $entity): null
     {
         return match ($this->state->getStep()) {
-            default => $this->start($tg, $entity),
+            default => $this->start($tg),
             self::STEP_CURRENCY_QUERIED => $this->gotCurrency($tg, $entity),
             self::STEP_SUBSCRIPTION_PLAN_QUERIED => $this->gotSubscriptionPlan($tg, $entity),
             self::STEP_PAYMENT_METHOD_QUERIED => $this->gotPaymentMethod($tg, $entity),
         };
     }
 
-    public function start(TelegramBotAwareHelper $tg, Entity $entity): ?string
+    public function start(TelegramBotAwareHelper $tg): ?string
     {
         $paymentMethodCount = count($this->getPaymentMethods($tg));
-
-        if (!$tg->getBot()->getEntity()->acceptPayments() || $paymentMethodCount === 0) {
-            $tg->stopConversation($entity);
-
-            $parameters = [
-                'contact_command' => $tg->command('contact', html: true),
-            ];
-            $message = $tg->trans('reply.not_accept_payments', parameters: $parameters);
-            $message = $tg->failText($message);
-
-            return $this->chooseActionChatSender->sendActions($tg, $message);
-        }
 
         $this->state->setCurrencyStep($tg->getCurrencyCode() === null);
         $this->state->setPaymentMethodStep($paymentMethodCount > 1);
@@ -98,10 +86,11 @@ class SubscribeTelegramBotConversation extends TelegramBotConversation implement
 
         $message = $tg->trans('reply.canceled', domain: 'subscribe');
         $message = $tg->upsetText($message);
+        $message .= "\n\n";
 
-        $tg->stopConversation($entity)->reply($message);
+        $tg->stopConversation($entity);
 
-        return $this->chooseActionChatSender->sendActions($tg);
+        return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
     }
 
     public function getCurrencyQuery(TelegramBotAwareHelper $tg, bool $help = false): string
@@ -125,11 +114,7 @@ class SubscribeTelegramBotConversation extends TelegramBotConversation implement
         $message = $this->getCurrencyQuery($tg, $help);
 
         $buttons = $this->getCurrencyButtons($tg);
-
-        if ($this->state->hasNotSkipHelpButton('currency')) {
-            $buttons[] = $tg->helpButton();
-        }
-
+        $buttons[] = $tg->helpButton();
         $buttons[] = $tg->cancelButton();
 
         return $tg->reply($message, $tg->keyboard(...$buttons))->null();
@@ -138,13 +123,13 @@ class SubscribeTelegramBotConversation extends TelegramBotConversation implement
     public function gotCurrency(TelegramBotAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText($tg->helpButton()->getText())) {
-            $this->state->addSkipHelpButton('currency');
-
             return $this->queryCurrency($tg, true);
         }
+
         if ($tg->matchText($tg->cancelButton()->getText())) {
             return $this->gotCancel($tg, $entity);
         }
+
         if ($tg->matchText(null)) {
             $currency = null;
         } else {
@@ -196,15 +181,12 @@ class SubscribeTelegramBotConversation extends TelegramBotConversation implement
         $buttons = $this->getSubscriptionPlanButtons($tg);
 
         if ($this->state->isCurrencyStep()) {
-            $buttons[] = $tg->backButton();
+            $buttons[] = $tg->prevButton();
         } else {
             $buttons[] = $this->getChangeCurrencyButton($tg);
         }
 
-        if ($this->state->hasNotSkipHelpButton('subscription_plan')) {
-            $buttons[] = $tg->helpButton();
-        }
-
+        $buttons[] = $tg->helpButton();
         $buttons[] = $tg->cancelButton();
 
         return $tg->reply($message, $tg->keyboard(...$buttons))->null();
@@ -212,17 +194,18 @@ class SubscribeTelegramBotConversation extends TelegramBotConversation implement
 
     public function gotSubscriptionPlan(TelegramBotAwareHelper $tg, Entity $entity): null
     {
-        if ($this->state->isCurrencyStep() && $tg->matchText($tg->backButton()->getText())) {
+        if ($this->state->isCurrencyStep() && $tg->matchText($tg->prevButton()->getText())) {
             return $this->queryCurrency($tg);
         }
-        if ($tg->matchText($tg->helpButton()->getText())) {
-            $this->state->addSkipHelpButton('subscription_plan');
 
+        if ($tg->matchText($tg->helpButton()->getText())) {
             return $this->querySubscriptionPlan($tg, true);
         }
+
         if ($tg->matchText($tg->cancelButton()->getText())) {
             return $this->gotCancel($tg, $entity);
         }
+
         if ($tg->matchText($this->getChangeCurrencyButton($tg)->getText())) {
             $this->state->setCurrencyStep(true);
 
@@ -252,6 +235,18 @@ class SubscribeTelegramBotConversation extends TelegramBotConversation implement
             $tg->reply($exception->getFirstMessage());
 
             return $this->querySubscriptionPlan($tg);
+        }
+
+        if (!$tg->getBot()->getEntity()->acceptPayments() || count($this->getPaymentMethods($tg)) === 0) {
+            $tg->stopConversation($entity);
+
+            $parameters = [
+                'contact_command' => $tg->command('contact', html: true),
+            ];
+            $message = $tg->trans('reply.not_accept_payments', parameters: $parameters);
+            $message = $tg->failText($message);
+
+            return $this->chooseActionChatSender->sendActions($tg, $message);
         }
 
         if ($this->state->isPaymentMethodStep()) {
@@ -284,12 +279,8 @@ class SubscribeTelegramBotConversation extends TelegramBotConversation implement
         $message = $this->getPaymentMethodQuery($tg, $help);
 
         $buttons = $this->getPaymentMethodButtons($tg);
-        $buttons[] = $tg->backButton();
-
-        if ($this->state->hasNotSkipHelpButton('payment_method')) {
-            $buttons[] = $tg->helpButton();
-        }
-
+        $buttons[] = $tg->prevButton();
+        $buttons[] = $tg->helpButton();
         $buttons[] = $tg->cancelButton();
 
         return $tg->reply($message, $tg->keyboard(...$buttons))->null();
@@ -297,14 +288,14 @@ class SubscribeTelegramBotConversation extends TelegramBotConversation implement
 
     public function gotPaymentMethod(TelegramBotAwareHelper $tg, Entity $entity): null
     {
-        if ($this->state->isPaymentMethodStep() && $tg->matchText($tg->backButton()->getText())) {
+        if ($this->state->isPaymentMethodStep() && $tg->matchText($tg->prevButton()->getText())) {
             return $this->queryPaymentMethod($tg);
         }
-        if ($tg->matchText($tg->helpButton()->getText())) {
-            $this->state->addSkipHelpButton('payment_method');
 
+        if ($tg->matchText($tg->helpButton()->getText())) {
             return $this->queryPaymentMethod($tg, true);
         }
+
         if ($tg->matchText($tg->cancelButton()->getText())) {
             return $this->gotCancel($tg, $entity);
         }
@@ -557,17 +548,18 @@ class SubscribeTelegramBotConversation extends TelegramBotConversation implement
 
     public function getStep(int $num): string
     {
+        $originalNum = $num;
         $total = 4;
 
         if (!$this->state->isCurrencyStep()) {
-            if ($num > 1) {
+            if ($originalNum > 1) {
                 $num--;
             }
             $total--;
         }
 
         if (!$this->state->isPaymentMethodStep()) {
-            if ($num > 2) {
+            if ($originalNum > 2) {
                 $num--;
             }
             $total--;

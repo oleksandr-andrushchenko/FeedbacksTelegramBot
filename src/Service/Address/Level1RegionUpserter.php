@@ -36,7 +36,6 @@ class Level1RegionUpserter
                 $name,
             );
             $this->entityManager->persist($level1Region);
-            $this->entityManager->flush();
         }
 
         return $level1Region;

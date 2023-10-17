@@ -33,7 +33,6 @@ class SearchFeedbackTelegramBotConversationStateNormalizer implements Normalizer
     {
         return array_merge($this->baseConversationStateNormalizer->normalize($object, $format, $context), [
             'search_term' => $object->getSearchTerm() === null ? null : $this->searchTermTransferNormalizer->normalize($object->getSearchTerm(), $format, $context),
-            'change' => $object->isChange(),
         ]);
     }
 
@@ -49,7 +48,6 @@ class SearchFeedbackTelegramBotConversationStateNormalizer implements Normalizer
 
         $object
             ->setSearchTerm(isset($data['search_term']) ? $this->searchTermTransferDenormalizer->denormalize($data['search_term'], SearchTermTransfer::class, $format, $context) : null)
-            ->setChange($data['change'] ?? null)
         ;
 
         return $object;

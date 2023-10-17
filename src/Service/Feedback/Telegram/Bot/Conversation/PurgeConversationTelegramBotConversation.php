@@ -17,6 +17,7 @@ class PurgeConversationTelegramBotConversation extends TelegramBotConversation i
 {
     public const STEP_CONFIRM_QUERIED = 10;
     public const STEP_CONFIRMED = 20;
+    public const STEP_CANCEL_PRESSED = 30;
 
     public function __construct(
         private readonly UserDataPurger $userDataPurger,
@@ -53,16 +54,25 @@ class PurgeConversationTelegramBotConversation extends TelegramBotConversation i
         }
         $message = $query;
 
-        $buttons = [
-            $tg->yesButton(),
-            $tg->noButton(),
-        ];
-
-        if ($this->state->hasNotSkipHelpButton('confirm')) {
-            $buttons[] = $tg->helpButton();
-        }
+        $buttons = [];
+        $buttons[] = [$tg->yesButton(), $tg->noButton()];
+        $buttons[] = $tg->helpButton();
+        $buttons[] = $tg->cancelButton();
 
         return $tg->reply($message, $tg->keyboard(...$buttons))->null();
+    }
+
+    public function gotCancel(TelegramBotAwareHelper $tg, Entity $entity): null
+    {
+        $this->state->setStep(self::STEP_CANCEL_PRESSED);
+
+        $tg->stopConversation($entity);
+
+        $message = $tg->trans('reply.canceled', domain: 'purge');
+        $message = $tg->upsetText($message);
+        $message .= "\n\n";
+
+        return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
     }
 
     public function gotConfirm(TelegramBotAwareHelper $tg, Entity $entity): null
@@ -72,11 +82,15 @@ class PurgeConversationTelegramBotConversation extends TelegramBotConversation i
 
             return $this->chooseActionChatSender->sendActions($tg);
         }
-        if ($tg->matchText($tg->helpButton()->getText())) {
-            $this->state->addSkipHelpButton('confirm');
 
+        if ($tg->matchText($tg->helpButton()->getText())) {
             return $this->queryConfirm($tg, true);
         }
+
+        if ($tg->matchText($tg->cancelButton()->getText())) {
+            return $this->gotCancel($tg, $entity);
+        }
+
         if (!$tg->matchText($tg->yesButton()->getText())) {
             $message = $tg->trans('reply.wrong');
             $message = $tg->wrongText($message);

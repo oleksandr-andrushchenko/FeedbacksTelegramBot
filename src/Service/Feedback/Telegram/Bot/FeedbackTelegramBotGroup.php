@@ -168,16 +168,6 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
     {
         $tg->stopCurrentConversation();
 
-        if (!$tg->getBot()->getEntity()->acceptPayments()) {
-            $parameters = [
-                'contact_command' => $tg->command('contact', html: true),
-            ];
-            $message = $tg->trans('reply.not_accept_payments', parameters: $parameters);
-            $message = $tg->failText($message);
-
-            return $this->chooseActionChatSender->sendActions($tg, $message);
-        }
-
         $messengerUser = $tg->getBot()->getMessengerUser();
         $activeSubscription = $this->subscriptionManager->getActiveSubscription($messengerUser);
 
@@ -296,9 +286,8 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
     {
         $message = $tg->trans('reply.wrong');
         $message = $tg->wrongText($message);
+        $message .= "\n\n";
 
-        $tg->reply($message);
-
-        return $this->chooseActionChatSender->sendActions($tg);
+        return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
     }
 }

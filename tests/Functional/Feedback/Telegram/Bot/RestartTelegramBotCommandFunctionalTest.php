@@ -56,7 +56,7 @@ class RestartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
         ];
     }
 
-    public function testGotConfirmSuccess(): void
+    public function testConfirmStepSuccess(): void
     {
         $this->bootFixtures([
             User::class,

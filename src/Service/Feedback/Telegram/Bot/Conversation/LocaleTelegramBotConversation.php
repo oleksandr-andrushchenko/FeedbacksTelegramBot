@@ -73,10 +73,11 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
         $message .= "\n\n";
         $message .= $this->getCurrentLocaleReply($tg);
         $message = $tg->upsetText($message);
+        $message .= "\n\n";
 
-        $tg->stopConversation($entity)->reply($message);
+        $tg->stopConversation($entity);
 
-        return $this->chooseActionChatSender->sendActions($tg);
+        return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
     }
 
     public function getCurrentLocaleReply(TelegramBotAwareHelper $tg): string
@@ -114,14 +115,10 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
 
         $message = $this->getChangeConfirmQuery($tg, $help);
 
-        $buttons = [
-            $tg->yesButton(),
-            $tg->noButton(),
-        ];
-
-        if ($this->state->hasNotSkipHelpButton('change_confirm')) {
-            $buttons[] = $tg->helpButton();
-        }
+        $buttons = [];
+        $buttons[] = [$tg->yesButton(), $tg->noButton()];
+        $buttons[] = $tg->helpButton();
+        $buttons[] = $tg->cancelButton();
 
         return $tg->reply($message, $tg->keyboard(...$buttons))->null();
     }
@@ -133,11 +130,15 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
 
             return $this->chooseActionChatSender->sendActions($tg);
         }
-        if ($tg->matchText($tg->helpButton()->getText())) {
-            $this->state->addSkipHelpButton('change_confirm');
 
+        if ($tg->matchText($tg->helpButton()->getText())) {
             return $this->queryChangeConfirm($tg, true);
         }
+
+        if ($tg->matchText($tg->cancelButton()->getText())) {
+            return $this->gotCancel($tg, $entity);
+        }
+
         if (!$tg->matchText($tg->yesButton()->getText())) {
             $message = $tg->trans('reply.wrong');
             $message = $tg->wrongText($message);
@@ -177,11 +178,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
 
         $buttons = $this->getLocaleButtons($this->getGuessLocales($tg), $tg);
         $buttons[] = $this->getOtherLocaleButton($tg);
-
-        if ($this->state->hasNotSkipHelpButton('guess_locale')) {
-            $buttons[] = $tg->helpButton();
-        }
-
+        $buttons[] = $tg->helpButton();
         $buttons[] = $tg->cancelButton();
 
         return $tg->reply($message, $tg->keyboard(...$buttons))->null();
@@ -194,11 +191,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
         $message = $this->getLocaleQuery($tg, $help);
 
         $buttons = $this->getLocaleButtons($this->getLocales(), $tg);
-
-        if ($this->state->hasNotSkipHelpButton('locale')) {
-            $buttons[] = $tg->helpButton();
-        }
-
+        $buttons[] = $tg->helpButton();
         $buttons[] = $tg->cancelButton();
 
         return $tg->reply($message, $tg->keyboard(...$buttons))->null();
@@ -218,18 +211,16 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
     {
         if ($tg->matchText($tg->helpButton()->getText())) {
             if ($guess) {
-                $this->state->addSkipHelpButton('guess_locale');
-
                 return $this->queryGuessLocale($tg, true);
             }
 
-            $this->state->addSkipHelpButton('locale');
-
             return $this->queryLocale($tg, true);
         }
+
         if ($tg->matchText($tg->cancelButton()->getText())) {
             return $this->gotCancel($tg, $entity);
         }
+
         if ($guess && $tg->matchText($this->getOtherLocaleButton($tg)->getText())) {
             return $this->queryLocale($tg);
         }
@@ -260,8 +251,9 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
         $tg->stopConversation($entity);
 
         $message = $this->getGotLocaleReply($tg);
+        $message .= "\n\n";
 
-        $this->chooseActionChatSender->sendActions($tg, $message);
+        $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
 
         $keyboard = $this->chooseActionChatSender->getKeyboard($tg);
         $this->botMatchesChatSender->sendTelegramBotMatchesIfNeed($tg, $keyboard);
