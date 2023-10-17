@@ -408,6 +408,10 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
             ->setTimezone($level1Region->getTimezone())
         ;
 
+        if ($user->getTimezone() !== null) {
+            return $this->replyAndClose($tg, $entity);
+        }
+
         $timezones = $this->getTimezones($tg);
 
         if (count($timezones) > 1) {
