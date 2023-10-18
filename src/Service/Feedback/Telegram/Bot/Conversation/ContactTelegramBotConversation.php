@@ -55,11 +55,14 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
     public function getLeftMessageConfirmQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
         $query = $tg->trans('query.left_message_confirm', domain: 'contact');
+        $query = $tg->queryText($query);
 
         if ($help) {
             $query = $tg->view('contact_left_message_confirm_help', [
                 'query' => $query,
             ]);
+        } else {
+            $query .= $tg->queryTipText($tg->useText(false));
         }
 
         return $query;
@@ -72,7 +75,6 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
         $message = $this->getLeftMessageConfirmQuery($tg, $help);
 
         $buttons = [];
-
         $buttons[] = [$tg->yesButton(), $tg->noButton()];
         $buttons[] = $tg->helpButton();
         $buttons[] = $tg->cancelButton();
@@ -97,10 +99,7 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
         }
 
         if (!$tg->matchText($tg->yesButton()->getText())) {
-            $message = $tg->trans('reply.wrong');
-            $message = $tg->wrongText($message);
-
-            $tg->reply($message);
+            $tg->replyWrong(false);
 
             return $this->queryLeftMessageConfirm($tg);
         }
@@ -111,11 +110,14 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
     public function getMessageQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
         $query = $tg->trans('query.message', domain: 'contact');
+        $query = $tg->queryText($query);
 
         if ($help) {
             $query = $tg->view('contact_message_help', [
                 'query' => $query,
             ]);
+        } else {
+            $query .= $tg->queryTipText($tg->useText(true));
         }
 
         return $query;
@@ -142,7 +144,7 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
 
         $message = $tg->trans('reply.canceled', domain: 'contact');
         $message = $tg->upsetText($message);
-        $message .= "\n\n";
+        $message .= "\n";
 
         return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
     }
@@ -150,10 +152,7 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
     public function gotMessage(TelegramBotAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText(null)) {
-            $message = $tg->trans('reply.wrong');
-            $message = $tg->wrongText($message);
-
-            $tg->reply($message);
+            $tg->replyWrong(true);
 
             return $this->queryMessage($tg);
         }

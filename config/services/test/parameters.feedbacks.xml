@@ -5,6 +5,44 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
+        <parameter key="app.feedback_subscription_plans" type="collection">
+            <parameter key="one_day" type="collection">
+                <parameter key="duration">+1 day</parameter>
+                <parameter key="default_price">1.99</parameter>
+                <parameter key="prices" type="collection">
+                    <parameter key="ua">0.99</parameter>
+                </parameter>
+            </parameter>
+            <parameter key="three_days" type="collection">
+                <parameter key="duration">+3 days</parameter>
+                <parameter key="default_price">2.99</parameter>
+                <parameter key="prices" type="collection">
+                    <parameter key="ua">1.99</parameter>
+                </parameter>
+            </parameter>
+            <parameter key="one_month" type="collection">
+                <parameter key="duration">+1 month</parameter>
+                <parameter key="default_price">4.99</parameter>
+                <parameter key="prices" type="collection">
+                    <parameter key="ua">3.99</parameter>
+                </parameter>
+            </parameter>
+            <parameter key="six_months" type="collection">
+                <parameter key="duration">+6 months</parameter>
+                <parameter key="default_price">19.99</parameter>
+                <parameter key="prices" type="collection">
+                    <parameter key="ua">14.99</parameter>
+                </parameter>
+            </parameter>
+            <parameter key="one_year" type="collection">
+                <parameter key="duration">+1 year</parameter>
+                <parameter key="default_price">29.99</parameter>
+                <parameter key="prices" type="collection">
+                    <parameter key="ua">19.99</parameter>
+                </parameter>
+            </parameter>
+        </parameter>
+
         <parameter key="app.create.search_term_type_step">true</parameter>
         <parameter key="app.create.extra_search_term_step">true</parameter>
         <parameter key="app.create.description_step">true</parameter>

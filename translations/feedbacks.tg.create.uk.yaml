@@ -1,11 +1,13 @@
 query:
   search_term: Про кого чи про що цей відгук?
+  search_term_tip: "Наприклад: ім'я, назва, номер телефону, електронна пошта, лінк тощо."
   search_term_type: Ким або чим є %search_term%?
   extra_search_term: Додайте більше інформації про %search_term%.
-  added_extra_search_terms: 'Вже додано: %search_terms%'
   rating: Оцініть ваш досвід з %search_term%.
   description: Опишіть ваш досвід з %search_term%.
-  confirm: "Ваш вудгук буде мати такий вигляд:\n\n%feedback%\n\nДодати відгук?"
+  description_tip: 'Наприклад: роскажіть як прошла ваша зустріч, розмова, будь-яка взаємодія, опишіть людину, організацію, місце тощо.'
+  confirm_preview: Ваш відгук буде мати такий вигляд
+  confirm: Додати відгук?
   send_to_channel_confirm: Бажаєте анонімно опубліківати Ваш відгук на каналах %channels%?
 keyboard:
   create_confirm: Додати відгук
@@ -13,5 +15,5 @@ reply:
   canceled: Діалог додавання відгуку скасовано.
   created: Відгук успішно додано.
   sent_to_channel: Відгук успішно опубліковано.
-  on_self_forbidden: Відгуки на себе заборонені.
+  on_self_forbidden: Відгуки про себе заборонені.
   limit_exceeded: 'Ви досягли ліміту створення відгуків: %tries_for%. Будь ласка, спробуйте пізніше або придбайте преміум-підписку.'

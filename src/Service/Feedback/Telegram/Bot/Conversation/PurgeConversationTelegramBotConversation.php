@@ -46,12 +46,16 @@ class PurgeConversationTelegramBotConversation extends TelegramBotConversation i
         $this->state->setStep(self::STEP_CONFIRM_QUERIED);
 
         $query = $tg->trans('query.confirm', domain: 'purge');
+        $query = $tg->queryText($query);
 
         if ($help) {
             $query = $tg->view('purge_confirm_help', [
                 'query' => $query,
             ]);
+        } else {
+            $query .= $tg->queryTipText($tg->useText(false));
         }
+
         $message = $query;
 
         $buttons = [];
@@ -70,7 +74,7 @@ class PurgeConversationTelegramBotConversation extends TelegramBotConversation i
 
         $message = $tg->trans('reply.canceled', domain: 'purge');
         $message = $tg->upsetText($message);
-        $message .= "\n\n";
+        $message .= "\n";
 
         return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
     }
@@ -92,10 +96,7 @@ class PurgeConversationTelegramBotConversation extends TelegramBotConversation i
         }
 
         if (!$tg->matchText($tg->yesButton()->getText())) {
-            $message = $tg->trans('reply.wrong');
-            $message = $tg->wrongText($message);
-
-            $tg->reply($message);
+            $tg->replyWrong(false);
 
             return $this->queryConfirm($tg);
         }

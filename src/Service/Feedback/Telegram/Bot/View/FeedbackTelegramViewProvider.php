@@ -78,7 +78,8 @@ class FeedbackTelegramViewProvider
             array_map(
                 fn (FeedbackSearchTerm $searchTerm): SearchTermTransfer => $this->searchTermProvider->getSearchTermByFeedbackSearchTerm($searchTerm),
                 $feedback->getSearchTerms()->toArray()
-            )
+            ),
+            localeCode: $localeCode
         );
         $message .= ':';
 

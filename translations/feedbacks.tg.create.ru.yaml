@@ -1,12 +1,14 @@
 query:
-  search_term: О ком или о чем вы хотите оставить отзыв?
+  search_term: О ком или о чем Вы хотите оставить отзыв?
+  search_term_tip: 'Например: имя, название, номер телефона, электронная почта, ссылка и т.д.'
   search_term_type: Кем или чем является %search_term%?
   extra_search_term: Добавьте больше информации о %search_term%.
-  added_extra_search_terms: 'Уже добавлено: %search_terms%'
-  rating: Оцените ваш опыт с %search_term%.
+  rating: Оцените Ваш опыт с %search_term%.
   description: Оставьте комментарий или добавьте любую информацию о %search_term%.
-  confirm: Создать отзыв о %search_term%?
-  send_to_channel_confirm: Хотите анонимно опубликовать ваш отзыв на канале %channels%?
+  description_tip: 'Например: расскажите, как прошла ваша встреча, разговор, любое взаимодействие, опишите человека, организацию или место и т.д.'
+  confirm_preview: Ваш отзыв будет выглядеть так
+  confirm: Создать отзыв?
+  send_to_channel_confirm: Хотите анонимно опубликовать Ваш отзыв на канале %channels%?
 keyboard:
   create_confirm: Добавить отзыв
 reply:

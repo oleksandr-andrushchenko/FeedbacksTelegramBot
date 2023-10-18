@@ -62,3 +62,5 @@
 * Add SearchTermParser tests
 * Cache db requests
 * Media uploads (S3)
+* Improve search term text normalization: single-spaces,multi-spaces, case/incese-sensitives
+* Validation for search terms: min/max length, emojis, tags etc.

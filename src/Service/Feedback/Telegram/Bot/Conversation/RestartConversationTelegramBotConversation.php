@@ -45,11 +45,14 @@ class RestartConversationTelegramBotConversation extends TelegramBotConversation
         $this->state->setStep(self::STEP_CONFIRM_QUERIED);
 
         $query = $tg->trans('query.confirm', domain: 'restart');
+        $query = $tg->queryText($query);
 
         if ($help) {
             $query = $tg->view('restart_confirm_help', [
                 'query' => $query,
             ]);
+        } else {
+            $query .= $tg->queryTipText($tg->useText(false));
         }
 
         $message = $query;
@@ -70,7 +73,7 @@ class RestartConversationTelegramBotConversation extends TelegramBotConversation
 
         $message = $tg->trans('reply.canceled', domain: 'restart');
         $message = $tg->upsetText($message);
-        $message .= "\n\n";
+        $message .= "\n";
 
         return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
     }
@@ -92,10 +95,7 @@ class RestartConversationTelegramBotConversation extends TelegramBotConversation
         }
 
         if (!$tg->matchText($tg->yesButton()->getText())) {
-            $message = $tg->trans('reply.wrong');
-            $message = $tg->wrongText($message);
-
-            $tg->reply($message);
+            $tg->replyWrong(false);
 
             return $this->queryConfirm($tg);
         }

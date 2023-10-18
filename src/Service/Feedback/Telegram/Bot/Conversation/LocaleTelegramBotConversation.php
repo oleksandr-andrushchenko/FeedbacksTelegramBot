@@ -73,7 +73,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
         $message .= "\n\n";
         $message .= $this->getCurrentLocaleReply($tg);
         $message = $tg->upsetText($message);
-        $message .= "\n\n";
+        $message .= "\n";
 
         $tg->stopConversation($entity);
 
@@ -98,12 +98,16 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
         $message .= "\n\n";
 
         $query = $tg->trans('query.change_confirm', domain: 'locale');
+        $query = $tg->queryText($query);
 
         if ($help) {
             $query = $tg->view('locale_change_confirm_help', [
                 'query' => $query,
             ]);
+        } else {
+            $query .= $tg->queryTipText($tg->useText(false));
         }
+
         $message .= $query;
 
         return $message;
@@ -140,10 +144,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
         }
 
         if (!$tg->matchText($tg->yesButton()->getText())) {
-            $message = $tg->trans('reply.wrong');
-            $message = $tg->wrongText($message);
-
-            $tg->reply($message);
+            $tg->replyWrong(false);
 
             return $this->queryChangeConfirm($tg);
         }
@@ -160,11 +161,14 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
     public function getLocaleQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
         $query = $tg->trans('query.locale', domain: 'locale');
+        $query = $tg->queryText($query);
 
         if ($help) {
             $query = $tg->view('locale_locale_help', [
                 'query' => $query,
             ]);
+        } else {
+            $query .= $tg->queryTipText($tg->useText(false));
         }
 
         return $query;
@@ -233,10 +237,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
         }
 
         if ($locale === null) {
-            $message = $tg->trans('reply.wrong');
-            $message = $tg->wrongText($message);
-
-            $tg->reply($message);
+            $tg->replyWrong(false);
 
             return $guess ? $this->queryGuessLocale($tg) : $this->queryLocale($tg);
         }

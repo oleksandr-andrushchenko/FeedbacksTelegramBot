@@ -201,6 +201,38 @@ class TelegramBotAwareHelper
         return '*' . $text;
     }
 
+    public function queryText(string $text): string
+    {
+        return '<u><b>' . $text . '</b></u>';
+    }
+
+    public function queryTipText(string $text): string
+    {
+        return "\n\n" . '<i>* ' . $text . '</i>';
+    }
+
+    public function alreadyAddedText(string $text, bool $highlight = true): string
+    {
+        return "\n\n" . $this->trans('query.already_added') . ":\n" . ($highlight ? ('<u><b>' . $text . '</b></u>') : $text);
+    }
+
+    public function replyWrong(bool $useInput): self
+    {
+        $message = $this->trans('reply.wrong');
+        $message .= ' ';
+        $message .= $this->useText($useInput);
+        $message = $this->wrongText($message);
+
+        $this->reply($message);
+
+        return $this;
+    }
+
+    public function useText(bool $useInput): string
+    {
+        return $useInput ? $this->trans('help.use_input') : $this->trans('help.use_keyboard');
+    }
+
     public function keyboard(...$buttons): Keyboard
     {
         return $this->keyboardFactory->createTelegramKeyboard(...$buttons);

@@ -88,11 +88,25 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
     {
         $query = $this->getStep(1);
         $query .= $tg->trans('query.search_term', domain: 'lookup');
+        $query = $tg->queryText($query);
+
+        if (!$help) {
+            $query .= $tg->queryTipText($tg->trans('query.search_term_tip', domain: 'lookup'));
+        }
+
+        $searchTerm = $this->state->getSearchTerm();
+
+        if ($searchTerm !== null) {
+            $searchTermView = $this->searchTermViewProvider->getSearchTermTelegramView($searchTerm);
+            $query .= $tg->alreadyAddedText($searchTermView, false);
+        }
 
         if ($help) {
             return $tg->view('lookup_search_term_help', [
                 'query' => $query,
             ]);
+        } else {
+            $query .= $tg->queryTipText($tg->useText(true));
         }
 
         return $query;
@@ -135,7 +149,7 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
 
         $message = $tg->trans('reply.canceled', domain: 'lookup');
         $message = $tg->upsetText($message);
-        $message .= "\n\n";
+        $message .= "\n";
 
         return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
     }
@@ -143,10 +157,7 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
     public function gotSearchTerm(TelegramBotAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText(null)) {
-            $message = $tg->trans('reply.wrong');
-            $message = $tg->wrongText($message);
-
-            $tg->reply($message);
+            $tg->replyWrong(true);
 
             return $this->querySearchTerm($tg);
         }
@@ -201,12 +212,18 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
             $types = $searchTerm->getPossibleTypes() ?? [];
 
             if (count($types) === 1) {
-                $searchTerm->setType($types[0]);
+                $searchTerm
+                    ->setType($types[0])
+                    ->setPossibleTypes(null)
+                ;
                 $this->searchTermParser->parseWithKnownType($searchTerm);
             } elseif ($this->searchTermTypeStep) {
                 return $this->querySearchTermType($tg);
             } else {
-                $searchTerm->setType(SearchTermType::unknown);
+                $searchTerm
+                    ->setType(SearchTermType::unknown)
+                    ->setPossibleTypes(null)
+                ;
             }
         }
 
@@ -224,12 +241,15 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
             'search_term' => sprintf('<u>%s</u>', $searchTerm),
         ];
         $query = $tg->trans('query.search_term_type', parameters: $parameters, domain: 'lookup');
+        $query = $tg->queryText($query);
 
         if ($help) {
             return $tg->view('lookup_search_term_type_help', [
                 'query' => $query,
                 'search_term' => $searchTerm,
             ]);
+        } else {
+            $query .= $tg->queryTipText($tg->useText(false));
         }
 
         return $query;
@@ -256,10 +276,7 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
     public function gotSearchTermType(TelegramBotAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText(null)) {
-            $message = $tg->trans('reply.wrong');
-            $message = $tg->wrongText($message);
-
-            $tg->reply($message);
+            $tg->replyWrong(false);
 
             return $this->querySearchTermType($tg);
         }
@@ -283,15 +300,15 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
         $type = $this->getSearchTermTypeByButton($tg->getText(), $tg);
 
         if ($type === null) {
-            $message = $tg->trans('reply.wrong');
-            $message = $tg->wrongText($message);
-
-            $tg->reply($message);
+            $tg->replyWrong(false);
 
             return $this->querySearchTermType($tg);
         }
 
-        $searchTerm->setType($type);
+        $searchTerm
+            ->setType($type)
+            ->setPossibleTypes(null)
+        ;
 
         $this->searchTermParser->parseWithKnownType($searchTerm);
         try {
@@ -345,12 +362,15 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
             'search_term' => $searchTerm,
         ];
         $query .= $tg->trans('query.confirm', parameters: $parameters, domain: 'lookup');
+        $query = $tg->queryText($query);
 
         if ($help) {
             $query = $tg->view('lookup_confirm_help', [
                 'query' => $query,
                 'search_term' => $searchTerm,
             ]);
+        } else {
+            $query .= $tg->queryTipText($tg->useText(false));
         }
 
         return $query;
@@ -471,10 +491,7 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
     public function gotConfirm(TelegramBotAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchText(null)) {
-            $message = $tg->trans('reply.wrong');
-            $message = $tg->wrongText($message);
-
-            $tg->reply($message);
+            $tg->replyWrong(false);
 
             return $this->queryConfirm($tg);
         }
@@ -492,10 +509,7 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
         }
 
         if (!$tg->matchText($tg->yesButton()->getText())) {
-            $message = $tg->trans('reply.wrong');
-            $message = $tg->wrongText($message);
-
-            $tg->reply($message);
+            $tg->replyWrong(false);
 
             return $this->queryConfirm($tg);
         }
