@@ -123,7 +123,7 @@ class TelegramChannelMatchesProviderTest extends TestCase
         $repository = $this->createMock(TelegramChannelRepository::class);
         $repository
             ->expects($this->once())
-            ->method('findPrimaryByGroup')
+            ->method('findPrimaryByGroupAndCountry')
             ->willReturn($channels)
         ;
 
