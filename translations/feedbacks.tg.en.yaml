@@ -30,5 +30,5 @@ reply:
   fail: "Unknown error has occurred,\n1) Make sure everything properly filled and repeat; or\n2) Try %contact_command% command; or\n3) Try again later please."
   not_accept_payments: To purchase a subscription, contact us %contact_command% or try again later.
   better_bot_match: You may be interested in the following bots
-  wrong: I don't understand you. Use input field or keyboard above please.
+  wrong: I don't understand you.
   use_primary: This bot is no longer supported. Try
