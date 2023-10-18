@@ -24,7 +24,7 @@ class TelegramChannelMatchesProvider
      */
     public function getTelegramChannelMatches(User $user, TelegramBot $bot): array
     {
-        $channels = $this->repository->findPrimaryByGroup($bot->getGroup());
+        $channels = $this->repository->findPrimaryByGroupAndCountry($bot->getGroup(), $bot->getCountryCode());
 
         if (count($channels) === 0) {
             return [];

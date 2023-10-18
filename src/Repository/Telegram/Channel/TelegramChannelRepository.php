@@ -76,4 +76,19 @@ class TelegramChannelRepository extends ServiceEntityRepository
             'deletedAt' => null,
         ]);
     }
+
+    /**
+     * @param TelegramBotGroupName $group
+     * @param string $countryCode
+     * @return TelegramChannel[]
+     */
+    public function findPrimaryByGroupAndCountry(TelegramBotGroupName $group, string $countryCode): array
+    {
+        return $this->findBy([
+            'group' => $group,
+            'countryCode' => $countryCode,
+            'primary' => true,
+            'deletedAt' => null,
+        ]);
+    }
 }
