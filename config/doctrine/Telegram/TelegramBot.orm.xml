@@ -25,12 +25,12 @@
         </field>
         <field name="checkUpdates" column="check_updates" type="boolean">
             <options>
-                <option name="default">1</option>
+                <option name="default">0</option>
             </options>
         </field>
         <field name="checkRequests" column="check_requests" type="boolean">
             <options>
-                <option name="default">1</option>
+                <option name="default">0</option>
             </options>
         </field>
         <field name="acceptPayments" column="accept_payments" type="boolean">
