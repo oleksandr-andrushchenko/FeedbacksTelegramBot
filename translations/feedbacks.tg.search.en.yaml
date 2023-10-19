@@ -1,6 +1,6 @@
 query:
   search_term: Who or what you are interested in?
-  search_term_tip: 'For example: name, title, phone number, email, link, etc.'
+  search_term_tip: 'For example: name, title, phone number, email, link etc.'
   search_term_type: Who or what %search_term% is?
   confirm: Confirm feedbacks search by %search_term%?
   create_confirm: Would you like to leave a feedback?
