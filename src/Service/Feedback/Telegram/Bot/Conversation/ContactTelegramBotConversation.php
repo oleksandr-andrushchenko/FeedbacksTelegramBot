@@ -182,7 +182,7 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
 
             return $this->chooseActionChatSender->sendActions($tg, $message);
         } catch (ValidatorException $exception) {
-            $tg->reply($exception->getFirstMessage());
+            $tg->replyWarning($exception->getFirstMessage());
 
             return $this->queryMessage($tg);
         }

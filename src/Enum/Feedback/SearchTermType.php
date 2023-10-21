@@ -31,12 +31,12 @@ enum SearchTermType: int
     public const base = [
         self::messenger_profile_url,
         self::messenger_username,
-        self::person_name,
-        self::url,
-        self::email,
-        self::place_name,
         self::phone_number,
-        self::organization_name,
         self::car_number,
+        self::email,
+        self::url,
+        self::place_name,
+        self::person_name,
+        self::organization_name,
     ];
 }

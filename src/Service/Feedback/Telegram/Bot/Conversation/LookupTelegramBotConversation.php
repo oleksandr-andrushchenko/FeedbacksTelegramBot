@@ -20,6 +20,7 @@ use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversation;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
+use App\Service\Util\String\MbLcFirster;
 use App\Service\Validator;
 use App\Transfer\Feedback\FeedbackSearchSearchTransfer;
 use App\Transfer\Feedback\SearchTermTransfer;
@@ -46,6 +47,7 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
         private readonly FeedbackSearchSearcher $searcher,
         private readonly EntityManagerInterface $entityManager,
         private readonly FeedbackSearchTelegramViewProvider $feedbackSearchViewProvider,
+        private readonly MbLcFirster $lcFirster,
         private readonly bool $searchTermTypeStep,
         private readonly bool $confirmStep,
     )
@@ -91,7 +93,26 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
         $query = $tg->queryText($query);
 
         if (!$help) {
-            $query .= $tg->queryTipText($tg->trans('query.search_term_tip', domain: 'lookup'));
+            $parameters = [
+                'should_be' => sprintf('<b>%s</b>', $tg->trans('query.search_term_should_be', domain: 'lookup')),
+            ];
+            $query .= $tg->queryTipText($tg->trans('query.search_term_tip', parameters: $parameters, domain: 'lookup'));
+            $searchTermTypeNames = array_map(
+                fn (SearchTermType $type): string => $this->lcFirster->mbLcFirst(
+                    $this->searchTermTypeProvider->getSearchTermTypeName($type)
+                ),
+                [
+                    SearchTermType::messenger_profile_url,
+                    SearchTermType::phone_number,
+                    SearchTermType::car_number,
+                    SearchTermType::email,
+                ]
+            );
+            $parameters = [
+                'put_one' => sprintf('<b>%s</b>', $tg->trans('query.search_term_put_one', domain: 'lookup')),
+                'types' => implode(', ', $searchTermTypeNames),
+            ];
+            $query .= $tg->queryTipText($tg->trans('query.search_term_tip_example', parameters: $parameters, domain: 'lookup'));
         }
 
         $searchTerm = $this->state->getSearchTerm();
@@ -188,20 +209,12 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
 
         $searchTerm = new SearchTermTransfer($tg->getText());
 
-        try {
-            $this->validator->validate($searchTerm, groups: 'text');
-        } catch (ValidatorException $exception) {
-            $tg->reply($exception->getFirstMessage());
-
-            return $this->querySearchTerm($tg);
-        }
-
         $this->searchTermParser->parseWithGuessType($searchTerm);
 
         try {
             $this->validator->validate($searchTerm);
         } catch (ValidatorException $exception) {
-            $tg->reply($exception->getFirstMessage());
+            $tg->replyWarning($exception->getFirstMessage());
 
             return $this->querySearchTerm($tg);
         }
@@ -261,9 +274,7 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
 
         $message = $this->getSearchTermTypeQuery($tg, $help);
 
-        $types = $this->state->getSearchTerm()->getPossibleTypes() ?? [];
-        $types = $this->searchTermTypeProvider->sortSearchTermTypes($types);
-        array_unshift($types, SearchTermType::unknown);
+        $types = $this->getSearchTermTypes($this->state->getSearchTerm());
 
         $buttons = $this->getSearchTermTypeButtons($types, $tg);
         $buttons[] = $this->getRemoveTermButton($this->state->getSearchTerm(), $tg);
@@ -297,7 +308,7 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
             return $this->gotCancel($tg, $entity);
         }
 
-        $type = $this->getSearchTermTypeByButton($tg->getText(), $tg);
+        $type = $this->getSearchTermTypeByButton($tg->getText(), $searchTerm, $tg);
 
         if ($type === null) {
             $tg->replyWrong(false);
@@ -314,7 +325,7 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
         try {
             $this->validator->validate($searchTerm);
         } catch (ValidatorException $exception) {
-            $tg->reply($exception->getFirstMessage());
+            $tg->replyWarning($exception->getFirstMessage());
 
             return $this->querySearchTerm($tg);
         }
@@ -341,11 +352,22 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
         return $tg->button($this->searchTermTypeProvider->getSearchTermTypeComposeName($type));
     }
 
-    public function getSearchTermTypeByButton(string $button, TelegramBotAwareHelper $tg): ?SearchTermType
+    public function getSearchTermTypes(SearchTermTransfer $searchTerm): array
     {
-        $types = $this->searchTermTypeProvider->getSearchTermTypes();
+        $types = $searchTerm->getPossibleTypes() ?? [];
+        $types = $this->searchTermTypeProvider->sortSearchTermTypes($types);
+        array_unshift($types, SearchTermType::unknown);
 
-        foreach ($types as $type) {
+        return $types;
+    }
+
+    public function getSearchTermTypeByButton(
+        string $button,
+        SearchTermTransfer $searchTerm,
+        TelegramBotAwareHelper $tg
+    ): ?SearchTermType
+    {
+        foreach ($this->getSearchTermTypes($searchTerm) as $type) {
             if ($this->getSearchTermTypeButton($type, $tg)->getText() === $button) {
                 return $type;
             }
@@ -474,7 +496,7 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
 
             return $this->chooseActionChatSender->sendActions($tg);
         } catch (ValidatorException $exception) {
-            $tg->reply($exception->getFirstMessage());
+            $tg->replyWarning($exception->getFirstMessage());
 
             return $this->querySearchTerm($tg);
         } catch (CommandLimitExceededException $exception) {

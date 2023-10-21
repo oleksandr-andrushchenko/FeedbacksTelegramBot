@@ -48,7 +48,17 @@ class TelegramBotAwareHelper
 
     public function getText(): ?string
     {
-        return $this->inputProvider->getTelegramInputByUpdate($this->getBot()->getUpdate());
+        $input = $this->inputProvider->getTelegramInputByUpdate($this->getBot()->getUpdate());
+
+        if ($input === null) {
+            return null;
+        }
+
+        // replace multi spaces with single space
+        $input = preg_replace('/ +/', ' ', $input);
+
+        // remove empty lines
+        return implode("\n", array_filter(explode("\n", $input), static fn (string $line): bool => !in_array($line, ['', ' '], true)));
     }
 
     public function matchText(?string $text): bool
@@ -208,12 +218,26 @@ class TelegramBotAwareHelper
 
     public function queryTipText(string $text): string
     {
-        return "\n\n" . '<i>*' . $text . '</i>';
+        return "\n\n" . $this->infoText($text);
     }
 
-    public function alreadyAddedText(string $text, bool $highlight = true): string
+    public function alreadyAddedText(string $text): string
     {
-        return "\n\n" . $this->trans('query.already_added') . ":\n" . ($highlight ? ('<u><b>' . $text . '</b></u>') : $text);
+        return "\n\n" . '<u><b>' . $this->trans('query.already_added') . '</b></u>:' . "\n" . ('<b>' . $text . '</b>');
+    }
+
+    public function warningText(string $text): string
+    {
+        return '⚠️ ' . $text;
+    }
+
+    public function replyWarning(string $text): self
+    {
+        $message = $this->warningText($text);
+
+        $this->reply($message);
+
+        return $this;
     }
 
     public function replyWrong(bool $useInput): self

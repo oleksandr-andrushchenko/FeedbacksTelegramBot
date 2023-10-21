@@ -38,7 +38,7 @@ class TelegramBotMatchesChatSender
 
         $message = $tg->trans('reply.better_bot_match');
         $message = $tg->infoText($message);
-        $message .= ":\n";
+        $message .= ":\n\n";
         $message .= implode(
             "\n",
             array_map(

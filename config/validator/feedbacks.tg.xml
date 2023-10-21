@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping
+        https://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="App\Entity\Feedback\Telegram\Bot\CreateFeedbackTelegramBotConversationState">
+        <constraint name="App\Validator\Feedback\Telegram\Bot\CreateFeedbackTelegramBotConversationStateConstraint"/>
+    </class>
+    <class name="App\Entity\Feedback\Telegram\Bot\SearchFeedbackTelegramBotConversationState">
+        <constraint name="App\Validator\Feedback\Telegram\Bot\SearchFeedbackTelegramBotConversationStateConstraint"/>
+    </class>
+    <class name="App\Entity\Feedback\Telegram\Bot\LookupTelegramBotConversationState">
+        <constraint name="App\Validator\Feedback\Telegram\Bot\LookupTelegramBotConversationStateConstraint"/>
+    </class>
+</constraint-mapping>

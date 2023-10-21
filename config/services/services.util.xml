@@ -15,5 +15,6 @@
             <argument type="service" id="app.array_pos_eraser"/>
         </service>
         <service id="app.string_mb_uc_firster" class="App\Service\Util\String\MbUcFirster" lazy="true"/>
+        <service id="app.string_mb_lc_firster" class="App\Service\Util\String\MbLcFirster" lazy="true"/>
     </services>
 </container>

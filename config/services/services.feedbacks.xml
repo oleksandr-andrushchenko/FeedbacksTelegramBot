@@ -285,6 +285,7 @@
             <argument type="service" id="app.feedback_telegram_view_provider"/>
             <argument type="service" id="app.telegram_channel_matches_provider"/>
             <argument type="service" id="app.telegram_channel_link_view_provider"/>
+            <argument type="service" id="app.string_mb_lc_firster"/>
             <argument>%app.create.search_term_type_step%</argument>
             <argument>%app.create.extra_search_term_step%</argument>
             <argument>%app.create.description_step%</argument>
@@ -304,6 +305,7 @@
             <argument type="service" id="app.feedback_searcher"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.feedback_telegram_view_provider"/>
+            <argument type="service" id="app.string_mb_lc_firster"/>
             <argument>%app.search.search_term_type_step%</argument>
             <argument>%app.search.confirm_step%</argument>
             <tag name="app.telegram_conversation_feedbacks"/>
@@ -319,6 +321,7 @@
             <argument type="service" id="app.feedback_search_searcher"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.feedback_search_telegram_view_provider"/>
+            <argument type="service" id="app.string_mb_lc_firster"/>
             <argument>%app.lookup.search_term_type_step%</argument>
             <argument>%app.lookup.confirm_step%</argument>
             <tag name="app.telegram_conversation_feedbacks"/>

@@ -1,0 +1,8 @@
+search_terms:
+  not_blank: Пошуковий термін не повинен бути порожнім.
+rating:
+  not_blank: Оцінка не може бути порожньою.
+description:
+  not_blank: Опис не може бути порожнім.
+  min_length: Опис має містити принаймні %min_length% символів.
+  max_length: Опис не може містити більше ніж %max_length% символів.

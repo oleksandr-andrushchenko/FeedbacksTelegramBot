@@ -1,0 +1,7 @@
+text:
+  not_blank: Search term cannot be empty.
+  single_line: Search term must contain only one line.
+  single_space: Search term cannot have more than one space (skip) in a row.
+  allowed_chars: Search term cannot contain special characters (%chars%).
+  min_length: Search term must contain at least %min_length% characters.
+  max_length: Search term cannot contain more than %max_length% characters.

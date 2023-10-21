@@ -1,0 +1,8 @@
+search_terms:
+  not_blank: Поисковый термин не должен быть пустым.
+rating:
+  not_blank: Оценка не может быть пустой.
+description:
+  not_blank: Описание не может быть пустым.
+  min_length: Описание должно содержать не менее %min_length% символов.
+  max_length: Описание не может содержать более %max_length% символов.

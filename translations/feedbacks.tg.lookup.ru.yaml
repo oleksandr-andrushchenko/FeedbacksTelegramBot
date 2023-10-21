@@ -1,6 +1,9 @@
 query:
   search_term: Кто или что вас интересует?
-  search_term_tip: 'Например: имя, название, номер телефона, электронная почта, ссылка и т.д.'
+  search_term_should_be: максимально простым
+  search_term_tip: Поисковый термин должен быть %should_be%, это то, что другие пользователи укзаывают при поиске отзывов.
+  search_term_put_one: Укажите что-то одно
+  search_term_tip_example: 'Например: %types% и т.д. %put_one%.'
   search_term_type: Кем или чем является %search_term%?
   confirm: Начать поиск запросов о %search_term%?
 keyboard:

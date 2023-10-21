@@ -1,0 +1,2 @@
+search_term:
+  not_blank: Search term cannot be empty.

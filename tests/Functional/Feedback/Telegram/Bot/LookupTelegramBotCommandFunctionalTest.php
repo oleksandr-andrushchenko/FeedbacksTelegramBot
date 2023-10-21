@@ -69,9 +69,9 @@ class LookupTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctiona
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
      * @return void
-     * @dataProvider searchTermStepSuccessDataProvider
+     * @dataProvider searchTermStepDataProvider
      */
-    public function testSearchTermStepSuccess(
+    public function testSearchTermStep(
         ?SearchTermTransfer $searchTerm,
         string $command,
         array $shouldSeeReplies,
@@ -89,11 +89,36 @@ class LookupTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctiona
         );
     }
 
-    public function searchTermStepSuccessDataProvider(): Generator
+    public function searchTermStepDataProvider(): Generator
     {
+        $validators = [
+            ['empty', '', 'text.not_blank'],
+            ['multiple lines', "first_line\r\nsecond_line", 'text.single_line'],
+            ['forbidden chars', 'qwasdйцуeqwe ; sdf', 'text.allowed_chars'],
+            ['too short', 'ф', 'text.min_length'],
+            ['too long', str_repeat('п', 256 + 1), 'text.max_length'],
+        ];
+
+        foreach ($validators as [$key, $command, $reply]) {
+            yield 'type ' . $key => [
+                'searchTerms' => null,
+                'command' => $command,
+                'shouldSeeReplies' => [
+                    $reply,
+                    'query.search_term',
+                ],
+                'shouldSeeButtons' => [
+                    $this->helpButton(),
+                    $this->cancelButton(),
+                ],
+                'shouldSeeStep' => LookupTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+                'shouldSeeFirstSearchTermText' => null,
+            ];
+        }
+
         yield 'type & unknown type' => [
             'searchTerm' => null,
-            'command' => $text = 'any',
+            'command' => $text = 'any_search_term',
             'shouldSeeReplies' => [
                 'query.search_term_type',
             ],
@@ -108,7 +133,7 @@ class LookupTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctiona
 
         yield 'type & known type' => [
             'searchTerm' => null,
-            'command' => Fixtures::getMessengerUserProfileUrl(new MessengerUserTransfer(Messenger::telegram, 'id', 'any')),
+            'command' => Fixtures::getMessengerUserProfileUrl(new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')),
             'shouldSeeReplies' => [
                 'query.confirm',
             ],
@@ -122,7 +147,7 @@ class LookupTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctiona
         ];
 
         yield 'remove' => [
-            'searchTerm' => $searchTerm = new SearchTermTransfer('any', SearchTermType::onlyfans_username),
+            'searchTerm' => $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
             'command' => $this->removeButton($searchTerm->getText()),
             'shouldSeeReplies' => [
                 'query.search_term',
@@ -135,7 +160,7 @@ class LookupTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctiona
         ];
 
         yield 'next' => [
-            'searchTerm' => new SearchTermTransfer('any', SearchTermType::person_name),
+            'searchTerm' => new SearchTermTransfer('any_search_term', SearchTermType::person_name),
             'command' => $this->nextButton(),
             'shouldSeeReplies' => [
                 'query.confirm',
@@ -167,7 +192,7 @@ class LookupTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctiona
         ];
 
         yield 'help & non-empty search term' => [
-            'searchTerm' => new SearchTermTransfer('any', SearchTermType::person_name),
+            'searchTerm' => new SearchTermTransfer('any_search_term', SearchTermType::person_name),
             'command' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
@@ -207,9 +232,9 @@ class LookupTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctiona
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
      * @return void
-     * @dataProvider searchTermTypeStepSuccessDataProvider
+     * @dataProvider searchTermTypeStepDataProvider
      */
-    public function testSearchTermTypeStepSuccess(
+    public function testSearchTermTypeStep(
         SearchTermTransfer $searchTerm,
         string $command,
         array $shouldSeeReplies,
@@ -227,10 +252,58 @@ class LookupTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctiona
         );
     }
 
-    public function searchTermTypeStepSuccessDataProvider(): Generator
+    public function searchTermTypeStepDataProvider(): Generator
     {
+        yield 'type unknown' => [
+            'searchTerm' => $searchTerm = (new SearchTermTransfer('any_search_term'))
+                ->setPossibleTypes([
+                    SearchTermType::instagram_username,
+                    SearchTermType::telegram_username,
+                    SearchTermType::organization_name,
+                ]),
+            'command' => 'unknown',
+            'shouldSeeReplies' => [
+                'reply.wrong',
+                'query.search_term_type',
+            ],
+            'shouldSeeButtons' => [
+                ...array_map(fn (SearchTermType $type): string => $this->searchTermTypeButton($type), $searchTerm->getPossibleTypes()),
+                ...[
+                    $this->searchTermTypeButton(SearchTermType::unknown),
+                    $this->removeButton($searchTerm->getText()),
+                    $this->helpButton(),
+                    $this->cancelButton(),
+                ],
+            ],
+            'shouldSeeStep' => LookupTelegramBotConversation::STEP_SEARCH_TERM_TYPE_QUERIED,
+        ];
+
+        yield 'type not in the list' => [
+            'searchTerm' => $searchTerm = (new SearchTermTransfer('any_search_term'))
+                ->setPossibleTypes([
+                    SearchTermType::instagram_username,
+                    SearchTermType::telegram_username,
+                    SearchTermType::organization_name,
+                ]),
+            'command' => $this->searchTermTypeButton(SearchTermType::tiktok_username),
+            'shouldSeeReplies' => [
+                'reply.wrong',
+                'query.search_term_type',
+            ],
+            'shouldSeeButtons' => [
+                ...array_map(fn (SearchTermType $type): string => $this->searchTermTypeButton($type), $searchTerm->getPossibleTypes()),
+                ...[
+                    $this->searchTermTypeButton(SearchTermType::unknown),
+                    $this->removeButton($searchTerm->getText()),
+                    $this->helpButton(),
+                    $this->cancelButton(),
+                ],
+            ],
+            'shouldSeeStep' => LookupTelegramBotConversation::STEP_SEARCH_TERM_TYPE_QUERIED,
+        ];
+
         yield 'select type' => [
-            'searchTerm' => $searchTerm = (new SearchTermTransfer('any'))
+            'searchTerm' => $searchTerm = (new SearchTermTransfer('any_search_term'))
                 ->setPossibleTypes([
                     SearchTermType::instagram_username,
                 ]),
@@ -248,7 +321,7 @@ class LookupTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctiona
         ];
 
         yield 'remove' => [
-            'searchTerm' => $searchTerm = (new SearchTermTransfer('any'))
+            'searchTerm' => $searchTerm = (new SearchTermTransfer('any_search_term'))
                 ->setPossibleTypes([
                     SearchTermType::instagram_username,
                 ]),
@@ -264,7 +337,7 @@ class LookupTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctiona
         ];
 
         yield 'help' => [
-            'searchTerm' => $searchTerm = (new SearchTermTransfer('any'))
+            'searchTerm' => $searchTerm = (new SearchTermTransfer('any_search_term'))
                 ->setPossibleTypes([
                     SearchTermType::instagram_username,
                     SearchTermType::telegram_username,
@@ -290,7 +363,7 @@ class LookupTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctiona
         ];
 
         yield 'cancel' => [
-            'searchTerms' => new SearchTermTransfer('any'),
+            'searchTerms' => new SearchTermTransfer('any_search_term'),
             'command' => $this->cancelButton(),
             'shouldSeeReplies' => [
                 'reply.canceled',
@@ -313,9 +386,9 @@ class LookupTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctiona
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
      * @return void
-     * @dataProvider confirmStepSuccessDataProvider
+     * @dataProvider confirmStepDataProvider
      */
-    public function testConfirmStepSuccess(
+    public function testConfirmStep(
         SearchTermTransfer $searchTerm,
         string $command,
         array $shouldSeeReplies,
@@ -346,8 +419,24 @@ class LookupTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctiona
         ;
     }
 
-    public function confirmStepSuccessDataProvider(): Generator
+    public function confirmStepDataProvider(): Generator
     {
+        yield 'unknown' => [
+            'searchTerm' => new SearchTermTransfer('any_search_term', SearchTermType::unknown),
+            'command' => 'unknown',
+            'shouldSeeReplies' => [
+                'reply.wrong',
+                'query.confirm',
+            ],
+            'shouldSeeButtons' => [
+                $this->yesButton(),
+                $this->prevButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => LookupTelegramBotConversation::STEP_CONFIRM_QUERIED,
+        ];
+
         yield 'yes & non-empty results' => [
             'searchTerm' => $searchTerm = new SearchTermTransfer(Fixtures::INSTAGRAM_USERNAME_3, SearchTermType::instagram_username),
             'command' => $this->yesButton(),
@@ -366,7 +455,7 @@ class LookupTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctiona
         ];
 
         yield 'prev' => [
-            'searchTerm' => $searchTerm = new SearchTermTransfer('any', SearchTermType::unknown),
+            'searchTerm' => $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::unknown),
             'command' => $this->prevButton(),
             'shouldSeeReplies' => [
                 'query.search_term',
@@ -381,7 +470,7 @@ class LookupTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctiona
         ];
 
         yield 'help' => [
-            'searchTerm' => new SearchTermTransfer('any', SearchTermType::unknown),
+            'searchTerm' => new SearchTermTransfer('any_search_term', SearchTermType::unknown),
             'command' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
@@ -399,7 +488,7 @@ class LookupTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctiona
         ];
 
         yield 'cancel' => [
-            'searchTerm' => new SearchTermTransfer('any', SearchTermType::unknown),
+            'searchTerm' => new SearchTermTransfer('any_search_term', SearchTermType::unknown),
             'command' => $this->cancelButton(),
             'shouldSeeReplies' => [
                 'reply.canceled',

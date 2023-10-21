@@ -286,7 +286,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
     {
         $message = $tg->trans('reply.wrong');
         $message = $tg->wrongText($message);
-        $message .= "\n\n";
+        $message .= "\n";
 
         return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
     }

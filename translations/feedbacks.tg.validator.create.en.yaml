@@ -1,0 +1,8 @@
+search_terms:
+  not_blank: Search term must not be empty.
+rating:
+  not_blank: Score cannot be blank.
+description:
+  not_blank: Description cannot be empty.
+  min_length: Description must contain at least %min_length% characters.
+  max_length: Description cannot contain more than %max_length% characters.

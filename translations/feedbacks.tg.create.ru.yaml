@@ -1,6 +1,9 @@
 query:
   search_term: О ком или о чем Вы хотите оставить отзыв?
-  search_term_tip: 'Например: имя, название, номер телефона, электронная почта, ссылка и т.д.'
+  search_term_should_be: максимально простым
+  search_term_tip: Поисковый термин должен быть %should_be%, это то, что другие пользователи будут указывать при поиске.
+  search_term_put_one: Укажите что-то одно
+  search_term_tip_example: 'Например: %types% и т.д. %put_one%.'
   search_term_type: Кем или чем является %search_term%?
   extra_search_term: Добавьте больше информации о %search_term%.
   rating: Оцените Ваш опыт с %search_term%.
