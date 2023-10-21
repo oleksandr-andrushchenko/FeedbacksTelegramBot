@@ -38,7 +38,7 @@ class YoutubeSearchTermParser implements SearchTermParserInterface
             ;
         } elseif ($this->supportsUsername($searchTerm->getText())) {
             $searchTerm
-                ->addPossibleType(SearchTermType::youtube_username)
+                ->addType(SearchTermType::youtube_username)
             ;
         }
     }

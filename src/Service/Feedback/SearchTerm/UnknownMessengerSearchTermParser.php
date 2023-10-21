@@ -26,7 +26,7 @@ class UnknownMessengerSearchTermParser implements SearchTermParserInterface
     public function parseWithGuessType(SearchTermTransfer $searchTerm): void
     {
         $searchTerm
-            ->addPossibleType(SearchTermType::messenger_username)
+            ->addType(SearchTermType::messenger_username)
         ;
     }
 

@@ -21,7 +21,7 @@ class SearchTermTransfer
         /**
          * @var null|SearchTermType[]
          */
-        private ?array $possibleTypes = null,
+        private ?array $types = null,
     )
     {
     }
@@ -103,25 +103,25 @@ class SearchTermTransfer
         return $this;
     }
 
-    public function getPossibleTypes(): ?array
+    public function getTypes(): ?array
     {
-        return $this->possibleTypes;
+        return $this->types;
     }
 
-    public function setPossibleTypes(?array $possibleTypes): self
+    public function setTypes(?array $types): self
     {
-        $this->possibleTypes = $possibleTypes;
+        $this->types = $types;
 
         return $this;
     }
 
-    public function addPossibleType(SearchTermType $type): self
+    public function addType(SearchTermType $type): self
     {
-        if ($this->possibleTypes === null) {
-            $this->possibleTypes = [];
+        if ($this->types === null) {
+            $this->types = [];
         }
 
-        $this->possibleTypes[] = $type;
+        $this->types[] = $type;
 
         return $this;
     }

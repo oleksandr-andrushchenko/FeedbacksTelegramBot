@@ -46,7 +46,7 @@ class TelegramBotAwareHelper
         return $this->bot;
     }
 
-    public function getText(): ?string
+    public function getInput(): ?string
     {
         $input = $this->inputProvider->getTelegramInputByUpdate($this->getBot()->getUpdate());
 
@@ -61,9 +61,9 @@ class TelegramBotAwareHelper
         return implode("\n", array_filter(explode("\n", $input), static fn (string $line): bool => !in_array($line, ['', ' '], true)));
     }
 
-    public function matchText(?string $text): bool
+    public function matchInput(?string $text): bool
     {
-        return $this->getText() === $text;
+        return $this->getInput() === $text;
     }
 
     public function getChatId(): ?int

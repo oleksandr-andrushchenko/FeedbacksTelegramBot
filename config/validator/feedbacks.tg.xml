@@ -10,7 +10,7 @@
     <class name="App\Entity\Feedback\Telegram\Bot\SearchFeedbackTelegramBotConversationState">
         <constraint name="App\Validator\Feedback\Telegram\Bot\SearchFeedbackTelegramBotConversationStateConstraint"/>
     </class>
-    <class name="App\Entity\Feedback\Telegram\Bot\LookupTelegramBotConversationState">
-        <constraint name="App\Validator\Feedback\Telegram\Bot\LookupTelegramBotConversationStateConstraint"/>
+    <class name="App\Entity\Feedback\Telegram\Bot\LookupFeedbackTelegramBotConversationState">
+        <constraint name="App\Validator\Feedback\Telegram\Bot\LookupFeedbackTelegramBotConversationStateConstraint"/>
     </class>
 </constraint-mapping>

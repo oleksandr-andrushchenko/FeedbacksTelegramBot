@@ -28,19 +28,19 @@ class NameSearchTermParser implements SearchTermParserInterface
     {
         if ($this->supportsPersonName($searchTerm->getText())) {
             $searchTerm
-                ->addPossibleType(SearchTermType::person_name)
+                ->addType(SearchTermType::person_name)
             ;
         }
 
         if ($this->supportsOrganizationName($searchTerm->getText())) {
             $searchTerm
-                ->addPossibleType(SearchTermType::organization_name)
+                ->addType(SearchTermType::organization_name)
             ;
         }
 
         if ($this->supportsPlaceName($searchTerm->getText())) {
             $searchTerm
-                ->addPossibleType(SearchTermType::place_name)
+                ->addType(SearchTermType::place_name)
             ;
         }
     }

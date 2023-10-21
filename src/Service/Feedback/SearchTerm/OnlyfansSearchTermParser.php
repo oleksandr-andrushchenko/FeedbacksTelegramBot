@@ -38,7 +38,7 @@ class OnlyfansSearchTermParser implements SearchTermParserInterface
             ;
         } elseif ($this->supportsUsername($searchTerm->getText())) {
             $searchTerm
-                ->addPossibleType(SearchTermType::onlyfans_username)
+                ->addType(SearchTermType::onlyfans_username)
             ;
         }
     }

@@ -311,7 +311,8 @@
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.telegram_conversation_lookup"
-                 class="App\Service\Feedback\Telegram\Bot\Conversation\LookupTelegramBotConversation" lazy="true">
+                 class="App\Service\Feedback\Telegram\Bot\Conversation\LookupFeedbackTelegramBotConversation"
+                 lazy="true">
             <argument type="service" id="app.validator"/>
             <argument type="service" id="app.feedback_search_term_parser"/>
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>

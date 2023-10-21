@@ -38,7 +38,7 @@ class InstagramSearchTermParser implements SearchTermParserInterface
             ;
         } elseif ($this->supportsUsername($searchTerm->getText())) {
             $searchTerm
-                ->addPossibleType(SearchTermType::instagram_username)
+                ->addType(SearchTermType::instagram_username)
             ;
         }
     }

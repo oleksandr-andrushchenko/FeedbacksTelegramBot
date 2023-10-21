@@ -38,7 +38,7 @@ class FacebookSearchTermParser implements SearchTermParserInterface
             ;
         } elseif ($this->supportsUsername($searchTerm->getText())) {
             $searchTerm
-                ->addPossibleType(SearchTermType::facebook_username)
+                ->addType(SearchTermType::facebook_username)
             ;
         }
     }

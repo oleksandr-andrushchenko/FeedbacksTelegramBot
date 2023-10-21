@@ -64,5 +64,4 @@
 * Improve search term text normalization: single-spaces,multi-spaces, case/incese-sensitives
 * Validation for search terms: min/max length, emojis, tags etc.
 * Add already added texts/prev/next for all conversations (for example for country/locale convs)
-* Rename Lookup -> LookupFeedback, $tg->getText -> $tg->getInput, getPossibleTypes -> getTypes()
 * Cache level 1 regions for ua,ru

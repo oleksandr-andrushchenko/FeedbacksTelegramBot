@@ -23,7 +23,7 @@
             <tag name="validator.constraint_validator" alias="app.validator.feedback_search"/>
         </service>
         <service id="app.validator.feedback_lookup"
-                 class="App\Validator\Feedback\Telegram\Bot\LookupTelegramBotConversationStateValidator"
+                 class="App\Validator\Feedback\Telegram\Bot\LookupFeedbackTelegramBotConversationStateValidator"
                  lazy="true">
             <argument type="service" id="app.validator_helper"/>
             <tag name="validator.constraint_validator" alias="app.validator.feedback_lookup"/>

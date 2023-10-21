@@ -38,7 +38,7 @@ class TwitterSearchTermParser implements SearchTermParserInterface
             ;
         } elseif ($this->supportsUsername($searchTerm->getText())) {
             $searchTerm
-                ->addPossibleType(SearchTermType::twitter_username)
+                ->addType(SearchTermType::twitter_username)
             ;
         }
     }

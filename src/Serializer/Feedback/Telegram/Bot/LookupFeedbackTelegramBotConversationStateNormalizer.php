@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Serializer\Feedback\Telegram\Bot;
 
-use App\Entity\Feedback\Telegram\Bot\LookupTelegramBotConversationState;
+use App\Entity\Feedback\Telegram\Bot\LookupFeedbackTelegramBotConversationState;
 use App\Entity\Telegram\TelegramBotConversationState;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class LookupTelegramBotConversationStateNormalizer implements NormalizerInterface, DenormalizerInterface
+class LookupFeedbackTelegramBotConversationStateNormalizer implements NormalizerInterface, DenormalizerInterface
 {
     public function __construct(
         private readonly NormalizerInterface $searchConversationStateNormalizer,
@@ -20,7 +20,7 @@ class LookupTelegramBotConversationStateNormalizer implements NormalizerInterfac
     }
 
     /**
-     * @param LookupTelegramBotConversationState $object
+     * @param LookupFeedbackTelegramBotConversationState $object
      * @param string|null $format
      * @param array $context
      * @return array
@@ -33,7 +33,7 @@ class LookupTelegramBotConversationStateNormalizer implements NormalizerInterfac
 
     public function supportsNormalization(mixed $data, string $format = null): bool
     {
-        return $data instanceof LookupTelegramBotConversationState;
+        return $data instanceof LookupFeedbackTelegramBotConversationState;
     }
 
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): TelegramBotConversationState
@@ -43,6 +43,6 @@ class LookupTelegramBotConversationStateNormalizer implements NormalizerInterfac
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
     {
-        return is_array($data) && $type === LookupTelegramBotConversationState::class;
+        return is_array($data) && $type === LookupFeedbackTelegramBotConversationState::class;
     }
 }

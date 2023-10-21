@@ -26,8 +26,8 @@ class UrlSearchTermParser implements SearchTermParserInterface
     public function parseWithGuessType(SearchTermTransfer $searchTerm): void
     {
         $searchTerm
-            ->addPossibleType(SearchTermType::messenger_profile_url)
-            ->addPossibleType(SearchTermType::url)
+            ->addType(SearchTermType::messenger_profile_url)
+            ->addType(SearchTermType::url)
         ;
     }
 

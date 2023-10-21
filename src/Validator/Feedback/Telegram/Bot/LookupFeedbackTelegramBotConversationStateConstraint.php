@@ -6,7 +6,7 @@ namespace App\Validator\Feedback\Telegram\Bot;
 
 use Symfony\Component\Validator\Constraint;
 
-class LookupTelegramBotConversationStateConstraint extends Constraint
+class LookupFeedbackTelegramBotConversationStateConstraint extends Constraint
 {
     public string $searchTermNotBlankMessage = 'search_term.not_blank';
 

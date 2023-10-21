@@ -31,7 +31,7 @@ class SearchTermTransferNormalizer implements NormalizerInterface, DenormalizerI
             'messenger_profile_url' => $object->getMessengerProfileUrl(),
             'messenger_username' => $object->getMessengerUsername(),
             'messenger_user' => $object->getMessengerUser() === null ? null : $this->messengerUserTransferNormalizer->normalize($object->getMessengerUser(), $format, $context),
-            'possible_types' => $object->getPossibleTypes() === null ? null : array_map(static fn ($type): int => $type->value, $object->getPossibleTypes()),
+            'types' => $object->getTypes() === null ? null : array_map(static fn ($type): int => $type->value, $object->getTypes()),
         ];
     }
 
@@ -52,7 +52,7 @@ class SearchTermTransferNormalizer implements NormalizerInterface, DenormalizerI
             ->setMessengerProfileUrl($data['messenger_profile_url'] ?? null)
             ->setMessengerUsername($data['messenger_username'] ?? null)
             ->setMessengerUser(isset($data['messenger_user']) ? $this->messengerUserTransferDenormalizer->denormalize($data['messenger_user'], MessengerUserTransfer::class, $format, $context) : null)
-            ->setPossibleTypes(isset($data['possible_types']) ? array_map(static fn ($type): SearchTermType => SearchTermType::from($type), $data['possible_types']) : null)
+            ->setTypes(isset($data['types']) ? array_map(static fn ($type): SearchTermType => SearchTermType::from($type), $data['types']) : null)
         ;
 
         return $object;

@@ -18,7 +18,7 @@ use App\Service\Feedback\Telegram\Bot\Conversation\ContactTelegramBotConversatio
 use App\Service\Feedback\Telegram\Bot\Conversation\CountryTelegramBotConversation;
 use App\Service\Feedback\Telegram\Bot\Conversation\CreateFeedbackTelegramBotConversation;
 use App\Service\Feedback\Telegram\Bot\Conversation\LocaleTelegramBotConversation;
-use App\Service\Feedback\Telegram\Bot\Conversation\LookupTelegramBotConversation;
+use App\Service\Feedback\Telegram\Bot\Conversation\LookupFeedbackTelegramBotConversation;
 use App\Service\Feedback\Telegram\Bot\Conversation\PurgeConversationTelegramBotConversation;
 use App\Service\Feedback\Telegram\Bot\Conversation\RestartConversationTelegramBotConversation;
 use App\Service\Feedback\Telegram\Bot\Conversation\SearchFeedbackTelegramBotConversation;
@@ -102,7 +102,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
 
     public function fallback(TelegramBotAwareHelper $tg): null
     {
-        return match ($tg->getText()) {
+        return match ($tg->getInput()) {
             $this->chooseActionChatSender->getCreateButton($tg)->getText() => $this->create($tg),
             $this->chooseActionChatSender->getSearchButton($tg)->getText() => $this->search($tg),
             $this->chooseActionChatSender->getLookupButton($tg)->getText() => $this->lookup($tg),
@@ -161,7 +161,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
 
     public function lookup(TelegramBotAwareHelper $tg): null
     {
-        return $tg->stopCurrentConversation()->startConversation(LookupTelegramBotConversation::class)->null();
+        return $tg->stopCurrentConversation()->startConversation(LookupFeedbackTelegramBotConversation::class)->null();
     }
 
     public function subscribe(TelegramBotAwareHelper $tg): null

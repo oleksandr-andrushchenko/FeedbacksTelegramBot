@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Feedback\Telegram\Bot\Conversation;
 
 use App\Entity\CommandLimit;
-use App\Entity\Feedback\Telegram\Bot\LookupTelegramBotConversationState;
+use App\Entity\Feedback\Telegram\Bot\LookupFeedbackTelegramBotConversationState;
 use App\Entity\Telegram\TelegramBotConversation as Entity;
 use App\Enum\Feedback\SearchTermType;
 use App\Exception\CommandLimitExceededException;
@@ -28,9 +28,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
 /**
- * @property LookupTelegramBotConversationState $state
+ * @property LookupFeedbackTelegramBotConversationState $state
  */
-class LookupTelegramBotConversation extends TelegramBotConversation implements TelegramBotConversationInterface
+class LookupFeedbackTelegramBotConversation extends TelegramBotConversation implements TelegramBotConversationInterface
 {
     public const STEP_SEARCH_TERM_QUERIED = 10;
     public const STEP_SEARCH_TERM_TYPE_QUERIED = 20;
@@ -52,7 +52,7 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
         private readonly bool $confirmStep,
     )
     {
-        parent::__construct(new LookupTelegramBotConversationState());
+        parent::__construct(new LookupFeedbackTelegramBotConversationState());
     }
 
     public function invoke(TelegramBotAwareHelper $tg, Entity $entity): null
@@ -177,7 +177,7 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
 
     public function gotSearchTerm(TelegramBotAwareHelper $tg, Entity $entity): null
     {
-        if ($tg->matchText(null)) {
+        if ($tg->matchInput(null)) {
             $tg->replyWrong(true);
 
             return $this->querySearchTerm($tg);
@@ -185,7 +185,7 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
 
         $searchTerm = $this->state->getSearchTerm();
 
-        if ($tg->matchText($tg->nextButton()->getText()) && $searchTerm !== null) {
+        if ($tg->matchInput($tg->nextButton()->getText()) && $searchTerm !== null) {
             if ($this->confirmStep) {
                 return $this->queryConfirm($tg);
             }
@@ -193,21 +193,21 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
             return $this->searchAndReply($tg, $entity);
         }
 
-        if ($searchTerm !== null && $tg->matchText($this->getRemoveTermButton($searchTerm, $tg)->getText())) {
+        if ($searchTerm !== null && $tg->matchInput($this->getRemoveTermButton($searchTerm, $tg)->getText())) {
             $this->state->setSearchTerm(null);
 
             return $this->querySearchTerm($tg);
         }
 
-        if ($tg->matchText($tg->helpButton()->getText())) {
+        if ($tg->matchInput($tg->helpButton()->getText())) {
             return $this->querySearchTerm($tg, true);
         }
 
-        if ($tg->matchText($tg->cancelButton()->getText())) {
+        if ($tg->matchInput($tg->cancelButton()->getText())) {
             return $this->gotCancel($tg, $entity);
         }
 
-        $searchTerm = new SearchTermTransfer($tg->getText());
+        $searchTerm = new SearchTermTransfer($tg->getInput());
 
         $this->searchTermParser->parseWithGuessType($searchTerm);
 
@@ -222,12 +222,12 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
         $this->state->setSearchTerm($searchTerm);
 
         if ($searchTerm->getType() === null) {
-            $types = $searchTerm->getPossibleTypes() ?? [];
+            $types = $searchTerm->getTypes() ?? [];
 
             if (count($types) === 1) {
                 $searchTerm
                     ->setType($types[0])
-                    ->setPossibleTypes(null)
+                    ->setTypes(null)
                 ;
                 $this->searchTermParser->parseWithKnownType($searchTerm);
             } elseif ($this->searchTermTypeStep) {
@@ -235,7 +235,7 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
             } else {
                 $searchTerm
                     ->setType(SearchTermType::unknown)
-                    ->setPossibleTypes(null)
+                    ->setTypes(null)
                 ;
             }
         }
@@ -286,7 +286,7 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
 
     public function gotSearchTermType(TelegramBotAwareHelper $tg, Entity $entity): null
     {
-        if ($tg->matchText(null)) {
+        if ($tg->matchInput(null)) {
             $tg->replyWrong(false);
 
             return $this->querySearchTermType($tg);
@@ -294,21 +294,21 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
 
         $searchTerm = $this->state->getSearchTerm();
 
-        if ($tg->matchText($this->getRemoveTermButton($searchTerm, $tg)->getText())) {
+        if ($tg->matchInput($this->getRemoveTermButton($searchTerm, $tg)->getText())) {
             $this->state->setSearchTerm(null);
 
             return $this->querySearchTerm($tg);
         }
 
-        if ($tg->matchText($tg->helpButton()->getText())) {
+        if ($tg->matchInput($tg->helpButton()->getText())) {
             return $this->querySearchTermType($tg, true);
         }
 
-        if ($tg->matchText($tg->cancelButton()->getText())) {
+        if ($tg->matchInput($tg->cancelButton()->getText())) {
             return $this->gotCancel($tg, $entity);
         }
 
-        $type = $this->getSearchTermTypeByButton($tg->getText(), $searchTerm, $tg);
+        $type = $this->getSearchTermTypeByButton($tg->getInput(), $searchTerm, $tg);
 
         if ($type === null) {
             $tg->replyWrong(false);
@@ -318,7 +318,7 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
 
         $searchTerm
             ->setType($type)
-            ->setPossibleTypes(null)
+            ->setTypes(null)
         ;
 
         $this->searchTermParser->parseWithKnownType($searchTerm);
@@ -354,7 +354,7 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
 
     public function getSearchTermTypes(SearchTermTransfer $searchTerm): array
     {
-        $types = $searchTerm->getPossibleTypes() ?? [];
+        $types = $searchTerm->getTypes() ?? [];
         $types = $this->searchTermTypeProvider->sortSearchTermTypes($types);
         array_unshift($types, SearchTermType::unknown);
 
@@ -512,25 +512,25 @@ class LookupTelegramBotConversation extends TelegramBotConversation implements T
 
     public function gotConfirm(TelegramBotAwareHelper $tg, Entity $entity): null
     {
-        if ($tg->matchText(null)) {
+        if ($tg->matchInput(null)) {
             $tg->replyWrong(false);
 
             return $this->queryConfirm($tg);
         }
 
-        if ($tg->matchText($tg->helpButton()->getText())) {
+        if ($tg->matchInput($tg->helpButton()->getText())) {
             return $this->queryConfirm($tg, true);
         }
 
-        if ($tg->matchText($tg->prevButton()->getText())) {
+        if ($tg->matchInput($tg->prevButton()->getText())) {
             return $this->querySearchTerm($tg);
         }
 
-        if ($tg->matchText($tg->cancelButton()->getText())) {
+        if ($tg->matchInput($tg->cancelButton()->getText())) {
             return $this->gotCancel($tg, $entity);
         }
 
-        if (!$tg->matchText($tg->yesButton()->getText())) {
+        if (!$tg->matchInput($tg->yesButton()->getText())) {
             $tg->replyWrong(false);
 
             return $this->queryConfirm($tg);

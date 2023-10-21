@@ -39,12 +39,12 @@ class TiktokSearchTermParser implements SearchTermParserInterface
                 ;
             } else {
                 $searchTerm
-                    ->addPossibleType(SearchTermType::tiktok_username)
+                    ->addType(SearchTermType::tiktok_username)
                 ;
             }
         } elseif ($this->supportsUsername($searchTerm->getText())) {
             $searchTerm
-                ->addPossibleType(SearchTermType::tiktok_username)
+                ->addType(SearchTermType::tiktok_username)
             ;
         }
     }

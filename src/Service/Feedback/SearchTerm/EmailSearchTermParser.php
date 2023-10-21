@@ -32,7 +32,7 @@ class EmailSearchTermParser implements SearchTermParserInterface
             ;
         } else {
             $searchTerm
-                ->addPossibleType(SearchTermType::email)
+                ->addType(SearchTermType::email)
             ;
         }
     }

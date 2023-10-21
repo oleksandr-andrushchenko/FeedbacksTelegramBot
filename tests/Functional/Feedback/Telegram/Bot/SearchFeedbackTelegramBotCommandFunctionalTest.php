@@ -256,7 +256,7 @@ class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
     {
         yield 'type unknown' => [
             'searchTerm' => $searchTerm = (new SearchTermTransfer('any_search_term'))
-                ->setPossibleTypes([
+                ->setTypes([
                     SearchTermType::instagram_username,
                     SearchTermType::telegram_username,
                     SearchTermType::organization_name,
@@ -267,7 +267,7 @@ class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 'query.search_term_type',
             ],
             'shouldSeeButtons' => [
-                ...array_map(fn (SearchTermType $type): string => $this->searchTermTypeButton($type), $searchTerm->getPossibleTypes()),
+                ...array_map(fn (SearchTermType $type): string => $this->searchTermTypeButton($type), $searchTerm->getTypes()),
                 ...[
                     $this->searchTermTypeButton(SearchTermType::unknown),
                     $this->removeButton($searchTerm->getText()),
@@ -280,7 +280,7 @@ class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
 
         yield 'type not in the list' => [
             'searchTerm' => $searchTerm = (new SearchTermTransfer('any_search_term'))
-                ->setPossibleTypes([
+                ->setTypes([
                     SearchTermType::instagram_username,
                     SearchTermType::telegram_username,
                     SearchTermType::organization_name,
@@ -291,7 +291,7 @@ class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 'query.search_term_type',
             ],
             'shouldSeeButtons' => [
-                ...array_map(fn (SearchTermType $type): string => $this->searchTermTypeButton($type), $searchTerm->getPossibleTypes()),
+                ...array_map(fn (SearchTermType $type): string => $this->searchTermTypeButton($type), $searchTerm->getTypes()),
                 ...[
                     $this->searchTermTypeButton(SearchTermType::unknown),
                     $this->removeButton($searchTerm->getText()),
@@ -304,10 +304,10 @@ class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
 
         yield 'select type' => [
             'searchTerm' => $searchTerm = (new SearchTermTransfer('any_search_term'))
-                ->setPossibleTypes([
+                ->setTypes([
                     SearchTermType::instagram_username,
                 ]),
-            'command' => $this->searchTermTypeButton($searchTerm->getPossibleTypes()[0]),
+            'command' => $this->searchTermTypeButton($searchTerm->getTypes()[0]),
             'shouldSeeReplies' => [
                 'query.confirm',
             ],
@@ -322,7 +322,7 @@ class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
 
         yield 'remove' => [
             'searchTerm' => $searchTerm = (new SearchTermTransfer('any_search_term'))
-                ->setPossibleTypes([
+                ->setTypes([
                     SearchTermType::instagram_username,
                 ]),
             'command' => $this->removeButton($searchTerm->getText()),
@@ -338,7 +338,7 @@ class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
 
         yield 'help' => [
             'searchTerm' => $searchTerm = (new SearchTermTransfer('any_search_term'))
-                ->setPossibleTypes([
+                ->setTypes([
                     SearchTermType::instagram_username,
                     SearchTermType::telegram_username,
                     SearchTermType::organization_name,
@@ -351,7 +351,7 @@ class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 'help.use_keyboard',
             ],
             'shouldSeeButtons' => [
-                ...array_map(fn (SearchTermType $type): string => $this->searchTermTypeButton($type), $searchTerm->getPossibleTypes()),
+                ...array_map(fn (SearchTermType $type): string => $this->searchTermTypeButton($type), $searchTerm->getTypes()),
                 ...[
                     $this->searchTermTypeButton(SearchTermType::unknown),
                     $this->removeButton($searchTerm->getText()),

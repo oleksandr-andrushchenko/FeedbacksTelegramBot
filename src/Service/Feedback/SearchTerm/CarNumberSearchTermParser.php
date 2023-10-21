@@ -26,7 +26,7 @@ class CarNumberSearchTermParser implements SearchTermParserInterface
     {
         if ($this->supports($searchTerm->getText())) {
             $searchTerm
-                ->addPossibleType(SearchTermType::car_number)
+                ->addType(SearchTermType::car_number)
             ;
         }
     }

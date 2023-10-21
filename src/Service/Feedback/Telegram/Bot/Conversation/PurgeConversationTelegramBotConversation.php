@@ -81,21 +81,21 @@ class PurgeConversationTelegramBotConversation extends TelegramBotConversation i
 
     public function gotConfirm(TelegramBotAwareHelper $tg, Entity $entity): null
     {
-        if ($tg->matchText($tg->noButton()->getText())) {
+        if ($tg->matchInput($tg->noButton()->getText())) {
             $tg->stopConversation($entity);
 
             return $this->chooseActionChatSender->sendActions($tg);
         }
 
-        if ($tg->matchText($tg->helpButton()->getText())) {
+        if ($tg->matchInput($tg->helpButton()->getText())) {
             return $this->queryConfirm($tg, true);
         }
 
-        if ($tg->matchText($tg->cancelButton()->getText())) {
+        if ($tg->matchInput($tg->cancelButton()->getText())) {
             return $this->gotCancel($tg, $entity);
         }
 
-        if (!$tg->matchText($tg->yesButton()->getText())) {
+        if (!$tg->matchInput($tg->yesButton()->getText())) {
             $tg->replyWrong(false);
 
             return $this->queryConfirm($tg);

@@ -129,21 +129,21 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
 
     public function gotChangeConfirm(TelegramBotAwareHelper $tg, Entity $entity): null
     {
-        if ($tg->matchText($tg->noButton()->getText())) {
+        if ($tg->matchInput($tg->noButton()->getText())) {
             $tg->stopConversation($entity);
 
             return $this->chooseActionChatSender->sendActions($tg);
         }
 
-        if ($tg->matchText($tg->helpButton()->getText())) {
+        if ($tg->matchInput($tg->helpButton()->getText())) {
             return $this->queryChangeConfirm($tg, true);
         }
 
-        if ($tg->matchText($tg->cancelButton()->getText())) {
+        if ($tg->matchInput($tg->cancelButton()->getText())) {
             return $this->gotCancel($tg, $entity);
         }
 
-        if (!$tg->matchText($tg->yesButton()->getText())) {
+        if (!$tg->matchInput($tg->yesButton()->getText())) {
             $tg->replyWrong(false);
 
             return $this->queryChangeConfirm($tg);
@@ -213,7 +213,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
 
     public function gotLocale(TelegramBotAwareHelper $tg, Entity $entity, bool $guess): null
     {
-        if ($tg->matchText($tg->helpButton()->getText())) {
+        if ($tg->matchInput($tg->helpButton()->getText())) {
             if ($guess) {
                 return $this->queryGuessLocale($tg, true);
             }
@@ -221,19 +221,19 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
             return $this->queryLocale($tg, true);
         }
 
-        if ($tg->matchText($tg->cancelButton()->getText())) {
+        if ($tg->matchInput($tg->cancelButton()->getText())) {
             return $this->gotCancel($tg, $entity);
         }
 
-        if ($guess && $tg->matchText($this->getOtherLocaleButton($tg)->getText())) {
+        if ($guess && $tg->matchInput($this->getOtherLocaleButton($tg)->getText())) {
             return $this->queryLocale($tg);
         }
 
-        if ($tg->matchText(null)) {
+        if ($tg->matchInput(null)) {
             $locale = null;
         } else {
             $locales = $guess ? $this->getGuessLocales($tg) : $this->getLocales();
-            $locale = $this->getLocaleByButton($tg->getText(), $locales, $tg);
+            $locale = $this->getLocaleByButton($tg->getInput(), $locales, $tg);
         }
 
         if ($locale === null) {

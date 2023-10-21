@@ -33,7 +33,7 @@ class PhoneNumberSearchTermParser implements SearchTermParserInterface
                 ;
             } else {
                 $searchTerm
-                    ->addPossibleType(SearchTermType::phone_number)
+                    ->addType(SearchTermType::phone_number)
                 ;
             }
         }

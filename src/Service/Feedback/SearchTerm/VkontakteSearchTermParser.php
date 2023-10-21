@@ -60,7 +60,7 @@ class VkontakteSearchTermParser implements SearchTermParserInterface
             $this->setupSearchTerm($searchTerm, $username);
         } elseif ($this->supportsUsername($searchTerm->getText())) {
             $searchTerm
-                ->addPossibleType(SearchTermType::vkontakte_username)
+                ->addType(SearchTermType::vkontakte_username)
             ;
         }
     }

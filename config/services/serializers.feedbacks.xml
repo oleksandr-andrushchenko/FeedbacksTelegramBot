@@ -33,7 +33,8 @@
             <tag name="serializer.normalizer" priority="-969"/>
         </service>
         <service id="app.normalizer.telegram_bot_conversation_state_lookup"
-                 class="App\Serializer\Feedback\Telegram\Bot\LookupTelegramBotConversationStateNormalizer" lazy="true">
+                 class="App\Serializer\Feedback\Telegram\Bot\LookupFeedbackTelegramBotConversationStateNormalizer"
+                 lazy="true">
             <argument type="service" id="app.normalizer.telegram_bot_conversation_state_search_feedback"/>
             <argument type="service" id="app.normalizer.telegram_bot_conversation_state_search_feedback"/>
             <tag name="serializer.normalizer" priority="-968"/>

@@ -38,7 +38,7 @@ class TelegramSearchTermParser implements SearchTermParserInterface
             ;
         } elseif ($this->supportsUsername($searchTerm->getText())) {
             $searchTerm
-                ->addPossibleType(SearchTermType::telegram_username)
+                ->addType(SearchTermType::telegram_username)
             ;
         }
     }

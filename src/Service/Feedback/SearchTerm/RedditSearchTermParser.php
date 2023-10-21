@@ -38,7 +38,7 @@ class RedditSearchTermParser implements SearchTermParserInterface
             ;
         } elseif ($this->supportsUsername($searchTerm->getText())) {
             $searchTerm
-                ->addPossibleType(SearchTermType::reddit_username)
+                ->addType(SearchTermType::reddit_username)
             ;
         }
     }

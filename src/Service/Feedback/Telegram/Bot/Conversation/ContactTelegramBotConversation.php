@@ -84,21 +84,21 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
 
     public function gotLeftMessageConfirm(TelegramBotAwareHelper $tg, Entity $entity): null
     {
-        if ($tg->matchText($tg->noButton()->getText())) {
+        if ($tg->matchInput($tg->noButton()->getText())) {
             $tg->stopConversation($entity);
 
             return $this->chooseActionChatSender->sendActions($tg);
         }
 
-        if ($tg->matchText($tg->helpButton()->getText())) {
+        if ($tg->matchInput($tg->helpButton()->getText())) {
             return $this->queryLeftMessageConfirm($tg, true);
         }
 
-        if ($tg->matchText($tg->cancelButton()->getText())) {
+        if ($tg->matchInput($tg->cancelButton()->getText())) {
             return $this->gotCancel($tg, $entity);
         }
 
-        if (!$tg->matchText($tg->yesButton()->getText())) {
+        if (!$tg->matchInput($tg->yesButton()->getText())) {
             $tg->replyWrong(false);
 
             return $this->queryLeftMessageConfirm($tg);
@@ -151,17 +151,17 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
 
     public function gotMessage(TelegramBotAwareHelper $tg, Entity $entity): null
     {
-        if ($tg->matchText(null)) {
+        if ($tg->matchInput(null)) {
             $tg->replyWrong(true);
 
             return $this->queryMessage($tg);
         }
 
-        if ($tg->matchText($tg->helpButton()->getText())) {
+        if ($tg->matchInput($tg->helpButton()->getText())) {
             return $this->queryMessage($tg, true);
         }
 
-        if ($tg->matchText($tg->cancelButton()->getText())) {
+        if ($tg->matchInput($tg->cancelButton()->getText())) {
             return $this->gotCancel($tg, $entity);
         }
 
@@ -170,7 +170,7 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
                 new UserContactMessageTransfer(
                     $tg->getBot()->getMessengerUser(),
                     $tg->getBot()->getMessengerUser()->getUser(),
-                    $tg->getText(),
+                    $tg->getInput(),
                     $tg->getBot()->getEntity()
                 )
             );

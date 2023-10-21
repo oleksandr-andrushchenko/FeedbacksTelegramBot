@@ -349,10 +349,10 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
             return $searchTerm;
         }
 
-        $possibleTypes = $searchTerm->getPossibleTypes() ?? [];
+        $possibleTypes = $searchTerm->getTypes() ?? [];
 
         if (!in_array($expectedType, $possibleTypes, true)) {
-            $searchTerm->addPossibleType($expectedType);
+            $searchTerm->addType($expectedType);
         }
 
         return $searchTerm;
