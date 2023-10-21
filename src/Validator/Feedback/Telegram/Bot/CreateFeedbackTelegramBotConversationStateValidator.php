@@ -35,7 +35,7 @@ class CreateFeedbackTelegramBotConversationStateValidator extends ConstraintVali
             throw new UnexpectedValueException($value, CreateFeedbackTelegramBotConversationStateConstraint::class);
         }
 
-        $helper = $this->helper->withContext($this->context)->withTranslationDomain('feedbacks.tg.validator.create');
+        $helper = $this->helper->withContext($this->context)->withTranslationDomain('feedbacks.tg.create_validation');
 
         if ($value->getStep() > CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED) {
             if ($value->getSearchTerms() === null) {

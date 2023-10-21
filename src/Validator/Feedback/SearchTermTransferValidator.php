@@ -33,7 +33,7 @@ class SearchTermTransferValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, SearchTermTransferConstraint::class);
         }
 
-        $helper = $this->helper->withContext($this->context)->withTranslationDomain('feedbacks.validator.search_term');
+        $helper = $this->helper->withContext($this->context)->withTranslationDomain('feedbacks.search_term_validation');
 
         $text = $value->getText();
 

@@ -33,7 +33,7 @@ class UserContactMessageTransferValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, UserContactMessageTransferConstraint::class);
         }
 
-        $helper = $this->helper->withContext($this->context)->withTranslationDomain('feedbacks.validator.user_contact_message');
+        $helper = $this->helper->withContext($this->context)->withTranslationDomain('user_contact_message_validation');
 
         $text = $value->getText();
 

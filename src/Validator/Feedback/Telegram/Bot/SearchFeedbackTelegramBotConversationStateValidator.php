@@ -35,7 +35,7 @@ class SearchFeedbackTelegramBotConversationStateValidator extends ConstraintVali
             throw new UnexpectedValueException($value, SearchFeedbackTelegramBotConversationStateConstraint::class);
         }
 
-        $helper = $this->helper->withContext($this->context)->withTranslationDomain('feedbacks.tg.validator.search');
+        $helper = $this->helper->withContext($this->context)->withTranslationDomain('feedbacks.tg.search_validation');
 
         if ($value->getStep() > SearchFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED) {
             if ($value->getSearchTerm() === null) {

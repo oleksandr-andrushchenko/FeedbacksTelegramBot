@@ -35,7 +35,7 @@ class LookupFeedbackTelegramBotConversationStateValidator extends ConstraintVali
             throw new UnexpectedValueException($value, LookupFeedbackTelegramBotConversationStateConstraint::class);
         }
 
-        $helper = $this->helper->withContext($this->context)->withTranslationDomain('feedbacks.tg.validator.lookup');
+        $helper = $this->helper->withContext($this->context)->withTranslationDomain('feedbacks.tg.lookup_validation');
 
         if ($value->getStep() > LookupFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED) {
             if ($value->getSearchTerm() === null) {
