@@ -1,0 +1,4 @@
+text:
+  not_blank: Message cannot be blank.
+  min_length: Message cannot contain less than %min_length% characters.
+  max_length: Message cannot contain more than %max_length% characters.
