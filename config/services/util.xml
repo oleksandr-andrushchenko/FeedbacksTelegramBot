@@ -5,9 +5,6 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.validator" class="App\Service\Validator">
-            <argument type="service" id="validator"/>
-        </service>
         <service id="app.array_key_quoter" class="App\Service\Util\Array\ArrayKeyQuoter" lazy="true"/>
         <service id="app.array_null_filter" class="App\Service\Util\Array\ArrayNullFilter" lazy="true"/>
         <service id="app.array_pos_eraser" class="App\Service\Util\Array\ArrayPosEraser" lazy="true"/>
