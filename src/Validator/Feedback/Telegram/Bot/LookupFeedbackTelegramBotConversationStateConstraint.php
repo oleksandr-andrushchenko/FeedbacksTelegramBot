@@ -17,6 +17,6 @@ class LookupFeedbackTelegramBotConversationStateConstraint extends Constraint
 
     public function validatedBy(): string
     {
-        return 'app.validator.feedback_lookup';
+        return 'app.feedback_lookup_validator';
     }
 }

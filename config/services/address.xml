@@ -4,15 +4,25 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services
         https://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
+        <service id="app.level_1_region_repository" class="App\Repository\Address\Level1RegionRepository">
+            <argument type="service" id="doctrine"/>
+        </service>
+        <service id="app.address_reverse_geocode_command" class="App\Command\Address\AddressReverseGeocodeCommand" lazy="true">
+            <argument type="service" id="app.google_address_geocoder"/>
+            <argument type="service" id="app.address_info_provider"/>
+            <argument type="service" id="app.doctrine_dry_runner"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <tag name="console.command" command="address:reverse-geocode"/>
+        </service>
         <service id="app.level_1_region_upserter" class="App\Service\Address\Level1RegionUpserter" lazy="true">
-            <argument type="service" id="app.repository.level_1_region"/>
+            <argument type="service" id="app.level_1_region_repository"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
         <service id="app.level_1_region_provider" class="App\Service\Address\Level1RegionProvider" lazy="true">
             <argument type="service" id="app.google_address_geocoder"/>
             <argument type="service" id="app.google_timezone_geocoder"/>
             <argument type="service" id="app.level_1_region_upserter"/>
-            <argument type="service" id="app.repository.level_1_region"/>
+            <argument type="service" id="app.level_1_region_repository"/>
             <argument type="service" id="translator"/>
         </service>
         <service id="app.address_info_provider" class="App\Service\Address\AddressInfoProvider" lazy="true"/>

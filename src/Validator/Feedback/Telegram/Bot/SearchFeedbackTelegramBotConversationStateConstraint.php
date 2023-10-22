@@ -17,6 +17,6 @@ class SearchFeedbackTelegramBotConversationStateConstraint extends Constraint
 
     public function validatedBy(): string
     {
-        return 'app.validator.feedback_search';
+        return 'app.feedback_search_validator';
     }
 }

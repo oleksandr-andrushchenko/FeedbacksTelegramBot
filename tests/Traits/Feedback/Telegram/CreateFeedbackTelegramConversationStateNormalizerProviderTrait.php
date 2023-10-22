@@ -10,6 +10,6 @@ trait CreateFeedbackTelegramConversationStateNormalizerProviderTrait
 {
     public function getCreateFeedbackTelegramConversationStateNormalizer(): CreateFeedbackTelegramBotConversationStateNormalizer
     {
-        return static::getContainer()->get('app.normalizer.telegram_bot_conversation_state_create_feedback');
+        return static::getContainer()->get('app.telegram_bot_conversation_state_create_feedback_normalizer');
     }
 }

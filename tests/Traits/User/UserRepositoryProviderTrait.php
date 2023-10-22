@@ -10,6 +10,6 @@ trait UserRepositoryProviderTrait
 {
     public function getUserRepository(): UserRepository
     {
-        return static::getContainer()->get('app.repository.user');
+        return static::getContainer()->get('app.user_repository');
     }
 }

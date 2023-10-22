@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="app.supported_locales" type="collection">
+            <parameter>en</parameter>
+            <parameter>uk</parameter>
+            <parameter>ru</parameter>
+        </parameter>
+        <parameter key="app.locales" type="collection">
+            <parameter key="en" type="collection">
+                <parameter key="code">en</parameter>
+                <parameter key="flag">us</parameter>
+            </parameter>
+            <parameter key="uk" type="collection">
+                <parameter key="code">uk</parameter>
+                <parameter key="flag">ua</parameter>
+            </parameter>
+            <parameter key="ru" type="collection">
+                <parameter key="code">ru</parameter>
+            </parameter>
+        </parameter>
+    </parameters>
+
+    <services>
+        <service id="app.intl_currencies_update_command" class="App\Command\Intl\CurrenciesUpdateCommand" lazy="true">
+            <argument type="service" id="app.intl_telegram_bot_currencies_provider"/>
+            <argument type="service" id="app.intl_currency_normalizer"/>
+            <argument>%app.currencies_file%</argument>
+            <tag name="console.command" command="intl:currencies:update"/>
+        </service>
+        <service id="app.intl_countries_update_command" class="App\Command\Intl\CountriesUpdateCommand" lazy="true">
+            <argument type="service" id="app.intl_locale_tools_countries_provider"/>
+            <argument type="service" id="app.intl_country_normalizer"/>
+            <argument>%app.countries_file%</argument>
+            <argument type="service" id="app.intl_i18n_iso_country_translations_provider"/>
+            <argument>%app.country_translation_file%</argument>
+            <argument>%app.supported_locales%</argument>
+            <tag name="console.command" command="intl:countries:update"/>
+        </service>
+        <service id="app.intl_locales_update_command" class="App\Command\Intl\LocalesUpdateCommand" lazy="true">
+            <argument type="service" id="app.intl_i18n_iso_locale_translations_provider"/>
+            <argument>%app.locale_translation_file%</argument>
+            <argument>%app.supported_locales%</argument>
+            <tag name="console.command" command="intl:locales:update"/>
+        </service>
+        <service id="app.intl_currency_normalizer" class="App\Serializer\Intl\CurrencyNormalizer">
+            <tag name="serializer.normalizer" priority="-960"/>
+        </service>
+        <service id="app.intl_country_normalizer" class="App\Serializer\Intl\CountryNormalizer">
+            <tag name="serializer.normalizer" priority="-959"/>
+        </service>
+        <service id="app.intl_telegram_bot_currencies_provider" class="App\Service\Intl\TelegramBotCurrenciesProvider"
+                 lazy="true"/>
+        <service id="app.intl_locale_tools_countries_provider" class="App\Service\Intl\LocaleToolsCountriesProvider"
+                 lazy="true">
+            <argument>%app.data_dir%</argument>
+        </service>
+        <service id="app.intl_i18n_iso_country_translations_provider"
+                 class="App\Service\Intl\I18nIsoCountryTranslationsProvider" lazy="true">
+            <argument>%app.data_dir%</argument>
+        </service>
+        <service id="app.intl_i18n_iso_locale_translations_provider"
+                 class="App\Service\Intl\I18nIsoLocaleTranslationsProvider" lazy="true">
+            <argument>%app.data_dir%</argument>
+            <argument type="service" id="app.string_mb_uc_firster"/>
+        </service>
+        <service id="app.intl_currency_provider" class="App\Service\Intl\CurrencyProvider" lazy="true">
+            <argument>%app.currencies_file%</argument>
+            <argument type="service" id="app.intl_currency_normalizer"/>
+            <argument type="service" id="translator"/>
+            <argument type="service" id="app.intl_country_provider"/>
+        </service>
+        <service id="app.intl_country_provider" class="App\Service\Intl\CountryProvider" lazy="true">
+            <argument type="service" id="translator"/>
+            <argument>%app.countries_file%</argument>
+            <argument type="service" id="app.intl_country_normalizer"/>
+        </service>
+        <service id="app.intl_locale_provider" class="App\Service\Intl\LocaleProvider" lazy="true">
+            <argument type="service" id="translator"/>
+            <argument>%app.locales%</argument>
+            <argument type="service" id="app.intl_country_provider"/>
+            <argument>%app.supported_locales%</argument>
+        </service>
+        <service id="app.intl_time_provider" class="App\Service\Intl\TimeProvider" lazy="true">
+            <argument type="service" id="app.translator"/>
+        </service>
+    </services>
+</container>

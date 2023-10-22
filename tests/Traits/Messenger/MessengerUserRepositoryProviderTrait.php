@@ -10,6 +10,6 @@ trait MessengerUserRepositoryProviderTrait
 {
     public function getMessengerUserRepository(): MessengerUserRepository
     {
-        return static::getContainer()->get('app.repository.messenger_user');
+        return static::getContainer()->get('app.messenger_user_repository');
     }
 }

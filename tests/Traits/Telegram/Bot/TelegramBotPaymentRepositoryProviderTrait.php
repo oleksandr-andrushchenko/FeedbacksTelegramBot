@@ -10,6 +10,6 @@ trait TelegramBotPaymentRepositoryProviderTrait
 {
     public function getTelegramBotPaymentRepository(): TelegramBotPaymentRepository
     {
-        return static::getContainer()->get('app.repository.telegram_bot_payment');
+        return static::getContainer()->get('app.telegram_bot_payment_repository');
     }
 }

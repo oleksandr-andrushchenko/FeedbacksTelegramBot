@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Command;
+namespace App\Service\Feedback\Command;
 
 use App\Entity\CommandLimit;
 use App\Entity\CommandOptions;

@@ -10,6 +10,6 @@ trait FeedbackRepositoryProviderTrait
 {
     public function getFeedbackRepository(): FeedbackRepository
     {
-        return static::getContainer()->get('app.repository.feedback');
+        return static::getContainer()->get('app.feedback_repository');
     }
 }

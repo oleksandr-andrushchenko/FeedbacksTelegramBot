@@ -7,7 +7,7 @@ namespace App\Service\Feedback\Statistic;
 use App\Entity\CommandOptions;
 use App\Entity\User\User;
 use App\Repository\Feedback\FeedbackRepository;
-use App\Service\Command\CommandStatisticProviderInterface;
+use App\Service\Feedback\Command\CommandStatisticProviderInterface;
 use DateTimeImmutable;
 use Generator;
 

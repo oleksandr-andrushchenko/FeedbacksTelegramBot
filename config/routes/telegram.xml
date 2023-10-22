@@ -4,9 +4,9 @@
         xsi:schemaLocation="http://symfony.com/schema/routing
         https://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="page" path="/{page}" controller="app.controller.telegram::page" methods="GET">
+    <route id="page" path="/{page}" controller="app.telegram_controller::page" methods="GET">
         <default key="page">index</default>
         <requirement key="page">index|privacy_policy|terms_of_use|contacts</requirement>
     </route>
-    <route id="webhook" path="/webhook" controller="app.controller.telegram::webhook" methods="POST"/>
+    <route id="webhook" path="/webhook" controller="app.telegram_controller::webhook" methods="POST"/>
 </routes>

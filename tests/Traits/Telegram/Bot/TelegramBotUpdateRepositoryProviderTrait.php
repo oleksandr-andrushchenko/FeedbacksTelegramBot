@@ -10,6 +10,6 @@ trait TelegramBotUpdateRepositoryProviderTrait
 {
     public function getTelegramBotUpdateRepository(): TelegramBotUpdateRepository
     {
-        return static::getContainer()->get('app.repository.telegram_bot_update');
+        return static::getContainer()->get('app.telegram_bot_update_repository');
     }
 }

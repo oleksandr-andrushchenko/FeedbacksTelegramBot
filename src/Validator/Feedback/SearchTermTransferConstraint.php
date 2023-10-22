@@ -28,6 +28,6 @@ class SearchTermTransferConstraint extends Constraint
 
     public function validatedBy(): string
     {
-        return 'app.validator.feedback_search_term';
+        return 'app.feedback_search_term_validator';
     }
 }

@@ -68,5 +68,3 @@
 * Re-factor: remove dots from questions, searchTerms: duplicates validation
 * Add confirm extra details step for create command ??
 * Make validators configurable via settings (options)
-* Rename service names, e.g. app.repository.telegram_bot -> app.telegram_bot_repository; move repos, serializers etc. to appropriate config file
-* Rename service config files

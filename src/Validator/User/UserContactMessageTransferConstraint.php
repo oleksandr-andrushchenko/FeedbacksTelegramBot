@@ -23,6 +23,6 @@ class UserContactMessageTransferConstraint extends Constraint
 
     public function validatedBy(): string
     {
-        return 'app.validator.user_contact_message';
+        return 'app.user_contact_message_validator';
     }
 }

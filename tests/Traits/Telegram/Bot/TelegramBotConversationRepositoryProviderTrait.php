@@ -10,6 +10,6 @@ trait TelegramBotConversationRepositoryProviderTrait
 {
     public function getTelegramBotConversationRepository(): TelegramBotConversationRepository
     {
-        return static::getContainer()->get('app.repository.telegram_bot_conversation');
+        return static::getContainer()->get('app.telegram_bot_conversation_repository');
     }
 }

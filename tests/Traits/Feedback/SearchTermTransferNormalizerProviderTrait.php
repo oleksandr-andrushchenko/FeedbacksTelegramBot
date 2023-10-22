@@ -10,6 +10,6 @@ trait SearchTermTransferNormalizerProviderTrait
 {
     public function getSearchTermTransferNormalizer(): SearchTermTransferNormalizer
     {
-        return static::getContainer()->get('app.normalizer.feedback_search_term_transfer');
+        return static::getContainer()->get('app.feedback_search_term_transfer_normalizer');
     }
 }

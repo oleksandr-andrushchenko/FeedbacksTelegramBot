@@ -4,5 +4,5 @@
         xsi:schemaLocation="http://symfony.com/schema/routing
         https://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="favicon" path="favicon.ico" controller="app.controller.index::favicon" methods="GET,HEAD,OPTIONS"/>
+    <route id="favicon" path="favicon.ico" controller="app.index_controller::favicon" methods="GET,HEAD,OPTIONS"/>
 </routes>
