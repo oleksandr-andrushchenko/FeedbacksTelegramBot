@@ -8,6 +8,7 @@ help:
 query:
   action: Select an action please.
   already_added: Already added
+  optional: Optional
 
 keyboard:
   yes: Yes

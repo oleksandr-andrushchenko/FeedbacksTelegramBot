@@ -75,33 +75,35 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
 
     /**
      * @param SearchTermTransfer[]|null $searchTerms
+     * @param Rating|null $rating
      * @param string $command
      * @param array $shouldSeeReplies
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
-     * @param string|null $shouldSeeFirstSearchTermText
+     * @param array|null $shouldSeeSearchTerms
      * @return void
      * @dataProvider searchTermStepDataProvider
      */
     public function testSearchTermStep(
         ?array $searchTerms,
+        ?Rating $rating,
         string $command,
         array $shouldSeeReplies,
         array $shouldSeeButtons,
         ?int $shouldSeeStep,
-        ?string $shouldSeeFirstSearchTermText
+        ?array $shouldSeeSearchTerms
     ): void
     {
         $this->test(
             $searchTerms,
-            null,
+            $rating,
             null,
             CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
             $command,
             $shouldSeeReplies,
             $shouldSeeButtons,
             $shouldSeeStep,
-            $shouldSeeFirstSearchTermText
+            $shouldSeeSearchTerms
         );
     }
 
@@ -118,6 +120,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         foreach ($validators as [$key, $command, $reply]) {
             yield 'type ' . $key . ' & empty search terms' => [
                 'searchTerms' => null,
+                'rating' => null,
                 'command' => $command,
                 'shouldSeeReplies' => [
                     $reply,
@@ -128,13 +131,14 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                     $this->cancelButton(),
                 ],
                 'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
-                'shouldSeeFirstSearchTermText' => null,
+                'shouldSeeSearchTerms' => [],
             ];
 
             yield 'type ' . $key . ' & non-empty search terms' => [
                 'searchTerms' => [
                     $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::person_name),
                 ],
+                'rating' => null,
                 'command' => $command,
                 'shouldSeeReplies' => [
                     $reply,
@@ -147,83 +151,110 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                     $this->cancelButton(),
                 ],
                 'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
-                'shouldSeeFirstSearchTermText' => null,
+                'shouldSeeSearchTerms' => [
+                    $searchTerm,
+                ],
             ];
         }
 
         yield 'type & empty search term & unknown type' => [
             'searchTerms' => null,
-            'command' => $text = 'any_search_term',
+            'rating' => null,
+            'command' => $input = 'any_search_term',
             'shouldSeeReplies' => [
                 'query.search_term_type',
             ],
             'shouldSeeButtons' => [
                 $this->searchTermTypeButton(SearchTermType::unknown),
-                $this->removeButton($text),
+                $this->removeButton($input),
                 $this->helpButton(),
                 $this->cancelButton(),
             ],
             'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_TYPE_QUERIED,
-            'shouldSeeFirstSearchTermText' => null,
+            'shouldSeeSearchTerms' => [
+                new SearchTermTransfer($input),
+            ],
         ];
 
         yield 'type & empty search term & known type' => [
             'searchTerms' => null,
-            'command' => Fixtures::getMessengerUserProfileUrl(new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')),
+            'rating' => null,
+            'command' => $input = Fixtures::getMessengerUserProfileUrl(
+                $user = new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')
+            ),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
             'shouldSeeButtons' => [
-                $this->prevButton(),
+                $this->removeButton($user->getUsername()),
                 $this->nextButton(),
                 $this->helpButton(),
                 $this->cancelButton(),
             ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-            'shouldSeeFirstSearchTermText' => null,
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+            'shouldSeeSearchTerms' => [
+                new SearchTermTransfer($input),
+            ],
         ];
 
         yield 'type & single search term & known type' => [
             'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
+                $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
             ],
-            'command' => $searchTermText = Fixtures::getMessengerUserProfileUrl(new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')),
+            'rating' => null,
+            'command' => $input = Fixtures::getMessengerUserProfileUrl(
+                $user = new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')
+            ),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
             'shouldSeeButtons' => [
-                $this->prevButton(),
+                $this->removeButton($searchTerm1->getText()),
+                $this->removeButton($user->getUsername()),
                 $this->nextButton(),
                 $this->helpButton(),
                 $this->cancelButton(),
             ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-            'shouldSeeFirstSearchTermText' => $searchTermText,
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+                new SearchTermTransfer($input),
+            ],
         ];
 
         yield 'type & multiple search terms & known type' => [
             'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
-                new SearchTermTransfer('any_search_term2', SearchTermType::place_name),
+                $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
+                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::place_name),
             ],
-            'command' => $searchTermText = Fixtures::getMessengerUserProfileUrl(new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')),
+            'rating' => null,
+            'command' => $input = Fixtures::getMessengerUserProfileUrl(
+                $user = new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')
+            ),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
             'shouldSeeButtons' => [
-                $this->prevButton(),
+                $this->removeButton($searchTerm1->getText()),
+                $this->removeButton($searchTerm2->getText()),
+                $this->removeButton($user->getUsername()),
                 $this->nextButton(),
                 $this->helpButton(),
                 $this->cancelButton(),
             ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-            'shouldSeeFirstSearchTermText' => $searchTermText,
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+                $searchTerm2,
+                new SearchTermTransfer($input),
+            ],
         ];
 
         yield 'remove & single search term' => [
             'searchTerms' => [
                 $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
             ],
+            'rating' => null,
             'command' => $this->removeButton($searchTerm->getText()),
             'shouldSeeReplies' => [
                 'query.search_term',
@@ -233,7 +264,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $this->cancelButton(),
             ],
             'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
-            'shouldSeeFirstSearchTermText' => null,
+            'shouldSeeSearchTerms' => [],
         ];
 
         yield 'remove & multiple search terms' => [
@@ -241,6 +272,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
                 $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::place_name),
             ],
+            'rating' => null,
             'command' => $this->removeButton($searchTerm1->getText()),
             'shouldSeeReplies' => [
                 'query.search_term',
@@ -252,49 +284,68 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $this->cancelButton(),
             ],
             'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
-            'shouldSeeFirstSearchTermText' => null,
+            'shouldSeeSearchTerms' => [
+                $searchTerm2,
+            ],
         ];
 
-        yield 'next & single search term' => [
+        yield 'next & single search term & empty rating' => [
             'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::person_name),
+                $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::person_name),
             ],
+            'rating' => null,
             'command' => $this->nextButton(),
             'shouldSeeReplies' => [
-                'query.extra_search_term',
+                'query.rating',
             ],
             'shouldSeeButtons' => [
-                $this->prevButton(),
-                $this->nextButton(),
-                $this->helpButton(),
-                $this->cancelButton(),
+                ...array_map(
+                    fn (Rating $rating): string => $this->ratingButton($rating),
+                    array_values(array_filter(iterator_to_array(Fixtures::ratings())))
+                ),
+                ...[
+                    $this->prevButton(),
+                    $this->helpButton(),
+                    $this->cancelButton(),
+                ],
             ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-            'shouldSeeFirstSearchTermText' => null,
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_RATING_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm,
+            ],
         ];
 
-        yield 'next & multiple single search terms' => [
+        yield 'next & multiple single search terms & empty rating' => [
             'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::person_name),
+                $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::person_name),
                 $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
             ],
+            'rating' => null,
             'command' => $this->nextButton(),
             'shouldSeeReplies' => [
-                'query.extra_search_term',
+                'query.rating',
             ],
             'shouldSeeButtons' => [
-                $this->removeButton($searchTerm2->getText()),
-                $this->prevButton(),
-                $this->nextButton(),
-                $this->helpButton(),
-                $this->cancelButton(),
+                ...array_map(
+                    fn (Rating $rating): string => $this->ratingButton($rating),
+                    array_values(array_filter(iterator_to_array(Fixtures::ratings())))
+                ),
+                ...[
+                    $this->prevButton(),
+                    $this->helpButton(),
+                    $this->cancelButton(),
+                ],
             ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-            'shouldSeeFirstSearchTermText' => null,
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_RATING_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+                $searchTerm2,
+            ],
         ];
 
         yield 'help & empty search terms' => [
             'searchTerms' => null,
+            'rating' => null,
             'command' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
@@ -307,18 +358,19 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $this->cancelButton(),
             ],
             'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
-            'shouldSeeFirstSearchTermText' => null,
+            'shouldSeeSearchTerms' => [],
         ];
 
         yield 'help & non-empty search terms' => [
             'searchTerms' => [
                 $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::person_name),
             ],
+            'rating' => null,
             'command' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
-                'query.search_term',
-                'search_term',
+                'query.extra_search_term',
+                'extra_search_term',
                 'help.use_input',
             ],
             'shouldSeeButtons' => [
@@ -328,13 +380,16 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $this->cancelButton(),
             ],
             'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
-            'shouldSeeFirstSearchTermText' => null,
+            'shouldSeeSearchTerms' => [
+                $searchTerm,
+            ],
         ];
 
         yield 'cancel' => [
             'searchTerms' => [
                 new SearchTermTransfer('15613145672', SearchTermType::phone_number),
             ],
+            'rating' => null,
             'command' => $this->cancelButton(),
             'shouldSeeReplies' => [
                 'reply.canceled',
@@ -346,7 +401,303 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $this->commandButton('lookup'),
             ],
             'shouldSeeStep' => null,
-            'shouldSeeFirstSearchTermText' => null,
+            'shouldSeeSearchTerms' => null,
+        ];
+
+        foreach ($validators as [$key, $command, $reply]) {
+            yield 'type ' . $key . ' & empty extra search terms' => [
+                'searchTerms' => [
+                    $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::person_name),
+                ],
+                'rating' => null,
+                'command' => $command,
+                'shouldSeeReplies' => [
+                    $reply,
+                    'query.extra_search_term',
+                ],
+                'shouldSeeButtons' => [
+                    $this->removeButton($searchTerm->getText()),
+                    $this->nextButton(),
+                    $this->helpButton(),
+                    $this->cancelButton(),
+                ],
+                'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+                'shouldSeeSearchTerms' => [
+                    $searchTerm,
+                ],
+            ];
+
+            yield 'type ' . $key . ' & non-empty extra search terms' => [
+                'searchTerms' => [
+                    $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::organization_name),
+                    $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::person_name),
+                ],
+                'rating' => null,
+                'command' => $command,
+                'shouldSeeReplies' => [
+                    $reply,
+                    'query.extra_search_term',
+                ],
+                'shouldSeeButtons' => [
+                    $this->removeButton($searchTerm1->getText()),
+                    $this->removeButton($searchTerm2->getText()),
+                    $this->nextButton(),
+                    $this->helpButton(),
+                    $this->cancelButton(),
+                ],
+                'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+                'shouldSeeSearchTerms' => [
+                    $searchTerm1,
+                    $searchTerm2,
+                ],
+            ];
+        }
+
+        yield 'type & empty extra search terms & unknown type' => [
+            'searchTerms' => [
+                $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
+            ],
+            'rating' => null,
+            'command' => $input = 'any_search_term',
+            'shouldSeeReplies' => [
+                'query.search_term_type',
+            ],
+            'shouldSeeButtons' => [
+                $this->searchTermTypeButton(SearchTermType::unknown),
+                $this->removeButton($input),
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_TYPE_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm,
+                new SearchTermTransfer($input),
+            ],
+        ];
+
+        yield 'type & empty extra search terms & known type' => [
+            'searchTerms' => [
+                $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
+            ],
+            'rating' => null,
+            'command' => $input = Fixtures::getMessengerUserProfileUrl(
+                $user = new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')
+            ),
+            'shouldSeeReplies' => [
+                'query.extra_search_term',
+            ],
+            'shouldSeeButtons' => [
+                $this->removeButton($searchTerm->getText()),
+                $this->removeButton($user->getUsername()),
+                $this->nextButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm,
+                new SearchTermTransfer($input),
+            ],
+        ];
+
+        yield 'type & single extra search terms & known type' => [
+            'searchTerms' => [
+                $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
+                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::instagram_username),
+            ],
+            'rating' => null,
+            'command' => $input = Fixtures::getMessengerUserProfileUrl(
+                $user = new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')
+            ),
+            'shouldSeeReplies' => [
+                'query.extra_search_term',
+            ],
+            'shouldSeeButtons' => [
+                $this->removeButton($searchTerm1->getText()),
+                $this->removeButton($searchTerm2->getText()),
+                $this->removeButton($user->getUsername()),
+                $this->nextButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+                $searchTerm2,
+                new SearchTermTransfer($input),
+            ],
+        ];
+
+        yield 'remove & single extra search term' => [
+            'searchTerms' => [
+                $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
+                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
+            ],
+            'rating' => null,
+            'command' => $this->removeButton($searchTerm2->getText()),
+            'shouldSeeReplies' => [
+                'query.extra_search_term',
+            ],
+            'shouldSeeButtons' => [
+                $this->removeButton($searchTerm1->getText()),
+                $this->nextButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+            ],
+        ];
+
+        yield 'remove & multiple extra search terms' => [
+            'searchTerms' => [
+                $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
+                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::place_name),
+                $searchTerm3 = new SearchTermTransfer('any_search_term3', SearchTermType::organization_name),
+            ],
+            'rating' => null,
+            'command' => $this->removeButton($searchTerm2->getText()),
+            'shouldSeeReplies' => [
+                'query.extra_search_term',
+            ],
+            'shouldSeeButtons' => [
+                $this->removeButton($searchTerm1->getText()),
+                $this->removeButton($searchTerm3->getText()),
+                $this->nextButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+                $searchTerm3,
+            ],
+        ];
+
+        yield 'next & empty extra search terms & empty rating' => [
+            'searchTerms' => [
+                $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::person_name),
+            ],
+            'rating' => null,
+            'command' => $this->nextButton(),
+            'shouldSeeReplies' => [
+                'query.rating',
+            ],
+            'shouldSeeButtons' => [
+                ...array_map(
+                    fn (Rating $rating): string => $this->ratingButton($rating),
+                    array_values(array_filter(iterator_to_array(Fixtures::ratings())))
+                ),
+                ...[
+                    $this->prevButton(),
+                    $this->helpButton(),
+                    $this->cancelButton(),
+                ],
+            ],
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_RATING_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm,
+            ],
+        ];
+
+        yield 'next & empty extra search terms & non-empty rating' => [
+            'searchTerms' => [
+                $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::person_name),
+            ],
+            'rating' => $rating = Rating::random(),
+            'command' => $this->nextButton(),
+            'shouldSeeReplies' => [
+                'query.rating',
+            ],
+            'shouldSeeButtons' => [
+                ...array_map(
+                    fn (Rating $r): string => $rating === $r ? $this->selectedText($this->ratingButton($r)) : $this->ratingButton($r),
+                    array_values(array_filter(iterator_to_array(Fixtures::ratings())))
+                ),
+                ...[
+                    $this->prevButton(),
+                    $this->nextButton(),
+                    $this->helpButton(),
+                    $this->cancelButton(),
+                ],
+            ],
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_RATING_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm,
+            ],
+        ];
+
+        yield 'help & empty extra search terms' => [
+            'searchTerms' => [
+                $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::person_name),
+            ],
+            'rating' => null,
+            'command' => $this->helpButton(),
+            'shouldSeeReplies' => [
+                'title',
+                'query.extra_search_term',
+                'extra_search_term',
+                'help.use_input',
+            ],
+            'shouldSeeButtons' => [
+                $this->removeButton($searchTerm->getText()),
+                $this->nextButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm,
+            ],
+        ];
+
+        yield 'help & non-empty extra search terms' => [
+            'searchTerms' => [
+                $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::organization_name),
+                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::person_name),
+            ],
+            'rating' => null,
+            'command' => $this->helpButton(),
+            'shouldSeeReplies' => [
+                'title',
+                'query.extra_search_term',
+                'extra_search_term',
+                'help.use_input',
+            ],
+            'shouldSeeButtons' => [
+                $this->removeButton($searchTerm1->getText()),
+                $this->removeButton($searchTerm2->getText()),
+                $this->nextButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+                $searchTerm2,
+            ],
+        ];
+
+        yield 'cancel & empty extra search terms' => [
+            'searchTerms' => [
+                $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::organization_name),
+            ],
+            'rating' => null,
+            'command' => $this->cancelButton(),
+            'shouldSeeReplies' => [
+                'reply.canceled',
+                'query.action',
+            ],
+            'shouldSeeButtons' => [
+                $this->commandButton('create'),
+                $this->commandButton('search'),
+                $this->commandButton('lookup'),
+            ],
+            'shouldSeeStep' => null,
+            'shouldSeeSearchTerms' => [
+                $searchTerm,
+            ],
         ];
     }
 
@@ -356,6 +707,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
      * @param array $shouldSeeReplies
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
+     * @param SearchTermTransfer[]|null $shouldSeeSearchTerms
      * @return void
      * @dataProvider searchTermTypeStepDataProvider
      */
@@ -364,7 +716,8 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         string $command,
         array $shouldSeeReplies,
         array $shouldSeeButtons,
-        ?int $shouldSeeStep
+        ?int $shouldSeeStep,
+        ?array $shouldSeeSearchTerms = null
     ): void
     {
         $this->test(
@@ -376,13 +729,13 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             $shouldSeeReplies,
             $shouldSeeButtons,
             $shouldSeeStep,
-            null
+            $shouldSeeSearchTerms
         );
     }
 
     public function searchTermTypeStepDataProvider(): Generator
     {
-        yield 'type unknown & single search term' => [
+        yield 'type wrong & single search term' => [
             'searchTerms' => [
                 $searchTerm = (new SearchTermTransfer('any_search_term'))
                     ->setTypes([
@@ -406,6 +759,9 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 ],
             ],
             'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_TYPE_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm,
+            ],
         ];
 
         yield 'type not in the list & single search term' => [
@@ -432,6 +788,9 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 ],
             ],
             'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_TYPE_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm,
+            ],
         ];
 
         yield 'select type & single search term' => [
@@ -446,35 +805,41 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 'query.extra_search_term',
             ],
             'shouldSeeButtons' => [
-                $this->prevButton(),
+                $this->removeButton($searchTerm->getText()),
                 $this->nextButton(),
                 $this->helpButton(),
                 $this->cancelButton(),
             ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm,
+            ],
         ];
 
         yield 'select type & multiple search terms' => [
             'searchTerms' => [
-                $searchTerm1 = (new SearchTermTransfer('any_search_term'))
+                $searchTerm1 = new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
+                $searchTerm2 = (new SearchTermTransfer('any_search_term'))
                     ->setTypes([
                         SearchTermType::instagram_username,
                     ]),
-                $searchTerm2 = (new SearchTermTransfer('any_search_term2'))
-                    ->setType(SearchTermType::telegram_username),
             ],
-            'command' => $this->searchTermTypeButton($searchTerm1->getTypes()[0]),
+            'command' => $this->searchTermTypeButton($searchTerm2->getTypes()[0]),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
             'shouldSeeButtons' => [
+                $this->removeButton($searchTerm1->getText()),
                 $this->removeButton($searchTerm2->getText()),
-                $this->prevButton(),
                 $this->nextButton(),
                 $this->helpButton(),
                 $this->cancelButton(),
             ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+                $searchTerm2,
+            ],
         ];
 
         yield 'remove & single search term' => [
@@ -493,30 +858,34 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $this->cancelButton(),
             ],
             'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+            'shouldSeeSearchTerms' => [],
         ];
 
         yield 'remove & multiple search terms' => [
             'searchTerms' => [
-                $searchTerm1 = (new SearchTermTransfer('any_search_term'))
+                $searchTerm1 = new SearchTermTransfer('any_search_term1', SearchTermType::tiktok_username),
+                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
+                $searchTerm3 = (new SearchTermTransfer('any_search_term3'))
                     ->setTypes([
                         SearchTermType::instagram_username,
                     ]),
-                $searchTerm2 = (new SearchTermTransfer('any_search_term2'))
-                    ->setType(SearchTermType::telegram_username),
-                (new SearchTermTransfer('any_search_term3'))
-                    ->setType(SearchTermType::tiktok_username),
             ],
-            'command' => $this->removeButton($searchTerm1->getText()),
+            'command' => $this->removeButton($searchTerm3->getText()),
             'shouldSeeReplies' => [
                 'query.search_term',
             ],
             'shouldSeeButtons' => [
+                $this->removeButton($searchTerm1->getText()),
                 $this->removeButton($searchTerm2->getText()),
                 $this->nextButton(),
                 $this->helpButton(),
                 $this->cancelButton(),
             ],
             'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+                $searchTerm2,
+            ],
         ];
 
         yield 'help & single search term' => [
@@ -545,550 +914,14 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 ],
             ],
             'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_TYPE_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm,
+            ],
         ];
 
         yield 'help & multiple search terms' => [
             'searchTerms' => [
-                $searchTerm1 = (new SearchTermTransfer('any_search_term'))
-                    ->setTypes([
-                        SearchTermType::instagram_username,
-                        SearchTermType::telegram_username,
-                        SearchTermType::organization_name,
-                    ]),
-                (new SearchTermTransfer('any_search_term2'))
-                    ->setType(SearchTermType::tiktok_username),
-            ],
-            'command' => $this->helpButton(),
-            'shouldSeeReplies' => [
-                'title',
-                'query.search_term_type',
-                'search_term_type',
-                'help.use_keyboard',
-            ],
-            'shouldSeeButtons' => [
-                ...array_map(fn (SearchTermType $type): string => $this->searchTermTypeButton($type), $searchTerm1->getTypes()),
-                ...[
-                    $this->searchTermTypeButton(SearchTermType::unknown),
-                    $this->removeButton($searchTerm1->getText()),
-                    $this->helpButton(),
-                    $this->cancelButton(),
-                ],
-            ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_TYPE_QUERIED,
-        ];
-
-        yield 'cancel' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term'),
-            ],
-            'command' => $this->cancelButton(),
-            'shouldSeeReplies' => [
-                'reply.canceled',
-                'query.action',
-            ],
-            'shouldSeeButtons' => [
-                $this->commandButton('create'),
-                $this->commandButton('search'),
-                $this->commandButton('lookup'),
-            ],
-            'shouldSeeStep' => null,
-        ];
-    }
-
-
-    /**
-     * @param SearchTermTransfer[]|null $searchTerms
-     * @param Rating|null $rating
-     * @param string $command
-     * @param array $shouldSeeReplies
-     * @param array $shouldSeeButtons
-     * @param int|null $shouldSeeStep
-     * @return void
-     * @dataProvider extraSearchTermStepDataProvider
-     */
-    public function testExtraSearchTermStep(
-        ?array $searchTerms,
-        ?Rating $rating,
-        string $command,
-        array $shouldSeeReplies,
-        array $shouldSeeButtons,
-        ?int $shouldSeeStep
-    ): void
-    {
-        $this->test(
-            $searchTerms,
-            $rating,
-            null,
-            CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-            $command,
-            $shouldSeeReplies,
-            $shouldSeeButtons,
-            $shouldSeeStep,
-            null
-        );
-    }
-
-    public function extraSearchTermStepDataProvider(): Generator
-    {
-        $validators = [
-            ['empty', '', 'text.not_blank'],
-            ['multiple lines', "first_line\nsecond_line", 'text.single_line'],
-            ['forbidden chars', 'qweqwe, sdf', 'text.allowed_chars'],
-            ['too short', 'q', 'text.min_length'],
-            ['too long', str_repeat('q', 256 + 1), 'text.max_length'],
-        ];
-
-        foreach ($validators as [$key, $command, $reply]) {
-            yield 'type ' . $key . ' & empty extra search terms' => [
-                'searchTerms' => [
-                    new SearchTermTransfer('any_search_term', SearchTermType::person_name),
-                ],
-                'rating' => null,
-                'command' => $command,
-                'shouldSeeReplies' => [
-                    $reply,
-                    'query.extra_search_term',
-                ],
-                'shouldSeeButtons' => [
-                    $this->prevButton(),
-                    $this->nextButton(),
-                    $this->helpButton(),
-                    $this->cancelButton(),
-                ],
-                'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-            ];
-
-            yield 'type ' . $key . ' & non-empty extra search terms' => [
-                'searchTerms' => [
-                    new SearchTermTransfer('any_search_term', SearchTermType::organization_name),
-                    $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::person_name),
-                ],
-                'rating' => null,
-                'command' => $command,
-                'shouldSeeReplies' => [
-                    $reply,
-                    'query.extra_search_term',
-                ],
-                'shouldSeeButtons' => [
-                    $this->removeButton($searchTerm2->getText()),
-                    $this->prevButton(),
-                    $this->nextButton(),
-                    $this->helpButton(),
-                    $this->cancelButton(),
-                ],
-                'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-            ];
-        }
-
-        yield 'type & empty extra search terms & unknown type' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
-            ],
-            'rating' => null,
-            'command' => $text = 'any_search_term',
-            'shouldSeeReplies' => [
-                'query.search_term_type',
-            ],
-            'shouldSeeButtons' => [
-                $this->searchTermTypeButton(SearchTermType::unknown),
-                $this->removeButton($text),
-                $this->helpButton(),
-                $this->cancelButton(),
-            ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_TYPE_QUERIED,
-        ];
-
-        yield 'type & empty extra search terms & known type' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
-            ],
-            'rating' => null,
-            'command' => Fixtures::getMessengerUserProfileUrl($user = new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')),
-            'shouldSeeReplies' => [
-                'query.extra_search_term',
-            ],
-            'shouldSeeButtons' => [
-                $this->removeButton($user->getUsername()),
-                $this->prevButton(),
-                $this->nextButton(),
-                $this->helpButton(),
-                $this->cancelButton(),
-            ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-        ];
-
-        yield 'type & single extra search terms & known type' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
-                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::instagram_username),
-            ],
-            'rating' => null,
-            'command' => Fixtures::getMessengerUserProfileUrl($user = new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')),
-            'shouldSeeReplies' => [
-                'query.extra_search_term',
-            ],
-            'shouldSeeButtons' => [
-                $this->removeButton($searchTerm2->getText()),
-                $this->removeButton($user->getUsername()),
-                $this->prevButton(),
-                $this->nextButton(),
-                $this->helpButton(),
-                $this->cancelButton(),
-            ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-        ];
-
-        yield 'prev' => [
-            'searchTerms' => [
-                $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
-            ],
-            'rating' => null,
-            'command' => $this->prevButton(),
-            'shouldSeeReplies' => [
-                'query.search_term',
-            ],
-            'shouldSeeButtons' => [
-                $this->removeButton($searchTerm->getText()),
-                $this->nextButton(),
-                $this->helpButton(),
-                $this->cancelButton(),
-            ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
-        ];
-
-        yield 'remove & single extra search term' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
-                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
-            ],
-            'rating' => null,
-            'command' => $this->removeButton($searchTerm2->getText()),
-            'shouldSeeReplies' => [
-                'query.extra_search_term',
-            ],
-            'shouldSeeButtons' => [
-                $this->prevButton(),
-                $this->nextButton(),
-                $this->helpButton(),
-                $this->cancelButton(),
-            ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-        ];
-
-        yield 'remove & multiple extra search terms' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
-                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::place_name),
-                $searchTerm3 = new SearchTermTransfer('any_search_term3', SearchTermType::organization_name),
-            ],
-            'rating' => null,
-            'command' => $this->removeButton($searchTerm2->getText()),
-            'shouldSeeReplies' => [
-                'query.extra_search_term',
-            ],
-            'shouldSeeButtons' => [
-                $this->removeButton($searchTerm3->getText()),
-                $this->prevButton(),
-                $this->nextButton(),
-                $this->helpButton(),
-                $this->cancelButton(),
-            ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-        ];
-
-        yield 'next & empty rating' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::person_name),
-            ],
-            'rating' => null,
-            'command' => $this->nextButton(),
-            'shouldSeeReplies' => [
-                'query.rating',
-            ],
-            'shouldSeeButtons' => [
-                ...array_map(
-                    fn (Rating $rating): string => $this->ratingButton($rating),
-                    array_values(array_filter(iterator_to_array(Fixtures::ratings())))
-                ),
-                ...[
-                    $this->prevButton(),
-                    $this->helpButton(),
-                    $this->cancelButton(),
-                ],
-            ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_RATING_QUERIED,
-        ];
-
-        yield 'next & non-empty rating' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::person_name),
-            ],
-            'rating' => $rating = Rating::random(),
-            'command' => $this->nextButton(),
-            'shouldSeeReplies' => [
-                'query.rating',
-            ],
-            'shouldSeeButtons' => [
-                ...array_map(
-                    fn (Rating $r): string => $rating === $r ? $this->selectedText($this->ratingButton($r)) : $this->ratingButton($r),
-                    array_values(array_filter(iterator_to_array(Fixtures::ratings())))
-                ),
-                ...[
-                    $this->prevButton(),
-                    $this->nextButton(),
-                    $this->helpButton(),
-                    $this->cancelButton(),
-                ],
-            ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_RATING_QUERIED,
-        ];
-
-        yield 'help & empty extra search terms' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::person_name),
-            ],
-            'rating' => null,
-            'command' => $this->helpButton(),
-            'shouldSeeReplies' => [
-                'title',
-                'query.extra_search_term',
-                'extra_search_term',
-                'help.use_input',
-            ],
-            'shouldSeeButtons' => [
-                $this->prevButton(),
-                $this->nextButton(),
-                $this->helpButton(),
-                $this->cancelButton(),
-            ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-        ];
-
-        yield 'help & non-empty extra search terms' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::organization_name),
-                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::person_name),
-            ],
-            'rating' => null,
-            'command' => $this->helpButton(),
-            'shouldSeeReplies' => [
-                'title',
-                'query.extra_search_term',
-                'extra_search_term',
-                'help.use_input',
-            ],
-            'shouldSeeButtons' => [
-                $this->removeButton($searchTerm2->getText()),
-                $this->prevButton(),
-                $this->nextButton(),
-                $this->helpButton(),
-                $this->cancelButton(),
-            ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-        ];
-
-        yield 'cancel' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::organization_name),
-            ],
-            'rating' => null,
-            'command' => $this->cancelButton(),
-            'shouldSeeReplies' => [
-                'reply.canceled',
-                'query.action',
-            ],
-            'shouldSeeButtons' => [
-                $this->commandButton('create'),
-                $this->commandButton('search'),
-                $this->commandButton('lookup'),
-            ],
-            'shouldSeeStep' => null,
-        ];
-    }
-
-    /**
-     * @param SearchTermTransfer[]|null $searchTerms
-     * @param string $command
-     * @param array $shouldSeeReplies
-     * @param array $shouldSeeButtons
-     * @param int|null $shouldSeeStep
-     * @return void
-     * @dataProvider extraSearchTermTypeStepSuccessDataProvider
-     */
-    public function testExtraSearchTermTypeStepSuccess(
-        ?array $searchTerms,
-        string $command,
-        array $shouldSeeReplies,
-        array $shouldSeeButtons,
-        ?int $shouldSeeStep
-    ): void
-    {
-        $this->test(
-            $searchTerms,
-            null,
-            null,
-            CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_TYPE_QUERIED,
-            $command,
-            $shouldSeeReplies,
-            $shouldSeeButtons,
-            $shouldSeeStep,
-            null
-        );
-    }
-
-    public function extraSearchTermTypeStepSuccessDataProvider(): Generator
-    {
-        yield 'type unknown & multiple extra search terms' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::instagram_username),
-                new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
-                $searchTerm3 = (new SearchTermTransfer('any_search_term3'))
-                    ->setTypes([
-                        SearchTermType::tiktok_username,
-                        SearchTermType::youtube_username,
-                    ]),
-            ],
-            'command' => 'unknown',
-            'shouldSeeReplies' => [
-                'reply.wrong',
-                'query.search_term_type',
-            ],
-            'shouldSeeButtons' => [
-                ...array_map(fn (SearchTermType $type): string => $this->searchTermTypeButton($type), $searchTerm3->getTypes()),
-                ...[
-                    $this->searchTermTypeButton(SearchTermType::unknown),
-                    $this->removeButton($searchTerm3->getText()),
-                    $this->helpButton(),
-                    $this->cancelButton(),
-                ],
-            ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_TYPE_QUERIED,
-        ];
-
-        yield 'type not in the list & multiple extra search terms' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::instagram_username),
-                new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
-                $searchTerm3 = (new SearchTermTransfer('any_search_term3'))
-                    ->setTypes([
-                        SearchTermType::tiktok_username,
-                        SearchTermType::youtube_username,
-                    ]),
-            ],
-            'command' => $this->searchTermTypeButton(SearchTermType::telegram_username),
-            'shouldSeeReplies' => [
-                'reply.wrong',
-                'query.search_term_type',
-            ],
-            'shouldSeeButtons' => [
-                ...array_map(fn (SearchTermType $type): string => $this->searchTermTypeButton($type), $searchTerm3->getTypes()),
-                ...[
-                    $this->searchTermTypeButton(SearchTermType::unknown),
-                    $this->removeButton($searchTerm3->getText()),
-                    $this->helpButton(),
-                    $this->cancelButton(),
-                ],
-            ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_TYPE_QUERIED,
-        ];
-
-        yield 'select type & single extra search term' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::telegram_username),
-                $searchTerm2 = (new SearchTermTransfer('any_search_term2'))
-                    ->setTypes([
-                        SearchTermType::instagram_username,
-                    ]),
-            ],
-            'command' => $this->searchTermTypeButton($searchTerm2->getTypes()[0]),
-            'shouldSeeReplies' => [
-                'query.extra_search_term',
-            ],
-            'shouldSeeButtons' => [
-                $this->removeButton($searchTerm2->getText()),
-                $this->prevButton(),
-                $this->nextButton(),
-                $this->helpButton(),
-                $this->cancelButton(),
-            ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-        ];
-
-        yield 'select type & multiple extra search terms' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::instagram_username),
-                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
-                $searchTerm3 = (new SearchTermTransfer('any_search_term3'))
-                    ->setTypes([
-                        SearchTermType::youtube_username,
-                        SearchTermType::tiktok_username,
-                    ]),
-            ],
-            'command' => $this->searchTermTypeButton($searchTerm3->getTypes()[count($searchTerm3->getTypes()) - 1]),
-            'shouldSeeReplies' => [
-                'query.extra_search_term',
-            ],
-            'shouldSeeButtons' => [
-                ...array_map(fn (SearchTermTransfer $searchTerm): string => $this->removeButton($searchTerm->getText()), [$searchTerm2, $searchTerm3]),
-                ...[
-                    $this->prevButton(),
-                    $this->nextButton(),
-                    $this->helpButton(),
-                    $this->cancelButton(),
-                ],
-            ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-        ];
-
-        yield 'remove & single extra search term' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::instagram_username),
-                $searchTerm2 = (new SearchTermTransfer('any_search_term2'))
-                    ->setTypes([
-                        SearchTermType::telegram_username,
-                        SearchTermType::youtube_username,
-                    ]),
-            ],
-            'command' => $this->removeButton($searchTerm2->getText()),
-            'shouldSeeReplies' => [
-                'query.extra_search_term',
-            ],
-            'shouldSeeButtons' => [
-                $this->prevButton(),
-                $this->nextButton(),
-                $this->helpButton(),
-                $this->cancelButton(),
-            ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-        ];
-
-        yield 'remove & multiple extra search term' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::instagram_username),
-                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
-                $searchTerm3 = (new SearchTermTransfer('any_search_term3'))
-                    ->setTypes([
-                        SearchTermType::tiktok_username,
-                        SearchTermType::youtube_username,
-                    ]),
-            ],
-            'command' => $this->removeButton($searchTerm3->getText()),
-            'shouldSeeReplies' => [
-                'query.extra_search_term',
-            ],
-            'shouldSeeButtons' => [
-                $this->removeButton($searchTerm2->getText()),
-                $this->prevButton(),
-                $this->nextButton(),
-                $this->helpButton(),
-                $this->cancelButton(),
-            ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
-        ];
-
-        yield 'help & single extra search term' => [
-            'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::instagram_username),
+                $searchTerm1 = new SearchTermTransfer('any_search_term1', SearchTermType::tiktok_username),
                 $searchTerm2 = (new SearchTermTransfer('any_search_term2'))
                     ->setTypes([
                         SearchTermType::instagram_username,
@@ -1112,13 +945,242 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                     $this->cancelButton(),
                 ],
             ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_TYPE_QUERIED,
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_TYPE_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+                $searchTerm2,
+            ],
+        ];
+
+        yield 'cancel' => [
+            'searchTerms' => [
+                new SearchTermTransfer('any_search_term'),
+            ],
+            'command' => $this->cancelButton(),
+            'shouldSeeReplies' => [
+                'reply.canceled',
+                'query.action',
+            ],
+            'shouldSeeButtons' => [
+                $this->commandButton('create'),
+                $this->commandButton('search'),
+                $this->commandButton('lookup'),
+            ],
+            'shouldSeeStep' => null,
+        ];
+
+
+        yield 'type unknown & multiple extra search terms' => [
+            'searchTerms' => [
+                $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::instagram_username),
+                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
+                $searchTerm3 = (new SearchTermTransfer('any_search_term3'))
+                    ->setTypes([
+                        SearchTermType::tiktok_username,
+                        SearchTermType::youtube_username,
+                    ]),
+            ],
+            'command' => 'unknown',
+            'shouldSeeReplies' => [
+                'reply.wrong',
+                'query.search_term_type',
+            ],
+            'shouldSeeButtons' => [
+                ...array_map(fn (SearchTermType $type): string => $this->searchTermTypeButton($type), $searchTerm3->getTypes()),
+                ...[
+                    $this->searchTermTypeButton(SearchTermType::unknown),
+                    $this->removeButton($searchTerm3->getText()),
+                    $this->helpButton(),
+                    $this->cancelButton(),
+                ],
+            ],
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_TYPE_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+                $searchTerm2,
+                $searchTerm3,
+            ],
+        ];
+
+        yield 'type not in the list & multiple extra search terms' => [
+            'searchTerms' => [
+                $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::instagram_username),
+                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
+                $searchTerm3 = (new SearchTermTransfer('any_search_term3'))
+                    ->setTypes([
+                        SearchTermType::tiktok_username,
+                        SearchTermType::youtube_username,
+                    ]),
+            ],
+            'command' => $this->searchTermTypeButton(SearchTermType::telegram_username),
+            'shouldSeeReplies' => [
+                'reply.wrong',
+                'query.search_term_type',
+            ],
+            'shouldSeeButtons' => [
+                ...array_map(fn (SearchTermType $type): string => $this->searchTermTypeButton($type), $searchTerm3->getTypes()),
+                ...[
+                    $this->searchTermTypeButton(SearchTermType::unknown),
+                    $this->removeButton($searchTerm3->getText()),
+                    $this->helpButton(),
+                    $this->cancelButton(),
+                ],
+            ],
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_TYPE_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+                $searchTerm2,
+                $searchTerm3,
+            ],
+        ];
+
+        yield 'select type & single extra search term' => [
+            'searchTerms' => [
+                $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::telegram_username),
+                $searchTerm2 = (new SearchTermTransfer('any_search_term2'))
+                    ->setTypes([
+                        SearchTermType::instagram_username,
+                    ]),
+            ],
+            'command' => $this->searchTermTypeButton($searchTerm2->getTypes()[0]),
+            'shouldSeeReplies' => [
+                'query.extra_search_term',
+            ],
+            'shouldSeeButtons' => [
+                $this->removeButton($searchTerm1->getText()),
+                $this->removeButton($searchTerm2->getText()),
+                $this->nextButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+                $searchTerm2,
+            ],
+        ];
+
+        yield 'select type & multiple extra search terms' => [
+            'searchTerms' => [
+                $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::instagram_username),
+                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
+                $searchTerm3 = (new SearchTermTransfer('any_search_term3'))
+                    ->setTypes([
+                        SearchTermType::youtube_username,
+                        SearchTermType::tiktok_username,
+                    ]),
+            ],
+            'command' => $this->searchTermTypeButton($searchTerm3->getTypes()[count($searchTerm3->getTypes()) - 1]),
+            'shouldSeeReplies' => [
+                'query.extra_search_term',
+            ],
+            'shouldSeeButtons' => [
+                ...array_map(fn (SearchTermTransfer $searchTerm): string => $this->removeButton($searchTerm->getText()), [$searchTerm1, $searchTerm2, $searchTerm3]),
+                ...[
+                    $this->nextButton(),
+                    $this->helpButton(),
+                    $this->cancelButton(),
+                ],
+            ],
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+                $searchTerm2,
+                $searchTerm3,
+            ],
+        ];
+
+        yield 'remove & single extra search term' => [
+            'searchTerms' => [
+                $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::instagram_username),
+                $searchTerm2 = (new SearchTermTransfer('any_search_term2'))
+                    ->setTypes([
+                        SearchTermType::telegram_username,
+                        SearchTermType::youtube_username,
+                    ]),
+            ],
+            'command' => $this->removeButton($searchTerm2->getText()),
+            'shouldSeeReplies' => [
+                'query.extra_search_term',
+            ],
+            'shouldSeeButtons' => [
+                $this->removeButton($searchTerm1->getText()),
+                $this->nextButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+            ],
+        ];
+
+        yield 'remove & multiple extra search term' => [
+            'searchTerms' => [
+                $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::instagram_username),
+                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
+                $searchTerm3 = (new SearchTermTransfer('any_search_term3'))
+                    ->setTypes([
+                        SearchTermType::tiktok_username,
+                        SearchTermType::youtube_username,
+                    ]),
+            ],
+            'command' => $this->removeButton($searchTerm3->getText()),
+            'shouldSeeReplies' => [
+                'query.extra_search_term',
+            ],
+            'shouldSeeButtons' => [
+                $this->removeButton($searchTerm1->getText()),
+                $this->removeButton($searchTerm2->getText()),
+                $this->nextButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+                $searchTerm2,
+            ],
+        ];
+
+        yield 'help & single extra search term' => [
+            'searchTerms' => [
+                $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::instagram_username),
+                $searchTerm2 = (new SearchTermTransfer('any_search_term2'))
+                    ->setTypes([
+                        SearchTermType::instagram_username,
+                        SearchTermType::telegram_username,
+                        SearchTermType::organization_name,
+                    ]),
+            ],
+            'command' => $this->helpButton(),
+            'shouldSeeReplies' => [
+                'title',
+                'query.search_term_type',
+                'search_term_type',
+                'help.use_keyboard',
+            ],
+            'shouldSeeButtons' => [
+                ...array_map(fn (SearchTermType $type): string => $this->searchTermTypeButton($type), $searchTerm2->getTypes()),
+                ...[
+                    $this->searchTermTypeButton(SearchTermType::unknown),
+                    $this->removeButton($searchTerm1->getText()),
+                    $this->removeButton($searchTerm2->getText()),
+                    $this->helpButton(),
+                    $this->cancelButton(),
+                ],
+            ],
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_TYPE_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+                $searchTerm2,
+            ],
         ];
 
         yield 'help & multiple extra search terms' => [
             'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::instagram_username),
-                new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
+                $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::instagram_username),
+                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
                 $searchTerm3 = (new SearchTermTransfer('any_search_term3'))
                     ->setTypes([
                         SearchTermType::tiktok_username,
@@ -1141,7 +1203,12 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                     $this->cancelButton(),
                 ],
             ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_TYPE_QUERIED,
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_TYPE_QUERIED,
+            'shouldSeeSearchTerms' => [
+                $searchTerm1,
+                $searchTerm2,
+                $searchTerm3,
+            ],
         ];
 
         yield 'cancel & empty extra search terms' => [
@@ -1270,7 +1337,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
 
         yield 'prev & empty extra search terms' => [
             'searchTerms' => [
-                new SearchTermTransfer('any_search_term', SearchTermType::unknown),
+                $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::unknown),
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
@@ -1279,19 +1346,19 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 'query.extra_search_term',
             ],
             'shouldSeeButtons' => [
-                $this->prevButton(),
+                $this->removeButton($searchTerm->getText()),
                 $this->nextButton(),
                 $this->helpButton(),
                 $this->cancelButton(),
             ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
         ];
 
         yield 'prev & non-empty extra search terms' => [
-            'searchTerms' => [
+            'searchTerms' => $searchTerms = [
                 new SearchTermTransfer('any_search_term', SearchTermType::unknown),
-                $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
-                $searchTerm3 = new SearchTermTransfer('any_search_term3', SearchTermType::vkontakte_username),
+                new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
+                new SearchTermTransfer('any_search_term3', SearchTermType::vkontakte_username),
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
@@ -1300,18 +1367,14 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 'query.extra_search_term',
             ],
             'shouldSeeButtons' => [
-                ...array_map(
-                    fn (SearchTermTransfer $searchTerm): string => $this->removeButton($searchTerm->getText()),
-                    [$searchTerm2, $searchTerm3]
-                ),
+                ...array_map(fn (SearchTermTransfer $searchTerm): string => $this->removeButton($searchTerm->getText()), $searchTerms),
                 ...[
-                    $this->prevButton(),
                     $this->nextButton(),
                     $this->helpButton(),
                     $this->cancelButton(),
                 ],
             ],
-            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_EXTRA_SEARCH_TERM_QUERIED,
+            'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
         ];
 
         yield 'next & empty description' => [
@@ -2070,7 +2133,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
      * @param array $shouldSeeReplies
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
-     * @param string|null $shouldSeeFirstSearchTermText
+     * @param array|null $shouldSeeSearchTerms
      * @return void
      */
     protected function test(
@@ -2082,7 +2145,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         array $shouldSeeReplies,
         array $shouldSeeButtons,
         ?int $shouldSeeStep,
-        ?string $shouldSeeFirstSearchTermText
+        ?array $shouldSeeSearchTerms
     ): void
     {
         $this->bootFixtures([
@@ -2103,16 +2166,27 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         $this
             ->type($command)
             ->shouldSeeStateStep($conversation, $shouldSeeStep)
-            ->shouldSeeFirstSearchTermText($conversation, $shouldSeeFirstSearchTermText)
+            ->shouldSeeSearchTerms($conversation, $shouldSeeSearchTerms)
             ->shouldSeeReply(...$shouldSeeReplies)
             ->shouldSeeButtons(...$shouldSeeButtons)
         ;
     }
 
-    protected function shouldSeeFirstSearchTermText(TelegramBotConversation $conversation, ?string $shouldSeeFirstSearchTermText): static
+    /**
+     * @param TelegramBotConversation $conversation
+     * @param SearchTermTransfer[]|null $shouldSeeSearchTerms
+     * @return $this
+     */
+    protected function shouldSeeSearchTerms(TelegramBotConversation $conversation, ?array $shouldSeeSearchTerms): static
     {
-        if ($shouldSeeFirstSearchTermText !== null) {
-            $this->assertEquals($shouldSeeFirstSearchTermText, $conversation->getState()['search_terms'][0]['text']);
+        if ($shouldSeeSearchTerms !== null) {
+            $searchTerms = $conversation->getState()['search_terms'] ?? [];
+
+            $this->assertCount(count($shouldSeeSearchTerms), $searchTerms);
+
+            foreach ($shouldSeeSearchTerms as $index => $shouldSeeSearchTerm) {
+                $this->assertEquals($shouldSeeSearchTerm->getText(), $searchTerms[$index]['text']);
+            }
         }
 
         return $this;

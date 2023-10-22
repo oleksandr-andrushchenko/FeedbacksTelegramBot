@@ -211,9 +211,9 @@ class TelegramBotAwareHelper
         return '*' . $text;
     }
 
-    public function queryText(string $text): string
+    public function queryText(string $text, bool $optional = false): string
     {
-        return '<u><b>' . $text . '</b></u>';
+        return '<u><b>' . $text . ($optional ? (' (' . $this->trans('query.optional') . ')') : '') . '</b></u>';
     }
 
     public function queryTipText(string $text): string

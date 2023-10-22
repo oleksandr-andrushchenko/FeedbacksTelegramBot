@@ -40,22 +40,6 @@ class CreateFeedbackTelegramBotConversationState extends TelegramBotConversation
         return $this;
     }
 
-    public function upsertFirstSearchTerm(?SearchTermTransfer $searchTerm): self
-    {
-        if ($this->searchTerms === null) {
-            $this->searchTerms = [];
-        }
-
-        $this->searchTerms[0] = $searchTerm;
-        $this->searchTerms = array_unique(array_values(array_filter($this->searchTerms)));
-
-        if (count($this->searchTerms) === 0) {
-            $this->searchTerms = null;
-        }
-
-        return $this;
-    }
-
     public function removeSearchTerm(SearchTermTransfer $searchTermRemove): self
     {
         foreach ($this->searchTerms as $index => $searchTerm) {

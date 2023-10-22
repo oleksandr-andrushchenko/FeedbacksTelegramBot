@@ -8,6 +8,7 @@ help:
 query:
   action: Виберіть дію.
   already_added: Вже додано
+  optional: Необов'язково
 
 keyboard:
   yes: Так

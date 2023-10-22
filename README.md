@@ -65,3 +65,4 @@
 * Validation for search terms: min/max length, emojis, tags etc.
 * Add already added texts/prev/next for all conversations (for example for country/locale convs)
 * Cache level 1 regions for ua,ru
+* Re-factor: remove dots from questions, ChooseActionTelegramChatSender::getQuery, searchTerms: duplicates validation, command key -> input key (in tests), type unknown -> type wrong (in tests)

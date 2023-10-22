@@ -8,6 +8,7 @@ help:
 query:
   action: Выберите действие.
   already_added: Уже добавлено
+  optional: Необязательно
 
 keyboard:
   yes: Да

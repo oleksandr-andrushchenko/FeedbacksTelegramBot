@@ -42,8 +42,6 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 {
     public const STEP_SEARCH_TERM_QUERIED = 10;
     public const STEP_SEARCH_TERM_TYPE_QUERIED = 20;
-    public const STEP_EXTRA_SEARCH_TERM_QUERIED = 21;
-    public const STEP_EXTRA_SEARCH_TERM_TYPE_QUERIED = 22;
     public const STEP_CANCEL_PRESSED = 30;
     public const STEP_RATING_QUERIED = 40;
     public const STEP_DESCRIPTION_QUERIED = 50;
@@ -81,8 +79,6 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             default => $this->start($tg),
             self::STEP_SEARCH_TERM_QUERIED => $this->gotSearchTerm($tg, $entity),
             self::STEP_SEARCH_TERM_TYPE_QUERIED => $this->gotSearchTermType($tg, $entity),
-            self::STEP_EXTRA_SEARCH_TERM_QUERIED => $this->gotExtraSearchTerm($tg, $entity),
-            self::STEP_EXTRA_SEARCH_TERM_TYPE_QUERIED => $this->gotExtraSearchTermType($tg, $entity),
             self::STEP_RATING_QUERIED => $this->gotRating($tg, $entity),
             self::STEP_DESCRIPTION_QUERIED => $this->gotDescription($tg, $entity),
             self::STEP_CONFIRM_QUERIED => $this->gotConfirm($tg, $entity),
@@ -95,21 +91,13 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         return $this->querySearchTerm($tg);
     }
 
-    public function getStep(int $num): string
+    public function getStep(int $num, string $symbols = ''): string
     {
         $originalNum = $num;
-        $total = 6;
-
-        if (!$this->extraSearchTermStep) {
-            if ($originalNum > 1) {
-                $num--;
-            }
-
-            $total--;
-        }
+        $total = 5;
 
         if (!$this->descriptionStep) {
-            if ($originalNum > 3) {
+            if ($originalNum > 2) {
                 $num--;
             }
 
@@ -117,7 +105,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         }
 
         if (!$this->confirmStep) {
-            if ($originalNum > 4) {
+            if ($originalNum > 3) {
                 $num--;
             }
 
@@ -125,79 +113,61 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         }
 
         if (!$this->sendToChannelConfirmStep) {
-            if ($originalNum > 5) {
+            if ($originalNum > 4) {
                 $num--;
             }
 
             $total--;
         }
 
-        return sprintf('[%d/%d] ', $num, $total);
+        return sprintf('[%d/%d%s] ', $num, $total, $symbols);
+    }
+
+    public function gotCancel(TelegramBotAwareHelper $tg, Entity $entity): null
+    {
+        $this->state->setStep(self::STEP_CANCEL_PRESSED);
+
+        $tg->stopConversation($entity);
+
+        $message = $tg->trans('reply.canceled', domain: 'create');
+        $message = $tg->upsetText($message);
+        $message .= "\n";
+
+        return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
     }
 
     public function getSearchTermQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
-        $query = $this->getStep(1);
-        $query .= $tg->trans('query.search_term', domain: 'create');
-        $query = $tg->queryText($query);
+        $searchTerms = $this->state->getSearchTerms() ?? [];
 
-        if (!$help) {
-            $parameters = [
-                'should_be' => sprintf('<b>%s</b>', $tg->trans('query.search_term_should_be', domain: 'create')),
-            ];
-            $query .= $tg->queryTipText($tg->trans('query.search_term_tip', parameters: $parameters, domain: 'create'));
-            $searchTermTypeNames = array_map(
-                fn (SearchTermType $type): string => $this->lcFirster->mbLcFirst(
-                    $this->searchTermTypeProvider->getSearchTermTypeName($type)
-                ),
-                [
-                    SearchTermType::messenger_profile_url,
-                    SearchTermType::phone_number,
-                    SearchTermType::car_number,
-                    SearchTermType::email,
-                ]
-            );
-            $parameters = [
-                'put_one' => sprintf('<b>%s</b>', $tg->trans('query.search_term_put_one', domain: 'create')),
-                'types' => implode(', ', $searchTermTypeNames),
-            ];
-            $query .= $tg->queryTipText($tg->trans('query.search_term_tip_example', parameters: $parameters, domain: 'create'));
-        }
-
-        $searchTerm = $this->state->getFirstSearchTerm();
-
-        if ($searchTerm !== null) {
-            $searchTermView = $this->searchTermViewProvider->getSearchTermTelegramView($searchTerm);
-            $query .= $tg->alreadyAddedText($searchTermView, false);
-        }
-
-        if ($help) {
-            $query = $tg->view('create_search_term_help', [
-                'query' => $query,
-            ]);
+        if (count($searchTerms) > 0) {
+            $searchTerm = array_shift($searchTerms);
         } else {
-            $query .= $tg->queryTipText($tg->useText(true));
+            $searchTerm = null;
         }
 
-        return $query;
-    }
-
-    public function getExtraSearchTermQuery(TelegramBotAwareHelper $tg, bool $help = false): string
-    {
-        $query = $this->getStep(2);
-        $searchTerm = $this->state->getFirstSearchTerm();
-        $searchTermView = $this->searchTermViewProvider->getSearchTermTelegramMainView($searchTerm);
-        $parameters = [
-            'search_term' => $searchTermView,
-        ];
-        $query .= $tg->trans('query.extra_search_term', parameters: $parameters, domain: 'create');
-        $query = $tg->queryText($query);
+        if ($searchTerm === null) {
+            $query = $this->getStep(1);
+            $query .= $tg->trans('query.search_term', domain: 'create');
+            $query = $tg->queryText($query);
+        } else {
+            $query = $this->getStep(1, '**');
+            $searchTermView = $this->searchTermViewProvider->getSearchTermTelegramMainView($searchTerm);
+            $parameters = [
+                'search_term' => $searchTermView,
+            ];
+            $query .= $tg->trans('query.extra_search_term', parameters: $parameters, domain: 'create');
+            $query = $tg->queryText($query, true);
+        }
 
         if (!$help) {
-            $parameters = [
-                'should_be' => sprintf('<b>%s</b>', $tg->trans('query.search_term_should_be', domain: 'create')),
-            ];
-            $query .= $tg->queryTipText($tg->trans('query.search_term_tip', parameters: $parameters, domain: 'create'));
+            if ($searchTerm === null) {
+                $parameters = [
+                    'should_be' => sprintf('<b>%s</b>', $tg->trans('query.search_term_should_be', domain: 'create')),
+                ];
+                $query .= $tg->queryTipText($tg->trans('query.search_term_tip', parameters: $parameters, domain: 'create'));
+            }
+
             $searchTermTypeNames = array_map(
                 fn (SearchTermType $type): string => $this->lcFirster->mbLcFirst(
                     $this->searchTermTypeProvider->getSearchTermTypeName($type)
@@ -216,21 +186,25 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $query .= $tg->queryTipText($tg->trans('query.search_term_tip_example', parameters: $parameters, domain: 'create'));
         }
 
-        $extraSearchTerms = $this->getExtraSearchTerms();
-
-        if (count($extraSearchTerms) > 0) {
-            $extraSearchTermViews = array_map(
+        if (count($searchTerms) > 0) {
+            $searchTermViews = array_map(
                 fn (SearchTermTransfer $searchTerm): string => $this->searchTermViewProvider->getSearchTermTelegramView($searchTerm),
-                $extraSearchTerms
+                $searchTerms
             );
-            $query .= $tg->alreadyAddedText(implode("\n", $extraSearchTermViews), false);
+            $query .= $tg->alreadyAddedText(implode("\n", $searchTermViews));
         }
 
         if ($help) {
-            $query = $tg->view('create_extra_search_term_help', [
-                'query' => $query,
-                'search_term' => $searchTermView,
-            ]);
+            if ($searchTerm === null) {
+                $query = $tg->view('create_search_term_help', [
+                    'query' => $query,
+                ]);
+            } else {
+                $query = $tg->view('create_extra_search_term_help', [
+                    'query' => $query,
+                    'search_term' => $searchTermView,
+                ]);
+            }
         } else {
             $query .= $tg->queryTipText($tg->useText(true));
         }
@@ -277,14 +251,14 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
     {
         $this->state->setStep(self::STEP_SEARCH_TERM_QUERIED);
 
+        $searchTerms = $this->state->getSearchTerms() ?? [];
+
         $message = $this->getSearchTermQuery($tg, $help);
 
         $buttons = [];
 
-        $searchTerm = $this->state->getFirstSearchTerm();
-
-        if ($searchTerm !== null) {
-            $buttons[] = $this->getRemoveTermButton($searchTerm, $tg);
+        if (count($searchTerms) > 0) {
+            $buttons[] = $this->getRemoveTermButtons($searchTerms, $tg);
             $buttons[] = $tg->nextButton();
         }
 
@@ -292,19 +266,6 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         $buttons[] = $tg->cancelButton();
 
         return $tg->reply($message, $tg->keyboard(...$buttons))->null();
-    }
-
-    public function gotCancel(TelegramBotAwareHelper $tg, Entity $entity): null
-    {
-        $this->state->setStep(self::STEP_CANCEL_PRESSED);
-
-        $tg->stopConversation($entity);
-
-        $message = $tg->trans('reply.canceled', domain: 'create');
-        $message = $tg->upsetText($message);
-        $message .= "\n";
-
-        return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
     }
 
     public function gotSearchTerm(TelegramBotAwareHelper $tg, Entity $entity): null
@@ -315,19 +276,17 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             return $this->querySearchTerm($tg);
         }
 
-        $searchTerm = $this->state->getFirstSearchTerm();
+        $searchTerms = $this->state->getSearchTerms() ?? [];
 
-        if ($searchTerm !== null) {
+        if (count($searchTerms) > 0) {
             if ($tg->matchInput($tg->nextButton()->getText())) {
-                if ($this->extraSearchTermStep) {
-                    return $this->queryExtraSearchTerm($tg);
-                }
-
                 return $this->queryRating($tg, $entity);
             }
 
-            if ($tg->matchInput($this->getRemoveTermButton($searchTerm, $tg)->getText())) {
-                $this->state->upsertFirstSearchTerm(null);
+            $searchTerm = $this->getTermByRemoveTermButton($tg->getInput(), $searchTerms, $tg);
+
+            if ($searchTerm !== null) {
+                $this->state->removeSearchTerm($searchTerm);
 
                 return $this->querySearchTerm($tg);
             }
@@ -352,29 +311,23 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             return $this->querySearchTerm($tg);
         }
 
-        $this->state->upsertFirstSearchTerm($searchTerm);
+        $this->state->addSearchTerm($searchTerm);
 
         if ($searchTerm->getType() === null) {
             $types = $searchTerm->getTypes() ?? [];
 
             if (count($types) === 1) {
-                $searchTerm
-                    ->setType($types[0])
-                    ->setTypes(null)
-                ;
+                $searchTerm->setType($types[0])->setTypes(null);
                 $this->searchTermParser->parseWithKnownType($searchTerm);
             } elseif ($this->searchTermTypeStep) {
                 return $this->querySearchTermType($tg);
             } else {
-                $searchTerm
-                    ->setType(SearchTermType::unknown)
-                    ->setTypes(null)
-                ;
+                $searchTerm->setType(SearchTermType::unknown)->setTypes(null);
             }
         }
 
         if ($this->extraSearchTermStep) {
-            return $this->queryExtraSearchTerm($tg);
+            return $this->querySearchTerm($tg);
         }
 
         return $this->queryRating($tg, $entity);
@@ -382,12 +335,13 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
     public function getSearchTermTypeQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
+        $query = $this->getStep(1, '*');
         $searchTerm = $this->state->getLastSearchTerm();
         $searchTermView = $searchTerm->getText();
         $parameters = [
             'search_term' => sprintf('<u>%s</u>', $searchTermView),
         ];
-        $query = $tg->trans('query.search_term_type', parameters: $parameters, domain: 'create');
+        $query .= $tg->trans('query.search_term_type', parameters: $parameters, domain: 'create');
         $query = $tg->queryText($query);
 
         if ($help) {
@@ -395,9 +349,9 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 'query' => $query,
                 'search_term' => $searchTermView,
             ]);
-        } else {
-            $query .= $tg->queryTipText($tg->useText(false));
         }
+
+        $query .= $tg->queryTipText($tg->useText(false));
 
         return $query;
     }
@@ -415,7 +369,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
     {
         $this->state->setStep(self::STEP_SEARCH_TERM_TYPE_QUERIED);
 
-        $searchTerm = $this->state->getFirstSearchTerm();
+        $searchTerm = $this->state->getLastSearchTerm();
         $message = $this->getSearchTermTypeQuery($tg, $help);
 
         $buttons = $this->getSearchTermTypeButtons($searchTerm, $tg);
@@ -434,7 +388,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             return $this->querySearchTermType($tg);
         }
 
-        $searchTerm = $this->state->getFirstSearchTerm();
+        $searchTerm = $this->state->getLastSearchTerm();
 
         if ($tg->matchInput($this->getRemoveTermButton($searchTerm, $tg)->getText())) {
             $this->state->removeSearchTerm($searchTerm);
@@ -459,7 +413,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         }
 
         $original = $searchTerm->getTypes();
-        $searchTerm->setTypes(null)->setType($type);
+        $searchTerm->setType($type)->setTypes(null);
 
         $this->searchTermParser->parseWithKnownType($searchTerm);
 
@@ -469,11 +423,11 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $searchTerm->setType(null)->setTypes($original);
             $tg->replyWarning($exception->getFirstMessage());
 
-            return $this->querySearchTerm($tg);
+            return $this->querySearchTermType($tg);
         }
 
         if ($this->extraSearchTermStep) {
-            return $this->queryExtraSearchTerm($tg);
+            return $this->querySearchTerm($tg);
         }
 
         return $this->queryRating($tg, $entity);
@@ -518,176 +472,9 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         return null;
     }
 
-    /**
-     * @return SearchTermTransfer[]
-     */
-    public function getExtraSearchTerms(): array
-    {
-        $searchTerms = $this->state->getSearchTerms() ?? [];
-
-        if (count($searchTerms) < 2) {
-            return [];
-        }
-
-        array_shift($searchTerms);
-
-        return $searchTerms;
-    }
-
-    public function queryExtraSearchTerm(TelegramBotAwareHelper $tg, bool $help = false): null
-    {
-        $this->state->setStep(self::STEP_EXTRA_SEARCH_TERM_QUERIED);
-
-        $message = $this->getExtraSearchTermQuery($tg, $help);
-
-        $buttons = [];
-
-        $extraSearchTerms = $this->getExtraSearchTerms();
-
-        if (count($extraSearchTerms) > 0) {
-            $buttons[] = $this->getRemoveTermButtons($extraSearchTerms, $tg);
-        }
-
-        $buttons[] = [$tg->prevButton(), $tg->nextButton()];
-        $buttons[] = $tg->helpButton();
-        $buttons[] = $tg->cancelButton();
-
-        return $tg->reply($message, $tg->keyboard(...$buttons))->null();
-    }
-
-
-    public function gotExtraSearchTerm(TelegramBotAwareHelper $tg, Entity $entity): null
-    {
-        if ($tg->matchInput(null)) {
-            $tg->replyWrong(true);
-
-            return $this->queryExtraSearchTerm($tg);
-        }
-
-        $extraSearchTerms = $this->getExtraSearchTerms();
-
-        if ($extraSearchTerms > 0) {
-            $searchTerm = $this->getTermByRemoveTermButton($tg->getInput(), $extraSearchTerms, $tg);
-
-            if ($searchTerm !== null) {
-                $this->state->removeSearchTerm($searchTerm);
-
-                return $this->queryExtraSearchTerm($tg);
-            }
-        }
-
-        if ($tg->matchInput($tg->prevButton()->getText())) {
-            return $this->querySearchTerm($tg);
-        }
-
-        if ($tg->matchInput($tg->nextButton()->getText())) {
-            return $this->queryRating($tg, $entity);
-        }
-
-        if ($tg->matchInput($tg->helpButton()->getText())) {
-            return $this->queryExtraSearchTerm($tg, true);
-        }
-
-        if ($tg->matchInput($tg->cancelButton()->getText())) {
-            return $this->gotCancel($tg, $entity);
-        }
-
-        $searchTerm = new SearchTermTransfer($tg->getInput());
-        $this->searchTermParser->parseWithGuessType($searchTerm);
-
-        try {
-            $this->validator->validate($searchTerm);
-        } catch (ValidatorException $exception) {
-            $tg->replyWarning($exception->getFirstMessage());
-
-            return $this->queryExtraSearchTerm($tg);
-        }
-
-        $this->state->addSearchTerm($searchTerm);
-
-        if ($searchTerm->getType() === null) {
-            $types = $searchTerm->getTypes() ?? [];
-
-            if (count($types) === 1) {
-                $searchTerm->setType($types[0])->setTypes(null);
-                $this->searchTermParser->parseWithKnownType($searchTerm);
-            } elseif ($this->searchTermTypeStep) {
-                return $this->queryExtraSearchTermType($tg);
-            } else {
-                $searchTerm->setType(SearchTermType::unknown)->setTypes(null);
-            }
-        }
-
-        return $this->queryExtraSearchTerm($tg);
-    }
-
-    public function queryExtraSearchTermType(TelegramBotAwareHelper $tg, bool $help = false): null
-    {
-        $this->state->setStep(self::STEP_EXTRA_SEARCH_TERM_TYPE_QUERIED);
-
-        $searchTerm = $this->state->getLastSearchTerm();
-        $message = $this->getSearchTermTypeQuery($tg, $help);
-
-        $buttons = $this->getSearchTermTypeButtons($searchTerm, $tg);
-        $buttons[] = $this->getRemoveTermButton($searchTerm, $tg);
-        $buttons[] = $tg->helpButton();
-        $buttons[] = $tg->cancelButton();
-
-        return $tg->reply($message, $tg->keyboard(...$buttons))->null();
-    }
-
-    public function gotExtraSearchTermType(TelegramBotAwareHelper $tg, Entity $entity): null
-    {
-        if ($tg->matchInput(null)) {
-            $tg->replyWrong(false);
-
-            return $this->queryExtraSearchTermType($tg);
-        }
-
-        $searchTerm = $this->state->getLastSearchTerm();
-
-        if ($tg->matchInput($this->getRemoveTermButton($searchTerm, $tg)->getText())) {
-            $this->state->removeSearchTerm($searchTerm);
-
-            return $this->queryExtraSearchTerm($tg);
-        }
-
-        if ($tg->matchInput($tg->helpButton()->getText())) {
-            return $this->queryExtraSearchTermType($tg, true);
-        }
-
-        if ($tg->matchInput($tg->cancelButton()->getText())) {
-            return $this->gotCancel($tg, $entity);
-        }
-
-        $type = $this->getSearchTermTypeByButton($tg->getInput(), $searchTerm, $tg);
-
-        if ($type === null) {
-            $tg->replyWrong(false);
-
-            return $this->queryExtraSearchTermType($tg);
-        }
-
-        $original = $searchTerm->getTypes();
-        $searchTerm->setType($type)->setTypes(null);
-
-        $this->searchTermParser->parseWithKnownType($searchTerm);
-
-        try {
-            $this->validator->validate($searchTerm);
-        } catch (ValidatorException $exception) {
-            $searchTerm->setType(null)->setTypes($original);
-            $tg->replyWarning($exception->getFirstMessage());
-
-            return $this->queryExtraSearchTermType($tg);
-        }
-
-        return $this->queryExtraSearchTerm($tg);
-    }
-
     public function getRatingQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
-        $query = $this->getStep(3);
+        $query = $this->getStep(2);
         $searchTermView = $this->searchTermViewProvider->getSearchTermTelegramMainView($this->state->getFirstSearchTerm());
         $parameters = [
             'search_term' => $searchTermView,
@@ -773,7 +560,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
         if ($tg->matchInput($tg->prevButton()->getText())) {
             if ($this->extraSearchTermStep) {
-                return $this->queryExtraSearchTerm($tg);
+                return $this->querySearchTerm($tg);
             }
 
             return $this->querySearchTerm($tg);
@@ -824,13 +611,13 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
     public function getDescriptionQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
-        $query = $this->getStep(4);
+        $query = $this->getStep(3);
         $searchTermView = $this->searchTermViewProvider->getSearchTermTelegramMainView($this->state->getFirstSearchTerm());
         $parameters = [
             'search_term' => $searchTermView,
         ];
         $query .= $tg->trans('query.description', $parameters, domain: 'create');
-        $query = $tg->queryText($query);
+        $query = $tg->queryText($query, true);
 
         if (!$help) {
             $query .= $tg->queryTipText($tg->trans('query.description_tip', domain: 'create'));
@@ -935,7 +722,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
     public function getConfirmQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
-        $query = $this->getStep(5);
+        $query = $this->getStep(4);
         $feedbackView = $this->feedbackViewProvider->getFeedbackTelegramView(
             $tg->getBot(),
             $this->creator->constructFeedback($this->constructTransfer($tg)),
@@ -1000,7 +787,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
     public function getSendToChannelConfirmQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
-        $query = $this->getStep(6);
+        $query = $this->getStep(5);
         $channels = $this->channelMatchesProvider->getTelegramChannelMatches(
             $tg->getBot()->getMessengerUser()->getUser(),
             $tg->getBot()->getEntity()
