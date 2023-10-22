@@ -170,9 +170,8 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
         $message = $tg->trans('reply.canceled', domain: 'lookup');
         $message = $tg->upsetText($message);
-        $message .= "\n";
 
-        return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
+        return $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
     }
 
     public function gotSearchTerm(TelegramBotAwareHelper $tg, Entity $entity): null

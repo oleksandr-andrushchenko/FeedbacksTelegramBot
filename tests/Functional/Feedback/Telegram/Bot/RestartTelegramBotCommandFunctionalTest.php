@@ -16,11 +16,11 @@ use Generator;
 class RestartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctionalTestCase
 {
     /**
-     * @param string $command
+     * @param string $input
      * @return void
      * @dataProvider startSuccessDataProvider
      */
-    public function testStartSuccess(string $command): void
+    public function testStartSuccess(string $input): void
     {
         $this->bootFixtures([
             User::class,
@@ -29,7 +29,7 @@ class RestartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
         ]);
 
         $this
-            ->type($command)
+            ->type($input)
             ->shouldSeeActiveConversation(
                 RestartConversationTelegramBotConversation::class,
                 (new TelegramBotConversationState())
@@ -48,11 +48,11 @@ class RestartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
     public function startSuccessDataProvider(): Generator
     {
         yield 'button' => [
-            'command' => $this->command('restart'),
+            'input' => $this->command('restart'),
         ];
 
-        yield 'command' => [
-            'command' => FeedbackTelegramBotGroup::RESTART,
+        yield 'input' => [
+            'input' => FeedbackTelegramBotGroup::RESTART,
         ];
     }
 

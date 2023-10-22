@@ -87,11 +87,10 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
         $message .= "\n\n";
         $message .= $this->getCurrentReply($tg);
         $message = $tg->upsetText($message);
-        $message .= "\n";
 
         $tg->stopConversation($entity);
 
-        return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
+        return $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
     }
 
     public function getChangeConfirmQuery(TelegramBotAwareHelper $tg, bool $help = false): string
@@ -468,9 +467,9 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
         $message = $tg->okText($message);
         $message .= "\n\n";
         $message .= $this->getCurrentReply($tg);
-        $message .= "\n\n";
+        $message .= "\n";
 
-        $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
+        $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
 
         $keyboard = $this->chooseActionChatSender->getKeyboard($tg);
         $this->botMatchesChatSender->sendTelegramBotMatchesIfNeed($tg, $keyboard);

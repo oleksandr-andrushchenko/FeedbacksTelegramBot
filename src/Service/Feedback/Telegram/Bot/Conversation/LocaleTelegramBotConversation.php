@@ -73,11 +73,10 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
         $message .= "\n\n";
         $message .= $this->getCurrentLocaleReply($tg);
         $message = $tg->upsetText($message);
-        $message .= "\n";
 
         $tg->stopConversation($entity);
 
-        return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
+        return $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
     }
 
     public function getCurrentLocaleReply(TelegramBotAwareHelper $tg): string
@@ -252,9 +251,9 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
         $tg->stopConversation($entity);
 
         $message = $this->getGotLocaleReply($tg);
-        $message .= "\n\n";
+        $message .= "\n";
 
-        $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
+        $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
 
         $keyboard = $this->chooseActionChatSender->getKeyboard($tg);
         $this->botMatchesChatSender->sendTelegramBotMatchesIfNeed($tg, $keyboard);

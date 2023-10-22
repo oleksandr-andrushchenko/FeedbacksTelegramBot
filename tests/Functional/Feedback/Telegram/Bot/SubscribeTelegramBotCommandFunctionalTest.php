@@ -31,7 +31,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
 
     /**
      * @param array $paymentMethodNames
-     * @param string $command
+     * @param string $input
      * @param array $shouldSeeReply
      * @param array $shouldSeeButtons
      * @return void
@@ -39,7 +39,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
      */
     public function testStartSuccess(
         array $paymentMethodNames,
-        string $command,
+        string $input,
         array $shouldSeeReply,
         array $shouldSeeButtons
     ): void
@@ -56,7 +56,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         );
 
         $this
-            ->type($command)
+            ->type($input)
             ->shouldSeeStateStep(
                 $this->getConversation(),
                 SubscribeTelegramBotConversation::STEP_SUBSCRIPTION_PLAN_QUERIED
@@ -72,7 +72,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
             'paymentMethodNames' => [
                 TelegramBotPaymentMethodName::portmone,
             ],
-            'command' => $this->command('subscribe'),
+            'input' => $this->command('subscribe'),
             'shouldSeeReply' => [
                 'query.subscription_plan',
             ],
@@ -92,7 +92,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
                 TelegramBotPaymentMethodName::portmone,
                 TelegramBotPaymentMethodName::liqpay,
             ],
-            'command' => $this->command('subscribe'),
+            'input' => $this->command('subscribe'),
             'shouldSeeReply' => [
                 'query.subscription_plan',
             ],
@@ -111,7 +111,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
             'paymentMethodNames' => [
                 TelegramBotPaymentMethodName::portmone,
             ],
-            'command' => FeedbackTelegramBotGroup::SUBSCRIBE,
+            'input' => FeedbackTelegramBotGroup::SUBSCRIBE,
             'shouldSeeReply' => [
                 'query.subscription_plan',
             ],
@@ -131,7 +131,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
                 TelegramBotPaymentMethodName::portmone,
                 TelegramBotPaymentMethodName::liqpay,
             ],
-            'command' => FeedbackTelegramBotGroup::SUBSCRIBE,
+            'input' => FeedbackTelegramBotGroup::SUBSCRIBE,
             'shouldSeeReply' => [
                 'query.subscription_plan',
             ],
@@ -150,7 +150,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
     /**
      * @param bool $currencyStep
      * @param bool $paymentMethodStep
-     * @param string $command
+     * @param string $input
      * @param array $shouldSeeReply
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
@@ -160,7 +160,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
     public function testCurrencyStepSuccess(
         bool $currencyStep,
         bool $paymentMethodStep,
-        string $command,
+        string $input,
         array $shouldSeeReply,
         array $shouldSeeButtons,
         ?int $shouldSeeStep
@@ -182,7 +182,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         $conversation = $this->createConversation(SubscribeTelegramBotConversation::class, $state);
 
         $this
-            ->type($command)
+            ->type($input)
             ->shouldSeeStateStep($conversation, $shouldSeeStep)
             ->shouldSeeReply(...$shouldSeeReply)
             ->shouldSeeButtons(...$shouldSeeButtons)
@@ -194,7 +194,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         yield 'select currency & no currency step & no payment method step' => [
             'currencyStep' => false,
             'paymentMethodStep' => false,
-            'command' => '🇺🇸 USD',
+            'input' => '🇺🇸 USD',
             'shouldSeeReply' => [
                 'query.subscription_plan',
             ],
@@ -213,7 +213,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         yield 'select currency & no currency step & payment method step' => [
             'currencyStep' => false,
             'paymentMethodStep' => true,
-            'command' => '🇺🇸 USD',
+            'input' => '🇺🇸 USD',
             'shouldSeeReply' => [
                 'query.subscription_plan',
             ],
@@ -232,7 +232,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         yield 'select currency & currency step & payment method step' => [
             'currencyStep' => true,
             'paymentMethodStep' => true,
-            'command' => '🇺🇸 USD',
+            'input' => '🇺🇸 USD',
             'shouldSeeReply' => [
                 'query.subscription_plan',
             ],
@@ -251,7 +251,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         yield 'select currency & currency step & no payment method step' => [
             'currencyStep' => true,
             'paymentMethodStep' => false,
-            'command' => '🇺🇸 USD',
+            'input' => '🇺🇸 USD',
             'shouldSeeReply' => [
                 'query.subscription_plan',
             ],
@@ -271,7 +271,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
     /**
      * @param bool $currencyStep
      * @param bool $paymentMethodStep
-     * @param string $command
+     * @param string $input
      * @param array $shouldSeeReply
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
@@ -281,7 +281,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
     public function testSubscriptionPlanStepSuccess(
         bool $currencyStep,
         bool $paymentMethodStep,
-        string $command,
+        string $input,
         array $shouldSeeReply,
         array $shouldSeeButtons,
         ?int $shouldSeeStep
@@ -304,7 +304,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         $conversation = $this->createConversation(SubscribeTelegramBotConversation::class, $state);
 
         $this
-            ->type($command)
+            ->type($input)
             ->shouldSeeStateStep($conversation, $shouldSeeStep)
             ->shouldSeeReply(...$shouldSeeReply)
             ->shouldSeeButtons(...$shouldSeeButtons)
@@ -316,7 +316,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         yield 'select plan & no currency step & payment method step' => [
             'currencyStep' => false,
             'paymentMethodStep' => true,
-            'command' => 'one_year - $20,00',
+            'input' => 'one_year - $20,00',
             'shouldSeeReply' => [
                 'query.payment_method',
             ],
@@ -332,7 +332,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         yield 'select plan & currency step & payment method step' => [
             'currencyStep' => true,
             'paymentMethodStep' => true,
-            'command' => 'one_year - $20,00',
+            'input' => 'one_year - $20,00',
             'shouldSeeReply' => [
                 'query.payment_method',
             ],
@@ -350,7 +350,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
     /**
      * @param bool $currencyStep
      * @param bool $paymentMethodStep
-     * @param string $command
+     * @param string $input
      * @param array $shouldSeeReply
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
@@ -360,7 +360,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
     public function testPaymentMethodStepSuccess(
         bool $currencyStep,
         bool $paymentMethodStep,
-        string $command,
+        string $input,
         array $shouldSeeReply,
         array $shouldSeeButtons,
         ?int $shouldSeeStep
@@ -387,7 +387,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         $previousPaymentCount = $paymentRepository->count([]);
 
         $this
-            ->type($command)
+            ->type($input)
             ->shouldSeeStateStep($conversation, $shouldSeeStep)
             ->shouldSeeReply(...$shouldSeeReply)
             ->shouldSeeButtons(...$shouldSeeButtons)
@@ -402,7 +402,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         yield 'select method & no currency step & payment method step' => [
             'currencyStep' => false,
             'paymentMethodStep' => true,
-            'command' => 'payment_method.portmone',
+            'input' => 'payment_method.portmone',
             'shouldSeeReply' => [
                 'query.payment',
             ],
@@ -417,7 +417,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         yield 'select method & currency step & payment method step' => [
             'currencyStep' => true,
             'paymentMethodStep' => true,
-            'command' => 'payment_method.portmone',
+            'input' => 'payment_method.portmone',
             'shouldSeeReply' => [
                 'query.payment',
             ],

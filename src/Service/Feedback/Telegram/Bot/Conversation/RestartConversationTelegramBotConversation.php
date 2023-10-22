@@ -73,9 +73,8 @@ class RestartConversationTelegramBotConversation extends TelegramBotConversation
 
         $message = $tg->trans('reply.canceled', domain: 'restart');
         $message = $tg->upsetText($message);
-        $message .= "\n";
 
-        return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
+        return $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
     }
 
     public function gotConfirm(TelegramBotAwareHelper $tg, Entity $entity): null

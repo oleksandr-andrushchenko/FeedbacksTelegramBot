@@ -174,9 +174,8 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
         $message = $tg->trans('reply.canceled', domain: 'search');
         $message = $tg->upsetText($message);
-        $message .= "\n";
 
-        return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
+        return $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
     }
 
     public function gotSearchTerm(TelegramBotAwareHelper $tg, Entity $entity): null

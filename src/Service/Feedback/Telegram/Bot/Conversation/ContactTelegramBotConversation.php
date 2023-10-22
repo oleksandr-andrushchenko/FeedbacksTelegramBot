@@ -144,9 +144,8 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
 
         $message = $tg->trans('reply.canceled', domain: 'contact');
         $message = $tg->upsetText($message);
-        $message .= "\n";
 
-        return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
+        return $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
     }
 
     public function gotMessage(TelegramBotAwareHelper $tg, Entity $entity): null

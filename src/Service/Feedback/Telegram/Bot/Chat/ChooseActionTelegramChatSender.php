@@ -21,24 +21,24 @@ class ChooseActionTelegramChatSender
     {
     }
 
-    public function sendActions(TelegramBotAwareHelper $tg, string $text = null, bool $prependDefault = false): null
+    public function sendActions(TelegramBotAwareHelper $tg, string $text = null, bool $appendDefault = false): null
     {
         $tg->reply(
-            $this->getQuery($tg, text: $text, prependDefault: $prependDefault),
+            $this->getQuery($tg, text: $text, appendDefault: $appendDefault),
             $this->getKeyboard($tg)
         );
 
         return null;
     }
 
-    public function getQuery(TelegramBotAwareHelper $tg, string $text = null, bool $prependDefault = false): string
+    public function getQuery(TelegramBotAwareHelper $tg, string $text = null, bool $appendDefault = false): string
     {
         if ($text === null) {
             return $this->getActionQuery($tg);
         }
 
-        if ($prependDefault) {
-            return $text . ' ' . $this->getActionQuery($tg);
+        if ($appendDefault) {
+            return $text . "\n" . $this->getActionQuery($tg);
         }
 
         return $text;

@@ -84,11 +84,10 @@ class SubscribeTelegramBotConversation extends TelegramBotConversation implement
 
         $message = $tg->trans('reply.canceled', domain: 'subscribe');
         $message = $tg->upsetText($message);
-        $message .= "\n";
 
         $tg->stopConversation($entity);
 
-        return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
+        return $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
     }
 
     public function getCurrencyQuery(TelegramBotAwareHelper $tg, bool $help = false): string

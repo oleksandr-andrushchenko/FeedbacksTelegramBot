@@ -131,9 +131,8 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
         $message = $tg->trans('reply.canceled', domain: 'create');
         $message = $tg->upsetText($message);
-        $message .= "\n";
 
-        return $this->chooseActionChatSender->sendActions($tg, text: $message, prependDefault: true);
+        return $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
     }
 
     public function getSearchTermQuery(TelegramBotAwareHelper $tg, bool $help = false): string

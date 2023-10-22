@@ -34,11 +34,11 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
     use FeedbackSearchTermTypeProviderTrait;
 
     /**
-     * @param string $command
+     * @param string $input
      * @return void
      * @dataProvider startSuccessDataProvider
      */
-    public function testStartSuccess(string $command): void
+    public function testStartSuccess(string $input): void
     {
         $this->bootFixtures([
             User::class,
@@ -47,7 +47,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         ]);
 
         $this
-            ->type($command)
+            ->type($input)
             ->shouldSeeStateStep(
                 $this->getConversation(),
                 CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED
@@ -65,18 +65,18 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
     public function startSuccessDataProvider(): Generator
     {
         yield 'button' => [
-            'command' => $this->command('create'),
+            'input' => $this->command('create'),
         ];
 
-        yield 'command' => [
-            'command' => FeedbackTelegramBotGroup::CREATE,
+        yield 'input' => [
+            'input' => FeedbackTelegramBotGroup::CREATE,
         ];
     }
 
     /**
      * @param SearchTermTransfer[]|null $searchTerms
      * @param Rating|null $rating
-     * @param string $command
+     * @param string $input
      * @param array $shouldSeeReplies
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
@@ -87,7 +87,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
     public function testSearchTermStep(
         ?array $searchTerms,
         ?Rating $rating,
-        string $command,
+        string $input,
         array $shouldSeeReplies,
         array $shouldSeeButtons,
         ?int $shouldSeeStep,
@@ -99,7 +99,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             $rating,
             null,
             CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED,
-            $command,
+            $input,
             $shouldSeeReplies,
             $shouldSeeButtons,
             $shouldSeeStep,
@@ -117,11 +117,11 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ['too long', str_repeat('q', 256 + 1), 'text.max_length'],
         ];
 
-        foreach ($validators as [$key, $command, $reply]) {
+        foreach ($validators as [$key, $input, $reply]) {
             yield 'type ' . $key . ' & empty search terms' => [
                 'searchTerms' => null,
                 'rating' => null,
-                'command' => $command,
+                'input' => $input,
                 'shouldSeeReplies' => [
                     $reply,
                     'query.search_term',
@@ -139,7 +139,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                     $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::person_name),
                 ],
                 'rating' => null,
-                'command' => $command,
+                'input' => $input,
                 'shouldSeeReplies' => [
                     $reply,
                     'query.search_term',
@@ -160,7 +160,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         yield 'type & empty search term & unknown type' => [
             'searchTerms' => null,
             'rating' => null,
-            'command' => $input = 'any_search_term',
+            'input' => $input = 'any_search_term',
             'shouldSeeReplies' => [
                 'query.search_term_type',
             ],
@@ -179,7 +179,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         yield 'type & empty search term & known type' => [
             'searchTerms' => null,
             'rating' => null,
-            'command' => $input = Fixtures::getMessengerUserProfileUrl(
+            'input' => $input = Fixtures::getMessengerUserProfileUrl(
                 $user = new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')
             ),
             'shouldSeeReplies' => [
@@ -202,7 +202,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
             ],
             'rating' => null,
-            'command' => $input = Fixtures::getMessengerUserProfileUrl(
+            'input' => $input = Fixtures::getMessengerUserProfileUrl(
                 $user = new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')
             ),
             'shouldSeeReplies' => [
@@ -228,7 +228,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::place_name),
             ],
             'rating' => null,
-            'command' => $input = Fixtures::getMessengerUserProfileUrl(
+            'input' => $input = Fixtures::getMessengerUserProfileUrl(
                 $user = new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')
             ),
             'shouldSeeReplies' => [
@@ -255,7 +255,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
             ],
             'rating' => null,
-            'command' => $this->removeButton($searchTerm->getText()),
+            'input' => $this->removeButton($searchTerm->getText()),
             'shouldSeeReplies' => [
                 'query.search_term',
             ],
@@ -273,7 +273,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::place_name),
             ],
             'rating' => null,
-            'command' => $this->removeButton($searchTerm1->getText()),
+            'input' => $this->removeButton($searchTerm1->getText()),
             'shouldSeeReplies' => [
                 'query.search_term',
             ],
@@ -294,7 +294,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::person_name),
             ],
             'rating' => null,
-            'command' => $this->nextButton(),
+            'input' => $this->nextButton(),
             'shouldSeeReplies' => [
                 'query.rating',
             ],
@@ -321,7 +321,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
             ],
             'rating' => null,
-            'command' => $this->nextButton(),
+            'input' => $this->nextButton(),
             'shouldSeeReplies' => [
                 'query.rating',
             ],
@@ -346,7 +346,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         yield 'help & empty search terms' => [
             'searchTerms' => null,
             'rating' => null,
-            'command' => $this->helpButton(),
+            'input' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
                 'query.search_term',
@@ -366,7 +366,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::person_name),
             ],
             'rating' => null,
-            'command' => $this->helpButton(),
+            'input' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
                 'query.extra_search_term',
@@ -390,7 +390,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 new SearchTermTransfer('15613145672', SearchTermType::phone_number),
             ],
             'rating' => null,
-            'command' => $this->cancelButton(),
+            'input' => $this->cancelButton(),
             'shouldSeeReplies' => [
                 'reply.canceled',
                 'query.action',
@@ -404,13 +404,13 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'shouldSeeSearchTerms' => null,
         ];
 
-        foreach ($validators as [$key, $command, $reply]) {
+        foreach ($validators as [$key, $input, $reply]) {
             yield 'type ' . $key . ' & empty extra search terms' => [
                 'searchTerms' => [
                     $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::person_name),
                 ],
                 'rating' => null,
-                'command' => $command,
+                'input' => $input,
                 'shouldSeeReplies' => [
                     $reply,
                     'query.extra_search_term',
@@ -433,7 +433,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                     $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::person_name),
                 ],
                 'rating' => null,
-                'command' => $command,
+                'input' => $input,
                 'shouldSeeReplies' => [
                     $reply,
                     'query.extra_search_term',
@@ -458,7 +458,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
             ],
             'rating' => null,
-            'command' => $input = 'any_search_term',
+            'input' => $input = 'any_search_term',
             'shouldSeeReplies' => [
                 'query.search_term_type',
             ],
@@ -480,7 +480,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
             ],
             'rating' => null,
-            'command' => $input = Fixtures::getMessengerUserProfileUrl(
+            'input' => $input = Fixtures::getMessengerUserProfileUrl(
                 $user = new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')
             ),
             'shouldSeeReplies' => [
@@ -506,7 +506,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::instagram_username),
             ],
             'rating' => null,
-            'command' => $input = Fixtures::getMessengerUserProfileUrl(
+            'input' => $input = Fixtures::getMessengerUserProfileUrl(
                 $user = new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')
             ),
             'shouldSeeReplies' => [
@@ -534,7 +534,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
             ],
             'rating' => null,
-            'command' => $this->removeButton($searchTerm2->getText()),
+            'input' => $this->removeButton($searchTerm2->getText()),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
@@ -557,7 +557,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm3 = new SearchTermTransfer('any_search_term3', SearchTermType::organization_name),
             ],
             'rating' => null,
-            'command' => $this->removeButton($searchTerm2->getText()),
+            'input' => $this->removeButton($searchTerm2->getText()),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
@@ -580,7 +580,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::person_name),
             ],
             'rating' => null,
-            'command' => $this->nextButton(),
+            'input' => $this->nextButton(),
             'shouldSeeReplies' => [
                 'query.rating',
             ],
@@ -606,7 +606,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::person_name),
             ],
             'rating' => $rating = Rating::random(),
-            'command' => $this->nextButton(),
+            'input' => $this->nextButton(),
             'shouldSeeReplies' => [
                 'query.rating',
             ],
@@ -633,7 +633,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::person_name),
             ],
             'rating' => null,
-            'command' => $this->helpButton(),
+            'input' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
                 'query.extra_search_term',
@@ -658,7 +658,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::person_name),
             ],
             'rating' => null,
-            'command' => $this->helpButton(),
+            'input' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
                 'query.extra_search_term',
@@ -684,7 +684,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::organization_name),
             ],
             'rating' => null,
-            'command' => $this->cancelButton(),
+            'input' => $this->cancelButton(),
             'shouldSeeReplies' => [
                 'reply.canceled',
                 'query.action',
@@ -703,7 +703,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
 
     /**
      * @param SearchTermTransfer[]|null $searchTerms
-     * @param string $command
+     * @param string $input
      * @param array $shouldSeeReplies
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
@@ -713,7 +713,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
      */
     public function testSearchTermTypeStep(
         ?array $searchTerms,
-        string $command,
+        string $input,
         array $shouldSeeReplies,
         array $shouldSeeButtons,
         ?int $shouldSeeStep,
@@ -725,7 +725,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             null,
             null,
             CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_TYPE_QUERIED,
-            $command,
+            $input,
             $shouldSeeReplies,
             $shouldSeeButtons,
             $shouldSeeStep,
@@ -744,7 +744,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                         SearchTermType::organization_name,
                     ]),
             ],
-            'command' => 'kjlk',
+            'input' => 'kjlk',
             'shouldSeeReplies' => [
                 'reply.wrong',
                 'query.search_term_type',
@@ -773,7 +773,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                         SearchTermType::organization_name,
                     ]),
             ],
-            'command' => $this->searchTermTypeButton(SearchTermType::tiktok_username),
+            'input' => $this->searchTermTypeButton(SearchTermType::tiktok_username),
             'shouldSeeReplies' => [
                 'reply.wrong',
                 'query.search_term_type',
@@ -800,7 +800,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                         SearchTermType::instagram_username,
                     ]),
             ],
-            'command' => $this->searchTermTypeButton($searchTerm->getTypes()[0]),
+            'input' => $this->searchTermTypeButton($searchTerm->getTypes()[0]),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
@@ -824,7 +824,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                         SearchTermType::instagram_username,
                     ]),
             ],
-            'command' => $this->searchTermTypeButton($searchTerm2->getTypes()[0]),
+            'input' => $this->searchTermTypeButton($searchTerm2->getTypes()[0]),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
@@ -849,7 +849,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                         SearchTermType::instagram_username,
                     ]),
             ],
-            'command' => $this->removeButton($searchTerm->getText()),
+            'input' => $this->removeButton($searchTerm->getText()),
             'shouldSeeReplies' => [
                 'query.search_term',
             ],
@@ -870,7 +870,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                         SearchTermType::instagram_username,
                     ]),
             ],
-            'command' => $this->removeButton($searchTerm3->getText()),
+            'input' => $this->removeButton($searchTerm3->getText()),
             'shouldSeeReplies' => [
                 'query.search_term',
             ],
@@ -897,7 +897,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                         SearchTermType::organization_name,
                     ]),
             ],
-            'command' => $this->helpButton(),
+            'input' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
                 'query.search_term_type',
@@ -929,7 +929,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                         SearchTermType::organization_name,
                     ]),
             ],
-            'command' => $this->helpButton(),
+            'input' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
                 'query.search_term_type',
@@ -956,7 +956,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'searchTerms' => [
                 new SearchTermTransfer('any_search_term'),
             ],
-            'command' => $this->cancelButton(),
+            'input' => $this->cancelButton(),
             'shouldSeeReplies' => [
                 'reply.canceled',
                 'query.action',
@@ -970,7 +970,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         ];
 
 
-        yield 'type unknown & multiple extra search terms' => [
+        yield 'type wrong & multiple extra search terms' => [
             'searchTerms' => [
                 $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::instagram_username),
                 $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::telegram_username),
@@ -980,7 +980,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                         SearchTermType::youtube_username,
                     ]),
             ],
-            'command' => 'unknown',
+            'input' => 'unknown',
             'shouldSeeReplies' => [
                 'reply.wrong',
                 'query.search_term_type',
@@ -1012,7 +1012,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                         SearchTermType::youtube_username,
                     ]),
             ],
-            'command' => $this->searchTermTypeButton(SearchTermType::telegram_username),
+            'input' => $this->searchTermTypeButton(SearchTermType::telegram_username),
             'shouldSeeReplies' => [
                 'reply.wrong',
                 'query.search_term_type',
@@ -1042,7 +1042,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                         SearchTermType::instagram_username,
                     ]),
             ],
-            'command' => $this->searchTermTypeButton($searchTerm2->getTypes()[0]),
+            'input' => $this->searchTermTypeButton($searchTerm2->getTypes()[0]),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
@@ -1070,7 +1070,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                         SearchTermType::tiktok_username,
                     ]),
             ],
-            'command' => $this->searchTermTypeButton($searchTerm3->getTypes()[count($searchTerm3->getTypes()) - 1]),
+            'input' => $this->searchTermTypeButton($searchTerm3->getTypes()[count($searchTerm3->getTypes()) - 1]),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
@@ -1099,7 +1099,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                         SearchTermType::youtube_username,
                     ]),
             ],
-            'command' => $this->removeButton($searchTerm2->getText()),
+            'input' => $this->removeButton($searchTerm2->getText()),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
@@ -1125,7 +1125,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                         SearchTermType::youtube_username,
                     ]),
             ],
-            'command' => $this->removeButton($searchTerm3->getText()),
+            'input' => $this->removeButton($searchTerm3->getText()),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
@@ -1153,7 +1153,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                         SearchTermType::organization_name,
                     ]),
             ],
-            'command' => $this->helpButton(),
+            'input' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
                 'query.search_term_type',
@@ -1187,7 +1187,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                         SearchTermType::youtube_username,
                     ]),
             ],
-            'command' => $this->helpButton(),
+            'input' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
                 'query.search_term_type',
@@ -1215,7 +1215,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'searchTerms' => [
                 new SearchTermTransfer('any_search_term', SearchTermType::car_number),
             ],
-            'command' => $this->cancelButton(),
+            'input' => $this->cancelButton(),
             'shouldSeeReplies' => [
                 'reply.canceled',
                 'query.action',
@@ -1234,7 +1234,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 new SearchTermTransfer('1563145672', SearchTermType::phone_number),
                 new SearchTermTransfer('any_search_term3', SearchTermType::telegram_username),
             ],
-            'command' => $this->cancelButton(),
+            'input' => $this->cancelButton(),
             'shouldSeeReplies' => [
                 'reply.canceled',
                 'query.action',
@@ -1252,7 +1252,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
      * @param SearchTermTransfer[]|null $searchTerms
      * @param Rating|null $rating
      * @param string|null $description
-     * @param string $command
+     * @param string $input
      * @param array $shouldSeeReplies
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
@@ -1263,7 +1263,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         ?array $searchTerms,
         ?Rating $rating,
         ?string $description,
-        string $command,
+        string $input,
         array $shouldSeeReplies,
         array $shouldSeeButtons,
         ?int $shouldSeeStep
@@ -1274,7 +1274,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             $rating,
             $description,
             CreateFeedbackTelegramBotConversation::STEP_RATING_QUERIED,
-            $command,
+            $input,
             $shouldSeeReplies,
             $shouldSeeButtons,
             $shouldSeeStep,
@@ -1284,13 +1284,13 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
 
     public function ratingStepDataProvider(): Generator
     {
-        yield 'type unknown & empty rating' => [
+        yield 'type wrong & empty rating' => [
             'searchTerms' => [
                 new SearchTermTransfer('any_search_term', SearchTermType::unknown),
             ],
             'rating' => null,
             'description' => null,
-            'command' => 'unknown',
+            'input' => 'unknown',
             'shouldSeeReplies' => [
                 'reply.wrong',
                 'query.rating',
@@ -1309,13 +1309,13 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'shouldSeeStep' => CreateFeedbackTelegramBotConversation::STEP_RATING_QUERIED,
         ];
 
-        yield 'type unknown & non-empty rating' => [
+        yield 'type wrong & non-empty rating' => [
             'searchTerms' => [
                 new SearchTermTransfer('any_search_term', SearchTermType::unknown),
             ],
             'rating' => $rating = Rating::random(),
             'description' => null,
-            'command' => 'unknown',
+            'input' => 'unknown',
             'shouldSeeReplies' => [
                 'reply.wrong',
                 'query.rating',
@@ -1341,7 +1341,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
-            'command' => $this->prevButton(),
+            'input' => $this->prevButton(),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
@@ -1362,7 +1362,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
-            'command' => $this->prevButton(),
+            'input' => $this->prevButton(),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
@@ -1383,7 +1383,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => null,
-            'command' => $this->nextButton(),
+            'input' => $this->nextButton(),
             'shouldSeeReplies' => [
                 'query.description',
             ],
@@ -1402,7 +1402,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => $description = 'any description',
-            'command' => $this->nextButton(),
+            'input' => $this->nextButton(),
             'shouldSeeReplies' => [
                 'query.description',
             ],
@@ -1422,7 +1422,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
-            'command' => $this->helpButton(),
+            'input' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
                 'query.rating',
@@ -1449,7 +1449,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => $rating = Rating::random(),
             'description' => 'any_description',
-            'command' => $this->helpButton(),
+            'input' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
                 'query.rating',
@@ -1477,7 +1477,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
-            'command' => $this->cancelButton(),
+            'input' => $this->cancelButton(),
             'shouldSeeReplies' => [
                 'reply.canceled',
                 'query.action',
@@ -1496,7 +1496,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => null,
             'description' => null,
-            'command' => $this->ratingButton(Rating::neutral),
+            'input' => $this->ratingButton(Rating::neutral),
             'shouldSeeReplies' => [
                 'query.description',
             ],
@@ -1515,7 +1515,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => $rating = Rating::neutral,
             'description' => null,
-            'command' => $this->selectedText($this->ratingButton($rating)),
+            'input' => $this->selectedText($this->ratingButton($rating)),
             'shouldSeeReplies' => [
                 'query.description',
             ],
@@ -1534,7 +1534,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => $rating = Rating::neutral,
             'description' => $description = 'any description',
-            'command' => $this->selectedText($this->ratingButton($rating)),
+            'input' => $this->selectedText($this->ratingButton($rating)),
             'shouldSeeReplies' => [
                 'query.description',
             ],
@@ -1554,7 +1554,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::satisfied,
             'description' => null,
-            'command' => $this->ratingButton(Rating::neutral),
+            'input' => $this->ratingButton(Rating::neutral),
             'shouldSeeReplies' => [
                 'query.description',
             ],
@@ -1573,7 +1573,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::satisfied,
             'description' => $description = 'any description',
-            'command' => $this->ratingButton(Rating::neutral),
+            'input' => $this->ratingButton(Rating::neutral),
             'shouldSeeReplies' => [
                 'query.description',
             ],
@@ -1592,7 +1592,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
      * @param SearchTermTransfer[]|null $searchTerms
      * @param Rating|null $rating
      * @param string|null $description
-     * @param string $command
+     * @param string $input
      * @param array $shouldSeeReplies
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
@@ -1603,7 +1603,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         ?array $searchTerms,
         ?Rating $rating,
         ?string $description,
-        string $command,
+        string $input,
         array $shouldSeeReplies,
         array $shouldSeeButtons,
         ?int $shouldSeeStep
@@ -1614,7 +1614,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             $rating,
             $description,
             CreateFeedbackTelegramBotConversation::STEP_DESCRIPTION_QUERIED,
-            $command,
+            $input,
             $shouldSeeReplies,
             $shouldSeeButtons,
             $shouldSeeStep,
@@ -1630,14 +1630,14 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ['too long', str_repeat('q', 2048 + 1), 'description.max_length'],
         ];
 
-        foreach ($validators as [$key, $command, $reply]) {
+        foreach ($validators as [$key, $input, $reply]) {
             yield 'type ' . $key . ' & empty description' => [
                 'searchTerms' => [
                     new SearchTermTransfer('any_search_term', SearchTermType::unknown),
                 ],
                 'rating' => Rating::random(),
                 'description' => null,
-                'command' => $command,
+                'input' => $input,
                 'shouldSeeReplies' => [
                     $reply,
                     'query.description',
@@ -1657,7 +1657,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 ],
                 'rating' => Rating::random(),
                 'description' => $description = 'any description',
-                'command' => $command,
+                'input' => $input,
                 'shouldSeeReplies' => [
                     $reply,
                     'query.description',
@@ -1679,7 +1679,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => $rating = Rating::random(),
             'description' => 'any_description',
-            'command' => $this->prevButton(),
+            'input' => $this->prevButton(),
             'shouldSeeReplies' => [
                 'query.rating',
             ],
@@ -1704,7 +1704,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
-            'command' => $this->nextButton(),
+            'input' => $this->nextButton(),
             'shouldSeeReplies' => [
                 'query.confirm',
             ],
@@ -1723,7 +1723,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => null,
-            'command' => $this->helpButton(),
+            'input' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
                 'query.description',
@@ -1745,7 +1745,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => $description = 'any description',
-            'command' => $this->helpButton(),
+            'input' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
                 'query.description',
@@ -1768,7 +1768,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
-            'command' => $this->cancelButton(),
+            'input' => $this->cancelButton(),
             'shouldSeeReplies' => [
                 'reply.canceled',
                 'query.action',
@@ -1787,7 +1787,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
-            'command' => 'any_description2',
+            'input' => 'any_description2',
             'shouldSeeReplies' => [
                 'query.confirm',
             ],
@@ -1806,7 +1806,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => $description = 'any description',
-            'command' => $this->removeButton($description),
+            'input' => $this->removeButton($description),
             'shouldSeeReplies' => [
                 'query.description',
             ],
@@ -1824,7 +1824,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
      * @param SearchTermTransfer[] $searchTerms
      * @param Rating $rating
      * @param string|null $description
-     * @param string $command
+     * @param string $input
      * @param array $shouldSeeReplies
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
@@ -1835,7 +1835,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         array $searchTerms,
         Rating $rating,
         ?string $description,
-        string $command,
+        string $input,
         array $shouldSeeReplies,
         array $shouldSeeButtons,
         ?int $shouldSeeStep
@@ -1846,7 +1846,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             $rating,
             $description,
             CreateFeedbackTelegramBotConversation::STEP_CONFIRM_QUERIED,
-            $command,
+            $input,
             $shouldSeeReplies,
             $shouldSeeButtons,
             $shouldSeeStep,
@@ -1856,13 +1856,13 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
 
     public function confirmStepDataProvider(): Generator
     {
-        yield 'type unknown' => [
+        yield 'type wrong' => [
             'searchTerms' => [
                 new SearchTermTransfer('any_search_term', SearchTermType::unknown),
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
-            'command' => 'unknown',
+            'input' => 'unknown',
             'shouldSeeReplies' => [
                 'reply.wrong',
                 'query.confirm',
@@ -1882,7 +1882,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
-            'command' => $this->yesButton(),
+            'input' => $this->yesButton(),
             'shouldSeeReplies' => [
                 'reply.created',
                 'query.send_to_channel_confirm',
@@ -1902,7 +1902,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => null,
-            'command' => $this->prevButton(),
+            'input' => $this->prevButton(),
             'shouldSeeReplies' => [
                 'query.description',
             ],
@@ -1921,7 +1921,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => $description = 'any description',
-            'command' => $this->prevButton(),
+            'input' => $this->prevButton(),
             'shouldSeeReplies' => [
                 'query.description',
             ],
@@ -1941,7 +1941,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
-            'command' => $this->helpButton(),
+            'input' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
                 'query.confirm',
@@ -1963,7 +1963,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
-            'command' => $this->cancelButton(),
+            'input' => $this->cancelButton(),
             'shouldSeeReplies' => [
                 'reply.canceled',
                 'query.action',
@@ -1981,7 +1981,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
      * @param SearchTermTransfer[] $searchTerms
      * @param Rating $rating
      * @param string|null $description
-     * @param string $command
+     * @param string $input
      * @param array $shouldSeeReplies
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
@@ -1992,7 +1992,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         array $searchTerms,
         Rating $rating,
         ?string $description,
-        string $command,
+        string $input,
         array $shouldSeeReplies,
         array $shouldSeeButtons,
         ?int $shouldSeeStep
@@ -2017,7 +2017,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         $conversation = $this->createConversation(CreateFeedbackTelegramBotConversation::class, $state);
 
         $this
-            ->type($command)
+            ->type($input)
             ->shouldSeeStateStep($conversation, $shouldSeeStep)
             ->shouldSeeReply(...$shouldSeeReplies)
             ->shouldSeeButtons(...$shouldSeeButtons)
@@ -2026,13 +2026,13 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
 
     public function sendToChannelConfirmStepDataProvider(): Generator
     {
-        yield 'type unknown' => [
+        yield 'type wrong' => [
             'searchTerms' => [
                 new SearchTermTransfer('any_search_term', SearchTermType::unknown),
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
-            'command' => 'unknown',
+            'input' => 'unknown',
             'shouldSeeReplies' => [
                 'reply.wrong',
                 'query.send_to_channel_confirm',
@@ -2052,7 +2052,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
-            'command' => $this->yesButton(),
+            'input' => $this->yesButton(),
             'shouldSeeReplies' => [
                 'reply.sent_to_channel',
             ],
@@ -2070,7 +2070,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
-            'command' => $this->noButton(),
+            'input' => $this->noButton(),
             'shouldSeeReplies' => [
                 'query.action',
             ],
@@ -2088,7 +2088,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
-            'command' => $this->helpButton(),
+            'input' => $this->helpButton(),
             'shouldSeeReplies' => [
                 'title',
                 'query.send_to_channel_confirm',
@@ -2110,7 +2110,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'rating' => Rating::random(),
             'description' => 'any_description',
-            'command' => $this->cancelButton(),
+            'input' => $this->cancelButton(),
             'shouldSeeReplies' => [
                 'reply.canceled',
                 'query.action',
@@ -2129,7 +2129,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
      * @param Rating|null $rating
      * @param string|null $description
      * @param int|null $stateStep
-     * @param string $command
+     * @param string $input
      * @param array $shouldSeeReplies
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
@@ -2141,7 +2141,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         ?Rating $rating,
         ?string $description,
         ?int $stateStep,
-        string $command,
+        string $input,
         array $shouldSeeReplies,
         array $shouldSeeButtons,
         ?int $shouldSeeStep,
@@ -2164,7 +2164,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         $conversation = $this->createConversation(CreateFeedbackTelegramBotConversation::class, $state);
 
         $this
-            ->type($command)
+            ->type($input)
             ->shouldSeeStateStep($conversation, $shouldSeeStep)
             ->shouldSeeSearchTerms($conversation, $shouldSeeSearchTerms)
             ->shouldSeeReply(...$shouldSeeReplies)
