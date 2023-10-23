@@ -23,7 +23,7 @@ class TelegramBotMatchesChatSender
     {
         $bots = $this->provider->getTelegramBotMatches(
             $tg->getBot()->getMessengerUser()->getUser(),
-            $tg->getBot()->getEntity()->getGroup()
+            $tg->getBot()->getEntity()
         );
 
         if (count($bots) === 0) {

@@ -6,7 +6,6 @@ namespace App\Service\Telegram\Bot;
 
 use App\Entity\Telegram\TelegramBot;
 use App\Entity\User\User;
-use App\Enum\Telegram\TelegramBotGroupName;
 use App\Repository\Telegram\Bot\TelegramBotRepository;
 
 class TelegramBotMatchesProvider
@@ -19,18 +18,18 @@ class TelegramBotMatchesProvider
 
     /**
      * @param User $user
-     * @param TelegramBotGroupName $group
+     * @param TelegramBot $bot
      * @return TelegramBot[]
      */
-    public function getTelegramBotMatches(User $user, TelegramBotGroupName $group): array
+    public function getTelegramBotMatches(User $user, TelegramBot $bot): array
     {
-        $bots = $this->repository->findPrimaryByGroup($group);
+        $bots = $this->repository->findPrimaryByGroup($bot->getGroup());
 
         if (count($bots) === 0) {
             return [];
         }
 
-        $bots = array_combine(array_map(fn (TelegramBot $bot) => $bot->getId(), $bots), $bots);
+        $bots = array_combine(array_map(static fn (TelegramBot $bot): int => $bot->getId(), $bots), $bots);
 
         $points = [];
 
@@ -49,8 +48,8 @@ class TelegramBotMatchesProvider
         $lastMaxPointsId = array_key_last($points);
         $maxPoints = $points[$lastMaxPointsId];
 
-        $maxPointsIds = array_keys(array_filter($points, fn (int $pts) => $pts === $maxPoints));
-        $bots = array_filter($bots, fn (TelegramBot $bot) => in_array($bot->getId(), $maxPointsIds, true));
+        $maxPointsIds = array_keys(array_filter($points, static fn (int $pts): bool => $pts === $maxPoints));
+        $bots = array_filter($bots, static fn (TelegramBot $bot): bool => in_array($bot->getId(), $maxPointsIds, true));
 
         return array_values($bots);
     }
