@@ -64,7 +64,7 @@ class Level1RegionProvider
         return $this->repository->findByCountry($countryCode);
     }
 
-    public function getLevel1RegionNameById(int $level1RegionId): ?string
+    public function getLevel1RegionNameById(string $level1RegionId): ?string
     {
         $level1Region = $this->repository->find($level1RegionId);
 
