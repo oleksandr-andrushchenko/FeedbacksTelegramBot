@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Entity;
+namespace App\Entity\Feedback\Command;
 
-readonly class CommandLimit
+readonly class FeedbackCommandLimit
 {
     public function __construct(
         private string $period,

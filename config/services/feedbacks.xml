@@ -19,7 +19,7 @@
             <parameter key="linkedin">https://www.linkedin.com/in/oleksandr-andrushchenko-26ab3078/</parameter>
         </parameter>
 
-        <parameter key="app.create_command_options" type="collection">
+        <parameter key="app.feedback_create_command_options" type="collection">
             <parameter key="limits" type="collection">
                 <parameter key="day">10</parameter>
                 <parameter key="month">200</parameter>
@@ -28,7 +28,7 @@
             <parameter key="log_activities">%app.log_activities_create_feedback%</parameter>
         </parameter>
 
-        <parameter key="app.search_command_options" type="collection">
+        <parameter key="app.feedback_search_command_options" type="collection">
             <parameter key="limits" type="collection">
                 <parameter key="day">5</parameter>
                 <parameter key="month">50</parameter>
@@ -37,7 +37,7 @@
             <parameter key="log_activities">%app.log_activities_search_feedback%</parameter>
         </parameter>
 
-        <parameter key="app.lookup_command_options" type="collection">
+        <parameter key="app.feedback_lookup_command_options" type="collection">
             <parameter key="limits" type="collection">
                 <parameter key="day">1</parameter>
                 <parameter key="month">30</parameter>
@@ -177,14 +177,14 @@
             <argument type="service" id="app.intl_currency_provider"/>
             <tag name="serializer.normalizer" priority="-966"/>
         </service>
-        <service id="app.feedback_command_options_factory" class="App\Service\Feedback\Command\CommandOptionsFactory"
-                 lazy="true"/>
+        <service id="app.feedback_command_options_factory"
+                 class="App\Service\Feedback\Command\FeedbackCommandOptionsFactory" lazy="true"/>
         <service id="app.feedback_command_statistic_provider_factory"
-                 class="App\Service\Feedback\Command\CommandStatisticProviderFactory" lazy="true">
-            <argument type="tagged_locator" tag="app.command_statistic_provider"/>
+                 class="App\Service\Feedback\Command\FeedbackCommandStatisticProviderFactory" lazy="true">
+            <argument type="tagged_locator" tag="app.feedback_command_statistic_provider"/>
         </service>
-        <service id="app.feedback_command_limits_checker" class="App\Service\Feedback\Command\CommandLimitsChecker"
-                 lazy="true">
+        <service id="app.feedback_command_limits_checker"
+                 class="App\Service\Feedback\Command\FeedbackCommandLimitsChecker" lazy="true">
             <argument>%app.check_feedbacks_limits%</argument>
         </service>
         <service id="app.feedback_telegram_reply_sign_view_provider"
@@ -194,7 +194,7 @@
             <argument type="service" id="translator"/>
         </service>
         <service id="app.feedback_creator" class="App\Service\Feedback\FeedbackCreator" lazy="true">
-            <argument type="service" id="app.create_command_options"/>
+            <argument type="service" id="app.feedback_create_command_options"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.validator"/>
             <argument type="service" id="app.feedback_statistic_provider"/>
@@ -205,7 +205,7 @@
             <argument type="service" id="app.event_bus"/>
         </service>
         <service id="app.feedback_search_creator" class="App\Service\Feedback\FeedbackSearchCreator" lazy="true">
-            <argument type="service" id="app.search_command_options"/>
+            <argument type="service" id="app.feedback_search_command_options"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.validator"/>
             <argument type="service" id="app.feedback_search_statistic_provider"/>
@@ -217,7 +217,7 @@
         </service>
         <service id="app.feedback_lookup_creator" class="App\Service\Feedback\FeedbackLookupCreator"
                  lazy="true">
-            <argument type="service" id="app.lookup_command_options"/>
+            <argument type="service" id="app.feedback_lookup_command_options"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.validator"/>
             <argument type="service" id="app.feedback_lookup_statistic_provider"/>
@@ -309,9 +309,9 @@
         </service>
         <service id="app.feedback_statistic_provider" class="App\Service\Feedback\Statistic\FeedbackStatisticProvider"
                  lazy="true">
-            <argument type="service" id="app.create_command_options"/>
+            <argument type="service" id="app.feedback_create_command_options"/>
             <argument type="service" id="app.feedback_repository"/>
-            <tag name="app.command_statistic_provider"/>
+            <tag name="app.feedback_command_statistic_provider"/>
         </service>
         <service id="app.feedback_subscription_manager"
                  class="App\Service\Feedback\Subscription\FeedbackSubscriptionManager" lazy="true">
@@ -323,15 +323,15 @@
         </service>
         <service id="app.feedback_search_statistic_provider"
                  class="App\Service\Feedback\Statistic\FeedbackSearchStatisticProvider" lazy="true">
-            <argument type="service" id="app.search_command_options"/>
+            <argument type="service" id="app.feedback_search_command_options"/>
             <argument type="service" id="app.feedback_search_repository"/>
-            <tag name="app.command_statistic_provider"/>
+            <tag name="app.feedback_command_statistic_provider"/>
         </service>
         <service id="app.feedback_lookup_statistic_provider"
                  class="App\Service\Feedback\Statistic\FeedbackLookupStatisticProvider" lazy="true">
-            <argument type="service" id="app.lookup_command_options"/>
+            <argument type="service" id="app.feedback_lookup_command_options"/>
             <argument type="service" id="app.feedback_lookup_repository"/>
-            <tag name="app.command_statistic_provider"/>
+            <tag name="app.feedback_command_statistic_provider"/>
         </service>
         <service id="app.search_term_provider"
                  class="App\Service\Feedback\SearchTerm\SearchTermProvider" lazy="true">
@@ -372,17 +372,17 @@
             <argument type="service" id="app.feedback_subscription_plan_provider"/>
             <argument type="service" id="app.feedback_subscription_manager"/>
         </service>
-        <service id="app.create_command_options" class="App\Entity\CommandOptions">
+        <service id="app.feedback_create_command_options" class="App\Entity\FeedbackCommandOptions">
             <factory service="app.feedback_command_options_factory"/>
-            <argument>%app.create_command_options%</argument>
+            <argument>%app.feedback_create_command_options%</argument>
         </service>
-        <service id="app.search_command_options" class="App\Entity\CommandOptions">
+        <service id="app.feedback_search_command_options" class="App\Entity\FeedbackCommandOptions">
             <factory service="app.feedback_command_options_factory"/>
-            <argument>%app.search_command_options%</argument>
+            <argument>%app.feedback_search_command_options%</argument>
         </service>
-        <service id="app.lookup_command_options" class="App\Entity\CommandOptions">
+        <service id="app.feedback_lookup_command_options" class="App\Entity\FeedbackCommandOptions">
             <factory service="app.feedback_command_options_factory"/>
-            <argument>%app.lookup_command_options%</argument>
+            <argument>%app.feedback_lookup_command_options%</argument>
         </service>
         <service id="app.feedback_search_term_type_provider"
                  class="App\Service\Feedback\SearchTerm\SearchTermTypeProvider" lazy="true">
@@ -425,9 +425,9 @@
             <argument type="service" id="app.subscription_telegram_view_provider"/>
             <argument type="service" id="app.intl_time_provider"/>
             <argument type="service" id="app.feedback_subscription_plan_provider"/>
-            <argument type="service" id="app.create_command_options"/>
-            <argument type="service" id="app.search_command_options"/>
-            <argument type="service" id="app.lookup_command_options"/>
+            <argument type="service" id="app.feedback_create_command_options"/>
+            <argument type="service" id="app.feedback_search_command_options"/>
+            <argument type="service" id="app.feedback_lookup_command_options"/>
             <tag name="app.telegram_group" group="feedbacks"/>
         </service>
         <service id="app.telegram_conversation_country"
@@ -551,7 +551,7 @@
         <service id="app.feedback_created_activity_logger"
                  class="App\Message\EventHandler\Feedback\FeedbackCreatedActivityLogger" lazy="true">
             <argument type="service" id="app.feedback_repository"/>
-            <argument type="service" id="app.create_command_options"/>
+            <argument type="service" id="app.feedback_create_command_options"/>
             <argument type="service" id="app.activity_logger"/>
             <argument type="service" id="logger"/>
             <tag name="messenger.message_handler" handles="App\Message\Event\Feedback\FeedbackCreatedEvent"
@@ -572,7 +572,7 @@
         <service id="app.feedback_lookup_created_activity_logger"
                  class="App\Message\EventHandler\Feedback\FeedbackLookupCreatedActivityLogger" lazy="true">
             <argument type="service" id="app.feedback_lookup_repository"/>
-            <argument type="service" id="app.lookup_command_options"/>
+            <argument type="service" id="app.feedback_lookup_command_options"/>
             <argument type="service" id="app.activity_logger"/>
             <argument type="service" id="logger"/>
             <tag name="messenger.message_handler" handles="App\Message\Event\Feedback\FeedbackLookupCreatedEvent"
@@ -581,7 +581,7 @@
         <service id="app.feedback_search_created_activity_logger"
                  class="App\Message\EventHandler\Feedback\FeedbackSearchCreatedActivityLogger" lazy="true">
             <argument type="service" id="app.feedback_search_repository"/>
-            <argument type="service" id="app.search_command_options"/>
+            <argument type="service" id="app.feedback_search_command_options"/>
             <argument type="service" id="app.activity_logger"/>
             <argument type="service" id="logger"/>
             <tag name="messenger.message_handler" handles="App\Message\Event\Feedback\FeedbackSearchCreatedEvent"

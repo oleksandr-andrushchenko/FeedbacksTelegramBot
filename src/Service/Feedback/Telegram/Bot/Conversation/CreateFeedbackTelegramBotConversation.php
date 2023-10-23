@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace App\Service\Feedback\Telegram\Bot\Conversation;
 
-use App\Entity\CommandLimit;
+use App\Entity\Feedback\Command\FeedbackCommandLimit;
 use App\Entity\Feedback\Telegram\Bot\CreateFeedbackTelegramBotConversationState;
 use App\Entity\Telegram\TelegramBotConversation as Entity;
 use App\Entity\Telegram\TelegramChannel;
 use App\Enum\Feedback\Rating;
 use App\Enum\Feedback\SearchTermType;
-use App\Exception\CommandLimitExceededException;
+use App\Exception\Feedback\FeedbackCommandLimitExceededException;
 use App\Exception\Messenger\SameMessengerUserException;
 use App\Exception\ValidatorException;
 use App\Message\Event\Feedback\FeedbackSendToTelegramChannelConfirmReceivedEvent;
 use App\Repository\Feedback\FeedbackRepository;
 use App\Service\Feedback\FeedbackCreator;
 use App\Service\Feedback\Rating\FeedbackRatingProvider;
-use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Service\Feedback\SearchTerm\SearchTermParserOnlyInterface;
+use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Service\Feedback\Telegram\Bot\Chat\ChooseActionTelegramChatSender;
 use App\Service\Feedback\Telegram\Bot\View\FeedbackTelegramViewProvider;
 use App\Service\Feedback\Telegram\View\MultipleSearchTermTelegramViewProvider;
@@ -773,7 +773,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         return $tg->reply($message, $tg->keyboard(...$buttons))->null();
     }
 
-    public function getLimitExceededReply(TelegramBotAwareHelper $tg, CommandLimit $limit): string
+    public function getLimitExceededReply(TelegramBotAwareHelper $tg, FeedbackCommandLimit $limit): string
     {
         return $tg->view('command_limit_exceeded', [
             'command' => 'create',
@@ -894,7 +894,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $tg->reply($message);
 
             return $this->querySearchTerm($tg);
-        } catch (CommandLimitExceededException $exception) {
+        } catch (FeedbackCommandLimitExceededException $exception) {
             $message = $this->getLimitExceededReply($tg, $exception->getLimit());
 
             $tg->reply($message);

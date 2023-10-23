@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Service\Feedback\Command;
 
 use App\Entity\User\User;
-use App\Exception\CommandLimitExceededException;
+use App\Exception\Feedback\FeedbackCommandLimitExceededException;
 
-class CommandLimitsChecker
+class FeedbackCommandLimitsChecker
 {
     public function __construct(
         private readonly bool $checkLimits,
@@ -17,11 +17,11 @@ class CommandLimitsChecker
 
     /**
      * @param User $user
-     * @param CommandStatisticProviderInterface $statisticProvider
+     * @param FeedbackCommandStatisticProviderInterface $statisticProvider
      * @return void
-     * @throws CommandLimitExceededException
+     * @throws FeedbackCommandLimitExceededException
      */
-    public function checkCommandLimits(User $user, CommandStatisticProviderInterface $statisticProvider): void
+    public function checkCommandLimits(User $user, FeedbackCommandStatisticProviderInterface $statisticProvider): void
     {
         if (!$this->checkLimits) {
             return;
@@ -45,7 +45,7 @@ class CommandLimitsChecker
             }
 
             if ($current >= $count) {
-                throw new CommandLimitExceededException($limit);
+                throw new FeedbackCommandLimitExceededException($limit);
             }
         }
     }

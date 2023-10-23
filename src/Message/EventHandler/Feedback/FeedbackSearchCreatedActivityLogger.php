@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Message\EventHandler\Feedback;
 
-use App\Entity\CommandOptions;
+use App\Entity\Feedback\Command\FeedbackCommandOptions;
 use App\Message\Event\Feedback\FeedbackSearchCreatedEvent;
 use App\Repository\Feedback\FeedbackSearchRepository;
 use Psr\Log\LoggerInterface;
@@ -13,7 +13,7 @@ class FeedbackSearchCreatedActivityLogger
 {
     public function __construct(
         private readonly FeedbackSearchRepository $searchRepository,
-        private readonly CommandOptions $options,
+        private readonly FeedbackCommandOptions $options,
         private readonly LoggerInterface $activityLogger,
         private readonly LoggerInterface $logger,
     )

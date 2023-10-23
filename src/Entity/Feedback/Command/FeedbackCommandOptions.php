@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Entity;
+namespace App\Entity\Feedback\Command;
 
-readonly class CommandOptions
+readonly class FeedbackCommandOptions
 {
     public function __construct(
         private array $limits,
@@ -14,7 +14,7 @@ readonly class CommandOptions
     }
 
     /**
-     * @return CommandLimit[]
+     * @return FeedbackCommandLimit[]
      */
     public function getLimits(): array
     {

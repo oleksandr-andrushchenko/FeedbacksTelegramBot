@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Service\Feedback\Telegram\Bot;
 
-use App\Entity\CommandOptions;
-use App\Entity\Telegram\TelegramBotCommand;
+use App\Entity\Feedback\Command\FeedbackCommandOptions;
 use App\Entity\Telegram\ErrorTelegramBotCommand;
 use App\Entity\Telegram\FallbackTelegramBotCommand;
+use App\Entity\Telegram\TelegramBotCommand;
 use App\Entity\Telegram\TelegramBotPayment;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionPlanProvider;
@@ -72,9 +72,9 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
         private readonly SubscriptionTelegramViewProvider $subscriptionViewProvider,
         private readonly TimeProvider $timeProvider,
         private readonly FeedbackSubscriptionPlanProvider $subscriptionPlanProvider,
-        private readonly CommandOptions $createOptions,
-        private readonly CommandOptions $searchOptions,
-        private readonly CommandOptions $lookupOptions,
+        private readonly FeedbackCommandOptions $createOptions,
+        private readonly FeedbackCommandOptions $searchOptions,
+        private readonly FeedbackCommandOptions $lookupOptions,
     )
     {
         parent::__construct($awareHelper, $conversationFactory);

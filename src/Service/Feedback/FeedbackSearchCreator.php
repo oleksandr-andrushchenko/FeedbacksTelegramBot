@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Service\Feedback;
 
-use App\Entity\CommandOptions;
+use App\Entity\Feedback\Command\FeedbackCommandOptions;
 use App\Entity\Feedback\FeedbackSearch;
-use App\Exception\CommandLimitExceededException;
+use App\Exception\Feedback\FeedbackCommandLimitExceededException;
 use App\Exception\ValidatorException;
 use App\Message\Event\Feedback\FeedbackSearchCreatedEvent;
-use App\Service\Feedback\Command\CommandLimitsChecker;
-use App\Service\Feedback\Command\CommandStatisticProviderInterface;
+use App\Service\Feedback\Command\FeedbackCommandLimitsChecker;
+use App\Service\Feedback\Command\FeedbackCommandStatisticProviderInterface;
 use App\Service\Feedback\SearchTerm\FeedbackSearchTermUpserter;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\IdGenerator;
@@ -22,11 +22,11 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class FeedbackSearchCreator
 {
     public function __construct(
-        private readonly CommandOptions $options,
+        private readonly FeedbackCommandOptions $options,
         private readonly EntityManagerInterface $entityManager,
         private readonly Validator $validator,
-        private readonly CommandStatisticProviderInterface $statisticProvider,
-        private readonly CommandLimitsChecker $limitsChecker,
+        private readonly FeedbackCommandStatisticProviderInterface $statisticProvider,
+        private readonly FeedbackCommandLimitsChecker $limitsChecker,
         private readonly FeedbackSubscriptionManager $subscriptionManager,
         private readonly FeedbackSearchTermUpserter $termUpserter,
         private readonly IdGenerator $idGenerator,
@@ -35,7 +35,7 @@ class FeedbackSearchCreator
     {
     }
 
-    public function getOptions(): CommandOptions
+    public function getOptions(): FeedbackCommandOptions
     {
         return $this->options;
     }
@@ -43,7 +43,7 @@ class FeedbackSearchCreator
     /**
      * @param FeedbackSearchTransfer $transfer
      * @return FeedbackSearch
-     * @throws CommandLimitExceededException
+     * @throws FeedbackCommandLimitExceededException
      * @throws ValidatorException
      */
     public function createFeedbackSearch(FeedbackSearchTransfer $transfer): FeedbackSearch

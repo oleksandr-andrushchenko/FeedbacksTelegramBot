@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Service\Feedback\Statistic;
 
-use App\Entity\CommandOptions;
+use App\Entity\Feedback\Command\FeedbackCommandOptions;
 use App\Entity\User\User;
 use App\Repository\Feedback\FeedbackLookupRepository;
-use App\Service\Feedback\Command\CommandStatisticProviderInterface;
+use App\Service\Feedback\Command\FeedbackCommandStatisticProviderInterface;
 use DateTimeImmutable;
 use Generator;
 
-class FeedbackLookupStatisticProvider implements CommandStatisticProviderInterface
+class FeedbackLookupStatisticProvider implements FeedbackCommandStatisticProviderInterface
 {
     public function __construct(
-        private readonly CommandOptions $options,
+        private readonly FeedbackCommandOptions $options,
         private readonly FeedbackLookupRepository $repository,
     )
     {

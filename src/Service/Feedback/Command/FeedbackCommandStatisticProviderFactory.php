@@ -6,7 +6,7 @@ namespace App\Service\Feedback\Command;
 
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
-class CommandStatisticProviderFactory
+class FeedbackCommandStatisticProviderFactory
 {
     public function __construct(
         private readonly ServiceLocator $serviceLocator,
@@ -14,7 +14,7 @@ class CommandStatisticProviderFactory
     {
     }
 
-    public function __invoke(string $class): CommandStatisticProviderInterface
+    public function __invoke(string $class): FeedbackCommandStatisticProviderInterface
     {
         return $this->serviceLocator->get($class);
     }

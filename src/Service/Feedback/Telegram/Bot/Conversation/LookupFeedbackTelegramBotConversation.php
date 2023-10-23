@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Service\Feedback\Telegram\Bot\Conversation;
 
-use App\Entity\CommandLimit;
+use App\Entity\Feedback\Command\FeedbackCommandLimit;
 use App\Entity\Feedback\Telegram\Bot\LookupFeedbackTelegramBotConversationState;
 use App\Entity\Telegram\TelegramBotConversation as Entity;
 use App\Enum\Feedback\SearchTermType;
-use App\Exception\CommandLimitExceededException;
+use App\Exception\Feedback\FeedbackCommandLimitExceededException;
 use App\Exception\ValidatorException;
 use App\Service\Feedback\FeedbackLookupCreator;
 use App\Service\Feedback\FeedbackSearchSearcher;
-use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Service\Feedback\SearchTerm\SearchTermParserOnlyInterface;
+use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Service\Feedback\Telegram\Bot\Chat\ChooseActionTelegramChatSender;
 use App\Service\Feedback\Telegram\Bot\View\FeedbackSearchTelegramViewProvider;
 use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
@@ -439,7 +439,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
         return $tg->trans('reply.title', $parameters, domain: 'lookup');
     }
 
-    public function getLimitExceededReply(TelegramBotAwareHelper $tg, CommandLimit $limit): string
+    public function getLimitExceededReply(TelegramBotAwareHelper $tg, FeedbackCommandLimit $limit): string
     {
         return $tg->view('command_limit_exceeded', [
             'command' => 'lookup',
@@ -496,7 +496,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $tg->replyWarning($exception->getFirstMessage());
 
             return $this->querySearchTerm($tg);
-        } catch (CommandLimitExceededException $exception) {
+        } catch (FeedbackCommandLimitExceededException $exception) {
             $message = $this->getLimitExceededReply($tg, $exception->getLimit());
 
             $tg->reply($message);
