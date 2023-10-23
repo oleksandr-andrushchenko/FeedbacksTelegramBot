@@ -71,3 +71,4 @@
 * Add confirm extra details step for create command ??
 * Make validators configurable via settings (options)
 * More money: lock feedbacks and ask money for it
+* Apply optimization tricks/tips for symfony prod application
