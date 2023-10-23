@@ -25,7 +25,6 @@ use App\Service\Util\String\MbLcFirster;
 use App\Service\Validator;
 use App\Transfer\Feedback\FeedbackSearchTransfer;
 use App\Transfer\Feedback\SearchTermTransfer;
-use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
 /**
@@ -48,7 +47,6 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
         private readonly SearchTermTypeProvider $searchTermTypeProvider,
         private readonly FeedbackSearchCreator $creator,
         private readonly FeedbackSearcher $searcher,
-        private readonly EntityManagerInterface $entityManager,
         private readonly FeedbackTelegramViewProvider $feedbackViewProvider,
         private readonly MbLcFirster $lcFirster,
         private readonly bool $searchTermTypeStep,
@@ -455,6 +453,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $this->validator->validate($this->state->getSearchTerm());
             $this->validator->validate($this->state);
 
+            // todo: use command bus
             $feedbackSearch = $this->creator->createFeedbackSearch(
                 new FeedbackSearchTransfer(
                     $tg->getBot()->getMessengerUser(),
@@ -462,7 +461,6 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
                     $tg->getBot()->getEntity()
                 )
             );
-            $this->entityManager->flush();
 
             $feedbacks = $this->searcher->searchFeedbacks($feedbackSearch);
             $count = count($feedbacks);

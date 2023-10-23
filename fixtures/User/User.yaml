@@ -1,6 +1,7 @@
 App\Entity\User\User:
   user_1:
     __construct:
+      id: user1
       username: user_1
       name: User 1 First Last
       countryCode: ua
@@ -12,6 +13,7 @@ App\Entity\User\User:
       email: null
   user_2:
     __construct:
+      id: user2
       username: user_2
       name: User 2 First Last
       countryCode: ua
@@ -23,6 +25,7 @@ App\Entity\User\User:
       email: null
   user_3:
     __construct:
+      id: user3
       username: user_3
       name: User 3 First Last
       countryCode: ua

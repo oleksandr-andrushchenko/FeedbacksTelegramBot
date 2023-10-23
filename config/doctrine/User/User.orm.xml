@@ -3,20 +3,18 @@
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
         https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
     <entity name="App\Entity\User\User" repository-class="App\Repository\User\UserRepository" table="users">
-        <id name="id" column="id" type="integer">
-            <generator/>
-            <options>
-                <option name="unsigned">true</option>
-            </options>
-        </id>
+
+        <id name="id" column="id" type="string" length="32"/>
+
         <field name="name" column="name" nullable="true"/>
         <field name="username" column="username" nullable="true"/>
         <field name="localeCode" column="locale_code" length="2" nullable="true"/>
         <field name="countryCode" column="country_code" length="2" nullable="true"/>
         <field name="locationLatitude" column="location_latitude" length="20" nullable="true"/>
         <field name="locationLongitude" column="location_longitude" length="20" nullable="true"/>
-        <field name="level1RegionId" column="level_1_region_id" nullable="true"/>
+        <field name="level1RegionId" column="level_1_region_id" length="32" nullable="true"/>
         <field name="currencyCode" column="currency_code" length="3" nullable="true"/>
         <field name="timezone" column="timezone" length="32" nullable="true"/>
         <field name="phoneNumber" column="phone_number" type="bigint" nullable="true">

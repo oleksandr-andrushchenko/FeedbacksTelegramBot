@@ -13,7 +13,6 @@ use App\Service\Telegram\Bot\Conversation\TelegramBotConversationManager;
 use App\Service\Telegram\Bot\Group\TelegramBotGroupRegistry;
 use App\Service\Telegram\Bot\Payment\TelegramBotPaymentManager;
 use App\Service\Telegram\Bot\View\TelegramBotLinkViewProvider;
-use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\TelegramLog;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,7 +32,6 @@ class TelegramBotUpdateHandler
         private readonly TelegramBotPaymentManager $paymentManager,
         private readonly TelegramBotLocaleSwitcher $localeSwitcher,
         private readonly TelegramBotInputProvider $inputProvider,
-        private readonly EntityManagerInterface $entityManager,
         private readonly TelegramBotRegistry $registry,
         private readonly TelegramBotRepository $botRepository,
         private readonly TelegramBotAwareHelper $awareHelper,
@@ -68,7 +66,7 @@ class TelegramBotUpdateHandler
         }
 
         $messengerUser = $this->messengerUserUpserter->upsertTelegramMessengerUser($bot);
-        $this->entityManager->flush();
+
         $bot->setMessengerUser($messengerUser);
         $this->localeSwitcher->syncLocale($bot, $request);
 

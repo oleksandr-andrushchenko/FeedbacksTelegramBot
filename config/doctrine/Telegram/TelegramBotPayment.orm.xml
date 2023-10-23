@@ -7,13 +7,8 @@
     <entity name="App\Entity\Telegram\TelegramBotPayment"
             repository-class="App\Repository\Telegram\Bot\TelegramBotPaymentRepository" table="telegram_payments">
 
-        <id name="id" column="id" type="bigint">
-            <generator/>
-            <options>
-                <option name="unsigned">true</option>
-            </options>
-        </id>
-        <field name="uuid" column="uuid" length="32" unique="true"/>
+        <id name="id" column="id" type="string" length="32"/>
+
         <many-to-one field="messengerUser" target-entity="App\Entity\Messenger\MessengerUser"/>
         <field name="chatId" column="chat_id" type="bigint"/>
         <many-to-one field="method" target-entity="App\Entity\Telegram\TelegramBotPaymentMethod"/>

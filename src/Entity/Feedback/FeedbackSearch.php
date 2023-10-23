@@ -9,10 +9,12 @@ use App\Entity\Telegram\TelegramBot;
 use App\Entity\User\User;
 use DateTimeImmutable;
 use DateTimeInterface;
+use Stringable;
 
-class FeedbackSearch
+class FeedbackSearch implements Stringable
 {
     public function __construct(
+        private readonly string $id,
         private readonly User $user,
         private readonly MessengerUser $messengerUser,
         private readonly FeedbackSearchTerm $searchTerm,
@@ -21,12 +23,11 @@ class FeedbackSearch
         private readonly ?string $localeCode = null,
         private readonly ?TelegramBot $telegramBot = null,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
-        private ?int $id = null,
     )
     {
     }
 
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
     }
@@ -69,5 +70,10 @@ class FeedbackSearch
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getId();
     }
 }

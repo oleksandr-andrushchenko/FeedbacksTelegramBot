@@ -9,22 +9,23 @@ use App\Entity\Telegram\TelegramBotPayment;
 use App\Enum\Feedback\FeedbackSubscriptionPlanName;
 use DateTimeImmutable;
 use DateTimeInterface;
+use Stringable;
 
-class FeedbackUserSubscription
+class FeedbackUserSubscription implements Stringable
 {
     public function __construct(
+        private readonly string $id,
         private readonly MessengerUser $messengerUser,
         private readonly FeedbackSubscriptionPlanName $subscriptionPlan,
         private readonly DateTimeInterface $expireAt,
         private readonly ?TelegramBotPayment $payment = null,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
-        private ?int $id = null,
     )
     {
     }
 
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
     }
@@ -64,5 +65,10 @@ class FeedbackUserSubscription
         $this->updatedAt = $updatedAt;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getId();
     }
 }

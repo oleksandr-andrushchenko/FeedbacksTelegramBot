@@ -17,6 +17,7 @@
         <service id="app.level_1_region_upserter" class="App\Service\Address\Level1RegionUpserter" lazy="true">
             <argument type="service" id="app.level_1_region_repository"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.id_generator"/>
         </service>
         <service id="app.level_1_region_provider" class="App\Service\Address\Level1RegionProvider" lazy="true">
             <argument type="service" id="app.google_address_geocoder"/>

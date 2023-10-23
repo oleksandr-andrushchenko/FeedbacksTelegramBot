@@ -16,7 +16,7 @@ class TelegramChannel
         private string $name,
         private string $countryCode,
         private string $localeCode,
-        private ?int $level1RegionId = null,
+        private ?string $level1RegionId = null,
         private ?int $chatId = null,
         private bool $primary = true,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
@@ -73,7 +73,7 @@ class TelegramChannel
         return $this;
     }
 
-    public function getLevel1RegionId(): ?int
+    public function getLevel1RegionId(): ?string
     {
         return $this->level1RegionId;
     }

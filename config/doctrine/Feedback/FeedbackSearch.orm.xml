@@ -7,12 +7,7 @@
     <entity name="App\Entity\Feedback\FeedbackSearch"
             repository-class="App\Repository\Feedback\FeedbackSearchRepository" table="feedback_searches">
 
-        <id name="id" column="id" type="integer">
-            <generator/>
-            <options>
-                <option name="unsigned">true</option>
-            </options>
-        </id>
+        <id name="id" column="id" type="string" length="32"/>
 
         <many-to-one field="user" target-entity="App\Entity\User\User"/>
         <many-to-one field="messengerUser" target-entity="App\Entity\Messenger\MessengerUser"/>

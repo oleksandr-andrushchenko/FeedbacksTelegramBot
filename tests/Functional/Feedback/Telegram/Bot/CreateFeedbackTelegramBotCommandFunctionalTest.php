@@ -2010,7 +2010,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ->setSearchTerms($searchTerms)
             ->setRating($rating)
             ->setDescription($description)
-            ->setCreatedId(1)
+            ->setCreatedId('feedback1')
             ->setStep(CreateFeedbackTelegramBotConversation::STEP_SEND_TO_CHANNEL_CONFIRM_QUERIED)
         ;
 

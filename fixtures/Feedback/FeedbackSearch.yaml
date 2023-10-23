@@ -1,6 +1,7 @@
 App\Entity\Feedback\FeedbackSearch:
   feedback_search_13_telegram_instagram_profile_url:
     __construct:
+      id: feedback_search1
       user: '@user_1'
       messengerUser: '@messenger_user_1_telegram'
       searchTerm: '@feedback_search_term_instagram_profile_url_3'
@@ -10,6 +11,7 @@ App\Entity\Feedback\FeedbackSearch:
       telegramBot: null
   feedback_search_23_telegram_instagram_username:
     __construct:
+      id: feedback_search2
       user: '@user_2'
       messengerUser: '@messenger_user_2_telegram'
       searchTerm: '@feedback_search_term_instagram_username_3'

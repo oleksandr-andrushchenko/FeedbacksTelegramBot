@@ -85,6 +85,7 @@
                  class="App\Repository\Feedback\FeedbackSearchSearchRepository">
             <argument type="service" id="doctrine"/>
         </service>
+        <service id="app.feedback_lookup_repository" alias="app.feedback_search_search_repository"/>
         <service id="app.feedback_user_subscription_repository"
                  class="App\Repository\Feedback\FeedbackUserSubscriptionRepository">
             <argument type="service" id="doctrine"/>
@@ -132,6 +133,14 @@
         <service id="app.feedback_search_normalizer" class="App\Serializer\Feedback\FeedbackSearchNormalizer"
                  lazy="true">
             <tag name="serializer.normalizer" priority="-985"/>
+        </service>
+        <service id="app.feedback_lookup_normalizer" class="App\Serializer\Feedback\FeedbackLookupNormalizer"
+                 lazy="true">
+            <tag name="serializer.normalizer" priority="-984"/>
+        </service>
+        <service id="app.feedback_user_subscription_normalizer"
+                 class="App\Serializer\Feedback\FeedbackUserSubscriptionNormalizer" lazy="true">
+            <tag name="serializer.normalizer" priority="-983"/>
         </service>
         <service id="app.telegram_bot_conversation_state_search_feedback_normalizer"
                  class="App\Serializer\Feedback\Telegram\Bot\SearchFeedbackTelegramBotConversationStateNormalizer"
@@ -185,14 +194,6 @@
             <argument type="service" id="app.messenger_user_profile_url_provider"/>
             <argument type="service" id="translator"/>
         </service>
-        <service id="app.telegram_channel_feedback_activity_publisher"
-                 class="App\Service\Feedback\Telegram\Bot\Activity\TelegramChannelFeedbackActivityPublisher"
-                 lazy="true">
-            <argument type="service" id="app.telegram_channel_matches_provider"/>
-            <argument type="service" id="app.telegram_bot_message_sender"/>
-            <argument type="service" id="app.feedback_telegram_view_provider"/>
-            <argument type="service" id="logger"/>
-        </service>
         <service id="app.feedback_creator" class="App\Service\Feedback\FeedbackCreator" lazy="true">
             <argument type="service" id="app.create_command_options"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
@@ -200,8 +201,9 @@
             <argument type="service" id="app.feedback_statistic_provider"/>
             <argument type="service" id="app.feedback_command_limits_checker"/>
             <argument type="service" id="app.feedback_subscription_manager"/>
-            <argument type="service" id="app.logger_activity"/>
             <argument type="service" id="app.feedback_search_term_upserter"/>
+            <argument type="service" id="app.id_generator"/>
+            <argument type="service" id="app.event_bus"/>
         </service>
         <service id="app.feedback_search_creator" class="App\Service\Feedback\FeedbackSearchCreator" lazy="true">
             <argument type="service" id="app.search_command_options"/>
@@ -210,8 +212,9 @@
             <argument type="service" id="app.feedback_search_statistic_provider"/>
             <argument type="service" id="app.feedback_command_limits_checker"/>
             <argument type="service" id="app.feedback_subscription_manager"/>
-            <argument type="service" id="app.logger_activity"/>
             <argument type="service" id="app.feedback_search_term_upserter"/>
+            <argument type="service" id="app.id_generator"/>
+            <argument type="service" id="app.event_bus"/>
         </service>
         <service id="app.feedback_search_search_creator" class="App\Service\Feedback\FeedbackSearchSearchCreator"
                  lazy="true">
@@ -221,8 +224,9 @@
             <argument type="service" id="app.feedback_search_search_statistic_provider"/>
             <argument type="service" id="app.feedback_command_limits_checker"/>
             <argument type="service" id="app.feedback_subscription_manager"/>
-            <argument type="service" id="app.logger_activity"/>
             <argument type="service" id="app.feedback_search_term_upserter"/>
+            <argument type="service" id="app.id_generator"/>
+            <argument type="service" id="app.event_bus"/>
         </service>
         <service id="app.feedback_searcher" class="App\Service\Feedback\FeedbackSearcher" lazy="true">
             <argument type="service" id="app.feedback_repository"/>
@@ -315,6 +319,8 @@
             <argument type="service" id="app.feedback_subscription_plan_provider"/>
             <argument type="service" id="app.feedback_user_subscription_repository"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.id_generator"/>
+            <argument type="service" id="app.event_bus"/>
         </service>
         <service id="app.feedback_search_statistic_provider"
                  class="App\Service\Feedback\Statistic\FeedbackSearchStatisticProvider" lazy="true">
@@ -453,8 +459,7 @@
             <argument type="service" id="app.feedback_search_term_type_provider"/>
             <argument type="service" id="app.feedback_creator"/>
             <argument type="service" id="app.feedback_rating_provider"/>
-            <argument type="service" id="app.telegram_channel_feedback_activity_publisher"/>
-            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.event_bus"/>
             <argument type="service" id="app.feedback_repository"/>
             <argument type="service" id="app.feedback_telegram_view_provider"/>
             <argument type="service" id="app.telegram_channel_matches_provider"/>
@@ -477,7 +482,6 @@
             <argument type="service" id="app.feedback_search_term_type_provider"/>
             <argument type="service" id="app.feedback_search_creator"/>
             <argument type="service" id="app.feedback_searcher"/>
-            <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.feedback_telegram_view_provider"/>
             <argument type="service" id="app.string_mb_lc_firster"/>
             <argument>%app.search.search_term_type_step%</argument>
@@ -494,7 +498,6 @@
             <argument type="service" id="app.feedback_search_term_type_provider"/>
             <argument type="service" id="app.feedback_search_search_creator"/>
             <argument type="service" id="app.feedback_search_searcher"/>
-            <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.feedback_search_telegram_view_provider"/>
             <argument type="service" id="app.string_mb_lc_firster"/>
             <argument>%app.lookup.search_term_type_step%</argument>
@@ -545,6 +548,53 @@
             <argument type="service" id="app.feedback_search_term_repository"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.messenger_user_upserter"/>
+        </service>
+        <service id="app.feedback_created_activity_logger"
+                 class="App\Message\EventHandler\Feedback\FeedbackCreatedActivityLogger" lazy="true">
+            <argument type="service" id="app.feedback_repository"/>
+            <argument type="service" id="app.create_command_options"/>
+            <argument type="service" id="app.activity_logger"/>
+            <argument type="service" id="logger"/>
+            <tag name="messenger.message_handler" handles="App\Message\Event\Feedback\FeedbackCreatedEvent"
+                 bus="app.event_bus"/>
+        </service>
+        <service id="app.feedback_created_telegram_channel_publisher"
+                 class="App\Message\EventHandler\Feedback\FeedbackCreatedTelegramChannelPublisher" lazy="true">
+            <argument type="service" id="app.feedback_repository"/>
+            <argument type="service" id="app.telegram_bot_registry"/>
+            <argument type="service" id="app.telegram_channel_matches_provider"/>
+            <argument type="service" id="app.telegram_bot_message_sender"/>
+            <argument type="service" id="app.feedback_telegram_view_provider"/>
+            <argument type="service" id="logger"/>
+            <tag name="messenger.message_handler"
+                 handles="App\Message\Event\Feedback\FeedbackSendToTelegramChannelConfirmReceivedEvent"
+                 bus="app.event_bus"/>
+        </service>
+        <service id="app.feedback_lookup_created_activity_logger"
+                 class="App\Message\EventHandler\Feedback\FeedbackLookupCreatedActivityLogger" lazy="true">
+            <argument type="service" id="app.feedback_lookup_repository"/>
+            <argument type="service" id="app.lookup_command_options"/>
+            <argument type="service" id="app.activity_logger"/>
+            <argument type="service" id="logger"/>
+            <tag name="messenger.message_handler" handles="App\Message\Event\Feedback\FeedbackLookupCreatedEvent"
+                 bus="app.event_bus"/>
+        </service>
+        <service id="app.feedback_search_created_activity_logger"
+                 class="App\Message\EventHandler\Feedback\FeedbackSearchCreatedActivityLogger" lazy="true">
+            <argument type="service" id="app.feedback_search_repository"/>
+            <argument type="service" id="app.search_command_options"/>
+            <argument type="service" id="app.activity_logger"/>
+            <argument type="service" id="logger"/>
+            <tag name="messenger.message_handler" handles="App\Message\Event\Feedback\FeedbackSearchCreatedEvent"
+                 bus="app.event_bus"/>
+        </service>
+        <service id="app.feedback_user_subscription_created_activity_logger"
+                 class="App\Message\EventHandler\Feedback\FeedbackUserSubscriptionCreatedActivityLogger" lazy="true">
+            <argument type="service" id="app.feedback_user_subscription_repository"/>
+            <argument type="service" id="app.activity_logger"/>
+            <argument type="service" id="logger"/>
+            <tag name="messenger.message_handler"
+                 handles="App\Message\Event\Feedback\FeedbackUserSubscriptionCreatedEvent" bus="app.event_bus"/>
         </service>
     </services>
 </container>

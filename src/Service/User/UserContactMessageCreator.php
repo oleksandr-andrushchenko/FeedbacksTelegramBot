@@ -6,40 +6,43 @@ namespace App\Service\User;
 
 use App\Entity\User\UserContactMessage;
 use App\Exception\ValidatorException;
+use App\Message\Event\User\UserContactMessageCreatedEvent;
+use App\Service\IdGenerator;
 use App\Transfer\User\UserContactMessageTransfer;
-use App\Service\Logger\ActivityLogger;
 use App\Service\Validator;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class UserContactMessageCreator
 {
     public function __construct(
         private readonly Validator $validator,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ActivityLogger $activityLogger,
+        private readonly IdGenerator $idGenerator,
+        private readonly MessageBusInterface $eventBus,
     )
     {
     }
 
     /**
-     * @param UserContactMessageTransfer $userContactMessageTransfer
+     * @param UserContactMessageTransfer $transfer
      * @return UserContactMessage
      * @throws ValidatorException
      */
-    public function createUserContactMessage(UserContactMessageTransfer $userContactMessageTransfer): UserContactMessage
+    public function createUserContactMessage(UserContactMessageTransfer $transfer): UserContactMessage
     {
-        $this->validator->validate($userContactMessageTransfer);
+        $this->validator->validate($transfer);
 
         $message = new UserContactMessage(
-            $userContactMessageTransfer->getMessengerUser(),
-            $userContactMessageTransfer->getUser(),
-            $userContactMessageTransfer->getText(),
-            $userContactMessageTransfer->getTelegramBot()
+            $this->idGenerator->generateId(),
+            $transfer->getMessengerUser(),
+            $transfer->getUser(),
+            $transfer->getText(),
+            $transfer->getTelegramBot()
         );
         $this->entityManager->persist($message);
 
-        // todo: fire event and consume
-        $this->activityLogger->logActivity($message);
+        $this->eventBus->dispatch(new UserContactMessageCreatedEvent(message: $message));
 
         return $message;
     }

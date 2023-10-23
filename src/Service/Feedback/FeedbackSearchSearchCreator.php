@@ -5,17 +5,19 @@ declare(strict_types=1);
 namespace App\Service\Feedback;
 
 use App\Entity\CommandOptions;
-use App\Entity\Feedback\FeedbackSearchSearch;
+use App\Entity\Feedback\FeedbackSearchSearch as FeedbackLookup;
 use App\Exception\CommandLimitExceededException;
 use App\Exception\ValidatorException;
+use App\Message\Event\Feedback\FeedbackLookupCreatedEvent;
 use App\Service\Feedback\Command\CommandLimitsChecker;
 use App\Service\Feedback\Command\CommandStatisticProviderInterface;
 use App\Service\Feedback\SearchTerm\FeedbackSearchTermUpserter;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
-use App\Service\Logger\ActivityLogger;
+use App\Service\IdGenerator;
 use App\Service\Validator;
-use App\Transfer\Feedback\FeedbackSearchSearchTransfer;
+use App\Transfer\Feedback\FeedbackSearchSearchTransfer as FeedbackLookupTransfer;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class FeedbackSearchSearchCreator
 {
@@ -26,8 +28,9 @@ class FeedbackSearchSearchCreator
         private readonly CommandStatisticProviderInterface $statisticProvider,
         private readonly CommandLimitsChecker $limitsChecker,
         private readonly FeedbackSubscriptionManager $subscriptionManager,
-        private readonly ActivityLogger $activityLogger,
         private readonly FeedbackSearchTermUpserter $termUpserter,
+        private readonly IdGenerator $idGenerator,
+        private readonly MessageBusInterface $eventBus,
     )
     {
     }
@@ -38,40 +41,38 @@ class FeedbackSearchSearchCreator
     }
 
     /**
-     * @param FeedbackSearchSearchTransfer $feedbackSearchLookupTransfer
-     * @return FeedbackSearchSearch
+     * @param FeedbackLookupTransfer $transfer
+     * @return FeedbackLookup
      * @throws CommandLimitExceededException
      * @throws ValidatorException
      */
-    public function createFeedbackSearchSearch(FeedbackSearchSearchTransfer $feedbackSearchLookupTransfer): FeedbackSearchSearch
+    public function createFeedbackSearchSearch(FeedbackLookupTransfer $transfer): FeedbackLookup
     {
-        $this->validator->validate($feedbackSearchLookupTransfer);
+        $this->validator->validate($transfer);
 
-        $messengerUser = $feedbackSearchLookupTransfer->getMessengerUser();
+        $messengerUser = $transfer->getMessengerUser();
         $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($messengerUser);
 
         if (!$hasActiveSubscription) {
             $this->limitsChecker->checkCommandLimits($messengerUser->getUser(), $this->statisticProvider);
         }
 
-        $searchTerm = $this->termUpserter->upsertFeedbackSearchTerm($feedbackSearchLookupTransfer->getSearchTerm());
+        $searchTerm = $this->termUpserter->upsertFeedbackSearchTerm($transfer->getSearchTerm());
 
-        $feedbackSearchSearch = new FeedbackSearchSearch(
+        $lookup = new FeedbackLookup(
+            $this->idGenerator->generateId(),
             $messengerUser->getUser(),
             $messengerUser,
             $searchTerm,
             hasActiveSubscription: $hasActiveSubscription,
             countryCode: $messengerUser->getUser()->getCountryCode(),
             localeCode: $messengerUser->getUser()->getLocaleCode(),
-            telegramBot: $feedbackSearchLookupTransfer->getTelegramBot()
+            telegramBot: $transfer->getTelegramBot()
         );
+        $this->entityManager->persist($lookup);
 
-        $this->entityManager->persist($feedbackSearchSearch);
+        $this->eventBus->dispatch(new FeedbackLookupCreatedEvent(lookup: $lookup));
 
-        if ($this->options->shouldLogActivities()) {
-            $this->activityLogger->logActivity($feedbackSearchSearch);
-        }
-
-        return $feedbackSearchSearch;
+        return $lookup;
     }
 }

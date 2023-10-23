@@ -18,7 +18,7 @@ class CreateFeedbackTelegramBotConversationState extends TelegramBotConversation
         private ?array $searchTerms = null,
         private ?Rating $rating = null,
         private ?string $description = null,
-        private ?int $createdId = null,
+        private ?string $createdId = null,
     )
     {
         parent::__construct($step);
@@ -109,12 +109,12 @@ class CreateFeedbackTelegramBotConversationState extends TelegramBotConversation
         return $this;
     }
 
-    public function getCreatedId(): ?int
+    public function getCreatedId(): ?string
     {
         return $this->createdId;
     }
 
-    public function setCreatedId(?int $createdId): self
+    public function setCreatedId(?string $createdId): self
     {
         $this->createdId = $createdId;
 

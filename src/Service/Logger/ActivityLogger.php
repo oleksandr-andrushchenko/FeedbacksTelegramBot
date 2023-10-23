@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Service\Logger;
 
+use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Stringable;
 
-class ActivityLogger
+class ActivityLogger extends AbstractLogger implements LoggerInterface
 {
     public function __construct(
         private readonly LoggerInterface $logger,
@@ -16,12 +18,16 @@ class ActivityLogger
     {
     }
 
-    public function logActivity(object $object): void
+    public function log($level, string|Stringable $message, array $context = []): void
     {
-        $updated = method_exists($object, 'getUpdatedAt') && $object->getUpdatedAt() !== null;
-        $message = sprintf('"%s" has been %s(?)', get_class($object), $updated ? 'updated' : 'created');
-        $context = $this->normalizer->normalize($object, 'activity');
+        if (!is_object($message)) {
+            return;
+        }
 
-        $this->logger->info($message, $context);
+        $updated = method_exists($message, 'getUpdatedAt') && $message->getUpdatedAt() !== null;
+        $envelop = sprintf('"%s" has been %s(?)', get_class($message), $updated ? 'updated' : 'created');
+        $context = $this->normalizer->normalize($message, 'activity');
+
+        $this->logger->log($level, $envelop, $context);
     }
 }

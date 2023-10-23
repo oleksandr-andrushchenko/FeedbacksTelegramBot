@@ -22,7 +22,7 @@
         <field name="name" column="name" length="1024"/>
         <field name="countryCode" column="country_code" length="2"/>
         <field name="localeCode" column="locale_code" length="2"/>
-        <field name="level1RegionId" column="level_1_region_id" nullable="true"/>
+        <field name="level1RegionId" column="level_1_region_id" length="32" nullable="true"/>
         <field name="chatId" column="chat_id" type="bigint" nullable="true"/>
         <field name="primary" column="_primary" type="boolean">
             <options>

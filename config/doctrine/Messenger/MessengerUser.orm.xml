@@ -7,12 +7,7 @@
     <entity name="App\Entity\Messenger\MessengerUser"
             repository-class="App\Repository\Messenger\MessengerUserRepository" table="messenger_users">
 
-        <id name="id" column="id" type="integer">
-            <generator/>
-            <options>
-                <option name="unsigned">true</option>
-            </options>
-        </id>
+        <id name="id" column="id" type="string" length="32"/>
 
         <field name="messenger" column="messenger" type="smallint" enum-type="App\Enum\Messenger\Messenger">
             <options>

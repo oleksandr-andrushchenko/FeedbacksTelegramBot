@@ -50,6 +50,7 @@ class TelegramController
             }
 
             // todo: push to ordered queue (amqp)
+            // todo: use command bus
             $this->updateHandler->handleTelegramBotUpdate($bot, $request);
             $this->entityManager->flush();
 

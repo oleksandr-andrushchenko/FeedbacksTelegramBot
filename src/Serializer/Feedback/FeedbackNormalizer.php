@@ -24,7 +24,7 @@ class FeedbackNormalizer implements NormalizerInterface
             ];
 
             foreach ($object->getSearchTerms() as $index => $searchTerm) {
-                $data[sprintf('term_%d', $index)] = [
+                $data[sprintf('term_%d', $index + 1)] = [
                     'text' => $searchTerm->getText(),
                     'type' => $searchTerm->getType()->name,
                 ];
@@ -33,6 +33,7 @@ class FeedbackNormalizer implements NormalizerInterface
             $data = array_merge($data, [
                 'rate' => $object->getRating()->name,
                 'description' => $object->getDescription(),
+                'bot' => sprintf('@%s', $object->getTelegramBot()->getUsername()),
                 'created_at' => $object->getCreatedAt()->getTimestamp(),
             ]);
 

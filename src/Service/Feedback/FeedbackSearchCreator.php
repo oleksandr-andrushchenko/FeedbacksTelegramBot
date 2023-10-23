@@ -8,14 +8,16 @@ use App\Entity\CommandOptions;
 use App\Entity\Feedback\FeedbackSearch;
 use App\Exception\CommandLimitExceededException;
 use App\Exception\ValidatorException;
+use App\Message\Event\Feedback\FeedbackSearchCreatedEvent;
 use App\Service\Feedback\Command\CommandLimitsChecker;
 use App\Service\Feedback\Command\CommandStatisticProviderInterface;
 use App\Service\Feedback\SearchTerm\FeedbackSearchTermUpserter;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
-use App\Service\Logger\ActivityLogger;
+use App\Service\IdGenerator;
 use App\Service\Validator;
 use App\Transfer\Feedback\FeedbackSearchTransfer;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class FeedbackSearchCreator
 {
@@ -26,8 +28,9 @@ class FeedbackSearchCreator
         private readonly CommandStatisticProviderInterface $statisticProvider,
         private readonly CommandLimitsChecker $limitsChecker,
         private readonly FeedbackSubscriptionManager $subscriptionManager,
-        private readonly ActivityLogger $activityLogger,
         private readonly FeedbackSearchTermUpserter $termUpserter,
+        private readonly IdGenerator $idGenerator,
+        private readonly MessageBusInterface $eventBus,
     )
     {
     }
@@ -38,40 +41,38 @@ class FeedbackSearchCreator
     }
 
     /**
-     * @param FeedbackSearchTransfer $feedbackSearchTransfer
+     * @param FeedbackSearchTransfer $transfer
      * @return FeedbackSearch
      * @throws CommandLimitExceededException
      * @throws ValidatorException
      */
-    public function createFeedbackSearch(FeedbackSearchTransfer $feedbackSearchTransfer): FeedbackSearch
+    public function createFeedbackSearch(FeedbackSearchTransfer $transfer): FeedbackSearch
     {
-        $this->validator->validate($feedbackSearchTransfer);
+        $this->validator->validate($transfer);
 
-        $messengerUser = $feedbackSearchTransfer->getMessengerUser();
+        $messengerUser = $transfer->getMessengerUser();
         $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($messengerUser);
 
         if (!$hasActiveSubscription) {
             $this->limitsChecker->checkCommandLimits($messengerUser->getUser(), $this->statisticProvider);
         }
 
-        $searchTerm = $this->termUpserter->upsertFeedbackSearchTerm($feedbackSearchTransfer->getSearchTerm());
+        $searchTerm = $this->termUpserter->upsertFeedbackSearchTerm($transfer->getSearchTerm());
 
-        $feedbackSearch = new FeedbackSearch(
+        $search = new FeedbackSearch(
+            $this->idGenerator->generateId(),
             $messengerUser->getUser(),
             $messengerUser,
             $searchTerm,
             hasActiveSubscription: $hasActiveSubscription,
             countryCode: $messengerUser->getUser()->getCountryCode(),
             localeCode: $messengerUser->getUser()->getLocaleCode(),
-            telegramBot: $feedbackSearchTransfer->getTelegramBot()
+            telegramBot: $transfer->getTelegramBot()
         );
+        $this->entityManager->persist($search);
 
-        $this->entityManager->persist($feedbackSearch);
+        $this->eventBus->dispatch(new FeedbackSearchCreatedEvent(search: $search));
 
-        if ($this->options->shouldLogActivities()) {
-            $this->activityLogger->logActivity($feedbackSearch);
-        }
-
-        return $feedbackSearch;
+        return $search;
     }
 }

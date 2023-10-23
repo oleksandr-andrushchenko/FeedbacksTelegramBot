@@ -132,11 +132,6 @@ class TelegramChannelImporter
                 );
             }
 
-            if ($level1Region !== null && $level1Region->getId() === null) {
-                // todo: use custom primary keys and remove this everywhere
-                $this->entityManager->flush();
-            }
-
             $transfer
                 ->setGroup($group)
                 ->setName($data['name'])

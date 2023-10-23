@@ -9,14 +9,15 @@ use App\Entity\Money;
 use App\Enum\Telegram\TelegramBotPaymentStatus;
 use DateTimeImmutable;
 use DateTimeInterface;
+use Stringable;
 
-class TelegramBotPayment
+class TelegramBotPayment implements Stringable
 {
     private readonly float $priceAmount;
     private readonly string $priceCurrency;
 
     public function __construct(
-        private readonly string $uuid,
+        private readonly string $id,
         private readonly MessengerUser $messengerUser,
         private readonly int $chatId,
         private readonly TelegramBotPaymentMethod $method,
@@ -28,21 +29,15 @@ class TelegramBotPayment
         private ?TelegramBotPaymentStatus $status = TelegramBotPaymentStatus::REQUEST_SENT,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
-        private ?int $id = null,
     )
     {
         $this->priceAmount = $price->getAmount();
         $this->priceCurrency = $price->getCurrency();
     }
 
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
-    }
-
-    public function getUuid(): string
-    {
-        return $this->uuid;
     }
 
     public function getMessengerUser(): MessengerUser
@@ -126,5 +121,10 @@ class TelegramBotPayment
         $this->updatedAt = $updatedAt;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getId();
     }
 }

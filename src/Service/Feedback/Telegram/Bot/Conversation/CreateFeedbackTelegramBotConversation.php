@@ -13,12 +13,12 @@ use App\Enum\Feedback\SearchTermType;
 use App\Exception\CommandLimitExceededException;
 use App\Exception\Messenger\SameMessengerUserException;
 use App\Exception\ValidatorException;
+use App\Message\Event\Feedback\FeedbackSendToTelegramChannelConfirmReceivedEvent;
 use App\Repository\Feedback\FeedbackRepository;
 use App\Service\Feedback\FeedbackCreator;
 use App\Service\Feedback\Rating\FeedbackRatingProvider;
 use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Service\Feedback\SearchTerm\SearchTermParserOnlyInterface;
-use App\Service\Feedback\Telegram\Bot\Activity\TelegramChannelFeedbackActivityPublisher;
 use App\Service\Feedback\Telegram\Bot\Chat\ChooseActionTelegramChatSender;
 use App\Service\Feedback\Telegram\Bot\View\FeedbackTelegramViewProvider;
 use App\Service\Feedback\Telegram\View\MultipleSearchTermTelegramViewProvider;
@@ -31,8 +31,8 @@ use App\Service\Util\String\MbLcFirster;
 use App\Service\Validator;
 use App\Transfer\Feedback\FeedbackTransfer;
 use App\Transfer\Feedback\SearchTermTransfer;
-use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Entities\KeyboardButton;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * /**
@@ -56,8 +56,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         private readonly SearchTermTypeProvider $searchTermTypeProvider,
         private readonly FeedbackCreator $creator,
         private readonly FeedbackRatingProvider $ratingProvider,
-        private readonly TelegramChannelFeedbackActivityPublisher $channelActivityPublisher,
-        private readonly EntityManagerInterface $entityManager,
+        private readonly MessageBusInterface $eventBus,
         private readonly FeedbackRepository $feedbackRepository,
         private readonly FeedbackTelegramViewProvider $feedbackViewProvider,
         private readonly TelegramChannelMatchesProvider $channelMatchesProvider,
@@ -857,13 +856,12 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         try {
             $this->validator->validate($this->state);
 
+            // todo: use command bus
             $feedback = $this->creator->createFeedback($this->constructTransfer($tg));
 
             $message = $tg->trans('reply.created', domain: 'create');
             $message = $tg->okText($message);
 
-            // todo: replace with custom generated feedback IDS and remove this
-            $this->entityManager->flush();
             $this->state->setCreatedId($feedback->getId());
 
             $tg->reply($message);
@@ -964,9 +962,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
         $tg->stopConversation($entity);
 
-        $feedback = $this->feedbackRepository->find($this->state->getCreatedId());
-
-        $this->channelActivityPublisher->publishTelegramChannelFeedbackActivity($tg->getBot(), $feedback);
+        $this->eventBus->dispatch(new FeedbackSendToTelegramChannelConfirmReceivedEvent($this->state->getCreatedId()));
 
         $message = $tg->trans('reply.sent_to_channel', domain: 'create');
         $message = $tg->okText($message);

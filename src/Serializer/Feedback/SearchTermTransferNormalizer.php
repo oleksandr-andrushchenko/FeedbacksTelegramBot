@@ -20,9 +20,14 @@ class SearchTermTransferNormalizer implements NormalizerInterface, DenormalizerI
     {
     }
 
+    /**
+     * @param SearchTermTransfer $object
+     * @param string|null $format
+     * @param array $context
+     * @return array
+     */
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
-        /** @var SearchTermTransfer $object */
         return [
             'text' => $object->getText(),
             'normalized_text' => $object->getNormalizedText(),

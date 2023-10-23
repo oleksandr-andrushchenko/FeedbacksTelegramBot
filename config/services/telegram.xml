@@ -197,7 +197,8 @@
                  class="App\Serializer\Telegram\Bot\TelegramBotPaymentMethodNormalizer" lazy="true">
             <tag name="serializer.normalizer" priority="-967"/>
         </service>
-        <service id="app.telegram_bot_payment_normalizer" class="App\Serializer\Telegram\Bot\TelegramBotPaymentNormalizer"
+        <service id="app.telegram_bot_payment_normalizer"
+                 class="App\Serializer\Telegram\Bot\TelegramBotPaymentNormalizer"
                  lazy="true">
             <argument type="service" id="app.money_normalizer"/>
             <tag name="serializer.normalizer" priority="-966"/>
@@ -335,7 +336,6 @@
             <argument type="service" id="app.telegram_bot_payment_manager"/>
             <argument type="service" id="app.telegram_bot_locale_switcher"/>
             <argument type="service" id="app.telegram_input_provider"/>
-            <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.telegram_bot_registry"/>
             <argument type="service" id="app.telegram_bot_repository"/>
             <argument type="service" id="app.telegram_bot_aware_helper"/>
@@ -379,23 +379,15 @@
         </service>
         <service id="app.telegram_messenger_user_maker" class="App\Service\Telegram\TelegramMessengerUserMaker"
                  lazy="true"/>
-        <service id="app.telegram_bot_payment_manager_options_factory"
-                 class="App\Service\Telegram\Bot\TelegramBotPaymentManagerOptionsFactory" lazy="true"/>
-        <service id="app.telegram_bot_payment_manager_options"
-                 class="App\Entity\Telegram\TelegramBotPaymentManagerOptions">
-            <factory service="app.telegram_bot_payment_manager_options_factory"/>
-            <argument>%app.telegram_bot_payment_manager_options%</argument>
-        </service>
         <service id="app.telegram_bot_payment_manager"
                  class="App\Service\Telegram\Bot\Payment\TelegramBotPaymentManager"
                  lazy="true">
-            <argument type="service" id="app.telegram_bot_payment_manager_options"/>
             <argument type="service" id="app.telegram_bot_invoice_sender"/>
             <argument type="service" id="app.intl_currency_provider"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.telegram_bot_payment_repository"/>
-            <argument type="service" id="app.uuid_generator"/>
-            <argument type="service" id="app.logger_activity"/>
+            <argument type="service" id="app.id_generator"/>
+            <argument type="service" id="app.event_bus"/>
         </service>
         <service id="app.telegram_bot_registry" class="App\Service\Telegram\Bot\TelegramBotRegistry" lazy="true">
             <argument type="service" id="app.telegram_bot_factory"/>
@@ -495,6 +487,21 @@
         <service id="app.telegram_channel_link_view_provider"
                  class="App\Service\Telegram\Channel\View\TelegramChannelLinkViewProvider" lazy="true">
             <argument type="service" id="app.telegram_link_provider"/>
+        </service>
+        <service id="app.telegram_bot_payment_activity_logger"
+                 class="App\Message\EventHandler\Telegram\TelegramBotPaymentActivityLogger" lazy="true">
+            <argument type="service" id="app.telegram_bot_payment_repository"/>
+            <argument type="service" id="app.activity_logger"/>
+            <argument type="service" id="logger"/>
+            <tag name="messenger.message_handler"
+                 handles="App\Message\Event\Telegram\TelegramBotPaymentCreatedEvent" method="invokeCreated"
+                 bus="app.event_bus"/>
+            <tag name="messenger.message_handler"
+                 handles="App\Message\Event\Telegram\TelegramBotPaymentPreCheckoutEvent" method="invokePreCheckout"
+                 bus="app.event_bus"/>
+            <tag name="messenger.message_handler"
+                 handles="App\Message\Event\Telegram\TelegramBotPaymentSuccessfulEvent" method="invokeSuccessful"
+                 bus="app.event_bus"/>
         </service>
     </services>
 </container>

@@ -12,6 +12,7 @@ use DateTimeInterface;
 class MessengerUser
 {
     public function __construct(
+        private string $id,
         private readonly Messenger $messenger,
         private readonly string $identifier,
         private ?string $username = null,
@@ -20,21 +21,13 @@ class MessengerUser
         private bool $showExtendedKeyboard = false,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
-        private ?int $id = null,
     )
     {
     }
 
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
-    }
-
-    public function setId(?int $id): self
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     public function getIdentifier(): string

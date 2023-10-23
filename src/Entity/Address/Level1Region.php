@@ -7,15 +7,15 @@ namespace App\Entity\Address;
 class Level1Region
 {
     public function __construct(
+        private readonly string $id,
         private readonly string $countryCode,
         private readonly string $name,
         private ?string $timezone = null,
-        private ?int $id = null,
     )
     {
     }
 
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
     }

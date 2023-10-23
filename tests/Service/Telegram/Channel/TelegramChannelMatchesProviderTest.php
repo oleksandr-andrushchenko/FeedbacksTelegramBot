@@ -242,12 +242,12 @@ class TelegramChannelMatchesProviderTest extends TestCase
 
     private function makeUser(
         string $countryCode = null,
-        int $level1RegionId = null,
+        int|string $level1RegionId = null,
     ): User
     {
         return $this->createConfiguredMock(User::class, [
             'getCountryCode' => $countryCode,
-            'getLevel1RegionId' => $level1RegionId,
+            'getLevel1RegionId' => $level1RegionId === null ? null : (string) $level1RegionId,
         ]);
     }
 
@@ -265,14 +265,14 @@ class TelegramChannelMatchesProviderTest extends TestCase
 
     private function makeChannel(
         string $countryCode = '',
-        int $level1RegionId = null,
+        int|string $level1RegionId = null,
         int $id = null
     ): TelegramChannel
     {
         return $this->createConfiguredMock(TelegramChannel::class, [
             'getId' => $id,
             'getCountryCode' => $countryCode,
-            'getLevel1RegionId' => $level1RegionId,
+            'getLevel1RegionId' => $level1RegionId === null ? null : (string) $level1RegionId,
         ]);
     }
 }

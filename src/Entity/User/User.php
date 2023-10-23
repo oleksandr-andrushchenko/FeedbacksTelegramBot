@@ -14,11 +14,12 @@ class User
     private ?string $locationLongitude;
 
     public function __construct(
+        private string $id,
         private ?string $username = null,
         private ?string $name = null,
         private ?string $countryCode = null,
         ?Location $location = null,
-        private ?int $level1RegionId = null,
+        private ?string $level1RegionId = null,
         private ?string $localeCode = null,
         private ?string $currencyCode = null,
         private ?string $timezone = null,
@@ -28,13 +29,12 @@ class User
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?DateTimeInterface $updatedAt = null,
         private ?DateTimeInterface $purgedAt = null,
-        private ?int $id = null,
     )
     {
         $this->setLocation($location);
     }
 
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
     }
@@ -145,12 +145,12 @@ class User
         return $this;
     }
 
-    public function getLevel1RegionId(): ?int
+    public function getLevel1RegionId(): ?string
     {
         return $this->level1RegionId;
     }
 
-    public function setLevel1RegionId(?int $level1RegionId): self
+    public function setLevel1RegionId(?string $level1RegionId): self
     {
         $this->level1RegionId = $level1RegionId;
 

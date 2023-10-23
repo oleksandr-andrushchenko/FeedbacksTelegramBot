@@ -7,36 +7,37 @@ namespace App\Service\Telegram\Bot\Payment;
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Money;
 use App\Entity\Telegram\TelegramBotPayment;
-use App\Entity\Telegram\TelegramBotPaymentManagerOptions;
 use App\Entity\Telegram\TelegramBotPaymentMethod;
 use App\Entity\User\User;
 use App\Enum\Telegram\TelegramBotPaymentStatus;
 use App\Exception\Telegram\Bot\Payment\TelegramBotInvalidCurrencyBotException;
 use App\Exception\Telegram\Bot\Payment\TelegramBotPaymentNotFoundException;
 use App\Exception\Telegram\Bot\Payment\TelegramBotUnknownPaymentException;
+use App\Message\Event\Telegram\TelegramBotPaymentCreatedEvent;
+use App\Message\Event\Telegram\TelegramBotPaymentPreCheckoutEvent;
+use App\Message\Event\Telegram\TelegramBotPaymentSuccessfulEvent;
 use App\Repository\Telegram\Bot\TelegramBotPaymentRepository;
 use App\Service\Intl\CurrencyProvider;
-use App\Service\Logger\ActivityLogger;
 use App\Service\Telegram\Bot\Api\TelegramBotInvoiceSenderInterface;
 use App\Service\Telegram\Bot\TelegramBot;
-use App\Service\UuidGenerator;
+use App\Service\IdGenerator;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Entities\Payments\LabeledPrice;
 use Longman\TelegramBot\Entities\Payments\OrderInfo;
 use Longman\TelegramBot\Entities\Payments\PreCheckoutQuery;
 use Longman\TelegramBot\Entities\Payments\SuccessfulPayment;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class TelegramBotPaymentManager
 {
     public function __construct(
-        private readonly TelegramBotPaymentManagerOptions $options,
         private readonly TelegramBotInvoiceSenderInterface $invoiceSender,
         private readonly CurrencyProvider $currencyProvider,
         private readonly EntityManagerInterface $entityManager,
         private readonly TelegramBotPaymentRepository $paymentRepository,
-        private readonly UuidGenerator $uuidGenerator,
-        private readonly ActivityLogger $activityLogger,
+        private readonly IdGenerator $idGenerator,
+        private readonly MessageBusInterface $eventBus,
     )
     {
     }
@@ -70,7 +71,7 @@ class TelegramBotPaymentManager
     {
         $currency = $this->currencyProvider->getCurrency($price->getCurrency());
 
-        $uuid = $this->uuidGenerator->generateUuid();
+        $uuid = $this->idGenerator->generateId();
         $payload['payment_id'] = $uuid;
 
         $payment = new TelegramBotPayment(
@@ -83,6 +84,8 @@ class TelegramBotPaymentManager
             $payload
         );
         $this->entityManager->persist($payment);
+
+        $this->eventBus->dispatch(new TelegramBotPaymentCreatedEvent(payment: $payment));
 
         $this->invoiceSender->sendInvoice(
             $bot,
@@ -99,10 +102,6 @@ class TelegramBotPaymentManager
                 ]),
             ]
         );
-
-        if ($this->options->logActivities()) {
-            $this->activityLogger->logActivity($payment);
-        }
 
         return $payment;
     }
@@ -129,9 +128,7 @@ class TelegramBotPaymentManager
         $payment->setStatus(TelegramBotPaymentStatus::PRE_CHECKOUT_RECEIVED);
         $payment->setUpdatedAt(new DateTimeImmutable());
 
-        if ($this->options->logActivities()) {
-            $this->activityLogger->logActivity($payment);
-        }
+        $this->eventBus->dispatch(new TelegramBotPaymentPreCheckoutEvent(payment: $payment));
 
         return $payment;
     }
@@ -153,9 +150,7 @@ class TelegramBotPaymentManager
         $payment->setStatus(TelegramBotPaymentStatus::SUCCESSFUL_PAYMENT_RECEIVED);
         $payment->setUpdatedAt(new DateTimeImmutable());
 
-        if ($this->options->logActivities()) {
-            $this->activityLogger->logActivity($payment);
-        }
+        $this->eventBus->dispatch(new TelegramBotPaymentSuccessfulEvent(payment: $payment));
 
         return $payment;
     }

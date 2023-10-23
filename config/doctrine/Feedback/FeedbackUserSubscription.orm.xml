@@ -8,13 +8,10 @@
             repository-class="App\Repository\Feedback\FeedbackUserSubscriptionRepository"
             table="feedback_user_subscriptions">
 
-        <id name="id" column="id" type="integer">
-            <generator/>
-            <options>
-                <option name="unsigned">true</option>
-            </options>
-        </id>
+        <id name="id" column="id" type="string" length="32"/>
+
         <many-to-one field="messengerUser" target-entity="App\Entity\Messenger\MessengerUser"/>
+
         <field name="subscriptionPlan" column="subscription_plan" type="smallint"
                enum-type="App\Enum\Feedback\FeedbackSubscriptionPlanName">
             <options>
@@ -22,7 +19,9 @@
             </options>
         </field>
         <field name="expireAt" column="expire_at" type="datetime_immutable"/>
+
         <one-to-one field="payment" target-entity="App\Entity\Telegram\TelegramBotPayment"/>
+
         <field name="createdAt" column="created_at" type="datetime_immutable"/>
         <field name="updatedAt" column="updated_at" type="datetime_immutable" nullable="true"/>
     </entity>

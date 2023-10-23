@@ -12,12 +12,14 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Stringable;
 
-class Feedback
+class Feedback implements Stringable
 {
     private Collection $searchTerms;
 
     public function __construct(
+        private readonly string $id,
         private readonly User $user,
         private readonly MessengerUser $messengerUser,
         array $searchTerms,
@@ -29,7 +31,6 @@ class Feedback
         private ?array $channelMessageIds = null,
         private readonly ?TelegramBot $telegramBot = null,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
-        private ?int $id = null,
     )
     {
         $this->searchTerms = new ArrayCollection();
@@ -39,7 +40,7 @@ class Feedback
         }
     }
 
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
     }
@@ -116,5 +117,10 @@ class Feedback
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getId();
     }
 }

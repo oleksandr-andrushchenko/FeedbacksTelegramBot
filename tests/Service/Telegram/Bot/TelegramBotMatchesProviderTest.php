@@ -194,13 +194,13 @@ class TelegramBotMatchesProviderTest extends TestCase
     private function makeUser(
         string $countryCode = null,
         string $localeCode = null,
-        int $level1RegionId = null,
+        int|string $level1RegionId = null,
     ): User
     {
         return $this->createConfiguredMock(User::class, [
             'getCountryCode' => $countryCode,
             'getLocaleCode' => $localeCode,
-            'getLevel1RegionId' => $level1RegionId,
+            'getLevel1RegionId' => $level1RegionId === null ? null : (string) $level1RegionId,
         ]);
     }
 

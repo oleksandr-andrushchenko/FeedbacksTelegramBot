@@ -10,7 +10,7 @@ use DateTimeInterface;
 class TelegramBotStoppedConversation
 {
     public function __construct(
-        private readonly int $messengerUserId,
+        private readonly string $messengerUserId,
         private readonly int $chatId,
         private readonly int $botId,
         private readonly string $class,
@@ -27,7 +27,7 @@ class TelegramBotStoppedConversation
         return $this->id;
     }
 
-    public function getMessengerUserId(): int
+    public function getMessengerUserId(): string
     {
         return $this->messengerUserId;
     }

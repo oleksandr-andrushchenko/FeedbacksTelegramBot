@@ -23,6 +23,7 @@ class FeedbackSearchNormalizer implements NormalizerInterface
                 'messenger' => $object->getMessengerUser()->getMessenger()->name,
                 'search_term' => $object->getSearchTerm()->getText(),
                 'search_term_type' => $object->getSearchTerm()->getType()->name,
+                'bot' => sprintf('@%s', $object->getTelegramBot()->getUsername()),
                 'created_at' => $object->getCreatedAt()->getTimestamp(),
             ];
         }

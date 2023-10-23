@@ -148,6 +148,7 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
             $this->getSerializer()->normalize($state)
         );
         $this->getEntityManager()->persist($conversation);
+        $this->getEntityManager()->flush();
 
         return $conversation;
     }

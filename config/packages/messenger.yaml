@@ -1,0 +1,52 @@
+framework:
+  messenger:
+    # The bus that is going to be injected when injecting MessageBusInterface
+    default_bus: app.command_bus
+    buses:
+      app.command_bus:
+        middleware:
+          - validation
+          - doctrine_transaction
+      #      app.query_bus:
+      #        middleware:
+      #          - validation
+      app.event_bus:
+        default_middleware:
+          enabled: true
+          # set "allow_no_handlers" to true (default is false) to allow having
+          # no handler configured for this bus without throwing an exception
+          allow_no_handlers: true
+          # set "allow_no_senders" to false (default is true) to throw an exception
+          # if no sender is configured for this bus
+          allow_no_senders: true
+        middleware:
+          - validation
+
+    # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+    # failure_transport: failed
+
+    transports:
+      # https://symfony.com/doc/current/messenger.html#transport-configuration
+      # async: '%env(MESSENGER_TRANSPORT_DSN)%'
+      # failed: 'doctrine://default?queue_name=failed'
+      sync: 'sync://'
+
+    routing:
+      # Route your messages to the transports
+      'App\Message\Event\Feedback\FeedbackCreatedEvent': sync
+      'App\Message\Event\Feedback\FeedbackLookupCreatedEvent': sync
+      'App\Message\Event\Feedback\FeedbackSearchCreatedEvent': sync
+      'App\Message\Event\Feedback\FeedbackSendToTelegramChannelConfirmReceivedEvent': sync
+      'App\Message\Event\Feedback\FeedbackUserSubscriptionCreatedEvent': sync
+      'App\Message\Event\Telegram\TelegramBotPaymentCreatedEvent': sync
+      'App\Message\Event\Telegram\TelegramBotPaymentPreCheckoutEvent': sync
+      'App\Message\Event\Telegram\TelegramBotPaymentSuccessfulEvent': sync
+      'App\Message\Event\User\UserContactMessageCreatedEvent': sync
+
+# when@test:
+#    framework:
+#        messenger:
+#            transports:
+#                # replace with your transport name here (e.g., my_transport: 'in-memory://')
+#                # For more Messenger testing tools, see https://github.com/zenstruck/messenger-test
+#                async: 'in-memory://'

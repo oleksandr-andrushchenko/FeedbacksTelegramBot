@@ -18,6 +18,7 @@
         </service>
         <service id="app.user_upserter" class="App\Service\User\UserUpserter" lazy="true">
             <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.id_generator"/>
         </service>
         <service id="app.user_data_purger" class="App\Service\User\UserDataPurger" lazy="true">
             <argument type="service" id="app.messenger_user_repository"/>
@@ -25,7 +26,16 @@
         <service id="app.user_contact_message_creator" class="App\Service\User\UserContactMessageCreator">
             <argument type="service" id="app.validator"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
-            <argument type="service" id="app.logger_activity"/>
+            <argument type="service" id="app.id_generator"/>
+            <argument type="service" id="app.event_bus"/>
+        </service>
+        <service id="app.user_contact_message_created_activity_logger"
+                 class="App\Message\EventHandler\User\UserContactMessageCreatedActivityLogger" lazy="true">
+            <argument type="service" id="app.user_contact_message_repository"/>
+            <argument type="service" id="app.activity_logger"/>
+            <argument type="service" id="logger"/>
+            <tag name="messenger.message_handler"
+                 handles="App\Message\Event\User\UserContactMessageCreatedEvent" bus="app.event_bus"/>
         </service>
     </services>
 </container>

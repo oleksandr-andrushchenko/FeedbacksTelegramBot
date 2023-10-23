@@ -7,6 +7,7 @@ namespace App\Service\Address;
 use App\Entity\Address\Address;
 use App\Entity\Address\Level1Region;
 use App\Repository\Address\Level1RegionRepository;
+use App\Service\IdGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 
 class Level1RegionUpserter
@@ -14,6 +15,7 @@ class Level1RegionUpserter
     public function __construct(
         private readonly Level1RegionRepository $repository,
         private readonly EntityManagerInterface $entityManager,
+        private readonly IdGenerator $idGenerator,
     )
     {
     }
@@ -32,6 +34,7 @@ class Level1RegionUpserter
 
         if ($level1Region === null) {
             $level1Region = new Level1Region(
+                $this->idGenerator->generateId(),
                 $countryCode,
                 $name,
             );

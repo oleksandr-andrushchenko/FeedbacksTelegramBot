@@ -5,7 +5,7 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.logger_activity" class="App\Service\Logger\ActivityLogger" lazy="true">
+        <service id="app.activity_logger" class="App\Service\Logger\ActivityLogger" lazy="true">
             <argument type="service" id="monolog.logger.activities"/>
             <argument type="service" id="serializer"/>
         </service>

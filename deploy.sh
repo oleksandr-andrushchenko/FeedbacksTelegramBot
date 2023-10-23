@@ -23,7 +23,7 @@ docker compose run php php bin/console cache:warmup --env=prod
 serverless deploy --stage=$1
 
 #serverless bref:cli --args="doctrine:database:create" --stage=prod
-serverless bref:cli --args="doctrine:migrations:migrate --no-interaction" --stage=$1
+serverless bref:cli --args="doctrine:migrations:migrate --no-interaction --all-or-nothing" --stage=$1
 #serverless bref:cli --args="telegram:bot:show-all --no-interaction"
 
 docker compose run php composer install

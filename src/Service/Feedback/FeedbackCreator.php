@@ -9,14 +9,16 @@ use App\Entity\Feedback\Feedback;
 use App\Exception\CommandLimitExceededException;
 use App\Exception\Messenger\SameMessengerUserException;
 use App\Exception\ValidatorException;
+use App\Message\Event\Feedback\FeedbackCreatedEvent;
 use App\Service\Feedback\Command\CommandLimitsChecker;
 use App\Service\Feedback\Command\CommandStatisticProviderInterface;
 use App\Service\Feedback\SearchTerm\FeedbackSearchTermUpserter;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
-use App\Service\Logger\ActivityLogger;
+use App\Service\IdGenerator;
 use App\Service\Validator;
 use App\Transfer\Feedback\FeedbackTransfer;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class FeedbackCreator
 {
@@ -27,8 +29,9 @@ class FeedbackCreator
         private readonly CommandStatisticProviderInterface $statisticProvider,
         private readonly CommandLimitsChecker $limitsChecker,
         private readonly FeedbackSubscriptionManager $subscriptionManager,
-        private readonly ActivityLogger $activityLogger,
         private readonly FeedbackSearchTermUpserter $termUpserter,
+        private readonly IdGenerator $idGenerator,
+        private readonly MessageBusInterface $eventBus,
     )
     {
     }
@@ -39,69 +42,68 @@ class FeedbackCreator
     }
 
     /**
-     * @param FeedbackTransfer $feedbackTransfer
+     * @param FeedbackTransfer $transfer
      * @return Feedback
      * @throws CommandLimitExceededException
      * @throws SameMessengerUserException
      * @throws ValidatorException
      */
-    public function createFeedback(FeedbackTransfer $feedbackTransfer): Feedback
+    public function createFeedback(FeedbackTransfer $transfer): Feedback
     {
-        $this->validator->validate($feedbackTransfer);
+        $this->validator->validate($transfer);
 
-        $this->checkSearchTermUser($feedbackTransfer);
+        $this->checkSearchTermUser($transfer);
 
-        $messengerUser = $feedbackTransfer->getMessengerUser();
+        $messengerUser = $transfer->getMessengerUser();
         $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($messengerUser);
 
         if (!$hasActiveSubscription) {
             $this->limitsChecker->checkCommandLimits($messengerUser->getUser(), $this->statisticProvider);
         }
 
-        $feedback = $this->constructFeedback($feedbackTransfer);
-
+        $feedback = $this->constructFeedback($transfer);
         $this->entityManager->persist($feedback);
 
-        // todo: dispatch event and send in the background
-        $this->logActivity($feedback);
+        $this->eventBus->dispatch(new FeedbackCreatedEvent(feedback: $feedback));
 
         return $feedback;
     }
 
-    public function constructFeedback(FeedbackTransfer $feedbackTransfer): Feedback
+    public function constructFeedback(FeedbackTransfer $transfer): Feedback
     {
-        $messengerUser = $feedbackTransfer->getMessengerUser();
+        $messengerUser = $transfer->getMessengerUser();
         $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($messengerUser);
 
         $searchTerms = [];
 
-        foreach ($feedbackTransfer->getSearchTerms() as $termTransfer) {
+        foreach ($transfer->getSearchTerms() as $termTransfer) {
             $searchTerms[] = $this->termUpserter->upsertFeedbackSearchTerm($termTransfer);
         }
 
         return new Feedback(
+            $this->idGenerator->generateId(),
             $messengerUser->getUser(),
             $messengerUser,
             $searchTerms,
-            $feedbackTransfer->getRating(),
-            description: $feedbackTransfer->getDescription(),
+            $transfer->getRating(),
+            description: $transfer->getDescription(),
             hasActiveSubscription: $hasActiveSubscription,
             countryCode: $messengerUser->getUser()->getCountryCode(),
             localeCode: $messengerUser->getUser()->getLocaleCode(),
-            telegramBot: $feedbackTransfer->getTelegramBot()
+            telegramBot: $transfer->getTelegramBot()
         );
     }
 
     /**
-     * @param FeedbackTransfer $feedbackTransfer
+     * @param FeedbackTransfer $transfer
      * @return void
      * @throws SameMessengerUserException
      */
-    private function checkSearchTermUser(FeedbackTransfer $feedbackTransfer): void
+    private function checkSearchTermUser(FeedbackTransfer $transfer): void
     {
-        $messengerUser = $feedbackTransfer->getMessengerUser();
+        $messengerUser = $transfer->getMessengerUser();
 
-        foreach ($feedbackTransfer->getSearchTerms() as $searchTerm) {
+        foreach ($transfer->getSearchTerms() as $searchTerm) {
             if (
                 $messengerUser?->getUsername() !== null
                 && $messengerUser?->getMessenger() !== null
@@ -112,14 +114,5 @@ class FeedbackCreator
                 throw new SameMessengerUserException($messengerUser);
             }
         }
-    }
-
-    private function logActivity(Feedback $feedback): void
-    {
-        if (!$this->options->shouldLogActivities()) {
-            return;
-        }
-
-        $this->activityLogger->logActivity($feedback);
     }
 }

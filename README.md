@@ -10,6 +10,8 @@
 * rm -rf migrations/*
 * php bin/console doctrine:migrations:diff
 * php bin/console doctrine:migrations:migrate
+* php bin/console telegram:bot:import telegram_bots.csv --no-interaction
+* php bin/console telegram:channel:import telegram_channels.csv --no-interaction
 
 # Create test db
 * docker compose exec -it mysql sh
@@ -68,3 +70,4 @@
 * Re-factor: remove dots from questions, searchTerms: duplicates validation
 * Add confirm extra details step for create command ??
 * Make validators configurable via settings (options)
+* More money: lock feedbacks and ask money for it

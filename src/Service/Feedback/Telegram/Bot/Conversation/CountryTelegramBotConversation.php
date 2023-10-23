@@ -187,11 +187,6 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
             return $this->queryCustomCountry($tg);
         }
 
-        if ($level1Region->getId() === null) {
-            // todo: use custom primary keys and remove this everywhere
-            $this->entityManager->flush();
-        }
-
         $user
             ->setCountryCode($level1Region->getCountryCode())
             ->setLevel1RegionId($level1Region->getId())

@@ -14,7 +14,7 @@
                 <option name="unsigned">true</option>
             </options>
         </id>
-        <field name="messengerUserId" column="messenger_user_id" type="bigint"/>
+        <field name="messengerUserId" column="messenger_user_id" length="32"/>
         <field name="chatId" column="chat_id" type="bigint"/>
         <field name="botId" column="bot_id" type="smallint"/>
         <field name="class" column="class" length="255"/>

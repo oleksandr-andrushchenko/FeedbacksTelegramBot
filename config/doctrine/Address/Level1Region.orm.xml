@@ -11,12 +11,8 @@
             <index fields="countryCode,name"/>
         </indexes>
 
-        <id name="id" column="id" type="integer">
-            <generator/>
-            <options>
-                <option name="unsigned">true</option>
-            </options>
-        </id>
+        <id name="id" column="id" type="string" length="32"/>
+
         <field name="countryCode" column="country_code" length="2"/>
         <field name="name" column="name" length="128"/>
         <field name="timezone" column="timezone" length="32" nullable="true"/>
