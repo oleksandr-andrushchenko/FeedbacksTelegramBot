@@ -218,7 +218,7 @@ class TelegramBotAwareHelper
 
     public function queryTipText(string $text): string
     {
-        return "\n\n" . $this->infoText($text);
+        return "\n\n" . '• <i>' . $text . '</i>';
     }
 
     public function alreadyAddedText(string $text): string
