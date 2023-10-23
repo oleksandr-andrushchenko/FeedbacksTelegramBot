@@ -78,7 +78,7 @@ class TelegramChannel
         return $this->level1RegionId;
     }
 
-    public function setLevel1RegionId(?int $level1RegionId): self
+    public function setLevel1RegionId(?string $level1RegionId): self
     {
         $this->level1RegionId = $level1RegionId;
 
