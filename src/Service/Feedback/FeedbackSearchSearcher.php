@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Feedback;
 
 use App\Entity\Feedback\FeedbackSearch;
-use App\Entity\Feedback\FeedbackSearchSearch;
+use App\Entity\Feedback\FeedbackLookup;
 use App\Enum\Feedback\SearchTermType;
 use App\Repository\Feedback\FeedbackSearchRepository;
 
@@ -18,11 +18,11 @@ class FeedbackSearchSearcher
     }
 
     /**
-     * @param FeedbackSearchSearch $feedbackSearchSearch
+     * @param FeedbackLookup $feedbackSearchSearch
      * @param int $limit
      * @return FeedbackSearch[]
      */
-    public function searchFeedbackSearches(FeedbackSearchSearch $feedbackSearchSearch, int $limit = 20): array
+    public function searchFeedbackSearches(FeedbackLookup $feedbackSearchSearch, int $limit = 20): array
     {
         $feedbackSearches = $this->repository->createQueryBuilder('fs')
             ->innerJoin('fs.searchTerm', 't')

@@ -7,7 +7,7 @@ namespace App\Transfer\Feedback;
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBot;
 
-readonly class FeedbackSearchSearchTransfer
+readonly class FeedbackLookupTransfer
 {
     public function __construct(
         private ?MessengerUser $messengerUser,

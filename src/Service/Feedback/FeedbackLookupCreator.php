@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Feedback;
 
 use App\Entity\CommandOptions;
-use App\Entity\Feedback\FeedbackSearchSearch as FeedbackLookup;
+use App\Entity\Feedback\FeedbackLookup;
 use App\Exception\CommandLimitExceededException;
 use App\Exception\ValidatorException;
 use App\Message\Event\Feedback\FeedbackLookupCreatedEvent;
@@ -15,11 +15,11 @@ use App\Service\Feedback\SearchTerm\FeedbackSearchTermUpserter;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\IdGenerator;
 use App\Service\Validator;
-use App\Transfer\Feedback\FeedbackSearchSearchTransfer as FeedbackLookupTransfer;
+use App\Transfer\Feedback\FeedbackLookupTransfer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class FeedbackSearchSearchCreator
+class FeedbackLookupCreator
 {
     public function __construct(
         private readonly CommandOptions $options,
@@ -46,7 +46,7 @@ class FeedbackSearchSearchCreator
      * @throws CommandLimitExceededException
      * @throws ValidatorException
      */
-    public function createFeedbackSearchSearch(FeedbackLookupTransfer $transfer): FeedbackLookup
+    public function createFeedbackLookup(FeedbackLookupTransfer $transfer): FeedbackLookup
     {
         $this->validator->validate($transfer);
 

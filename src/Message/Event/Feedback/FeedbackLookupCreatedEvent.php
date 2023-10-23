@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Message\Event\Feedback;
 
-use App\Entity\Feedback\FeedbackSearchSearch as FeedbackLookup;
+use App\Entity\Feedback\FeedbackLookup;
 use LogicException;
 
 readonly class FeedbackLookupCreatedEvent

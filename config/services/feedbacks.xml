@@ -81,11 +81,10 @@
         <service id="app.feedback_search_repository" class="App\Repository\Feedback\FeedbackSearchRepository">
             <argument type="service" id="doctrine"/>
         </service>
-        <service id="app.feedback_search_search_repository"
-                 class="App\Repository\Feedback\FeedbackSearchSearchRepository">
+        <service id="app.feedback_lookup_repository"
+                 class="App\Repository\Feedback\FeedbackLookupRepository">
             <argument type="service" id="doctrine"/>
         </service>
-        <service id="app.feedback_lookup_repository" alias="app.feedback_search_search_repository"/>
         <service id="app.feedback_user_subscription_repository"
                  class="App\Repository\Feedback\FeedbackUserSubscriptionRepository">
             <argument type="service" id="doctrine"/>
@@ -216,12 +215,12 @@
             <argument type="service" id="app.id_generator"/>
             <argument type="service" id="app.event_bus"/>
         </service>
-        <service id="app.feedback_search_search_creator" class="App\Service\Feedback\FeedbackSearchSearchCreator"
+        <service id="app.feedback_lookup_creator" class="App\Service\Feedback\FeedbackLookupCreator"
                  lazy="true">
             <argument type="service" id="app.lookup_command_options"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.validator"/>
-            <argument type="service" id="app.feedback_search_search_statistic_provider"/>
+            <argument type="service" id="app.feedback_lookup_statistic_provider"/>
             <argument type="service" id="app.feedback_command_limits_checker"/>
             <argument type="service" id="app.feedback_subscription_manager"/>
             <argument type="service" id="app.feedback_search_term_upserter"/>
@@ -328,10 +327,10 @@
             <argument type="service" id="app.feedback_search_repository"/>
             <tag name="app.command_statistic_provider"/>
         </service>
-        <service id="app.feedback_search_search_statistic_provider"
-                 class="App\Service\Feedback\Statistic\FeedbackSearchSearchStatisticProvider" lazy="true">
+        <service id="app.feedback_lookup_statistic_provider"
+                 class="App\Service\Feedback\Statistic\FeedbackLookupStatisticProvider" lazy="true">
             <argument type="service" id="app.lookup_command_options"/>
-            <argument type="service" id="app.feedback_search_search_repository"/>
+            <argument type="service" id="app.feedback_lookup_repository"/>
             <tag name="app.command_statistic_provider"/>
         </service>
         <service id="app.search_term_provider"
@@ -496,7 +495,7 @@
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
             <argument type="service" id="app.search_term_telegram_view_provider"/>
             <argument type="service" id="app.feedback_search_term_type_provider"/>
-            <argument type="service" id="app.feedback_search_search_creator"/>
+            <argument type="service" id="app.feedback_lookup_creator"/>
             <argument type="service" id="app.feedback_search_searcher"/>
             <argument type="service" id="app.feedback_search_telegram_view_provider"/>
             <argument type="service" id="app.string_mb_lc_firster"/>

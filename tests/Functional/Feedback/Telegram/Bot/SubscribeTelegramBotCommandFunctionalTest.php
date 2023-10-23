@@ -14,7 +14,7 @@ use App\Enum\Telegram\TelegramBotPaymentMethodName;
 use App\Service\Feedback\Telegram\Bot\Conversation\SubscribeTelegramBotConversation;
 use App\Service\Feedback\Telegram\Bot\FeedbackTelegramBotGroup;
 use App\Tests\Functional\Telegram\Bot\TelegramBotCommandFunctionalTestCase;
-use App\Tests\Traits\Feedback\FeedbackSearchSearchRepositoryProviderTrait;
+use App\Tests\Traits\Feedback\FeedbackLookupRepositoryProviderTrait;
 use App\Tests\Traits\Feedback\FeedbackSubscriptionPlanProviderTrait;
 use App\Tests\Traits\Intl\CurrencyProviderTrait;
 use App\Tests\Traits\Telegram\Bot\TelegramBotInvoiceSenderProviderTrait;
@@ -23,7 +23,7 @@ use Generator;
 
 class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctionalTestCase
 {
-    use FeedbackSearchSearchRepositoryProviderTrait;
+    use FeedbackLookupRepositoryProviderTrait;
     use CurrencyProviderTrait;
     use FeedbackSubscriptionPlanProviderTrait;
     use TelegramBotPaymentRepositoryProviderTrait;

@@ -11,7 +11,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Stringable;
 
-class FeedbackSearchSearch implements Stringable
+class FeedbackLookup implements Stringable
 {
     public function __construct(
         private readonly string $id,

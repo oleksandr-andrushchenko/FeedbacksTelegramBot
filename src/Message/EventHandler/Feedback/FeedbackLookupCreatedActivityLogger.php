@@ -6,7 +6,7 @@ namespace App\Message\EventHandler\Feedback;
 
 use App\Entity\CommandOptions;
 use App\Message\Event\Feedback\FeedbackLookupCreatedEvent;
-use App\Repository\Feedback\FeedbackSearchSearchRepository as FeedbackLookupRepository;
+use App\Repository\Feedback\FeedbackLookupRepository;
 use Psr\Log\LoggerInterface;
 
 class FeedbackLookupCreatedActivityLogger

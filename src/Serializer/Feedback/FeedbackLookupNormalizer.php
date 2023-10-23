@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Serializer\Feedback;
 
-use App\Entity\Feedback\FeedbackSearchSearch as FeedbackLookup;
+use App\Entity\Feedback\FeedbackLookup;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class FeedbackLookupNormalizer implements NormalizerInterface

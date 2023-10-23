@@ -6,16 +6,16 @@ namespace App\Service\Feedback\Statistic;
 
 use App\Entity\CommandOptions;
 use App\Entity\User\User;
-use App\Repository\Feedback\FeedbackSearchSearchRepository;
+use App\Repository\Feedback\FeedbackLookupRepository;
 use App\Service\Feedback\Command\CommandStatisticProviderInterface;
 use DateTimeImmutable;
 use Generator;
 
-class FeedbackSearchSearchStatisticProvider implements CommandStatisticProviderInterface
+class FeedbackLookupStatisticProvider implements CommandStatisticProviderInterface
 {
     public function __construct(
         private readonly CommandOptions $options,
-        private readonly FeedbackSearchSearchRepository $repository,
+        private readonly FeedbackLookupRepository $repository,
     )
     {
     }

@@ -10,7 +10,7 @@ use App\Entity\Telegram\TelegramBotConversation as Entity;
 use App\Enum\Feedback\SearchTermType;
 use App\Exception\CommandLimitExceededException;
 use App\Exception\ValidatorException;
-use App\Service\Feedback\FeedbackSearchSearchCreator;
+use App\Service\Feedback\FeedbackLookupCreator;
 use App\Service\Feedback\FeedbackSearchSearcher;
 use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Service\Feedback\SearchTerm\SearchTermParserOnlyInterface;
@@ -22,7 +22,7 @@ use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
 use App\Service\Util\String\MbLcFirster;
 use App\Service\Validator;
-use App\Transfer\Feedback\FeedbackSearchSearchTransfer;
+use App\Transfer\Feedback\FeedbackLookupTransfer;
 use App\Transfer\Feedback\SearchTermTransfer;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
@@ -42,7 +42,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly SearchTermTelegramViewProvider $searchTermViewProvider,
         private readonly SearchTermTypeProvider $searchTermTypeProvider,
-        private readonly FeedbackSearchSearchCreator $creator,
+        private readonly FeedbackLookupCreator $creator,
         private readonly FeedbackSearchSearcher $searcher,
         private readonly FeedbackSearchTelegramViewProvider $feedbackSearchViewProvider,
         private readonly MbLcFirster $lcFirster,
@@ -456,8 +456,8 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $this->validator->validate($this->state);
 
             // todo: use command bus
-            $feedbackSearchSearch = $this->creator->createFeedbackSearchSearch(
-                new FeedbackSearchSearchTransfer(
+            $feedbackSearchSearch = $this->creator->createFeedbackLookup(
+                new FeedbackLookupTransfer(
                     $tg->getBot()->getMessengerUser(),
                     $this->state->getSearchTerm(),
                     $tg->getBot()->getEntity()
