@@ -115,13 +115,12 @@ class ChooseActionTelegramChatSender
     public function getCountryButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
         $countryCode = $tg->getCountryCode();
-        $country = $countryCode === null ? null : $this->countryProvider->getCountry($countryCode);
 
-        if ($country === null) {
+        if ($countryCode === null) {
             return $tg->button($tg->command('country'));
         }
 
-        $text = $this->countryProvider->getCountryIcon($country);
+        $text = $this->countryProvider->getCountryIconByCode($countryCode);
         $text .= ' ';
         $text .= $tg->trans('country', domain: 'command');
 

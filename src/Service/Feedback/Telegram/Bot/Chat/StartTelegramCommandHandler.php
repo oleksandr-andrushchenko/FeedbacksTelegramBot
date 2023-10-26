@@ -36,8 +36,6 @@ class StartTelegramCommandHandler
 
     public function reply(TelegramBotAwareHelper $tg): void
     {
-        $countryCode = $tg->getCountryCode();
-        $country = $this->countryProvider->getCountry($countryCode);
         $locale = $this->localeProvider->getLocale($tg->getLocaleCode());
         $parameters = [
             'username' => $tg->getBot()->getEntity()->getUsername(),
@@ -55,7 +53,7 @@ class StartTelegramCommandHandler
         $message = $tg->view('start', [
             'privacy_policy_link' => $privacyPolicyLink,
             'terms_of_use_link' => $termsOfUseLink,
-            'country_icon' => $this->countryProvider->getCountryIcon($country),
+            'country_icon' => $this->countryProvider->getCountryIconByCode($tg->getCountryCode()),
             'locale_icon' => $this->localeProvider->getLocaleIcon($locale),
         ]);
 
