@@ -194,6 +194,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
         $message = $this->getLocaleQuery($tg, $help);
 
         $buttons = $this->getLocaleButtons($this->getLocales(), $tg);
+        $buttons[] = $tg->prevButton();
         $buttons[] = $tg->helpButton();
         $buttons[] = $tg->cancelButton();
 
@@ -212,6 +213,10 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
 
     public function gotLocale(TelegramBotAwareHelper $tg, Entity $entity, bool $guess): null
     {
+        if (!$guess && $tg->matchInput($tg->prevButton()->getText())) {
+            return $this->queryGuessLocale($tg);
+        }
+
         if ($tg->matchInput($tg->helpButton()->getText())) {
             if ($guess) {
                 return $this->queryGuessLocale($tg, true);
