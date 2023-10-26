@@ -73,6 +73,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
         $message .= "\n\n";
         $message .= $this->getCurrentLocaleReply($tg);
         $message = $tg->upsetText($message);
+        $message .= "\n";
 
         $tg->stopConversation($entity);
 
