@@ -5,11 +5,6 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="app.supported_locales" type="collection">
-            <parameter>en</parameter>
-            <parameter>uk</parameter>
-            <parameter>ru</parameter>
-        </parameter>
         <parameter key="app.locales" type="collection">
             <parameter key="en" type="collection">
                 <parameter key="code">en</parameter>
@@ -38,13 +33,13 @@
             <argument>%app.countries_file%</argument>
             <argument type="service" id="app.intl_i18n_iso_country_translations_provider"/>
             <argument>%app.country_translation_file%</argument>
-            <argument>%app.supported_locales%</argument>
+            <argument>%app.locales%</argument>
             <tag name="console.command" command="intl:countries:update"/>
         </service>
         <service id="app.intl_locales_update_command" class="App\Command\Intl\LocalesUpdateCommand" lazy="true">
             <argument type="service" id="app.intl_i18n_iso_locale_translations_provider"/>
             <argument>%app.locale_translation_file%</argument>
-            <argument>%app.supported_locales%</argument>
+            <argument>%app.locales%</argument>
             <tag name="console.command" command="intl:locales:update"/>
         </service>
         <service id="app.intl_currency_normalizer" class="App\Serializer\Intl\CurrencyNormalizer">
@@ -83,7 +78,6 @@
             <argument type="service" id="translator"/>
             <argument>%app.locales%</argument>
             <argument type="service" id="app.intl_country_provider"/>
-            <argument>%app.supported_locales%</argument>
         </service>
         <service id="app.intl_time_provider" class="App\Service\Intl\TimeProvider" lazy="true">
             <argument type="service" id="app.translator"/>

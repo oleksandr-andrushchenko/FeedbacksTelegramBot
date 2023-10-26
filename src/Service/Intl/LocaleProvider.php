@@ -11,16 +11,15 @@ class LocaleProvider
 {
     public function __construct(
         private readonly TranslatorInterface $translator,
-        private readonly array $data,
+        private readonly array $supportedLocales,
         private readonly CountryProvider $countryProvider,
-        private readonly array $supported,
     )
     {
     }
 
     public function hasLocale(string $code): bool
     {
-        return array_key_exists($code, $this->data);
+        return array_key_exists($code, $this->supportedLocales);
     }
 
     public function getLocale(string $code): ?Locale
@@ -29,7 +28,7 @@ class LocaleProvider
             return null;
         }
 
-        return $this->denormalize($this->data[$code]);
+        return $this->denormalize($this->supportedLocales[$code]);
     }
 
     public function getLocaleIcon(Locale $locale): string
@@ -68,24 +67,19 @@ class LocaleProvider
     }
 
     /**
-     * @param bool|null $supported
      * @param string|null $countryCode
      * @return Locale[]
      */
-    public function getLocales(bool $supported = null, string $countryCode = null): array
+    public function getLocales(string $countryCode = null): array
     {
-        $data = $this->data;
-
-        if ($supported) {
-            $data = array_filter($data, fn ($code): bool => in_array($code, $this->supported, true), ARRAY_FILTER_USE_KEY);
-        }
+        $data = $this->supportedLocales;
 
         if ($countryCode !== null) {
             $filter = $this->countryProvider->getCountry($countryCode)->getLocaleCodes() ?? [];
             $data = array_filter($data, static fn ($code): bool => in_array($code, $filter, true), ARRAY_FILTER_USE_KEY);
         }
 
-        return array_map(fn ($record): Locale => $this->denormalize($record), $supported === null && $countryCode === null ? $data : array_values($data));
+        return array_map(fn ($record): Locale => $this->denormalize($record), array_values($data));
     }
 
     private function denormalize(array $record): Locale

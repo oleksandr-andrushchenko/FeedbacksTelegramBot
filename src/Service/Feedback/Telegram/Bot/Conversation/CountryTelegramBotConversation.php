@@ -246,7 +246,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
 
     public function gotCountry(TelegramBotAwareHelper $tg, Entity $entity, bool $guess): null
     {
-        if ($tg->matchInput($tg->prevButton()->getText()) && !$guess) {
+        if (!$guess && $tg->matchInput($tg->prevButton()->getText())) {
             return $this->queryGuessCountry($tg);
         }
 

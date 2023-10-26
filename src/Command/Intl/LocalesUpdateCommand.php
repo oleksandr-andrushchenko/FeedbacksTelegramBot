@@ -56,7 +56,7 @@ class LocalesUpdateCommand extends Command
         }
 
         foreach ($translations as $locale => $data) {
-            if (!in_array($locale, $this->supportedLocales, true)) {
+            if (!isset($this->supportedLocales[$locale])) {
                 continue;
             }
 

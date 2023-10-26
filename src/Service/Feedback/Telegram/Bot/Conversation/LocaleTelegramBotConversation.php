@@ -54,7 +54,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
      */
     public function getGuessLocales(TelegramBotAwareHelper $tg): array
     {
-        return $this->provider->getLocales(supported: true, countryCode: $tg->getCountryCode());
+        return $this->provider->getLocales(countryCode: $tg->getCountryCode());
     }
 
     /**
@@ -62,7 +62,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
      */
     public function getLocales(): array
     {
-        return $this->provider->getLocales(supported: true);
+        return $this->provider->getLocales();
     }
 
     public function gotCancel(TelegramBotAwareHelper $tg, Entity $entity): null

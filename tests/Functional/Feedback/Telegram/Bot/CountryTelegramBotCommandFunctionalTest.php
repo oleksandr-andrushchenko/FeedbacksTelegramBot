@@ -1087,4 +1087,9 @@ class CountryTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
             $tz,
         ];
     }
+
+    protected function country(string $countryCode): string
+    {
+        return $this->getCountryProvider()->getCountryIconByCode($countryCode) . ' ' . $countryCode;
+    }
 }

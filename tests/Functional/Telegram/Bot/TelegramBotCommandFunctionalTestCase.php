@@ -509,11 +509,6 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
         }
     }
 
-    protected function country(string $countryCode): string
-    {
-        return $this->getCountryProvider()->getCountryIconByCode($countryCode) . ' ' . $countryCode;
-    }
-
     protected function okReplies(): array
     {
         return [
