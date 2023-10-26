@@ -72,3 +72,5 @@
 * Make validators configurable via settings (options)
 * More money: lock feedbacks and ask money for it
 * Apply optimization tricks/tips for symfony prod application
+* move translation out of the repo
+* rename: getLocaleIcon -> getLocaleIconByCode, text ->type -> ->typeText
