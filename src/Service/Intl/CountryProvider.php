@@ -45,8 +45,11 @@ class CountryProvider
 
     public function getCountryIcon(Country $country): string
     {
-        $code = $country->getCode();
+        return $this->getCountryIconByCode($country->getCode());
+    }
 
+    public function getCountryIconByCode(string $code): string
+    {
         return "\xF0\x9F\x87" . chr(ord($code[0]) + 0x45) . "\xF0\x9F\x87" . chr(ord($code[1]) + 0x45);
     }
 
