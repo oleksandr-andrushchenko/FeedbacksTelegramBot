@@ -21,8 +21,7 @@ class TelegramBotLinkViewProvider
 
     public function getTelegramBotLinkView(TelegramBot $bot): string
     {
-        $country = $this->countryProvider->getCountry($bot->getCountryCode());
-        $countryIcon = $this->countryProvider->getCountryIcon($country);
+        $countryIcon = $this->countryProvider->getCountryIconByCode($bot->getCountryCode());
         $locale = $this->localeProvider->getLocale($bot->getLocaleCode());
         $localeIcon = $this->localeProvider->getLocaleIcon($locale);
         $link = $this->linkProvider->getTelegramLink($bot->getUsername());

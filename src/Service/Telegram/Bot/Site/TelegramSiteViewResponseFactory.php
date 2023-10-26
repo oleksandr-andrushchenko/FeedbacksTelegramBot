@@ -54,7 +54,7 @@ class TelegramSiteViewResponseFactory
             $botMap = fn (TelegramBot $bot) => [
                 'username' => $bot->getUsername(),
                 'name' => $bot->getName(),
-                'country_icon' => $this->countryProvider->getCountryIcon($this->countryProvider->getCountry($bot->getCountryCode())),
+                'country_icon' => $this->countryProvider->getCountryIconByCode($bot->getCountryCode()),
                 'locale_icon' => $this->localeProvider->getLocaleIcon($this->localeProvider->getLocale($bot->getLocaleCode())),
             ];
 

@@ -519,15 +519,6 @@ class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         ];
     }
 
-    /**
-     * @param SearchTermTransfer|null $searchTerm
-     * @param int|null $stateStep
-     * @param string $input
-     * @param array $shouldSeeReplies
-     * @param array $shouldSeeButtons
-     * @param int|null $shouldSeeStep
-     * @return void
-     */
     protected function test(
         ?SearchTermTransfer $searchTerm,
         ?int $stateStep,
