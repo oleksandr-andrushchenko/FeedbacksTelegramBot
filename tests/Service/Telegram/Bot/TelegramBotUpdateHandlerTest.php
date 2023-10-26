@@ -27,7 +27,9 @@ class TelegramBotUpdateHandlerTest extends DatabaseTestCase
         ]);
         $updateId = 10;
 
-        $this->handleTelegramBotUpdate(null, $this->getTelegramMessageUpdateFixture('any', updateId: $updateId));
+        $this->handleTelegramBotUpdate(null, $this->getTelegramMessageUpdateFixture([
+            'text' => 'any',
+        ], updateId: $updateId));
 
         $this->assertLogged(Level::Info, 'Telegram update received');
 
@@ -47,7 +49,9 @@ class TelegramBotUpdateHandlerTest extends DatabaseTestCase
         $updateRepository = $this->getTelegramBotUpdateRepository();
         $previousUpdateCount = $updateRepository->count([]);
 
-        $this->handleTelegramBotUpdate(null, $this->getTelegramMessageUpdateFixture('any', updateId: 1));
+        $this->handleTelegramBotUpdate(null, $this->getTelegramMessageUpdateFixture([
+            'text' => 'any',
+        ], updateId: 1));
 
         $this->assertLogged(Level::Info, 'Telegram update received');
         $this->assertLogged(Level::Debug, 'Duplicate telegram update received, processing aborted');

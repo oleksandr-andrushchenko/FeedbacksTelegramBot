@@ -436,7 +436,6 @@
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
             <argument type="service" id="app.telegram_bot_matches_chat_sender"/>
             <argument type="service" id="app.level_1_region_provider"/>
-            <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="logger"/>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>

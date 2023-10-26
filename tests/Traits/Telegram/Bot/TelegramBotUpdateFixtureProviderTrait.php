@@ -9,19 +9,19 @@ use Longman\TelegramBot\Entities\Update;
 
 trait TelegramBotUpdateFixtureProviderTrait
 {
-    private function getTelegramBotUpdateFixture(int $updateId = null): Update
+    protected function getTelegramBotUpdateFixture(int $updateId = null): Update
     {
         return $this->getTelegramUpdate($updateId);
     }
 
-    private function getTelegramMessageUpdateFixture(
-        string $text,
+    protected function getTelegramMessageUpdateFixture(
+        array $data,
         int $fromId = Fixtures::TELEGRAM_USER_ID_1,
         int $chatId = Fixtures::TELEGRAM_CHAT_ID_1,
         int $updateId = null
     ): Update
     {
-        return $this->getTelegramUpdate($updateId, Update::TYPE_MESSAGE, [
+        return $this->getTelegramUpdate($updateId, Update::TYPE_MESSAGE, array_merge($data, [
             'message_id' => mt_rand(100, 200),
             'from' => [
                 'id' => $fromId,
@@ -38,12 +38,11 @@ trait TelegramBotUpdateFixtureProviderTrait
                 'type' => 'private',
             ],
             'date' => 1678120209,
-            'text' => $text,
             'entities' => [],
-        ]);
+        ]));
     }
 
-    private function getTelegramUpdate(int $updateId = null, string $type = null, array $body = null): Update
+    protected function getTelegramUpdate(int $updateId = null, string $type = null, array $body = null): Update
     {
         $data = [
             'update_id' => $updateId === null ? mt_rand(100, 200) : $updateId,

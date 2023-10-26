@@ -8,7 +8,7 @@
             <argument type="service" id="doctrine"/>
         </service>
         <service id="app.address_reverse_geocode_command" class="App\Command\Address\AddressReverseGeocodeCommand" lazy="true">
-            <argument type="service" id="app.google_address_geocoder"/>
+            <argument type="service" id="app.address_geocoder"/>
             <argument type="service" id="app.address_info_provider"/>
             <argument type="service" id="app.doctrine_dry_runner"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
@@ -20,8 +20,8 @@
             <argument type="service" id="app.id_generator"/>
         </service>
         <service id="app.level_1_region_provider" class="App\Service\Address\Level1RegionProvider" lazy="true">
-            <argument type="service" id="app.google_address_geocoder"/>
-            <argument type="service" id="app.google_timezone_geocoder"/>
+            <argument type="service" id="app.address_geocoder"/>
+            <argument type="service" id="app.timezone_geocoder"/>
             <argument type="service" id="app.level_1_region_upserter"/>
             <argument type="service" id="app.level_1_region_repository"/>
             <argument type="service" id="translator"/>

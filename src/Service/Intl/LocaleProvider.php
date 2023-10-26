@@ -34,9 +34,7 @@ class LocaleProvider
 
     public function getLocaleIcon(Locale $locale): string
     {
-        $country = $this->countryProvider->getCountry($locale->getFlag());
-
-        return $this->countryProvider->getCountryIcon($country);
+        return $this->countryProvider->getCountryIconByCode($locale->getFlag());
     }
 
     public function getUnknownLocaleIcon(): string

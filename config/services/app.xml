@@ -67,5 +67,7 @@
         <service id="app.validator_helper" class="App\Service\Validator\ValidatorHelper" lazy="true">
             <argument type="service" id="app.array_key_quoter"/>
         </service>
+        <service id="app.address_geocoder" alias="app.google_address_geocoder"/>
+        <service id="app.timezone_geocoder" alias="app.google_timezone_geocoder"/>
     </services>
 </container>

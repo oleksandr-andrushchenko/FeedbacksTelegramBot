@@ -31,7 +31,7 @@ class Level1RegionProvider
      * @throws AddressGeocodeFailedException
      * @throws TimezoneGeocodeFailedException
      */
-    public function getLevel1RegionByLocation(Location $location): Level1Region
+    public function  getLevel1RegionByLocation(Location $location): Level1Region
     {
         $address = $this->addressGeocoder->geocodeAddress($location);
         $level1Region = $this->upserter->upsertLevel1RegionByAddress($address);
@@ -68,10 +68,14 @@ class Level1RegionProvider
     {
         $level1Region = $this->repository->find($level1RegionId);
 
+        if ($level1Region === null) {
+            return null;
+        }
+
         return $this->getLevel1RegionName($level1Region);
     }
 
-    public function getLevel1RegionName(Level1Region $level1Region, string $localeCode = null): ?string
+    public function getLevel1RegionName(Level1Region $level1Region, string $localeCode = null): string
     {
         return $this->translator->trans(
             $level1Region->getName(),

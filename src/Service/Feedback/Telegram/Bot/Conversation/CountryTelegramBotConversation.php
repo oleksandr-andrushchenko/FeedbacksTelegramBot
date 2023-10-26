@@ -18,7 +18,6 @@ use App\Service\Telegram\Bot\Chat\TelegramBotMatchesChatSender;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversation;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
-use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Entities\KeyboardButton;
 use Psr\Log\LoggerInterface;
 
@@ -36,7 +35,6 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly TelegramBotMatchesChatSender $botMatchesChatSender,
         private readonly Level1RegionProvider $level1RegionProvider,
-        private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
     )
     {
@@ -222,8 +220,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
 
         $message = $this->getCountryQuery($tg, $help);
 
-        $buttons = [];
-        $buttons = array_merge($buttons, $this->getCountryButtons($this->getGuessCountries($tg), $tg));
+        $buttons = $this->getCountryButtons($this->getGuessCountries($tg), $tg);
         $buttons[] = $this->getOtherCountryButton($tg);
         $buttons[] = $this->getRequestLocationButton($tg);
         $buttons[] = $tg->helpButton();
@@ -238,8 +235,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
 
         $message = $this->getCountryQuery($tg, $help);
 
-        $buttons = [];
-        $buttons = array_merge($buttons, $this->getCountryButtons($this->getCountries(), $tg));
+        $buttons = $this->getCountryButtons($this->getCountries(), $tg);
         $buttons[] = $this->getRequestLocationButton($tg);
         $buttons[] = $tg->prevButton();
         $buttons[] = $tg->helpButton();
@@ -397,6 +393,10 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
 
         $user = $tg->getBot()->getMessengerUser()?->getUser();
 
+        if ($user->getLevel1RegionId() === $level1Region->getId()) {
+            return $this->queryTimezone($tg);
+        }
+
         $user
             ->setLevel1RegionId($level1Region->getId())
             ->setTimezone($level1Region->getTimezone())
@@ -513,8 +513,9 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
             return $this->queryTimezone($tg, true);
         }
 
+        $user = $tg->getBot()->getMessengerUser()?->getUser();
+
         if ($tg->matchInput($tg->cancelButton()->getText())) {
-            $user = $tg->getBot()->getMessengerUser()?->getUser();
             $country = $this->provider->getCountry($user->getCountryCode());
             $user->setTimezone($country?->getTimezones()[0] ?? null);
 
@@ -539,7 +540,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
             return $this->queryTimezone($tg);
         }
 
-        $tg->getBot()->getMessengerUser()?->getUser()->setTimezone($timezone);
+        $user->setTimezone($timezone);
 
         return $this->replyAndClose($tg, $entity);
     }

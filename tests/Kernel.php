@@ -38,5 +38,7 @@ class Kernel extends BaseKernel implements CompilerPassInterface
         $container->getDefinition('app.telegram_bot_invoice_sender')->setPublic(true);
         $container->getDefinition('app.intl_country_provider')->setPublic(true);
         $container->getDefinition('app.feedback_rating_provider')->setPublic(true);
+        $container->getDefinition('app.address_geocoder')->setPublic(true);
+        $container->getDefinition('app.timezone_geocoder')->setPublic(true);
     }
 }

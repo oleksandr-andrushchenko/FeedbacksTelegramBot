@@ -8,6 +8,7 @@ use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBotConversation;
 use App\Entity\Telegram\TelegramBotConversationState;
 use App\Entity\Telegram\TelegramBotPaymentMethod;
+use App\Entity\User\User;
 use App\Enum\Feedback\Rating;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
@@ -21,6 +22,7 @@ use App\Tests\DatabaseTestCase;
 use App\Tests\Fixtures;
 use App\Tests\Traits\EntityManagerProviderTrait;
 use App\Tests\Traits\Feedback\SearchTermParserProviderTrait;
+use App\Tests\Traits\Intl\CountryProviderTrait;
 use App\Tests\Traits\Messenger\MessengerUserProfileUrlProviderTrait;
 use App\Tests\Traits\Messenger\MessengerUserRepositoryProviderTrait;
 use App\Tests\Traits\SerializerProviderTrait;
@@ -63,6 +65,7 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
     use TelegramBotUserProviderTrait;
     use TelegramBotChatProviderTrait;
     use TelegramBotRepositoryProviderTrait;
+    use CountryProviderTrait;
 
     protected ?TelegramBot $bot;
     protected ?TelegramBotAwareHelper $tg;
@@ -107,13 +110,15 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
     protected function getUpdate(): Update
     {
         if ($this->update === null) {
-            $this->update = $this->getTelegramMessageUpdateFixture('any');
+            $this->update = $this->getTelegramMessageUpdateFixture([
+                'text' => 'any',
+            ]);
         }
 
         return $this->update;
     }
 
-    public static function getContainer(): ContainerInterface
+    protected static function getContainer(): ContainerInterface
     {
         return parent::getContainer();
     }
@@ -171,7 +176,26 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
     {
         $this->bot = null;
         $this->tg = null;
-        $this->update = $this->getTelegramMessageUpdateFixture($command);
+        $this->update = $this->getTelegramMessageUpdateFixture([
+            'text' => $command,
+        ]);
+        $this->getBot()->setUpdate(null);
+        $this->getBot()->setMessengerUser(null);
+        $this->handleTelegramBotUpdate($this->getBot()->getEntity(), $this->getUpdate());
+
+        return $this;
+    }
+
+    protected function typeLocation(string $latitude, string $longitude): static
+    {
+        $this->bot = null;
+        $this->tg = null;
+        $this->update = $this->getTelegramMessageUpdateFixture([
+            'location' => [
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+            ],
+        ]);
         $this->getBot()->setUpdate(null);
         $this->getBot()->setMessengerUser(null);
         $this->handleTelegramBotUpdate($this->getBot()->getEntity(), $this->getUpdate());
@@ -187,6 +211,11 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
     protected function shouldNotSeeActiveConversation(string $expectedClass = null, TelegramBotConversationState $expectedState = null): static
     {
         return $this->shouldSeeConversation($expectedClass, $expectedState, false);
+    }
+
+    protected function getUser(): ?User
+    {
+        return $this->getUpdateMessengerUser()?->getUser();
     }
 
     protected function getConversation(): ?TelegramBotConversation
@@ -337,6 +366,29 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
         ;
     }
 
+    protected function chooseActionReplies(): array
+    {
+        return [
+            'query.action',
+        ];
+    }
+
+    protected function chooseActionButtons(): array
+    {
+        return [
+            $this->commandButton('create'),
+            $this->commandButton('search'),
+            $this->commandButton('lookup'),
+        ];
+    }
+
+    protected function cancelReplies(): array
+    {
+        return [
+            'reply.canceled',
+        ];
+    }
+
     /**
      * @param SearchTermTransfer $searchTerm
      * @param SearchTermType|null $expectedType
@@ -417,27 +469,27 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
         return $name . ' ' . $name;
     }
 
-    public function removeButton(string $text): string
+    protected function removeButton(string $text): string
     {
         return '❌ ' . $text;
     }
 
-    public function ratingButton(Rating $rating): string
+    protected function ratingButton(Rating $rating): string
     {
         return $rating->name . ' ' . $rating->name;
     }
 
-    public function searchTermTypeButton(SearchTermType $type): string
+    protected function searchTermTypeButton(SearchTermType $type): string
     {
         return $type->name . ' ' . $type->name;
     }
 
-    public function searchTermTypeTrans(SearchTermType $type): string
+    protected function searchTermTypeTrans(SearchTermType $type): string
     {
         return $type->name;
     }
 
-    public function selectedText(string $text): string
+    protected function selectedText(string $text): string
     {
         return '*' . $text;
     }
@@ -455,5 +507,24 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
         } else {
             $this->assertNull($this->getTelegramBotConversationRepository()->findOneByHash($conversation->getHash()));
         }
+    }
+
+    protected function country(string $countryCode): string
+    {
+        return $this->getCountryProvider()->getCountryIconByCode($countryCode) . ' ' . $countryCode;
+    }
+
+    protected function okReplies(): array
+    {
+        return [
+            'reply.ok',
+        ];
+    }
+
+    protected function wrongReplies(): array
+    {
+        return [
+            'reply.wrong',
+        ];
     }
 }

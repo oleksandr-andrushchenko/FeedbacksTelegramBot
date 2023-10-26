@@ -16,5 +16,7 @@
         <service id="app.telegram_bot_chat_action_sender"
                  class="App\Tests\Fake\Service\Telegram\Bot\Api\FakeTelegramBotChatActionSender" lazy="true"/>
         <service id="translator" class="App\Tests\Fake\Service\FakeTranslator" lazy="true"/>
+        <service id="app.address_geocoder" class="App\Tests\Fake\Service\FakeAddressGeocoder" lazy="true"/>
+        <service id="app.timezone_geocoder" class="App\Tests\Fake\Service\FakeTimezoneGeocoder" lazy="true"/>
     </services>
 </container>
