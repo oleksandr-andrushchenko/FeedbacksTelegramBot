@@ -35,7 +35,7 @@ class TelegramBotInvoiceSender implements TelegramBotInvoiceSenderInterface
             'payload' => $payload,
             'provider_token' => $providerToken,
             'currency' => $currency,
-            'prices' => array_map(fn (LabeledPrice $price) => $price->jsonSerialize(), $prices),
+            'prices' => array_map(static fn (LabeledPrice $price): array => $price->jsonSerialize(), $prices),
         ];
 
         if ($photo !== null) {

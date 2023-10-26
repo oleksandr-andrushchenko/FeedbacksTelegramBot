@@ -89,10 +89,10 @@ class CountryProvider
      */
     public function getCountries(string $localeCode = null): array
     {
-        $countries = array_map(fn ($record) => $this->denormalize($record), array_values($this->getData()));
+        $countries = array_map(fn ($record): Country => $this->denormalize($record), array_values($this->getData()));
 
         if ($localeCode !== null) {
-            $countries = array_filter($countries, fn ($country) => in_array($localeCode, $country->getLocaleCodes(), true));
+            $countries = array_filter($countries, static fn (Country $country): bool => in_array($localeCode, $country->getLocaleCodes(), true));
         }
 
         return $localeCode === null ? $countries : array_values($countries);

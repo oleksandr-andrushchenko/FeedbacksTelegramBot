@@ -87,10 +87,10 @@ class CurrencyProvider
         $data = $this->getData();
 
         if ($currencyCodes !== null) {
-            $data = array_filter($data, fn ($code) => in_array($code, $currencyCodes, true), ARRAY_FILTER_USE_KEY);
+            $data = array_filter($data, static fn ($code): bool => in_array($code, $currencyCodes, true), ARRAY_FILTER_USE_KEY);
         }
 
-        return array_map(fn ($record) => $this->denormalize($record), $currencyCodes === null ? $data : array_values($data));
+        return array_map(fn ($record): Currency => $this->denormalize($record), $currencyCodes === null ? $data : array_values($data));
     }
 
     private function denormalize(array $record): Currency

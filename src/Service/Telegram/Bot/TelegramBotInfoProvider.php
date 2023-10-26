@@ -20,7 +20,7 @@ class TelegramBotInfoProvider
     {
         $paymentMethods = $this->paymentMethodRepository->findActiveByBot($bot);
         $paymentMethodNames = array_map(
-            fn (TelegramBotPaymentMethod $paymentMethod) => sprintf(
+            static fn (TelegramBotPaymentMethod $paymentMethod): string => sprintf(
                 '%s (%s)',
                 ucwords($paymentMethod->getName()->name),
                 join(', ', $paymentMethod->getCurrencyCodes())

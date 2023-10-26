@@ -346,7 +346,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
      */
     public function getSearchTermTypeButtons(array $types, TelegramBotAwareHelper $tg): array
     {
-        return array_map(fn (SearchTermType $type) => $this->getSearchTermTypeButton($type, $tg), $types);
+        return array_map(fn (SearchTermType $type): KeyboardButton => $this->getSearchTermTypeButton($type, $tg), $types);
     }
 
     public function getSearchTermTypeButton(SearchTermType $type, TelegramBotAwareHelper $tg): KeyboardButton

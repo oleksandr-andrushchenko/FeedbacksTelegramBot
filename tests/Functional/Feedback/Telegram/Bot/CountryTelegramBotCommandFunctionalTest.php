@@ -60,7 +60,7 @@ class CountryTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
         ;
 
         $this
-            ->type($input)
+            ->typeText($input)
             ->shouldSeeStateStep($this->getConversation(), $shouldSeeStep)
             ->shouldSeeReply(...$shouldSeeReplies)
             ->shouldSeeButtons(...$shouldSeeButtons)
@@ -964,7 +964,7 @@ class CountryTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
         $conversation = $this->createConversation(CountryTelegramBotConversation::class, $state);
 
         $this
-            ->type($input)
+            ->typeText($input)
             ->shouldSeeStateStep($conversation, $shouldSeeStep)
             ->shouldSeeReply(...$shouldSeeReplies)
             ->shouldSeeButtons(...$shouldSeeButtons)

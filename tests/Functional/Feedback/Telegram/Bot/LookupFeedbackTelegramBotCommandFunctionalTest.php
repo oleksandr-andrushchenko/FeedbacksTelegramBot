@@ -36,7 +36,7 @@ class LookupFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         ]);
 
         $this
-            ->type($input)
+            ->typeText($input)
             ->shouldSeeStateStep(
                 $this->getConversation(),
                 LookupFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED
@@ -263,7 +263,7 @@ class LookupFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 ]),
             'input' => 'unknown',
             'shouldSeeReplies' => [
-                'reply.wrong',
+                ...$this->wrongReplies(),
                 'query.search_term_type',
             ],
             'shouldSeeButtons' => [
@@ -287,7 +287,7 @@ class LookupFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 ]),
             'input' => $this->searchTermTypeButton(SearchTermType::tiktok_username),
             'shouldSeeReplies' => [
-                'reply.wrong',
+                ...$this->wrongReplies(),
                 'query.search_term_type',
             ],
             'shouldSeeButtons' => [
@@ -412,7 +412,7 @@ class LookupFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         $conversation = $this->createConversation(LookupFeedbackTelegramBotConversation::class, $state);
 
         $this
-            ->type($input)
+            ->typeText($input)
             ->shouldSeeStateStep($conversation, $shouldSeeStep)
             ->shouldSeeReply(...$shouldSeeReplies)
             ->shouldSeeButtons(...$shouldSeeButtons)
@@ -425,7 +425,7 @@ class LookupFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'searchTerm' => new SearchTermTransfer('any_search_term', SearchTermType::unknown),
             'input' => 'unknown',
             'shouldSeeReplies' => [
-                'reply.wrong',
+                ...$this->wrongReplies(),
                 'query.confirm',
             ],
             'shouldSeeButtons' => [
@@ -526,7 +526,7 @@ class LookupFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         $conversation = $this->createConversation(LookupFeedbackTelegramBotConversation::class, $state);
 
         $this
-            ->type($input)
+            ->typeText($input)
             ->shouldSeeStateStep($conversation, $shouldSeeStep)
             ->shouldSeeReply(...$shouldSeeReplies)
             ->shouldSeeButtons(...$shouldSeeButtons)

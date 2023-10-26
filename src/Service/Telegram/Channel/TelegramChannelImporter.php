@@ -37,7 +37,7 @@ class TelegramChannelImporter
     public function importTelegramChannels(string $filename, callable $logger = null): ImportResult
     {
         $result = new ImportResult();
-        $logger = $logger ?? fn (string $message) => null;
+        $logger = $logger ?? static fn (string $message): null => null;
 
         $channels = $this->repository->findAll();
         $usernames = $this->getUsernames($filename);

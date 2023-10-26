@@ -82,22 +82,22 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
 
     protected function getCommands(TelegramBotAwareHelper $tg): iterable
     {
-        yield new TelegramBotCommand(self::START, fn () => $this->start($tg), menu: false);
-        yield new TelegramBotCommand(self::CREATE, fn () => $this->create($tg), menu: true, key: 'create', beforeConversations: true);
-        yield new TelegramBotCommand(self::SEARCH, fn () => $this->search($tg), menu: true, key: 'search', beforeConversations: true);
-        yield new TelegramBotCommand(self::LOOKUP, fn () => $this->lookup($tg), menu: true, key: 'lookup', beforeConversations: true);
-        yield new TelegramBotCommand(self::SUBSCRIBE, fn () => $this->subscribe($tg), menu: true, key: 'subscribe', beforeConversations: true);
-        yield new TelegramBotCommand(self::SUBSCRIPTIONS, fn () => $this->subscriptions($tg), menu: true, key: 'subscriptions', beforeConversations: true);
-        yield new TelegramBotCommand(self::COUNTRY, fn () => $this->country($tg), menu: true, key: 'country', beforeConversations: true);
-        yield new TelegramBotCommand(self::LOCALE, fn () => $this->locale($tg), menu: true, key: 'locale', beforeConversations: true);
-        yield new TelegramBotCommand(self::LIMITS, fn () => $this->limits($tg), menu: true, key: 'locale', beforeConversations: true);
-        yield new TelegramBotCommand(self::PURGE, fn () => $this->purge($tg), menu: true, key: 'purge', beforeConversations: true);
-        yield new TelegramBotCommand(self::CONTACT, fn () => $this->contact($tg), menu: true, key: 'contact', beforeConversations: true);
-        yield new TelegramBotCommand(self::COMMANDS, fn () => $this->commands($tg), menu: true, key: 'commands', beforeConversations: true);
-        yield new TelegramBotCommand(self::RESTART, fn () => $this->restart($tg), menu: true, key: 'restart', beforeConversations: true);
+        yield new TelegramBotCommand(self::START, fn (): null => $this->start($tg), menu: false);
+        yield new TelegramBotCommand(self::CREATE, fn (): null => $this->create($tg), menu: true, key: 'create', beforeConversations: true);
+        yield new TelegramBotCommand(self::SEARCH, fn (): null => $this->search($tg), menu: true, key: 'search', beforeConversations: true);
+        yield new TelegramBotCommand(self::LOOKUP, fn (): null => $this->lookup($tg), menu: true, key: 'lookup', beforeConversations: true);
+        yield new TelegramBotCommand(self::SUBSCRIBE, fn (): null => $this->subscribe($tg), menu: true, key: 'subscribe', beforeConversations: true);
+        yield new TelegramBotCommand(self::SUBSCRIPTIONS, fn (): null => $this->subscriptions($tg), menu: true, key: 'subscriptions', beforeConversations: true);
+        yield new TelegramBotCommand(self::COUNTRY, fn (): null => $this->country($tg), menu: true, key: 'country', beforeConversations: true);
+        yield new TelegramBotCommand(self::LOCALE, fn (): null => $this->locale($tg), menu: true, key: 'locale', beforeConversations: true);
+        yield new TelegramBotCommand(self::LIMITS, fn (): null => $this->limits($tg), menu: true, key: 'locale', beforeConversations: true);
+        yield new TelegramBotCommand(self::PURGE, fn (): null => $this->purge($tg), menu: true, key: 'purge', beforeConversations: true);
+        yield new TelegramBotCommand(self::CONTACT, fn (): null => $this->contact($tg), menu: true, key: 'contact', beforeConversations: true);
+        yield new TelegramBotCommand(self::COMMANDS, fn (): null => $this->commands($tg), menu: true, key: 'commands', beforeConversations: true);
+        yield new TelegramBotCommand(self::RESTART, fn (): null => $this->restart($tg), menu: true, key: 'restart', beforeConversations: true);
 
-        yield new FallbackTelegramBotCommand(fn () => $this->fallback($tg));
-        yield new ErrorTelegramBotCommand(fn (Throwable $exception) => $this->exception($tg));
+        yield new FallbackTelegramBotCommand(fn (): null => $this->fallback($tg));
+        yield new ErrorTelegramBotCommand(fn (Throwable $exception): null => $this->exception($tg));
     }
 
     public function fallback(TelegramBotAwareHelper $tg): null

@@ -77,15 +77,15 @@ class LocaleProvider
         $data = $this->data;
 
         if ($supported) {
-            $data = array_filter($data, fn ($code) => in_array($code, $this->supported, true), ARRAY_FILTER_USE_KEY);
+            $data = array_filter($data, fn ($code): bool => in_array($code, $this->supported, true), ARRAY_FILTER_USE_KEY);
         }
 
         if ($countryCode !== null) {
             $filter = $this->countryProvider->getCountry($countryCode)->getLocaleCodes() ?? [];
-            $data = array_filter($data, fn ($code) => in_array($code, $filter, true), ARRAY_FILTER_USE_KEY);
+            $data = array_filter($data, static fn ($code): bool => in_array($code, $filter, true), ARRAY_FILTER_USE_KEY);
         }
 
-        return array_map(fn ($record) => $this->denormalize($record), $supported === null && $countryCode === null ? $data : array_values($data));
+        return array_map(fn ($record): Locale => $this->denormalize($record), $supported === null && $countryCode === null ? $data : array_values($data));
     }
 
     private function denormalize(array $record): Locale

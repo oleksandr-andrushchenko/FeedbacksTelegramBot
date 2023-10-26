@@ -20,7 +20,7 @@ class TelegramBotCommandFunctionalTest extends TelegramBotCommandFunctionalTestC
         $bot->setDeletedAt(new DateTimeImmutable());
         $this->getEntityManager()->flush();
 
-        $this->type('any');
+        $this->typeText('any');
 
         $this->assertEmpty($this->getTelegramBotMessageSender()->getCalls());
     }
@@ -38,7 +38,7 @@ class TelegramBotCommandFunctionalTest extends TelegramBotCommandFunctionalTestC
         $entityManager->persist($newBot);
         $entityManager->flush();
 
-        $this->type('any');
+        $this->typeText('any');
 
         $this->shouldSeeReply(
             'reply.use_primary',
@@ -57,7 +57,7 @@ class TelegramBotCommandFunctionalTest extends TelegramBotCommandFunctionalTestC
         $bot->setPrimary(false);
         $this->getEntityManager()->flush();
 
-        $this->type('any');
+        $this->typeText('any');
 
         $this->assertEmpty($this->getTelegramBotMessageSender()->getCalls());
     }
@@ -75,7 +75,7 @@ class TelegramBotCommandFunctionalTest extends TelegramBotCommandFunctionalTestC
         $entityManager->persist($newBot);
         $entityManager->flush();
 
-        $this->type('any');
+        $this->typeText('any');
 
         $this->shouldSeeReply(
             'reply.use_primary',

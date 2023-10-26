@@ -53,7 +53,7 @@ class TelegramBotImporter
 
         $this->entityManager->flush();
 
-        $logger = $logger ?? fn (string $message) => null;
+        $logger = $logger ?? static fn (string $message): null => null;
 
         $this->walk($filename, function ($data) use ($result, $logger): void {
             $transfer = (new TelegramBotTransfer($data['username']))

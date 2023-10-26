@@ -64,7 +64,7 @@ class TelegramChannelImportCommand extends Command
             }
         }
 
-        $logger = fn (string $message) => $io->note($message);
+        $logger = static fn (string $message) => $io->note($message);
         $func = fn () => $this->importer->importTelegramChannels($filename, $logger);
 
         if ($dryRun) {

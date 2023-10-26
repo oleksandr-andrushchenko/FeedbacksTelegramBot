@@ -268,7 +268,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
      */
     public function getLocaleButtons(array $locales, TelegramBotAwareHelper $tg): array
     {
-        return array_map(fn (Locale $locale) => $this->getLocaleButton($locale, $tg), $locales);
+        return array_map(fn (Locale $locale): KeyboardButton => $this->getLocaleButton($locale, $tg), $locales);
     }
 
     public function getLocaleButton(Locale $locale, TelegramBotAwareHelper $tg): KeyboardButton

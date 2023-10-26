@@ -42,7 +42,7 @@ class FeedbackSubscriptionPlanProvider
         if ($country !== null) {
             $subscriptionPlans = array_filter(
                 $subscriptionPlans,
-                fn (FeedbackSubscriptionPlan $subscriptionPlan) => $subscriptionPlan->isGlobal() || in_array($country, $subscriptionPlan->getCountries(), true)
+                static fn (FeedbackSubscriptionPlan $subscriptionPlan): bool => $subscriptionPlan->isGlobal() || in_array($country, $subscriptionPlan->getCountries(), true)
             );
         }
 

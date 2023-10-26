@@ -27,15 +27,15 @@ class TelegramBotMyCommandsProvider
         $group = $this->groupRegistry->getTelegramGroup($bot->getEntity()->getGroup());
 
         $realCommands = array_values(
-            array_filter($group->getTelegramCommands($bot), fn ($command) => $command instanceof TelegramBotCommand)
+            array_filter($group->getTelegramCommands($bot), static fn ($command): bool => $command instanceof TelegramBotCommand)
         );
 
         $adminChatScopeCommands = array_values(
-            array_filter($realCommands, fn (TelegramBotCommand $command) => $command->isMenu())
+            array_filter($realCommands, static fn (TelegramBotCommand $command): bool => $command->isMenu())
         );
 
         $defaultScopeCommands = array_values(
-            array_filter($adminChatScopeCommands, fn ($command) => true)
+            array_filter($adminChatScopeCommands, static fn ($command): bool => true)
         );
 
         $localeCode = $bot->getEntity()->getLocaleCode();

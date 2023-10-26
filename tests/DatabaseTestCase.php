@@ -171,7 +171,10 @@ abstract class DatabaseTestCase extends KernelTestCase
 
         $service->load(
             array_map(
-                fn ($entityClass) => sprintf(__DIR__ . '/../fixtures/%s.yaml', str_replace(['App\Entity\\', '\\'], ['', '/'], $entityClass)),
+                static fn (string $entityClass): string => sprintf(
+                    __DIR__ . '/../fixtures/%s.yaml',
+                    str_replace(['App\Entity\\', '\\'], ['', '/'], $entityClass)
+                ),
                 $fixtures
             )
         );

@@ -56,7 +56,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         );
 
         $this
-            ->type($input)
+            ->typeText($input)
             ->shouldSeeStateStep(
                 $this->getConversation(),
                 SubscribeTelegramBotConversation::STEP_SUBSCRIPTION_PLAN_QUERIED
@@ -182,7 +182,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         $conversation = $this->createConversation(SubscribeTelegramBotConversation::class, $state);
 
         $this
-            ->type($input)
+            ->typeText($input)
             ->shouldSeeStateStep($conversation, $shouldSeeStep)
             ->shouldSeeReply(...$shouldSeeReply)
             ->shouldSeeButtons(...$shouldSeeButtons)
@@ -304,7 +304,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         $conversation = $this->createConversation(SubscribeTelegramBotConversation::class, $state);
 
         $this
-            ->type($input)
+            ->typeText($input)
             ->shouldSeeStateStep($conversation, $shouldSeeStep)
             ->shouldSeeReply(...$shouldSeeReply)
             ->shouldSeeButtons(...$shouldSeeButtons)
@@ -387,7 +387,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         $previousPaymentCount = $paymentRepository->count([]);
 
         $this
-            ->type($input)
+            ->typeText($input)
             ->shouldSeeStateStep($conversation, $shouldSeeStep)
             ->shouldSeeReply(...$shouldSeeReply)
             ->shouldSeeButtons(...$shouldSeeButtons)

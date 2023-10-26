@@ -20,7 +20,7 @@ class StartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctional
         ]);
 
         $this
-            ->type(FeedbackTelegramBotGroup::START)
+            ->typeText(FeedbackTelegramBotGroup::START)
         ;
 
         $this->assertNotNull($this->getUpdateMessengerUser());

@@ -64,7 +64,7 @@ class TelegramBotImportCommand extends Command
             }
         }
 
-        $logger = fn (string $message) => $io->note($message);
+        $logger = static fn (string $message) => $io->note($message);
         $func = fn () => $this->importer->importTelegramBots($filename, $logger);
 
         if ($dryRun) {

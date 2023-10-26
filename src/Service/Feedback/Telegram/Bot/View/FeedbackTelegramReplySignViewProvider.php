@@ -28,7 +28,7 @@ class FeedbackTelegramReplySignViewProvider
     ): string
     {
         $localeCode = $localeCode ?? $bot->getEntity()->getLocaleCode();
-        $text = fn ($key) => $this->translator->trans('sign.' . $key, domain: 'feedbacks.tg', locale: $localeCode);
+        $text = fn ($key): string => $this->translator->trans('sign.' . $key, domain: 'feedbacks.tg', locale: $localeCode);
 
         $botLink = $this->messengerUserProfileUrlProvider->getMessengerUserProfileUrl(
             Messenger::telegram,

@@ -321,7 +321,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
     public function getLevel1RegionButtons(TelegramBotAwareHelper $tg): array
     {
         return array_map(
-            fn (Level1Region $level1Region) => $this->getLevel1RegionButton($level1Region, $tg),
+            fn (Level1Region $level1Region): KeyboardButton => $this->getLevel1RegionButton($level1Region, $tg),
             $this->getLevel1Regions($tg)
         );
     }

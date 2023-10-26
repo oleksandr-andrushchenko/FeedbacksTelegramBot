@@ -49,25 +49,25 @@ class LocaleToolsCountriesProvider implements CountriesProviderInterface
             }
 
             $code = strtolower($country['cca2']);
-            $locales = array_filter(array_map(fn (array $language) => $language['bcp47'] ?? null, $country['languages']['official']));
+            $locales = array_filter(array_map(static fn (array $language): ?string => $language['bcp47'] ?? null, $country['languages']['official']));
 
             if (count($locales) === 0) {
                 continue;
             }
 
-            $currencies = array_filter(array_map(fn (array $currency) => $currency['iso4217'] ?? null, $country['currencies']));
+            $currencies = array_filter(array_map(static fn (array $currency): ?string => $currency['iso4217'] ?? null, $country['currencies']));
 
             if (count($currencies) === 0) {
                 continue;
             }
 
-            $phones = array_filter(array_map(fn (string $suffix) => ltrim($country['idd']['prefix'], '+') . $suffix, $country['idd']['suffixes']));
+            $phones = array_filter(array_map(static fn (string $suffix): string => ltrim($country['idd']['prefix'], '+') . $suffix, $country['idd']['suffixes']));
 
             if (count($phones) === 0) {
                 continue;
             }
 
-            $timezones = array_map(fn (array $timezone) => $timezone['name'], $country['locale']['timezones']);
+            $timezones = array_map(static fn (array $timezone): string => $timezone['name'], $country['locale']['timezones']);
 
             $countries[$code] = new Country($code, $currencies[0], $locales, $phones[0], $timezones);
         }

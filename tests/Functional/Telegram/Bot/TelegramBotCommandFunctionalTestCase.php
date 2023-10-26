@@ -172,7 +172,7 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
         return $paymentMethod;
     }
 
-    protected function type(string $command): static
+    protected function typeText(string $command): static
     {
         $this->bot = null;
         $this->tg = null;

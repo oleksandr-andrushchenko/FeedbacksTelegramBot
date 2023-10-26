@@ -15,7 +15,7 @@ class TelegramBotKeyboardFactory
     {
 //        return $this->createTelegramInlineKeyboard(...$buttons);
         return new Keyboard([
-            'keyboard' => array_map(fn ($button) => is_array($button) ? $button : [$button], $buttons),
+            'keyboard' => array_map(static fn ($button) => is_array($button) ? $button : [$button], $buttons),
             'is_persistent' => true,
             'resize_keyboard' => true,
             'one_time_keyboard' => false,
@@ -35,7 +35,7 @@ class TelegramBotKeyboardFactory
     public function createTelegramInlineKeyboard(...$buttons): InlineKeyboard
     {
         return new InlineKeyboard([
-            'inline_keyboard' => array_map(fn ($button) => is_array($button) ? $button : [$button], $buttons),
+            'inline_keyboard' => array_map(static fn ($button) => is_array($button) ? $button : [$button], $buttons),
         ]);
     }
 

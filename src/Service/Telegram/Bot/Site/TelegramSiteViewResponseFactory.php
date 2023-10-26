@@ -51,7 +51,7 @@ class TelegramSiteViewResponseFactory
         }
 
         if ($switcher) {
-            $botMap = fn (TelegramBot $bot) => [
+            $botMap = fn (TelegramBot $bot): array => [
                 'username' => $bot->getUsername(),
                 'name' => $bot->getName(),
                 'country_icon' => $this->countryProvider->getCountryIconByCode($bot->getCountryCode()),
@@ -60,7 +60,7 @@ class TelegramSiteViewResponseFactory
 
             $bots = $this->botRepository->findByGroup($group);
         } else {
-            $botMap = fn (TelegramBot $bot) => [
+            $botMap = static fn (TelegramBot $bot): array => [
                 'username' => $bot->getUsername(),
             ];
 
@@ -68,7 +68,7 @@ class TelegramSiteViewResponseFactory
         }
 
         return new Response($this->twig->render($template, [
-            'pages' => array_diff(array_map(fn ($page) => $page->value, SitePage::cases()), [SitePage::INDEX->value]),
+            'pages' => array_diff(array_map(static fn ($page): string => $page->value, SitePage::cases()), [SitePage::INDEX->value]),
             'page' => $page->value,
             'contacts' => $contacts,
             'bots' => array_map($botMap, $bots),

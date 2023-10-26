@@ -142,7 +142,7 @@ class TelegramBot
 
     public function getAdminIds(): array
     {
-        return array_map(fn ($adminId) => (int) $adminId, $this->adminIds);
+        return array_map(static fn ($adminId): int => (int) $adminId, $this->adminIds);
     }
 
     public function setAdminIds(array $adminIds): self

@@ -95,7 +95,7 @@ class TelegramBotMatchesProviderTest extends TestCase
         ;
         $provider = new TelegramBotMatchesProvider($repository);
         $actualBots = $provider->getTelegramBotMatches($user, new TelegramBot('', TelegramBotGroupName::default, '', '', 'ca', 'en'));
-        $actualBotIds = array_map(fn (TelegramBot $bot) => $bot->getId(), $actualBots);
+        $actualBotIds = array_map(static fn (TelegramBot $bot): int => $bot->getId(), $actualBots);
 
         $this->assertEquals($expectedBotIds, $actualBotIds);
     }

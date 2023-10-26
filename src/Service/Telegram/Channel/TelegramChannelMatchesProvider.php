@@ -30,7 +30,7 @@ class TelegramChannelMatchesProvider
             return [];
         }
 
-        $channels = array_combine(array_map(fn (TelegramChannel $channel) => $channel->getId(), $channels), $channels);
+        $channels = array_combine(array_map(static fn (TelegramChannel $channel): int => $channel->getId(), $channels), $channels);
 
         $points = [];
 

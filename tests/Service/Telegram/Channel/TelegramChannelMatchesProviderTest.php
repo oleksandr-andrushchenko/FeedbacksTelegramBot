@@ -129,7 +129,7 @@ class TelegramChannelMatchesProviderTest extends TestCase
 
         $provider = new TelegramChannelMatchesProvider($repository);
         $actualChannels = $provider->getTelegramChannelMatches($user, $bot);
-        $actualChannelIds = array_map(fn (TelegramChannel $channel) => $channel->getId(), $actualChannels);
+        $actualChannelIds = array_map(static fn (TelegramChannel $channel): int => $channel->getId(), $actualChannels);
 
         $this->assertEquals($expectedChannelIds, $actualChannelIds);
     }

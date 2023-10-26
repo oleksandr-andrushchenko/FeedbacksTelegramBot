@@ -47,7 +47,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         ]);
 
         $this
-            ->type($input)
+            ->typeText($input)
             ->shouldSeeStateStep(
                 $this->getConversation(),
                 CreateFeedbackTelegramBotConversation::STEP_SEARCH_TERM_QUERIED
@@ -746,7 +746,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'input' => 'kjlk',
             'shouldSeeReplies' => [
-                'reply.wrong',
+                ...$this->wrongReplies(),
                 'query.search_term_type',
             ],
             'shouldSeeButtons' => [
@@ -775,7 +775,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'input' => $this->searchTermTypeButton(SearchTermType::tiktok_username),
             'shouldSeeReplies' => [
-                'reply.wrong',
+                ...$this->wrongReplies(),
                 'query.search_term_type',
             ],
             'shouldSeeButtons' => [
@@ -982,7 +982,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'input' => 'unknown',
             'shouldSeeReplies' => [
-                'reply.wrong',
+                ...$this->wrongReplies(),
                 'query.search_term_type',
             ],
             'shouldSeeButtons' => [
@@ -1014,7 +1014,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ],
             'input' => $this->searchTermTypeButton(SearchTermType::telegram_username),
             'shouldSeeReplies' => [
-                'reply.wrong',
+                ...$this->wrongReplies(),
                 'query.search_term_type',
             ],
             'shouldSeeButtons' => [
@@ -1292,7 +1292,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'description' => null,
             'input' => 'unknown',
             'shouldSeeReplies' => [
-                'reply.wrong',
+                ...$this->wrongReplies(),
                 'query.rating',
             ],
             'shouldSeeButtons' => [
@@ -1317,7 +1317,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'description' => null,
             'input' => 'unknown',
             'shouldSeeReplies' => [
-                'reply.wrong',
+                ...$this->wrongReplies(),
                 'query.rating',
             ],
             'shouldSeeButtons' => [
@@ -1864,7 +1864,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'description' => 'any_description',
             'input' => 'unknown',
             'shouldSeeReplies' => [
-                'reply.wrong',
+                ...$this->wrongReplies(),
                 'query.confirm',
             ],
             'shouldSeeButtons' => [
@@ -2017,7 +2017,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         $conversation = $this->createConversation(CreateFeedbackTelegramBotConversation::class, $state);
 
         $this
-            ->type($input)
+            ->typeText($input)
             ->shouldSeeStateStep($conversation, $shouldSeeStep)
             ->shouldSeeReply(...$shouldSeeReplies)
             ->shouldSeeButtons(...$shouldSeeButtons)
@@ -2034,7 +2034,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'description' => 'any_description',
             'input' => 'unknown',
             'shouldSeeReplies' => [
-                'reply.wrong',
+                ...$this->wrongReplies(),
                 'query.send_to_channel_confirm',
             ],
             'shouldSeeButtons' => [
@@ -2164,7 +2164,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         $conversation = $this->createConversation(CreateFeedbackTelegramBotConversation::class, $state);
 
         $this
-            ->type($input)
+            ->typeText($input)
             ->shouldSeeStateStep($conversation, $shouldSeeStep)
             ->shouldSeeSearchTerms($conversation, $shouldSeeSearchTerms)
             ->shouldSeeReply(...$shouldSeeReplies)

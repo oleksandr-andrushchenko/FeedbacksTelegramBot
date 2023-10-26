@@ -33,7 +33,7 @@ class TelegramBotCommandsSyncer
             $data = [
                 'scope' => $myCommands->getScope()->jsonSerialize(),
                 'commands' => array_map(
-                    fn (TelegramBotCommand $command) => [
+                    fn (TelegramBotCommand $command): array => [
                         'command' => $command->getName(),
                         'description' => $this->getDescription($bot, $command, $myCommands),
                     ],

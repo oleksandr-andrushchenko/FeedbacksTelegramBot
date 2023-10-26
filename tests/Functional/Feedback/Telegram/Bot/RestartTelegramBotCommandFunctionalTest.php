@@ -29,7 +29,7 @@ class RestartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
         ]);
 
         $this
-            ->type($input)
+            ->typeText($input)
             ->shouldSeeActiveConversation(
                 RestartConversationTelegramBotConversation::class,
                 (new TelegramBotConversationState())
@@ -71,9 +71,9 @@ class RestartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
         );
 
         $this
-            ->type($this->yesButton())
+            ->typeText($this->yesButton())
             ->shouldSeeReply(
-                'reply.ok',
+                ...$this->okReplies(),
             )
             ->shouldSeeChooseAction()
             ->shouldNotSeeActiveConversation()
