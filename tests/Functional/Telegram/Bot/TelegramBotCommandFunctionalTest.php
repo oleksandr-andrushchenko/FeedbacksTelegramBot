@@ -10,7 +10,7 @@ use DateTimeImmutable;
 
 class TelegramBotCommandFunctionalTest extends TelegramBotCommandFunctionalTestCase
 {
-    public function testDeletedWithoutReplacementTelegramBotRequestSuccess(): void
+    public function testDeletedWithoutReplacementTelegramBotRequest(): void
     {
         $this->bootFixtures([
             TelegramBot::class,
@@ -25,7 +25,7 @@ class TelegramBotCommandFunctionalTest extends TelegramBotCommandFunctionalTestC
         $this->assertEmpty($this->getTelegramBotMessageSender()->getCalls());
     }
 
-    public function testDeletedWithReplacementTelegramBotRequestSuccess(): void
+    public function testDeletedWithReplacementTelegramBotRequest(): void
     {
         $this->bootFixtures([
             TelegramBot::class,
@@ -47,7 +47,7 @@ class TelegramBotCommandFunctionalTest extends TelegramBotCommandFunctionalTestC
         );
     }
 
-    public function testNonPrimaryWithoutReplacementTelegramBotRequestSuccess(): void
+    public function testNonPrimaryWithoutReplacementTelegramBotRequest(): void
     {
         $this->bootFixtures([
             TelegramBot::class,
@@ -62,7 +62,7 @@ class TelegramBotCommandFunctionalTest extends TelegramBotCommandFunctionalTestC
         $this->assertEmpty($this->getTelegramBotMessageSender()->getCalls());
     }
 
-    public function testNonPrimaryWithReplacementTelegramBotRequestSuccess(): void
+    public function testNonPrimaryWithReplacementTelegramBotRequest(): void
     {
         $this->bootFixtures([
             TelegramBot::class,

@@ -20,7 +20,7 @@ class TelegramBotUpdateHandlerTest extends DatabaseTestCase
     use AssertLoggedTrait;
     use TelegramBotUpdateHandlerTrait;
 
-    public function testHandleTelegramBotUpdateStoreSuccess(): void
+    public function testHandleTelegramBotUpdateStore(): void
     {
         $this->bootFixtures([
             TelegramBot::class,
@@ -39,7 +39,7 @@ class TelegramBotUpdateHandlerTest extends DatabaseTestCase
         $this->assertNotNull($updateRepository->find($updateId));
     }
 
-    public function testHandleTelegramBotUpdateDuplicateSuccess(): void
+    public function testHandleTelegramBotUpdateDuplicate(): void
     {
         $this->bootFixtures([
             TelegramBot::class,

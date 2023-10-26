@@ -1026,7 +1026,6 @@ class CountryTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
             ->setTimezone($timezone)
             ->setLocaleCode($localeCode)
         ;
-//        $this->getEntityManager()->flush();
 
         $state = (new TelegramBotConversationState())
             ->setStep($stateStep)
@@ -1125,7 +1124,6 @@ class CountryTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
     ): void
     {
         $user = $this->getUser();
-//        var_dump($user);die;
 
         $this->assertEquals($shouldSeeCountryCode, $user->getCountryCode());
         $this->assertEquals($shouldSeeLevel1RegionId, $user->getLevel1RegionId());

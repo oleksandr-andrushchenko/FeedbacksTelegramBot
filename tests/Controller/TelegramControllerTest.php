@@ -25,9 +25,9 @@ class TelegramControllerTest extends DatabaseTestCase
     /**
      * @param SitePage $page
      * @return void
-     * @dataProvider pageSuccessDataProvider
+     * @dataProvider pageDataProvider
      */
-    public function testPageSuccess(SitePage $page): void
+    public function testPage(SitePage $page): void
     {
         $this->bootFixtures([
             TelegramBot::class,
@@ -45,7 +45,7 @@ class TelegramControllerTest extends DatabaseTestCase
         $this->assertStringContainsString($bot->getUsername(), $response->getContent());
     }
 
-    public function pageSuccessDataProvider(): Generator
+    public function pageDataProvider(): Generator
     {
         yield 'index' => [
             'page' => SitePage::INDEX,
@@ -64,7 +64,7 @@ class TelegramControllerTest extends DatabaseTestCase
         ];
     }
 
-    public function testWebhookSuccess(): void
+    public function testWebhook(): void
     {
         $this->bootFixtures([
             TelegramBot::class,

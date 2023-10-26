@@ -18,9 +18,9 @@ class RestartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
     /**
      * @param string $input
      * @return void
-     * @dataProvider startSuccessDataProvider
+     * @dataProvider startDataProvider
      */
-    public function testStartSuccess(string $input): void
+    public function testStart(string $input): void
     {
         $this->bootFixtures([
             User::class,
@@ -45,7 +45,7 @@ class RestartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
         ;
     }
 
-    public function startSuccessDataProvider(): Generator
+    public function startDataProvider(): Generator
     {
         yield 'button' => [
             'input' => $this->command('restart'),
@@ -56,7 +56,7 @@ class RestartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
         ];
     }
 
-    public function testConfirmStepSuccess(): void
+    public function testConfirmStep(): void
     {
         $this->bootFixtures([
             User::class,

@@ -35,9 +35,9 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
      * @param array $shouldSeeReply
      * @param array $shouldSeeButtons
      * @return void
-     * @dataProvider startSuccessDataProvider
+     * @dataProvider startDataProvider
      */
-    public function testStartSuccess(
+    public function testStart(
         array $paymentMethodNames,
         string $input,
         array $shouldSeeReply,
@@ -66,7 +66,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         ;
     }
 
-    public function startSuccessDataProvider(): Generator
+    public function startDataProvider(): Generator
     {
         yield 'button & one payment method' => [
             'paymentMethodNames' => [
@@ -155,9 +155,9 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
      * @return void
-     * @dataProvider currencyStepSuccessDataProvider
+     * @dataProvider currencyStepDataProvider
      */
-    public function testCurrencyStepSuccess(
+    public function testCurrencyStep(
         bool $currencyStep,
         bool $paymentMethodStep,
         string $input,
@@ -189,7 +189,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         ;
     }
 
-    public function currencyStepSuccessDataProvider(): Generator
+    public function currencyStepDataProvider(): Generator
     {
         yield 'select currency & no currency step & no payment method step' => [
             'currencyStep' => false,
@@ -276,9 +276,9 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
      * @return void
-     * @dataProvider subscriptionPlanStepSuccessDataProvider
+     * @dataProvider subscriptionPlanStepDataProvider
      */
-    public function testSubscriptionPlanStepSuccess(
+    public function testSubscriptionPlanStep(
         bool $currencyStep,
         bool $paymentMethodStep,
         string $input,
@@ -311,7 +311,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         ;
     }
 
-    public function subscriptionPlanStepSuccessDataProvider(): Generator
+    public function subscriptionPlanStepDataProvider(): Generator
     {
         yield 'select plan & no currency step & payment method step' => [
             'currencyStep' => false,
@@ -355,9 +355,9 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
      * @param array $shouldSeeButtons
      * @param int|null $shouldSeeStep
      * @return void
-     * @dataProvider paymentMethodStepSuccessDataProvider
+     * @dataProvider paymentMethodStepDataProvider
      */
-    public function testPaymentMethodStepSuccess(
+    public function testPaymentMethodStep(
         bool $currencyStep,
         bool $paymentMethodStep,
         string $input,
@@ -397,7 +397,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
         $this->assertCount(1, $this->getTelegramBotInvoiceSender()->getCalls());
     }
 
-    public function paymentMethodStepSuccessDataProvider(): Generator
+    public function paymentMethodStepDataProvider(): Generator
     {
         yield 'select method & no currency step & payment method step' => [
             'currencyStep' => false,

@@ -25,9 +25,9 @@ class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
     /**
      * @param string $input
      * @return void
-     * @dataProvider startSuccessDataProvider
+     * @dataProvider startDataProvider
      */
-    public function testStartSuccess(string $input): void
+    public function testStart(string $input): void
     {
         $this->bootFixtures([
             User::class,
@@ -51,7 +51,7 @@ class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         ;
     }
 
-    public function startSuccessDataProvider(): Generator
+    public function startDataProvider(): Generator
     {
         yield 'button' => [
             'input' => $this->command('search'),

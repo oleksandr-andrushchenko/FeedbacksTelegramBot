@@ -13,7 +13,7 @@ class StartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctional
 {
     use CountryProviderTrait;
 
-    public function testStartSuccess(): void
+    public function testStart(): void
     {
         $this->bootFixtures([
             TelegramBot::class,
