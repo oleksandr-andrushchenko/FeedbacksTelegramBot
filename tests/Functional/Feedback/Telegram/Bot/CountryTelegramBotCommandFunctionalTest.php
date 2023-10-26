@@ -539,6 +539,27 @@ class CountryTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
             'shouldSeeLocaleCode' => $locale,
         ];
 
+        yield 'prev' => [
+            'countryCode' => $country = 'ua',
+            'level1RegionId' => $region1 = 'ua_kyiv',
+            'timezone' => $tz = 'Europe/Kiev',
+            'localeCode' => $locale = 'ua',
+            'input' => $this->prevButton(),
+            'shouldSeeReplies' => [
+                'query.country',
+            ],
+            'shouldSeeButtons' => [
+                $this->requestLocationButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => CountryTelegramBotConversation::STEP_GUESS_COUNTRY_QUERIED,
+            'shouldSeeCountryCode' => $country,
+            'shouldSeeLevel1RegionId' => $region1,
+            'shouldSeeTimezone' => $tz,
+            'shouldSeeLocaleCode' => $locale,
+        ];
+
         yield 'help' => [
             'countryCode' => $country = 'ua',
             'level1RegionId' => $region1 = 'ua_kyiv',
@@ -718,6 +739,29 @@ class CountryTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
             'shouldSeeLocaleCode' => $locale,
         ];
 
+        yield 'prev' => [
+            'countryCode' => $country = 'ua',
+            'level1RegionId' => $region1 = 'ua_kyiv',
+            'timezone' => $tz = 'kyiv/tz',
+            'localeCode' => $locale = 'uk',
+            'input' => $this->prevButton(),
+            'shouldSeeReplies' => [
+                'query.country',
+            ],
+            'shouldSeeButtons' => [
+                $this->country($country),
+                $this->otherButton(),
+                $this->requestLocationButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => CountryTelegramBotConversation::STEP_GUESS_COUNTRY_QUERIED,
+            'shouldSeeCountryCode' => $country,
+            'shouldSeeLevel1RegionId' => $region1,
+            'shouldSeeTimezone' => $tz,
+            'shouldSeeLocaleCode' => $locale,
+        ];
+
         yield 'help' => [
             'countryCode' => $country = 'ua',
             'level1RegionId' => $region1 = 'ua_kyiv',
@@ -869,6 +913,33 @@ class CountryTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
                 $this->cancelButton(),
             ],
             'shouldSeeStep' => CountryTelegramBotConversation::STEP_TIMEZONE_QUERIED,
+            'shouldSeeCountryCode' => $country,
+            'shouldSeeLevel1RegionId' => $region1,
+            'shouldSeeTimezone' => $tz,
+            'shouldSeeLocaleCode' => $locale,
+        ];
+
+        yield 'prev' => [
+            'countryCode' => $country = 'ua',
+            'level1RegionId' => $region1 = 'ua_kyiv',
+            'timezone' => $tz = 'kyiv/tz',
+            'localeCode' => $locale = 'uk',
+            'input' => $this->prevButton(),
+            'shouldSeeReplies' => [
+                'query.level_1_region',
+            ],
+            'shouldSeeButtons' => [
+                ...[
+                    'ua_kyiv',
+                    'ua_kyiv_oblast',
+                    'ua_lviv_oblast',
+                ],
+                $this->requestLocationButton(),
+                $this->prevButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
+            ],
+            'shouldSeeStep' => CountryTelegramBotConversation::STEP_LEVEL_1_REGION_QUERIED,
             'shouldSeeCountryCode' => $country,
             'shouldSeeLevel1RegionId' => $region1,
             'shouldSeeTimezone' => $tz,
