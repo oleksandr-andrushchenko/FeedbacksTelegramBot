@@ -49,7 +49,7 @@ class SearchTermTransferValidator extends ConstraintValidator
 
         if (preg_match('/[' . $constraint->textAllowedChars . ']/', $value->getText()) === 1) {
             return $helper->addMessage($constraint->textAllowedCharsMessage, [
-                'chars' => '"' . implode('", "', str_split($constraint->textAllowedChars)) . '"',
+                'chars' => $constraint->textAllowedChars,
             ]);
         }
 

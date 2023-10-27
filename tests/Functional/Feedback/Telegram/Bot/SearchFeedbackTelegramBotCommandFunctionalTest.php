@@ -16,12 +16,14 @@ use App\Service\Feedback\Telegram\Bot\Conversation\SearchFeedbackTelegramBotConv
 use App\Service\Feedback\Telegram\Bot\FeedbackTelegramBotGroup;
 use App\Tests\Fixtures;
 use App\Tests\Functional\Telegram\Bot\TelegramBotCommandFunctionalTestCase;
+use App\Tests\Traits\Messenger\MessengerUserProfileUrlProviderTrait;
 use App\Transfer\Feedback\SearchTermTransfer;
-use App\Transfer\Messenger\MessengerUserTransfer;
 use Generator;
 
 class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctionalTestCase
 {
+    use MessengerUserProfileUrlProviderTrait;
+
     /**
      * @param string $input
      * @return void
@@ -133,7 +135,7 @@ class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
 
         yield 'type & known type' => [
             'searchTerm' => null,
-            'input' => Fixtures::getMessengerUserProfileUrl(new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')),
+            'input' => $this->getMessengerUserProfileUrlProvider()->getMessengerUserProfileUrl(Messenger::telegram, 'any_search_term'),
             'shouldSeeReplies' => [
                 'query.confirm',
             ],

@@ -36,24 +36,17 @@ class CarNumberSearchTermParser implements SearchTermParserInterface
         if ($searchTerm->getType() === SearchTermType::car_number) {
             $normalized = $this->normalize($searchTerm->getText());
 
-            $searchTerm
-                ->setNormalizedText($normalized === $searchTerm->getText() ? null : $normalized)
-            ;
+            if ($normalized !== $searchTerm->getText()) {
+                $searchTerm
+                    ->setNormalizedText($normalized)
+                ;
+            }
         }
-    }
-
-    public function parseWithNetwork(SearchTermTransfer $searchTerm): void
-    {
-        // TODO: Implement parseWithNetwork() method.
     }
 
     private function supports(string $number): bool
     {
-        if (preg_match('/[0-9]+/', $number) === 0) {
-            return false;
-        }
-
-        $result = preg_match($this->getPattern($first = 'A-Za-z0-9\pL\x{00C0}-\x{00FF}', $first), $number);
+        $result = preg_match($this->getPattern($first = 'A-Za-z0-9\pL\x{00C0}-\x{00FF}', $first . '\ '), $number);
 
         if ($result === 1) {
             return true;

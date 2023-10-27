@@ -26,29 +26,24 @@ class VkontakteSearchTermParser implements SearchTermParserInterface
 
     public function setupSearchTerm(SearchTermTransfer $searchTerm, string $username): void
     {
-        $normalizedUsername = $this->normalizeUsername($username);
-        $normalizedProfileUrl = $this->makeProfileUrl($normalizedUsername);
-
         $searchTerm
             ->setType(SearchTermType::vkontakte_username)
-            ->setMessenger(Messenger::vkontakte)
-            ->setNormalizedText($searchTerm->getText() === $normalizedUsername ? null : $normalizedUsername)
-            ->setMessengerUsername($normalizedUsername)
-            ->setMessengerProfileUrl($normalizedProfileUrl)
         ;
+
+        $normalizedUsername = $this->normalizeUsername($username);
+
+        if ($searchTerm->getText() !== $normalizedUsername) {
+            $searchTerm
+                ->setNormalizedText($normalizedUsername)
+            ;
+        }
 
         if (str_starts_with($username, 'id')) {
             $id = substr($username, 2);
 
             if (is_numeric($id)) {
                 $searchTerm
-                    ->setMessengerUser(
-                        new MessengerUserTransfer(
-                            Messenger::vkontakte,
-                            $id,
-                            username: $normalizedUsername
-                        )
-                    )
+                    ->setMessengerUser(new MessengerUserTransfer(Messenger::vkontakte, $id, username: $normalizedUsername))
                 ;
             }
         }
@@ -68,16 +63,8 @@ class VkontakteSearchTermParser implements SearchTermParserInterface
     public function parseWithKnownType(SearchTermTransfer $searchTerm): void
     {
         if ($searchTerm->getType() === SearchTermType::vkontakte_username) {
-            $username = $searchTerm->getText();
-
-            $this->supportsUsername($username);
-            $this->setupSearchTerm($searchTerm, $username);
+            $this->setupSearchTerm($searchTerm, $searchTerm->getText());
         }
-    }
-
-    public function parseWithNetwork(SearchTermTransfer $searchTerm): void
-    {
-        // TODO: Implement parseWithNetwork() method.
     }
 
     private function supportsUsername(string $username): bool
@@ -93,11 +80,6 @@ class VkontakteSearchTermParser implements SearchTermParserInterface
     private function normalizeUsername(string $username): string
     {
         return ltrim($username, '@');
-    }
-
-    private function makeProfileUrl(string $username): string
-    {
-        return sprintf('https://vk.com/%s', $username);
     }
 
     private function supportsUrl(string $url, string &$username = null): bool

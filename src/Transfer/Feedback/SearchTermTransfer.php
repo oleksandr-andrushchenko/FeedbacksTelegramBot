@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Transfer\Feedback;
 
 use App\Enum\Feedback\SearchTermType;
-use App\Enum\Messenger\Messenger;
 use App\Transfer\Messenger\MessengerUserTransfer;
 
 class SearchTermTransfer
@@ -14,9 +13,6 @@ class SearchTermTransfer
         private readonly string $text,
         private ?SearchTermType $type = null,
         private ?string $normalizedText = null,
-        private ?Messenger $messenger = null,
-        private ?string $messengerProfileUrl = null,
-        private ?string $messengerUsername = null,
         private ?MessengerUserTransfer $messengerUser = null,
         /**
          * @var null|SearchTermType[]
@@ -55,30 +51,6 @@ class SearchTermTransfer
         return $this;
     }
 
-    public function getMessengerUsername(): ?string
-    {
-        return $this->messengerUsername;
-    }
-
-    public function setMessengerUsername(?string $messengerUsername): self
-    {
-        $this->messengerUsername = $messengerUsername;
-
-        return $this;
-    }
-
-    public function getMessenger(): ?Messenger
-    {
-        return $this->messenger;
-    }
-
-    public function setMessenger(?Messenger $messenger): self
-    {
-        $this->messenger = $messenger;
-
-        return $this;
-    }
-
     public function getMessengerUser(): ?MessengerUserTransfer
     {
         return $this->messengerUser;
@@ -87,18 +59,6 @@ class SearchTermTransfer
     public function setMessengerUser(?MessengerUserTransfer $messengerUser): self
     {
         $this->messengerUser = $messengerUser;
-
-        return $this;
-    }
-
-    public function getMessengerProfileUrl(): ?string
-    {
-        return $this->messengerProfileUrl;
-    }
-
-    public function setMessengerProfileUrl(?string $messengerProfileUrl): self
-    {
-        $this->messengerProfileUrl = $messengerProfileUrl;
 
         return $this;
     }

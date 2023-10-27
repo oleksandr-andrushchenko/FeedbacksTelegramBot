@@ -8,11 +8,13 @@ use App\Entity\Feedback\FeedbackSearch;
 use App\Entity\Feedback\FeedbackLookup;
 use App\Enum\Feedback\SearchTermType;
 use App\Repository\Feedback\FeedbackSearchRepository;
+use App\Service\Feedback\SearchTerm\SearchTermMessengerProvider;
 
 class FeedbackSearchSearcher
 {
     public function __construct(
         private readonly FeedbackSearchRepository $repository,
+        private readonly SearchTermMessengerProvider $searchTermMessengerProvider,
     )
     {
     }
@@ -42,10 +44,14 @@ class FeedbackSearchSearcher
                 return false;
             }
 
-            if (
-                $feedbackSearchSearch->getSearchTerm()->getMessenger() !== null
-                && $feedbackSearchSearch->getSearchTerm()->getMessenger() !== $feedbackSearch->getSearchTerm()->getMessenger()
-            ) {
+            $lookupMessenger = $this->searchTermMessengerProvider->getSearchTermMessenger(
+                $feedbackSearchSearch->getSearchTerm()->getType()
+            );
+            $searchMessenger = $this->searchTermMessengerProvider->getSearchTermMessenger(
+                $feedbackSearch->getSearchTerm()->getType()
+            );
+
+            if ($lookupMessenger !== null && $lookupMessenger !== $searchMessenger) {
                 return false;
             }
 

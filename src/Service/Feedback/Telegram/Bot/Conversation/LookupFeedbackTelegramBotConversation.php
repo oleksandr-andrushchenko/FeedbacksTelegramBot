@@ -399,8 +399,6 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
     {
         $this->state->setStep(self::STEP_CONFIRM_QUERIED);
 
-        $this->searchTermParser->parseWithNetwork($this->state->getSearchTerm());
-
         $message = $this->getConfirmQuery($tg, $help);
 
         $buttons = [];

@@ -411,24 +411,6 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
         return $searchTerm;
     }
 
-    protected function getMessengerProfileUrlSearchTerm(MessengerUserTransfer $messengerUser): SearchTermTransfer
-    {
-        return (new SearchTermTransfer($url = $this->getMessengerUserProfileUrl($messengerUser)))
-            ->setMessenger($messengerUser->getMessenger())
-            ->setMessengerProfileUrl($url)
-            ->setMessengerUsername($messengerUser->getUsername())
-        ;
-    }
-
-    protected function getMessengerUsernameSearchTerm(MessengerUserTransfer $messengerUser): SearchTermTransfer
-    {
-        return (new SearchTermTransfer($messengerUser->getUsername()))
-            ->setMessenger($messengerUser->getMessenger())
-            ->setMessengerProfileUrl($messengerUser->getMessenger() === Messenger::unknown ? null : $this->getMessengerUserProfileUrl($messengerUser))
-            ->setMessengerUsername($messengerUser->getUsername())
-        ;
-    }
-
     protected function prevButton(): string
     {
         return '⬅️ keyboard.prev';

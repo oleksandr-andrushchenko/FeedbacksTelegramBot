@@ -203,6 +203,7 @@
             <argument type="service" id="app.feedback_search_term_upserter"/>
             <argument type="service" id="app.id_generator"/>
             <argument type="service" id="app.event_bus"/>
+            <argument type="service" id="app.feedback_search_term_messenger_provider"/>
         </service>
         <service id="app.feedback_search_creator" class="App\Service\Feedback\FeedbackSearchCreator" lazy="true">
             <argument type="service" id="app.feedback_search_command_options"/>
@@ -229,9 +230,11 @@
         </service>
         <service id="app.feedback_searcher" class="App\Service\Feedback\FeedbackSearcher" lazy="true">
             <argument type="service" id="app.feedback_repository"/>
+            <argument type="service" id="app.feedback_search_term_messenger_provider"/>
         </service>
         <service id="app.feedback_search_searcher" class="App\Service\Feedback\FeedbackSearchSearcher" lazy="true">
             <argument type="service" id="app.feedback_search_repository"/>
+            <argument type="service" id="app.feedback_search_term_messenger_provider"/>
         </service>
 
         <service id="app.feedback_search_term_parser_instagram"
@@ -333,10 +336,7 @@
             <argument type="service" id="app.feedback_lookup_repository"/>
             <tag name="app.feedback_command_statistic_provider"/>
         </service>
-        <service id="app.search_term_provider"
-                 class="App\Service\Feedback\SearchTerm\SearchTermProvider" lazy="true">
-            <argument type="service" id="app.messenger_user_profile_url_provider"/>
-        </service>
+        <service id="app.search_term_provider" class="App\Service\Feedback\SearchTerm\SearchTermProvider" lazy="true"/>
         <service id="app.feedback_search_telegram_view_provider"
                  class="App\Service\Feedback\Telegram\Bot\View\FeedbackSearchTelegramViewProvider" lazy="true">
             <argument type="service" id="app.search_term_provider"/>
@@ -359,6 +359,8 @@
         <service id="app.search_term_telegram_view_provider"
                  class="App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider" lazy="true">
             <argument type="service" id="app.feedback_search_term_type_provider"/>
+            <argument type="service" id="app.messenger_user_profile_url_provider"/>
+            <argument type="service" id="app.feedback_search_term_messenger_provider"/>
         </service>
         <service id="app.multiple_search_term_telegram_view_provider"
                  class="App\Service\Feedback\Telegram\View\MultipleSearchTermTelegramViewProvider" lazy="true">
@@ -594,5 +596,7 @@
             <tag name="messenger.message_handler"
                  handles="App\Message\Event\Feedback\FeedbackUserSubscriptionCreatedEvent" bus="app.event_bus"/>
         </service>
+        <service id="app.feedback_search_term_messenger_provider"
+                 class="App\Service\Feedback\SearchTerm\SearchTermMessengerProvider" lazy="true"/>
     </services>
 </container>

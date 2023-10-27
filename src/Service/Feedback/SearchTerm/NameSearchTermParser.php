@@ -50,11 +50,6 @@ class NameSearchTermParser implements SearchTermParserInterface
         // TODO: Implement parseWithKnownType() method.
     }
 
-    public function parseWithNetwork(SearchTermTransfer $searchTerm): void
-    {
-        // TODO: Implement parseWithNetwork() method.
-    }
-
     private function supportsPersonName(string $personName): bool
     {
         $result = preg_match($this->getPattern($first = 'A-Za-z\pL\x{00C0}-\x{00FF}', $first), $personName);

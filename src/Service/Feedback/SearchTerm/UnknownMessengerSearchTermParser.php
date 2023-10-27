@@ -6,7 +6,6 @@ namespace App\Service\Feedback\SearchTerm;
 
 use App\Transfer\Feedback\SearchTermTransfer;
 use App\Enum\Feedback\SearchTermType;
-use App\Enum\Messenger\Messenger;
 
 class UnknownMessengerSearchTermParser implements SearchTermParserInterface
 {
@@ -35,17 +34,12 @@ class UnknownMessengerSearchTermParser implements SearchTermParserInterface
         if ($searchTerm->getType() === SearchTermType::messenger_username) {
             $normalizedUsername = $this->normalizeUsername($searchTerm->getText());
 
-            $searchTerm
-                ->setNormalizedText($normalizedUsername === $searchTerm->getText() ? null : $normalizedUsername)
-                ->setMessengerUsername($normalizedUsername)
-                ->setMessenger(Messenger::unknown)
-            ;
+            if ($normalizedUsername !== $searchTerm->getText()) {
+                $searchTerm
+                    ->setNormalizedText($normalizedUsername)
+                ;
+            }
         }
-    }
-
-    public function parseWithNetwork(SearchTermTransfer $searchTerm): void
-    {
-        // TODO: Implement parseWithNetwork() method.
     }
 
     private function supportsUsername(SearchTermTransfer $searchTerm): bool

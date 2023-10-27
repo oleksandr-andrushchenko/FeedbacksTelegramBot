@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service\Feedback\SearchTerm;
 
 use App\Enum\Feedback\SearchTermType;
-use App\Enum\Messenger\Messenger;
 use App\Transfer\Feedback\SearchTermTransfer;
 
 class InstagramSearchTermParser implements SearchTermParserInterface
@@ -26,15 +25,9 @@ class InstagramSearchTermParser implements SearchTermParserInterface
     public function parseWithGuessType(SearchTermTransfer $searchTerm): void
     {
         if ($this->supportsUrl($searchTerm->getText(), $username)) {
-            $normalizedUsername = $this->normalizeUsername($username);
-            $normalizedProfileUrl = $this->makeProfileUrl($normalizedUsername);
-
             $searchTerm
-                ->setNormalizedText($normalizedUsername)
+                ->setNormalizedText($this->normalizeUsername($username))
                 ->setType(SearchTermType::instagram_username)
-                ->setMessengerUsername($normalizedUsername)
-                ->setMessenger(Messenger::instagram)
-                ->setMessengerProfileUrl($normalizedProfileUrl)
             ;
         } elseif ($this->supportsUsername($searchTerm->getText())) {
             $searchTerm
@@ -48,22 +41,12 @@ class InstagramSearchTermParser implements SearchTermParserInterface
         if ($searchTerm->getType() === SearchTermType::instagram_username) {
             $normalizedUsername = $this->normalizeUsername($searchTerm->getText());
 
-            $searchTerm
-                ->setNormalizedText($normalizedUsername === $searchTerm->getText() ? null : $normalizedUsername)
-                ->setMessenger(Messenger::instagram)
-                ->setMessengerUsername($normalizedUsername)
-                ->setMessengerProfileUrl($this->makeProfileUrl($normalizedUsername))
-            ;
+            if ($normalizedUsername !== $searchTerm->getText()) {
+                $searchTerm
+                    ->setNormalizedText($normalizedUsername)
+                ;
+            }
         }
-    }
-
-    public function parseWithNetwork(SearchTermTransfer $searchTerm): void
-    {
-//        $messengerUser = $this->userProvider->getInstagramMessengerUser($searchTerm->getMessengerUsername());
-//
-//        $searchTerm
-//            ->setMessengerUser($messengerUser)
-//        ;
     }
 
     private function supportsUsername(string $username): bool
@@ -83,11 +66,6 @@ class InstagramSearchTermParser implements SearchTermParserInterface
     private function normalizeUsername(string $username): string
     {
         return ltrim($username, '@');
-    }
-
-    private function makeProfileUrl(string $username): string
-    {
-        return sprintf('https://instagram.com/%s', $username);
     }
 
     private function supportsUrl(string $url, string &$username = null): bool

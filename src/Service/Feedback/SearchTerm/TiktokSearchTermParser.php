@@ -6,7 +6,6 @@ namespace App\Service\Feedback\SearchTerm;
 
 use App\Transfer\Feedback\SearchTermTransfer;
 use App\Enum\Feedback\SearchTermType;
-use App\Enum\Messenger\Messenger;
 
 class TiktokSearchTermParser implements SearchTermParserInterface
 {
@@ -26,22 +25,10 @@ class TiktokSearchTermParser implements SearchTermParserInterface
     public function parseWithGuessType(SearchTermTransfer $searchTerm): void
     {
         if ($this->supportsUrl($searchTerm->getText(), $username)) {
-            $normalizedUsername = $this->normalizeUsername($username);
-            $normalizedProfileUrl = $this->makeProfileUrl($normalizedUsername);
-
-            if ($searchTerm->getText() === $normalizedProfileUrl) {
-                $searchTerm
-                    ->setNormalizedText($normalizedUsername)
-                    ->setType(SearchTermType::tiktok_username)
-                    ->setMessengerUsername($normalizedUsername)
-                    ->setMessenger(Messenger::tiktok)
-                    ->setMessengerProfileUrl($normalizedProfileUrl)
-                ;
-            } else {
-                $searchTerm
-                    ->addType(SearchTermType::tiktok_username)
-                ;
-            }
+            $searchTerm
+                ->setNormalizedText($this->normalizeUsername($username))
+                ->setType(SearchTermType::tiktok_username)
+            ;
         } elseif ($this->supportsUsername($searchTerm->getText())) {
             $searchTerm
                 ->addType(SearchTermType::tiktok_username)
@@ -54,18 +41,12 @@ class TiktokSearchTermParser implements SearchTermParserInterface
         if ($searchTerm->getType() === SearchTermType::tiktok_username) {
             $normalizedUsername = $this->normalizeUsername($searchTerm->getText());
 
-            $searchTerm
-                ->setNormalizedText($normalizedUsername === $searchTerm->getText() ? null : $normalizedUsername)
-                ->setMessenger(Messenger::tiktok)
-                ->setMessengerUsername($normalizedUsername)
-                ->setMessengerProfileUrl($this->makeProfileUrl($normalizedUsername))
-            ;
+            if ($normalizedUsername !== $searchTerm->getText()) {
+                $searchTerm
+                    ->setNormalizedText($normalizedUsername)
+                ;
+            }
         }
-    }
-
-    public function parseWithNetwork(SearchTermTransfer $searchTerm): void
-    {
-        // TODO: Implement parseWithNetwork() method.
     }
 
     private function supportsUsername(string $username): bool
@@ -85,11 +66,6 @@ class TiktokSearchTermParser implements SearchTermParserInterface
     private function normalizeUsername(string $username): string
     {
         return ltrim($username, '@');
-    }
-
-    private function makeProfileUrl(string $username): string
-    {
-        return sprintf('https://tiktok.com/@%s', $username);
     }
 
     private function supportsUrl(string $url, string &$username = null): bool

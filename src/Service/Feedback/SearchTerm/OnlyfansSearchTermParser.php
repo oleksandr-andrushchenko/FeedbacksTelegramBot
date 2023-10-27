@@ -6,7 +6,6 @@ namespace App\Service\Feedback\SearchTerm;
 
 use App\Transfer\Feedback\SearchTermTransfer;
 use App\Enum\Feedback\SearchTermType;
-use App\Enum\Messenger\Messenger;
 
 class OnlyfansSearchTermParser implements SearchTermParserInterface
 {
@@ -26,15 +25,9 @@ class OnlyfansSearchTermParser implements SearchTermParserInterface
     public function parseWithGuessType(SearchTermTransfer $searchTerm): void
     {
         if ($this->supportsUrl($searchTerm->getText(), $username)) {
-            $normalizedUsername = $this->normalizeUsername($username);
-            $normalizedProfileUrl = $this->makeProfileUrl($normalizedUsername);
-
             $searchTerm
-                ->setNormalizedText($normalizedUsername)
+                ->setNormalizedText($this->normalizeUsername($username))
                 ->setType(SearchTermType::onlyfans_username)
-                ->setMessengerUsername($normalizedUsername)
-                ->setMessenger(Messenger::onlyfans)
-                ->setMessengerProfileUrl($normalizedProfileUrl)
             ;
         } elseif ($this->supportsUsername($searchTerm->getText())) {
             $searchTerm
@@ -48,18 +41,12 @@ class OnlyfansSearchTermParser implements SearchTermParserInterface
         if ($searchTerm->getType() === SearchTermType::onlyfans_username) {
             $normalizedUsername = $this->normalizeUsername($searchTerm->getText());
 
-            $searchTerm
-                ->setNormalizedText($normalizedUsername === $searchTerm->getText() ? null : $normalizedUsername)
-                ->setMessenger(Messenger::onlyfans)
-                ->setMessengerUsername($normalizedUsername)
-                ->setMessengerProfileUrl($this->makeProfileUrl($normalizedUsername))
-            ;
+            if ($normalizedUsername !== $searchTerm->getText()) {
+                $searchTerm
+                    ->setNormalizedText($normalizedUsername)
+                ;
+            }
         }
-    }
-
-    public function parseWithNetwork(SearchTermTransfer $searchTerm): void
-    {
-        // TODO: Implement parseWithNetwork() method.
     }
 
     private function supportsUsername(string $username): bool
@@ -73,17 +60,12 @@ class OnlyfansSearchTermParser implements SearchTermParserInterface
 
     private function getUsernamePattern(bool $url): string
     {
-        return ($url ? '' : '@?') . '\w(?!.*?\.{2})[\w.]{1,28}\w';
+        return ($url ? '' : '@?') . '\w(?!.*?\.{2})[\w.-]{1,28}\w';
     }
 
     private function normalizeUsername(string $username): string
     {
         return ltrim($username, '@');
-    }
-
-    private function makeProfileUrl(string $username): string
-    {
-        return sprintf('https://onlyfans.com/%s', $username);
     }
 
     private function supportsUrl(string $url, string &$username = null): bool

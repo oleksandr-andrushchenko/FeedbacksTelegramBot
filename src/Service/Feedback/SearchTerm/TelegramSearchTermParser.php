@@ -6,7 +6,6 @@ namespace App\Service\Feedback\SearchTerm;
 
 use App\Transfer\Feedback\SearchTermTransfer;
 use App\Enum\Feedback\SearchTermType;
-use App\Enum\Messenger\Messenger;
 
 class TelegramSearchTermParser implements SearchTermParserInterface
 {
@@ -26,15 +25,9 @@ class TelegramSearchTermParser implements SearchTermParserInterface
     public function parseWithGuessType(SearchTermTransfer $searchTerm): void
     {
         if ($this->supportsUrl($searchTerm->getText(), $username)) {
-            $normalizedUsername = $this->normalizeUsername($username);
-            $normalizedProfileUrl = $this->makeProfileUrl($normalizedUsername);
-
             $searchTerm
-                ->setNormalizedText($normalizedUsername)
+                ->setNormalizedText($this->normalizeUsername($username))
                 ->setType(SearchTermType::telegram_username)
-                ->setMessengerUsername($normalizedUsername)
-                ->setMessenger(Messenger::telegram)
-                ->setMessengerProfileUrl($normalizedProfileUrl)
             ;
         } elseif ($this->supportsUsername($searchTerm->getText())) {
             $searchTerm
@@ -48,18 +41,12 @@ class TelegramSearchTermParser implements SearchTermParserInterface
         if ($searchTerm->getType() === SearchTermType::telegram_username) {
             $normalizedUsername = $this->normalizeUsername($searchTerm->getText());
 
-            $searchTerm
-                ->setNormalizedText($normalizedUsername === $searchTerm->getText() ? null : $normalizedUsername)
-                ->setMessenger(Messenger::telegram)
-                ->setMessengerUsername($normalizedUsername)
-                ->setMessengerProfileUrl($this->makeProfileUrl($normalizedUsername))
-            ;
+            if ($normalizedUsername !== $searchTerm->getText()) {
+                $searchTerm
+                    ->setNormalizedText($normalizedUsername)
+                ;
+            }
         }
-    }
-
-    public function parseWithNetwork(SearchTermTransfer $searchTerm): void
-    {
-        // TODO: Implement parseWithNetwork() method.
     }
 
     private function supportsUsername(string $username): bool
@@ -80,11 +67,6 @@ class TelegramSearchTermParser implements SearchTermParserInterface
     private function normalizeUsername(string $username): string
     {
         return ltrim($username, '@');
-    }
-
-    private function makeProfileUrl(string $username): string
-    {
-        return sprintf('https://t.me/%s', $username);
     }
 
     private function supportsUrl(string $url, string &$username = null): bool

@@ -42,15 +42,12 @@ class EmailSearchTermParser implements SearchTermParserInterface
         if ($searchTerm->getType() === SearchTermType::email) {
             $normalized = $this->normalizeEmail($searchTerm->getText());
 
-            $searchTerm
-                ->setNormalizedText($normalized === $searchTerm->getText() ? null : $normalized)
-            ;
+            if ($normalized !== $searchTerm->getText()) {
+                $searchTerm
+                    ->setNormalizedText($normalized)
+                ;
+            }
         }
-    }
-
-    public function parseWithNetwork(SearchTermTransfer $searchTerm): void
-    {
-        // TODO: Implement parseWithNetwork() method.
     }
 
     private function normalizeEmail(string $email)

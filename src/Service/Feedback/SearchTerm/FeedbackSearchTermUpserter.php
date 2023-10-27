@@ -33,8 +33,6 @@ class FeedbackSearchTermUpserter
             $termTransfer->getNormalizedText() ?? $termTransfer->getText(),
             $termTransfer->getType(),
             messengerUser: $messengerUser,
-            messenger: $messengerUser?->getMessenger() ?? $termTransfer->getMessenger(),
-            messengerUsername: $messengerUser?->getUsername() ?? $termTransfer->getMessengerUsername(),
         );
 
         $searchTerms = $this->repository->findByNormalizedText($newTerm->getNormalizedText());
@@ -45,18 +43,6 @@ class FeedbackSearchTermUpserter
             }
 
             if ($searchTerm->getType() !== $newTerm->getType()) {
-                return false;
-            }
-
-            if ($searchTerm->getMessenger() !== $newTerm->getMessenger()) {
-                return false;
-            }
-
-            if ($searchTerm->getMessengerUsername() !== $newTerm->getMessengerUsername()) {
-                return false;
-            }
-
-            if ($searchTerm->getMessengerUser() !== $newTerm->getMessengerUser()) {
                 return false;
             }
 

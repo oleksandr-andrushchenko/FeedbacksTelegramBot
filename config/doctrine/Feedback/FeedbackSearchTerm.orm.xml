@@ -25,13 +25,6 @@
                 <option name="unsigned">true</option>
             </options>
         </field>
-        <field name="messenger" column="messenger" type="smallint" enum-type="App\Enum\Messenger\Messenger"
-               nullable="true">
-            <options>
-                <option name="unsigned">true</option>
-            </options>
-        </field>
-        <field name="messengerUsername" column="messenger_username" nullable="true"/>
 
         <many-to-one field="messengerUser" target-entity="App\Entity\Messenger\MessengerUser"/>
 

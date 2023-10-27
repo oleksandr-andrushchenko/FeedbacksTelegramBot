@@ -24,11 +24,4 @@ interface SearchTermParserOnlyInterface
      * @param SearchTermTransfer $searchTerm
      */
     public function parseWithKnownType(SearchTermTransfer $searchTerm): void;
-
-    /**
-     * Set search term info according to known type, from any third party sources
-     *
-     * @param SearchTermTransfer $searchTerm
-     */
-    public function parseWithNetwork(SearchTermTransfer $searchTerm): void;
 }

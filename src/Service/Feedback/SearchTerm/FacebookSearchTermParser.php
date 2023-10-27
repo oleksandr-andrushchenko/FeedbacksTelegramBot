@@ -7,6 +7,7 @@ namespace App\Service\Feedback\SearchTerm;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
 use App\Transfer\Feedback\SearchTermTransfer;
+use App\Transfer\Messenger\MessengerUserTransfer;
 
 class FacebookSearchTermParser implements SearchTermParserInterface
 {
@@ -23,19 +24,31 @@ class FacebookSearchTermParser implements SearchTermParserInterface
         return false;
     }
 
+    public function setupSearchTerm(SearchTermTransfer $searchTerm, string $username): void
+    {
+        $searchTerm
+            ->setType(SearchTermType::facebook_username)
+        ;
+
+        $normalizedUsername = $this->normalizeUsername($username);
+
+        if ($searchTerm->getText() !== $normalizedUsername) {
+            $searchTerm
+                ->setNormalizedText($normalizedUsername)
+            ;
+        }
+
+        if (is_numeric($username)) {
+            $searchTerm
+                ->setMessengerUser(new MessengerUserTransfer(Messenger::facebook, $username))
+            ;
+        }
+    }
+
     public function parseWithGuessType(SearchTermTransfer $searchTerm): void
     {
         if ($this->supportsUrl($searchTerm->getText(), $username)) {
-            $normalizedUsername = $this->normalizeUsername($username);
-            $normalizedProfileUrl = $this->makeProfileUrl($normalizedUsername);
-
-            $searchTerm
-                ->setNormalizedText($normalizedUsername)
-                ->setType(SearchTermType::facebook_username)
-                ->setMessengerUsername($normalizedUsername)
-                ->setMessenger(Messenger::facebook)
-                ->setMessengerProfileUrl($normalizedProfileUrl)
-            ;
+            $this->setupSearchTerm($searchTerm, $username);
         } elseif ($this->supportsUsername($searchTerm->getText())) {
             $searchTerm
                 ->addType(SearchTermType::facebook_username)
@@ -46,20 +59,8 @@ class FacebookSearchTermParser implements SearchTermParserInterface
     public function parseWithKnownType(SearchTermTransfer $searchTerm): void
     {
         if ($searchTerm->getType() === SearchTermType::facebook_username) {
-            $normalizedUsername = $this->normalizeUsername($searchTerm->getText());
-
-            $searchTerm
-                ->setNormalizedText($normalizedUsername === $searchTerm->getText() ? null : $normalizedUsername)
-                ->setMessenger(Messenger::facebook)
-                ->setMessengerUsername($normalizedUsername)
-                ->setMessengerProfileUrl($this->makeProfileUrl($normalizedUsername))
-            ;
+            $this->setupSearchTerm($searchTerm, $searchTerm->getText());
         }
-    }
-
-    public function parseWithNetwork(SearchTermTransfer $searchTerm): void
-    {
-        // TODO: Implement parseWithNetwork() method.
     }
 
     private function supportsUsername(string $username): bool
@@ -81,13 +82,16 @@ class FacebookSearchTermParser implements SearchTermParserInterface
         return ltrim($username, '@');
     }
 
-    private function makeProfileUrl(string $username): string
-    {
-        return sprintf('https://facebook.com/%s', $username);
-    }
-
     private function supportsUrl(string $url, string &$username = null): bool
     {
+        $result = preg_match('/^(?:(?:http|https):\/\/)?(?:www\.)?(?:m\.)?facebook\.com\/profile\.php\?id=([0-9]+)/', $url, $matches);
+
+        if ($result === 1) {
+            $username = $matches[1];
+
+            return true;
+        }
+
         $result = preg_match('/^(?:(?:http|https):\/\/)?(?:www\.)?(?:m\.)?facebook\.com\/(' . $this->getUsernamePattern(true) . ')[?\/]?/im', $url, $matches);
 
         if ($result === 1 && $this->supportsUsername($matches[1])) {

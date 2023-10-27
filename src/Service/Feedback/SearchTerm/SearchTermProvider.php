@@ -7,33 +7,22 @@ namespace App\Service\Feedback\SearchTerm;
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Messenger\MessengerUser;
 use App\Enum\Feedback\SearchTermType;
-use App\Enum\Messenger\Messenger;
 use App\Transfer\Feedback\SearchTermTransfer;
 use App\Transfer\Messenger\MessengerUserTransfer;
-use App\Service\Messenger\MessengerUserProfileUrlProvider;
 
 class SearchTermProvider
 {
-    public function __construct(
-        private readonly MessengerUserProfileUrlProvider $messengerUserProfileUrlProvider,
-    )
-    {
-    }
-
     public function getSearchTerm(
         string $text,
         ?SearchTermType $type,
-        ?Messenger $messenger,
-        ?string $messengerUsername,
+        ?string $normalizedText,
         ?MessengerUser $messengerUser
     ): SearchTermTransfer
     {
-        $messengerProfileUrl = null;
+        $searchTerm = new SearchTermTransfer($text, type: $type, normalizedText: $normalizedText);
 
-        if ($messengerUser === null) {
-            $messengerUserTransfer = null;
-        } else {
-            $messengerUserTransfer = new MessengerUserTransfer(
+        if ($messengerUser !== null) {
+            $searchTerm->setMessengerUser(new MessengerUserTransfer(
                 $messengerUser->getMessenger(),
                 $messengerUser->getIdentifier(),
                 username: $messengerUser->getUsername(),
@@ -41,22 +30,10 @@ class SearchTermProvider
                 countryCode: $messengerUser->getUser()->getCountryCode(),
                 localeCode: $messengerUser->getUser()->getLocaleCode(),
                 currencyCode: $messengerUser->getUser()->getCurrencyCode()
-            );
-
-            $messengerProfileUrl = $this->messengerUserProfileUrlProvider->getMessengerUserProfileUrlByUser($messengerUserTransfer);
+            ));
         }
 
-        if ($messengerProfileUrl === null && $messenger !== Messenger::unknown && $messengerUsername !== null) {
-            $messengerProfileUrl = $this->messengerUserProfileUrlProvider->getMessengerUserProfileUrl($messenger, $messengerUsername);
-        }
-
-        return (new SearchTermTransfer($text))
-            ->setType($type)
-            ->setMessenger($messenger)
-            ->setMessengerProfileUrl($messengerProfileUrl)
-            ->setMessengerUsername($messengerUsername)
-            ->setMessengerUser($messengerUserTransfer)
-        ;
+        return $searchTerm;
     }
 
     public function getSearchTermByFeedbackSearchTerm(FeedbackSearchTerm $searchTerm): SearchTermTransfer
@@ -64,8 +41,7 @@ class SearchTermProvider
         return $this->getSearchTerm(
             $searchTerm->getText(),
             $searchTerm->getType(),
-            $searchTerm->getMessenger(),
-            $searchTerm->getMessengerUsername(),
+            $searchTerm->getNormalizedText(),
             $searchTerm->getMessengerUser()
         );
     }

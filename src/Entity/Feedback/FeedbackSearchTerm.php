@@ -6,7 +6,6 @@ namespace App\Entity\Feedback;
 
 use App\Entity\Messenger\MessengerUser;
 use App\Enum\Feedback\SearchTermType;
-use App\Enum\Messenger\Messenger;
 use DateTimeImmutable;
 use DateTimeInterface;
 
@@ -17,8 +16,6 @@ class FeedbackSearchTerm
         private readonly string $normalizedText,
         private readonly SearchTermType $type,
         private readonly ?MessengerUser $messengerUser,
-        private readonly ?Messenger $messenger,
-        private readonly ?string $messengerUsername,
         private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
         private ?int $id = null,
     )
@@ -48,16 +45,6 @@ class FeedbackSearchTerm
     public function getMessengerUser(): ?MessengerUser
     {
         return $this->messengerUser;
-    }
-
-    public function getMessenger(): ?Messenger
-    {
-        return $this->messenger;
-    }
-
-    public function getMessengerUsername(): ?string
-    {
-        return $this->messengerUsername;
     }
 
     public function getCreatedAt(): DateTimeInterface

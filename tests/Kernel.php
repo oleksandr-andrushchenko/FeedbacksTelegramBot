@@ -40,5 +40,6 @@ class Kernel extends BaseKernel implements CompilerPassInterface
         $container->getDefinition('app.feedback_rating_provider')->setPublic(true);
         $container->getDefinition('app.address_geocoder')->setPublic(true);
         $container->getDefinition('app.timezone_geocoder')->setPublic(true);
+        $container->getDefinition('app.messenger_user_profile_url_provider')->setPublic(true);
     }
 }

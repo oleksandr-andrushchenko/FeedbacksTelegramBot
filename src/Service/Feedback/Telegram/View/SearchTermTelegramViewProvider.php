@@ -5,13 +5,18 @@ declare(strict_types=1);
 namespace App\Service\Feedback\Telegram\View;
 
 use App\Enum\Feedback\SearchTermType;
+use App\Enum\Messenger\Messenger;
+use App\Service\Feedback\SearchTerm\SearchTermMessengerProvider;
 use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
+use App\Service\Messenger\MessengerUserProfileUrlProvider;
 use App\Transfer\Feedback\SearchTermTransfer;
 
 class SearchTermTelegramViewProvider
 {
     public function __construct(
         private readonly SearchTermTypeProvider $termTypeProvider,
+        private readonly MessengerUserProfileUrlProvider $messengerUserProfileUrlProvider,
+        private readonly SearchTermMessengerProvider $searchTermMessengerProvider,
     )
     {
     }
@@ -20,26 +25,16 @@ class SearchTermTelegramViewProvider
     {
         $message = '<u><b>';
 
-        if ($searchTerm->getMessengerProfileUrl() !== null) {
-            $message .= sprintf(
-                '<a href="%s">%s</a>',
-                $searchTerm->getMessengerProfileUrl(),
-                $searchTerm->getMessengerUsername() ?? $searchTerm->getMessengerProfileUrl()
-            );
-        } elseif ($searchTerm->getMessengerUsername() !== null) {
-            $message .= $searchTerm->getMessengerUsername();
+        $messenger = $this->searchTermMessengerProvider->getSearchTermMessenger($searchTerm->getType());
+        $text = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
+
+        if ($messenger !== Messenger::unknown) {
+            $url = $this->messengerUserProfileUrlProvider->getMessengerUserProfileUrl($messenger, $text);
+            $message .= sprintf('<a href="%s">%s</a>', $url, $text);
         } elseif ($searchTerm->getType() === SearchTermType::url) {
-            $message .= sprintf(
-                '<a href="%s">%s</a>',
-                $searchTerm->getText(),
-                $searchTerm->getNormalizedText() ?? $searchTerm->getText()
-            );
-        } elseif ($searchTerm->getType() === SearchTermType::phone_number) {
-            $message .= $searchTerm->getNormalizedText() ?? $searchTerm->getText();
-        } elseif ($searchTerm->getType() === SearchTermType::email) {
-            $message .= $searchTerm->getNormalizedText() ?? $searchTerm->getText();
+            $message .= sprintf('<a href="%s">%s</a>', $searchTerm->getText(), $text);
         } else {
-            $message .= $searchTerm->getText();
+            $message .= $text;
         }
 
         $message .= '</b></u>';

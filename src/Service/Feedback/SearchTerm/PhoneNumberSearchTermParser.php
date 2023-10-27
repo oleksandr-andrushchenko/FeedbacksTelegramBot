@@ -25,17 +25,9 @@ class PhoneNumberSearchTermParser implements SearchTermParserInterface
     public function parseWithGuessType(SearchTermTransfer $searchTerm): void
     {
         if ($this->supports($searchTerm->getText())) {
-            $normalized = $this->normalize($searchTerm->getText());
-
-            if ($normalized === $searchTerm->getText()) {
-                $searchTerm
-                    ->setType(SearchTermType::phone_number)
-                ;
-            } else {
-                $searchTerm
-                    ->addType(SearchTermType::phone_number)
-                ;
-            }
+            $searchTerm
+                ->addType(SearchTermType::phone_number)
+            ;
         }
     }
 
@@ -44,20 +36,17 @@ class PhoneNumberSearchTermParser implements SearchTermParserInterface
         if ($searchTerm->getType() === SearchTermType::phone_number) {
             $normalized = $this->normalize($searchTerm->getText());
 
-            $searchTerm
-                ->setNormalizedText($normalized === $searchTerm->getText() ? null : $normalized)
-            ;
+            if ($normalized !== $searchTerm->getText()) {
+                $searchTerm
+                    ->setNormalizedText($normalized)
+                ;
+            }
         }
-    }
-
-    public function parseWithNetwork(SearchTermTransfer $searchTerm): void
-    {
-        // TODO: Implement parseWithNetwork() method.
     }
 
     private function supports(string $number): bool
     {
-        return preg_match("/^\\+?\\d{1,4}?[-.\\s]?\\(?\\d{1,3}?\\)?[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,9}$/", $number) === 1;
+        return preg_match("/^\+?[0-9.\-() ]+$/", $number) === 1;
     }
 
     private function normalize(string $number): ?string

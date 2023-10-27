@@ -6,6 +6,7 @@ namespace App\Service\Feedback;
 
 use App\Entity\Feedback\Command\FeedbackCommandOptions;
 use App\Entity\Feedback\Feedback;
+use App\Enum\Messenger\Messenger;
 use App\Exception\Feedback\FeedbackCommandLimitExceededException;
 use App\Exception\Messenger\SameMessengerUserException;
 use App\Exception\ValidatorException;
@@ -13,6 +14,7 @@ use App\Message\Event\Feedback\FeedbackCreatedEvent;
 use App\Service\Feedback\Command\FeedbackCommandLimitsChecker;
 use App\Service\Feedback\Command\FeedbackCommandStatisticProviderInterface;
 use App\Service\Feedback\SearchTerm\FeedbackSearchTermUpserter;
+use App\Service\Feedback\SearchTerm\SearchTermMessengerProvider;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\IdGenerator;
 use App\Service\Validator;
@@ -32,6 +34,7 @@ class FeedbackCreator
         private readonly FeedbackSearchTermUpserter $termUpserter,
         private readonly IdGenerator $idGenerator,
         private readonly MessageBusInterface $eventBus,
+        private readonly SearchTermMessengerProvider $searchTermMessengerProvider,
     )
     {
     }
@@ -104,12 +107,14 @@ class FeedbackCreator
         $messengerUser = $transfer->getMessengerUser();
 
         foreach ($transfer->getSearchTerms() as $searchTerm) {
+            $messenger = $this->searchTermMessengerProvider->getSearchTermMessenger($searchTerm->getType());
+
             if (
                 $messengerUser?->getUsername() !== null
                 && $messengerUser?->getMessenger() !== null
-                && $searchTerm?->getMessengerUsername() !== null
-                && strcasecmp($messengerUser->getUsername(), $searchTerm->getMessengerUsername()) === 0
-                && $messengerUser->getMessenger() === $searchTerm->getMessenger()
+                && $messenger !== Messenger::unknown
+                && strcasecmp($messengerUser->getUsername(), $searchTerm->getNormalizedText() ?? $searchTerm->getText()) === 0
+                && $messengerUser->getMessenger() === $messenger
             ) {
                 throw new SameMessengerUserException($messengerUser);
             }

@@ -16,14 +16,13 @@ use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
 use App\Service\Feedback\Telegram\Bot\Conversation\CreateFeedbackTelegramBotConversation;
 use App\Service\Feedback\Telegram\Bot\FeedbackTelegramBotGroup;
-use App\Tests\Fixtures;
 use App\Tests\Functional\Telegram\Bot\TelegramBotCommandFunctionalTestCase;
 use App\Tests\Traits\Feedback\FeedbackRatingProviderTrait;
 use App\Tests\Traits\Feedback\FeedbackRepositoryProviderTrait;
 use App\Tests\Traits\Feedback\FeedbackSearchTermTypeProviderTrait;
+use App\Tests\Traits\Messenger\MessengerUserProfileUrlProviderTrait;
 use App\Tests\Traits\User\UserRepositoryProviderTrait;
 use App\Transfer\Feedback\SearchTermTransfer;
-use App\Transfer\Messenger\MessengerUserTransfer;
 use Generator;
 
 class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctionalTestCase
@@ -32,6 +31,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
     use UserRepositoryProviderTrait;
     use FeedbackRatingProviderTrait;
     use FeedbackSearchTermTypeProviderTrait;
+    use MessengerUserProfileUrlProviderTrait;
 
     /**
      * @param string $input
@@ -179,14 +179,13 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         yield 'type & empty search term & known type' => [
             'searchTerms' => null,
             'rating' => null,
-            'input' => $input = Fixtures::getMessengerUserProfileUrl(
-                $user = new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')
-            ),
+            'input' => $input = $this->getMessengerUserProfileUrlProvider()
+                ->getMessengerUserProfileUrl(Messenger::telegram, $username = 'any_search_term'),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
             'shouldSeeButtons' => [
-                $this->removeButton($user->getUsername()),
+                $this->removeButton($username),
                 $this->nextButton(),
                 $this->helpButton(),
                 $this->cancelButton(),
@@ -202,15 +201,14 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm1 = new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
             ],
             'rating' => null,
-            'input' => $input = Fixtures::getMessengerUserProfileUrl(
-                $user = new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')
-            ),
+            'input' => $input = $this->getMessengerUserProfileUrlProvider()
+                ->getMessengerUserProfileUrl(Messenger::telegram, $username = 'any_search_term'),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
             'shouldSeeButtons' => [
                 $this->removeButton($searchTerm1->getText()),
-                $this->removeButton($user->getUsername()),
+                $this->removeButton($username),
                 $this->nextButton(),
                 $this->helpButton(),
                 $this->cancelButton(),
@@ -228,16 +226,15 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::place_name),
             ],
             'rating' => null,
-            'input' => $input = Fixtures::getMessengerUserProfileUrl(
-                $user = new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')
-            ),
+            'input' => $input = $this->getMessengerUserProfileUrlProvider()
+                ->getMessengerUserProfileUrl(Messenger::telegram, $username = 'any_search_term'),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
             'shouldSeeButtons' => [
                 $this->removeButton($searchTerm1->getText()),
                 $this->removeButton($searchTerm2->getText()),
-                $this->removeButton($user->getUsername()),
+                $this->removeButton($username),
                 $this->nextButton(),
                 $this->helpButton(),
                 $this->cancelButton(),
@@ -299,10 +296,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 'query.rating',
             ],
             'shouldSeeButtons' => [
-                ...array_map(
-                    fn (Rating $rating): string => $this->ratingButton($rating),
-                    array_values(array_filter(iterator_to_array(Fixtures::ratings())))
-                ),
+                ...array_map(fn (Rating $rating): string => $this->ratingButton($rating), Rating::cases()),
                 ...[
                     $this->prevButton(),
                     $this->helpButton(),
@@ -326,10 +320,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 'query.rating',
             ],
             'shouldSeeButtons' => [
-                ...array_map(
-                    fn (Rating $rating): string => $this->ratingButton($rating),
-                    array_values(array_filter(iterator_to_array(Fixtures::ratings())))
-                ),
+                ...array_map(fn (Rating $rating): string => $this->ratingButton($rating), Rating::cases()),
                 ...[
                     $this->prevButton(),
                     $this->helpButton(),
@@ -480,15 +471,14 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm = new SearchTermTransfer('any_search_term', SearchTermType::onlyfans_username),
             ],
             'rating' => null,
-            'input' => $input = Fixtures::getMessengerUserProfileUrl(
-                $user = new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')
-            ),
+            'input' => $input = $this->getMessengerUserProfileUrlProvider()
+                ->getMessengerUserProfileUrl(Messenger::telegram, $username = 'any_search_term'),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
             'shouldSeeButtons' => [
                 $this->removeButton($searchTerm->getText()),
-                $this->removeButton($user->getUsername()),
+                $this->removeButton($username),
                 $this->nextButton(),
                 $this->helpButton(),
                 $this->cancelButton(),
@@ -506,16 +496,15 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $searchTerm2 = new SearchTermTransfer('any_search_term2', SearchTermType::instagram_username),
             ],
             'rating' => null,
-            'input' => $input = Fixtures::getMessengerUserProfileUrl(
-                $user = new MessengerUserTransfer(Messenger::telegram, 'id', 'any_search_term')
-            ),
+            'input' => $input = $this->getMessengerUserProfileUrlProvider()
+                ->getMessengerUserProfileUrl(Messenger::telegram, $username = 'any_search_term'),
             'shouldSeeReplies' => [
                 'query.extra_search_term',
             ],
             'shouldSeeButtons' => [
                 $this->removeButton($searchTerm1->getText()),
                 $this->removeButton($searchTerm2->getText()),
-                $this->removeButton($user->getUsername()),
+                $this->removeButton($username),
                 $this->nextButton(),
                 $this->helpButton(),
                 $this->cancelButton(),
@@ -585,10 +574,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 'query.rating',
             ],
             'shouldSeeButtons' => [
-                ...array_map(
-                    fn (Rating $rating): string => $this->ratingButton($rating),
-                    array_values(array_filter(iterator_to_array(Fixtures::ratings())))
-                ),
+                ...array_map(fn (Rating $rating): string => $this->ratingButton($rating), Rating::cases()),
                 ...[
                     $this->prevButton(),
                     $this->helpButton(),
@@ -613,7 +599,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'shouldSeeButtons' => [
                 ...array_map(
                     fn (Rating $r): string => $rating === $r ? $this->selectedText($this->ratingButton($r)) : $this->ratingButton($r),
-                    array_values(array_filter(iterator_to_array(Fixtures::ratings())))
+                    Rating::cases()
                 ),
                 ...[
                     $this->prevButton(),
@@ -1296,10 +1282,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 'query.rating',
             ],
             'shouldSeeButtons' => [
-                ...array_map(
-                    fn (Rating $rating): string => $this->ratingButton($rating),
-                    array_values(array_filter(iterator_to_array(Fixtures::ratings())))
-                ),
+                ...array_map(fn (Rating $rating): string => $this->ratingButton($rating), Rating::cases()),
                 ...[
                     $this->prevButton(),
                     $this->helpButton(),
@@ -1323,7 +1306,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'shouldSeeButtons' => [
                 ...array_map(
                     fn (Rating $r): string => $rating === $r ? $this->selectedText($this->ratingButton($r)) : $this->ratingButton($r),
-                    array_values(array_filter(iterator_to_array(Fixtures::ratings())))
+                    Rating::cases()
                 ),
                 ...[
                     $this->prevButton(),
@@ -1430,10 +1413,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 'help.use_keyboard',
             ],
             'shouldSeeButtons' => [
-                ...array_map(
-                    fn (Rating $rating): string => $this->ratingButton($rating),
-                    array_values(array_filter(iterator_to_array(Fixtures::ratings())))
-                ),
+                ...array_map(fn (Rating $rating): string => $this->ratingButton($rating), Rating::cases()),
                 ...[
                     $this->prevButton(),
                     $this->helpButton(),
@@ -1459,7 +1439,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'shouldSeeButtons' => [
                 ...array_map(
                     fn (Rating $r): string => $rating === $r ? $this->selectedText($this->ratingButton($r)) : $this->ratingButton($r),
-                    array_values(array_filter(iterator_to_array(Fixtures::ratings())))
+                    Rating::cases()
                 ),
                 ...[
                     $this->prevButton(),
@@ -1686,7 +1666,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'shouldSeeButtons' => [
                 ...array_map(
                     fn (Rating $r): string => $rating === $r ? $this->selectedText($this->ratingButton($r)) : $this->ratingButton($r),
-                    array_values(array_filter(iterator_to_array(Fixtures::ratings())))
+                    Rating::cases()
                 ),
                 ...[
                     $this->prevButton(),

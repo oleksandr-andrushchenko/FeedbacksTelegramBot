@@ -8,11 +8,13 @@ use App\Entity\Feedback\Feedback;
 use App\Entity\Feedback\FeedbackSearch;
 use App\Enum\Feedback\SearchTermType;
 use App\Repository\Feedback\FeedbackRepository;
+use App\Service\Feedback\SearchTerm\SearchTermMessengerProvider;
 
 class FeedbackSearcher
 {
     public function __construct(
         private readonly FeedbackRepository $feedbackRepository,
+        private readonly SearchTermMessengerProvider $searchTermMessengerProvider,
     )
     {
     }
@@ -37,7 +39,7 @@ class FeedbackSearcher
         // todo: for example: search term=+1 (561) 314-5672, its a phone number, stored as: 15613145672, but search with unknown type will give FALSE (+1 (561) 314-5672 === 15613145672)
         // todo: coz it wasnt parsed to selected seearch term type
 
-        $feedbacks = array_filter($feedbacks, static function (Feedback $feedback) use ($feedbackSearch): bool {
+        $feedbacks = array_filter($feedbacks, function (Feedback $feedback) use ($feedbackSearch): bool {
             foreach ($feedback->getSearchTerms() as $searchTerm) {
                 if ($searchTerm->getNormalizedText() === $feedbackSearch->getSearchTerm()->getNormalizedText()) {
                     if (
@@ -48,10 +50,12 @@ class FeedbackSearcher
                         return false;
                     }
 
-                    if (
-                        $feedbackSearch->getSearchTerm()->getMessenger() !== null
-                        && $feedbackSearch->getSearchTerm()->getMessenger() !== $searchTerm->getMessenger()
-                    ) {
+                    $searchMessenger = $this->searchTermMessengerProvider->getSearchTermMessenger(
+                        $feedbackSearch->getSearchTerm()->getType()
+                    );
+                    $messenger = $this->searchTermMessengerProvider->getSearchTermMessenger($searchTerm->getType());
+
+                    if ($searchMessenger !== null && $searchMessenger !== $messenger) {
                         return false;
                     }
 

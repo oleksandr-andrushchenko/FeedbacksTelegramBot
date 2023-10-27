@@ -12,7 +12,7 @@ class SearchTermTransferConstraint extends Constraint
 
     public string $textSingleLineMessage = 'text.single_line';
 
-    public string $textAllowedChars = ',;=()*^$#!~';
+    public string $textAllowedChars = ',;()*^$#!~';
     public string $textAllowedCharsMessage = 'text.allowed_chars';
 
     public int $textMinLength = 5;

@@ -50,17 +50,4 @@ class SearchTermParser implements SearchTermParserInterface
             }
         }
     }
-
-    public function parseWithNetwork(SearchTermTransfer $searchTerm): void
-    {
-        if ($searchTerm->getType() === null) {
-            return;
-        }
-
-        foreach ($this->parserFactory->createSearchTermParsers() as $parser) {
-            if ($parser->supportsSearchTerm($searchTerm)) {
-                $parser->parseWithNetwork($searchTerm);
-            }
-        }
-    }
 }

@@ -757,11 +757,6 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
     {
         $this->state->setStep(self::STEP_CONFIRM_QUERIED);
 
-        array_map(
-            fn (SearchTermTransfer $searchTerm) => $this->searchTermParser->parseWithNetwork($searchTerm),
-            $this->state->getSearchTerms()
-        );
-
         $message = $this->getConfirmQuery($tg, $help);
 
         $buttons = [];
