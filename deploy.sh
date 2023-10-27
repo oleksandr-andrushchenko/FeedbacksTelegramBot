@@ -17,8 +17,8 @@ else
 fi
 
 docker compose run php composer install --prefer-dist --optimize-autoloader --no-dev
-docker compose run php php bin/console cache:clear --env=prod
-docker compose run php php bin/console cache:warmup --env=prod
+docker compose run php APP_ENV=prod APP_DEBUG=0 php bin/console cache:clear --env=prod
+docker compose run php APP_ENV=prod APP_DEBUG=0 php bin/console cache:warmup --env=prod
 
 serverless deploy --stage=$1
 
