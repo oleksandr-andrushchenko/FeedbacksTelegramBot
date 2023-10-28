@@ -33,11 +33,6 @@ class SearchTermTypeProvider
         return $icon . ' ' . $name;
     }
 
-    public function getSearchTermTypes(): array
-    {
-        return SearchTermType::cases();
-    }
-
     public function sortSearchTermTypes(array $types): array
     {
         $sortedAll = SearchTermType::cases();
