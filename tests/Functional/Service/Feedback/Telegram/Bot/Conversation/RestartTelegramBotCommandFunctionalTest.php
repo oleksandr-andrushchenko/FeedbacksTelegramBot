@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Feedback\Telegram\Bot;
+namespace App\Tests\Functional\Service\Feedback\Telegram\Bot\Conversation;
 
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBot;
@@ -10,7 +10,7 @@ use App\Entity\Telegram\TelegramBotConversationState;
 use App\Entity\User\User;
 use App\Service\Feedback\Telegram\Bot\Conversation\RestartConversationTelegramBotConversation;
 use App\Service\Feedback\Telegram\Bot\FeedbackTelegramBotGroup;
-use App\Tests\Functional\Telegram\Bot\TelegramBotCommandFunctionalTestCase;
+use App\Tests\Functional\Service\Telegram\Bot\TelegramBotCommandFunctionalTestCase;
 use Generator;
 
 class RestartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctionalTestCase

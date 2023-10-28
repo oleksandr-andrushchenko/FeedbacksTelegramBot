@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller;
+namespace App\Tests\Functional\Controller;
 
 use App\Entity\Telegram\TelegramBot;
 use App\Enum\Site\SitePage;

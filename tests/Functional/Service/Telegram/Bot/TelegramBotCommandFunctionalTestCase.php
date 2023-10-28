@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Telegram\Bot;
+namespace App\Tests\Functional\Service\Telegram\Bot;
 
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBotConversation;
@@ -38,7 +38,6 @@ use App\Tests\Traits\Telegram\Bot\TelegramBotUpdateHandlerTrait;
 use App\Tests\Traits\Telegram\Bot\TelegramBotUserProviderTrait;
 use App\Tests\Traits\TranslatorProviderTrait;
 use App\Transfer\Feedback\SearchTermTransfer;
-use App\Transfer\Messenger\MessengerUserTransfer;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\KeyboardButton;

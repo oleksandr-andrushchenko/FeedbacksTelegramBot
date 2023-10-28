@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Service\Telegram\Channel;
+namespace App\Tests\Functional\Service\Telegram\Channel;
 
 use App\Entity\Telegram\TelegramBot;
 use App\Entity\Telegram\TelegramChannel;

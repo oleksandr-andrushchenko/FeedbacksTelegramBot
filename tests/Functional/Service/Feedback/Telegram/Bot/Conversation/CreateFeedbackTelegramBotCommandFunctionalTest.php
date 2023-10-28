@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Feedback\Telegram\Bot;
+namespace App\Tests\Functional\Service\Feedback\Telegram\Bot\Conversation;
 
 use App\Entity\Feedback\Feedback;
 use App\Entity\Feedback\FeedbackSearchTerm;
@@ -17,7 +17,7 @@ use App\Enum\Messenger\Messenger;
 use App\Service\Feedback\Telegram\Bot\Conversation\CreateFeedbackTelegramBotConversation;
 use App\Service\Feedback\Telegram\Bot\FeedbackTelegramBotGroup;
 use App\Tests\Fixtures;
-use App\Tests\Functional\Telegram\Bot\TelegramBotCommandFunctionalTestCase;
+use App\Tests\Functional\Service\Telegram\Bot\TelegramBotCommandFunctionalTestCase;
 use App\Tests\Traits\Feedback\FeedbackRatingProviderTrait;
 use App\Tests\Traits\Feedback\FeedbackRepositoryProviderTrait;
 use App\Tests\Traits\Feedback\FeedbackSearchTermRepositoryProviderTrait;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Telegram\Bot;
+namespace App\Tests\Functional\Service\Telegram\Bot;
 
 use App\Entity\Telegram\TelegramBot;
 use App\Tests\Fixtures;

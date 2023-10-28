@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Feedback\Telegram\Bot;
+namespace App\Tests\Functional\Service\Feedback\Telegram\Bot\Conversation;
 
 use App\Entity\Feedback\Telegram\Bot\SubscribeTelegramBotConversationState;
 use App\Entity\Messenger\MessengerUser;
@@ -13,7 +13,7 @@ use App\Enum\Feedback\FeedbackSubscriptionPlanName;
 use App\Enum\Telegram\TelegramBotPaymentMethodName;
 use App\Service\Feedback\Telegram\Bot\Conversation\SubscribeTelegramBotConversation;
 use App\Service\Feedback\Telegram\Bot\FeedbackTelegramBotGroup;
-use App\Tests\Functional\Telegram\Bot\TelegramBotCommandFunctionalTestCase;
+use App\Tests\Functional\Service\Telegram\Bot\TelegramBotCommandFunctionalTestCase;
 use App\Tests\Traits\Feedback\FeedbackLookupRepositoryProviderTrait;
 use App\Tests\Traits\Feedback\FeedbackSubscriptionPlanProviderTrait;
 use App\Tests\Traits\Intl\CurrencyProviderTrait;

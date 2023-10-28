@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Feedback\Telegram\Bot;
+namespace App\Tests\Functional\Service\Feedback\Telegram\Bot\Conversation;
 
 use App\Entity\Address\Level1Region;
 use App\Entity\Messenger\MessengerUser;
@@ -11,7 +11,7 @@ use App\Entity\Telegram\TelegramBotConversationState;
 use App\Entity\User\User;
 use App\Service\Feedback\Telegram\Bot\Conversation\LocaleTelegramBotConversation;
 use App\Service\Feedback\Telegram\Bot\FeedbackTelegramBotGroup;
-use App\Tests\Functional\Telegram\Bot\TelegramBotCommandFunctionalTestCase;
+use App\Tests\Functional\Service\Telegram\Bot\TelegramBotCommandFunctionalTestCase;
 use Generator;
 
 class LocaleTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctionalTestCase

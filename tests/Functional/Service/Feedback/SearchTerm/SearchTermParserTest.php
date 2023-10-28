@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Feedback\SearchTerm;
+namespace App\Tests\Functional\Service\Feedback\SearchTerm;
 
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Messenger\Messenger;
