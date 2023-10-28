@@ -22,4 +22,9 @@ class FeedbackRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Feedback::class);
     }
+
+    public function findOneLast(): ?Feedback
+    {
+        return $this->findOneBy([], ['createdAt' => 'DESC']);
+    }
 }
