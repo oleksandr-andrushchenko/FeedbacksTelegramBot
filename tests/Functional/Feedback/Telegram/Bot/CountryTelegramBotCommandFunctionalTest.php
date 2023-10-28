@@ -1027,11 +1027,11 @@ class CountryTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
             ->setLocaleCode($localeCode)
         ;
 
-        $state = (new TelegramBotConversationState())
-            ->setStep($stateStep)
-        ;
-
-        $conversation = $this->createConversation(CountryTelegramBotConversation::class, $state);
+        $conversation = $this->createConversation(
+            CountryTelegramBotConversation::class,
+            (new TelegramBotConversationState())
+                ->setStep($stateStep)
+        );
 
         $this
             ->typeText($input)

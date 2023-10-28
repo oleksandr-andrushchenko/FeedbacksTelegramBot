@@ -173,13 +173,13 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
             TelegramBotPaymentMethod::class,
         ]);
 
-        $state = (new SubscribeTelegramBotConversationState())
-            ->setCurrencyStep($currencyStep)
-            ->setPaymentMethodStep($paymentMethodStep)
-            ->setStep(SubscribeTelegramBotConversation::STEP_CURRENCY_QUERIED)
-        ;
-
-        $conversation = $this->createConversation(SubscribeTelegramBotConversation::class, $state);
+        $conversation = $this->createConversation(
+            SubscribeTelegramBotConversation::class,
+            (new SubscribeTelegramBotConversationState())
+                ->setCurrencyStep($currencyStep)
+                ->setPaymentMethodStep($paymentMethodStep)
+                ->setStep(SubscribeTelegramBotConversation::STEP_CURRENCY_QUERIED)
+        );
 
         $this
             ->typeText($input)
@@ -294,14 +294,14 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
             TelegramBotPaymentMethod::class,
         ]);
 
-        $state = (new SubscribeTelegramBotConversationState())
-            ->setCurrencyStep($currencyStep)
-            ->setPaymentMethodStep($paymentMethodStep)
-            ->setCurrency($this->getCurrencyProvider()->getCurrency('USD'))
-            ->setStep(SubscribeTelegramBotConversation::STEP_SUBSCRIPTION_PLAN_QUERIED)
-        ;
-
-        $conversation = $this->createConversation(SubscribeTelegramBotConversation::class, $state);
+        $conversation = $this->createConversation(
+            SubscribeTelegramBotConversation::class,
+            (new SubscribeTelegramBotConversationState())
+                ->setCurrencyStep($currencyStep)
+                ->setPaymentMethodStep($paymentMethodStep)
+                ->setCurrency($this->getCurrencyProvider()->getCurrency('USD'))
+                ->setStep(SubscribeTelegramBotConversation::STEP_SUBSCRIPTION_PLAN_QUERIED)
+        );
 
         $this
             ->typeText($input)
@@ -373,15 +373,15 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
             TelegramBotPaymentMethod::class,
         ]);
 
-        $state = (new SubscribeTelegramBotConversationState())
-            ->setCurrencyStep($currencyStep)
-            ->setPaymentMethodStep(true)
-            ->setCurrency($this->getCurrencyProvider()->getCurrency('USD'))
-            ->setSubscriptionPlan($this->getFeedbackSubscriptionPlanProvider()->getSubscriptionPlan(FeedbackSubscriptionPlanName::one_year))
-            ->setStep(SubscribeTelegramBotConversation::STEP_PAYMENT_METHOD_QUERIED)
-        ;
-
-        $conversation = $this->createConversation(SubscribeTelegramBotConversation::class, $state);
+        $conversation = $this->createConversation(
+            SubscribeTelegramBotConversation::class,
+            (new SubscribeTelegramBotConversationState())
+                ->setCurrencyStep($currencyStep)
+                ->setPaymentMethodStep(true)
+                ->setCurrency($this->getCurrencyProvider()->getCurrency('USD'))
+                ->setSubscriptionPlan($this->getFeedbackSubscriptionPlanProvider()->getSubscriptionPlan(FeedbackSubscriptionPlanName::one_year))
+                ->setStep(SubscribeTelegramBotConversation::STEP_PAYMENT_METHOD_QUERIED)
+        );
 
         $paymentRepository = $this->getTelegramBotPaymentRepository();
         $previousPaymentCount = $paymentRepository->count([]);

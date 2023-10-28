@@ -470,11 +470,11 @@ class LocaleTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctiona
             ->setLocaleCode($localeCode)
         ;
 
-        $state = (new TelegramBotConversationState())
-            ->setStep($stateStep)
-        ;
-
-        $conversation = $this->createConversation(LocaleTelegramBotConversation::class, $state);
+        $conversation = $this->createConversation(
+            LocaleTelegramBotConversation::class,
+            (new TelegramBotConversationState())
+                ->setStep($stateStep)
+        );
 
         $this
             ->typeText($input)
