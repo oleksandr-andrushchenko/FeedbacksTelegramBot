@@ -5,11 +5,11 @@ if [ $# -eq 0 ]; then
   exit 1
 fi
 
-envs=("dev" "prod")
+stages=("dev" "prod")
 value="\<${1}\>"
 
 # shellcheck disable=SC2199
-if [[ ${envs[@]} =~ $value ]]; then
+if [[ ${stages[@]} =~ $value ]]; then
   echo "continue with $1 stage"
 else
   echo "invalid stage"
