@@ -73,3 +73,4 @@
 * More money: lock feedbacks and ask money for it
 * Apply optimization tricks/tips for symfony prod application
 * move translation out of the repo
+* check doctrine queries, optimize if need
