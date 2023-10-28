@@ -470,7 +470,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
                 $message = $this->getEmptyListReply($tg);
 
-                return $this->chooseActionChatSender->sendActions($tg, $message);
+                return $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
             }
 
             $message = $this->getListReply($tg, $count);
