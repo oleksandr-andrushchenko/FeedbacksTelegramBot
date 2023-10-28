@@ -6,7 +6,6 @@ namespace App\Service\Feedback;
 
 use App\Entity\Feedback\Command\FeedbackCommandOptions;
 use App\Entity\Feedback\Feedback;
-use App\Enum\Messenger\Messenger;
 use App\Exception\Feedback\FeedbackCommandLimitExceededException;
 use App\Exception\Messenger\SameMessengerUserException;
 use App\Exception\ValidatorException;
@@ -112,7 +111,6 @@ class FeedbackCreator
             if (
                 $messengerUser?->getUsername() !== null
                 && $messengerUser?->getMessenger() !== null
-                && $messenger !== Messenger::unknown
                 && strcasecmp($messengerUser->getUsername(), $searchTerm->getNormalizedText() ?? $searchTerm->getText()) === 0
                 && $messengerUser->getMessenger() === $messenger
             ) {

@@ -28,10 +28,10 @@ class SearchTermTelegramViewProvider
         $messenger = $this->searchTermMessengerProvider->getSearchTermMessenger($searchTerm->getType());
         $text = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
 
-        if ($messenger !== Messenger::unknown) {
+        if (!in_array($messenger, [null, Messenger::unknown])) {
             $url = $this->messengerUserProfileUrlProvider->getMessengerUserProfileUrl($messenger, $text);
             $message .= sprintf('<a href="%s">%s</a>', $url, $text);
-        } elseif ($searchTerm->getType() === SearchTermType::url) {
+        } elseif (in_array($searchTerm->getType(), [SearchTermType::url, SearchTermType::messenger_profile_url], true)) {
             $message .= sprintf('<a href="%s">%s</a>', $searchTerm->getText(), $text);
         } else {
             $message .= $text;

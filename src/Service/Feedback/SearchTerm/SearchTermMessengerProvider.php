@@ -9,7 +9,7 @@ use App\Enum\Messenger\Messenger;
 
 class SearchTermMessengerProvider
 {
-    public function getSearchTermMessenger(SearchTermType $searchTermType): Messenger
+    public function getSearchTermMessenger(SearchTermType $searchTermType): ?Messenger
     {
         return match ($searchTermType) {
             SearchTermType::instagram_username => Messenger::instagram,
@@ -21,7 +21,8 @@ class SearchTermMessengerProvider
             SearchTermType::twitter_username => Messenger::twitter,
             SearchTermType::youtube_username => Messenger::youtube,
             SearchTermType::vkontakte_username => Messenger::vkontakte,
-            default => Messenger::unknown,
+            SearchTermType::messenger_username, SearchTermType::messenger_profile_url => Messenger::unknown,
+            default => null,
         };
     }
 }
