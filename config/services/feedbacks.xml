@@ -359,6 +359,7 @@
             <argument type="service" id="app.feedback_search_term_type_provider"/>
             <argument type="service" id="app.messenger_user_profile_url_provider"/>
             <argument type="service" id="app.feedback_search_term_messenger_provider"/>
+            <argument type="service" id="app.string_secrets_adder"/>
         </service>
         <service id="app.multiple_search_term_telegram_view_provider"
                  class="App\Service\Feedback\Telegram\View\MultipleSearchTermTelegramViewProvider" lazy="true">

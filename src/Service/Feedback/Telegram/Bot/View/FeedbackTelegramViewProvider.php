@@ -34,10 +34,11 @@ class FeedbackTelegramViewProvider
         TelegramBot $bot,
         Feedback $feedback,
         int $number = null,
-        string $localeCode = null,
+        bool $addSecrets = false,
         bool $showSign = true,
         bool $showTime = true,
         TelegramChannel $channel = null,
+        string $localeCode = null,
     ): string
     {
         $country = null;
@@ -79,6 +80,7 @@ class FeedbackTelegramViewProvider
                 fn (FeedbackSearchTerm $searchTerm): SearchTermTransfer => $this->searchTermProvider->getSearchTermByFeedbackSearchTerm($searchTerm),
                 $feedback->getSearchTerms()->toArray()
             ),
+            addSecrets: $addSecrets,
             localeCode: $localeCode
         );
         $message .= ':';

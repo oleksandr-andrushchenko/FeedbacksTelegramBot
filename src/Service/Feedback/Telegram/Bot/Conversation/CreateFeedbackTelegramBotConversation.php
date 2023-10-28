@@ -724,9 +724,9 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         $feedbackView = $this->feedbackViewProvider->getFeedbackTelegramView(
             $tg->getBot(),
             $this->creator->constructFeedback($this->constructTransfer($tg)),
-            localeCode: $tg->getBot()->getEntity()->getLocaleCode(),
             showSign: false,
-            showTime: false
+            showTime: false,
+            localeCode: $tg->getBot()->getEntity()->getLocaleCode()
         );
 
         $searchTermView = $this->searchTermViewProvider->getSearchTermTelegramMainView($this->state->getFirstSearchTerm());
@@ -804,9 +804,9 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $feedbackView = $this->feedbackViewProvider->getFeedbackTelegramView(
                 $tg->getBot(),
                 $feedback,
-                localeCode: $tg->getBot()->getEntity()->getLocaleCode(),
                 showSign: false,
-                showTime: false
+                showTime: false,
+                localeCode: $tg->getBot()->getEntity()->getLocaleCode()
             );
 
             $query = $tg->view('create_send_to_channel_confirm_help', [

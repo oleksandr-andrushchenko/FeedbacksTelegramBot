@@ -14,9 +14,17 @@ class MultipleSearchTermTelegramViewProvider
     {
     }
 
-    public function getSearchTermTelegramView(SearchTermTransfer $searchTerm, string $localeCode = null): string
+    public function getSearchTermTelegramView(
+        SearchTermTransfer $searchTerm,
+        bool $addSecrets = false,
+        string $localeCode = null
+    ): string
     {
-        return $this->singleViewProvider->getSearchTermTelegramView($searchTerm, $localeCode);
+        return $this->singleViewProvider->getSearchTermTelegramView(
+            $searchTerm,
+            addSecrets: $addSecrets,
+            localeCode: $localeCode
+        );
     }
 
     public function getSearchTermTelegramMainView(SearchTermTransfer $searchTerm): string
@@ -26,17 +34,24 @@ class MultipleSearchTermTelegramViewProvider
 
     /**
      * @param SearchTermTransfer[] $searchTerms
+     * @param bool $addSecrets
      * @param string|null $localeCode
      * @return string
      */
-    public function getMultipleSearchTermTelegramView(array $searchTerms, string $localeCode = null): string
+    public function getMultipleSearchTermTelegramView(
+        array $searchTerms,
+        bool $addSecrets = false,
+        string $localeCode = null
+    ): string
     {
-        array_map(static fn ($searchTerm): bool => assert($searchTerm instanceof SearchTermTransfer), $searchTerms);
-
         return implode(
             ', ',
             array_map(
-                fn (SearchTermTransfer $searchTerm): string => $this->singleViewProvider->getSearchTermTelegramView($searchTerm, $localeCode),
+                fn (SearchTermTransfer $searchTerm): string => $this->singleViewProvider->getSearchTermTelegramView(
+                    $searchTerm,
+                    addSecrets: $addSecrets,
+                    localeCode: $localeCode
+                ),
                 $searchTerms
             )
         );

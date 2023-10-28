@@ -52,9 +52,10 @@ class FeedbackCreatedTelegramChannelPublisher
             $message = $this->viewProvider->getFeedbackTelegramView(
                 $bot,
                 $feedback,
-                localeCode: $channel->getLocaleCode(),
+                addSecrets: true,
                 showTime: false,
                 channel: $channel,
+                localeCode: $channel->getLocaleCode(),
             );
             $chatId = $channel->getChatId() ?? ('@' . $channel->getUsername());
 

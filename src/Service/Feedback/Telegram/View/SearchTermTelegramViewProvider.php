@@ -9,6 +9,7 @@ use App\Enum\Messenger\Messenger;
 use App\Service\Feedback\SearchTerm\SearchTermMessengerProvider;
 use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Service\Messenger\MessengerUserProfileUrlProvider;
+use App\Service\Util\String\SecretsAdder;
 use App\Transfer\Feedback\SearchTermTransfer;
 
 class SearchTermTelegramViewProvider
@@ -17,11 +18,12 @@ class SearchTermTelegramViewProvider
         private readonly SearchTermTypeProvider $termTypeProvider,
         private readonly MessengerUserProfileUrlProvider $messengerUserProfileUrlProvider,
         private readonly SearchTermMessengerProvider $searchTermMessengerProvider,
+        private readonly SecretsAdder $secretsAdder,
     )
     {
     }
 
-    public function getSearchTermTelegramMainView(SearchTermTransfer $searchTerm): string
+    public function getSearchTermTelegramMainView(SearchTermTransfer $searchTerm, bool $addSecrets = false): string
     {
         $message = '<u><b>';
 
@@ -34,7 +36,11 @@ class SearchTermTelegramViewProvider
         } elseif (in_array($searchTerm->getType(), [SearchTermType::url, SearchTermType::messenger_profile_url], true)) {
             $message .= sprintf('<a href="%s">%s</a>', $searchTerm->getText(), $text);
         } else {
-            $message .= $text;
+            if ($addSecrets && in_array($searchTerm->getType(), [SearchTermType::phone_number, SearchTermType::email], true)) {
+                $message .= $this->secretsAdder->addSecrets($text);
+            } else {
+                $message .= $text;
+            }
         }
 
         $message .= '</b></u>';
@@ -42,9 +48,13 @@ class SearchTermTelegramViewProvider
         return $message;
     }
 
-    public function getSearchTermTelegramView(SearchTermTransfer $searchTerm, string $localeCode = null): string
+    public function getSearchTermTelegramView(
+        SearchTermTransfer $searchTerm,
+        bool $addSecrets = false,
+        string $localeCode = null
+    ): string
     {
-        $message = $this->getSearchTermTelegramMainView($searchTerm);
+        $message = $this->getSearchTermTelegramMainView($searchTerm, addSecrets: $addSecrets);
 
         if ($searchTerm->getType() !== null && $searchTerm->getType() !== SearchTermType::unknown) {
             $searchTermTypeView = $this->termTypeProvider->getSearchTermTypeName($searchTerm->getType(), $localeCode);

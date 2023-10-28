@@ -472,7 +472,11 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $tg->reply($message);
 
             foreach ($feedbacks as $index => $feedback) {
-                $message = $this->feedbackViewProvider->getFeedbackTelegramView($tg->getBot(), $feedback, $index + 1);
+                $message = $this->feedbackViewProvider->getFeedbackTelegramView(
+                    $tg->getBot(),
+                    $feedback,
+                    number: $index + 1
+                );
 
                 $tg->reply($message);
             }
