@@ -454,7 +454,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $this->validator->validate($this->state);
 
             // todo: use command bus
-            $feedbackSearchSearch = $this->creator->createFeedbackLookup(
+            $feedbackLookup = $this->creator->createFeedbackLookup(
                 new FeedbackLookupTransfer(
                     $tg->getBot()->getMessengerUser(),
                     $this->state->getSearchTerm(),
@@ -462,7 +462,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 )
             );
 
-            $feedbackSearches = $this->searcher->searchFeedbackSearches($feedbackSearchSearch);
+            $feedbackSearches = $this->searcher->searchFeedbackSearches($feedbackLookup);
             $count = count($feedbackSearches);
 
             if ($count === 0) {
