@@ -50,7 +50,6 @@
 * 1) propose to keep/change current settings on start
 * 2) move settings to messenger user layer (+ delete from user) and make messenger user unique per [messenger, id, bot]
 * Implemented request_user for keyboard button when asking for search term type (as telegram user possible type - will receive ID!!)
-* Add region1, region2 and locality selection steps for country conversation's custom flow (when address table is ready)
 * Replace help replies using php not twig
 
 * Location select on start ??
@@ -66,7 +65,6 @@
 * Improve search term text normalization: single-spaces,multi-spaces, case/incese-sensitives
 * Validation for search terms: min/max length, emojis, tags etc.
 * Add already added texts/prev/next for all conversations (for example for country/locale convs)
-* Cache level 1 regions for ua,ru
 * Re-factor: remove dots from questions, searchTerms: duplicates validation
 * Add confirm extra details step for create command ??
 * Make validators configurable via settings (options)
