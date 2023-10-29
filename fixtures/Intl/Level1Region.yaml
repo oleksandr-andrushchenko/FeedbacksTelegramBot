@@ -1,4 +1,4 @@
-App\Entity\Address\Level1Region:
+App\Entity\Intl\Level1Region:
   level_1_region_1_ua_kyiv:
     __construct:
       id: ua_kyiv

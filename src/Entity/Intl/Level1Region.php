@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Entity\Address;
+namespace App\Entity\Intl;
 
 class Level1Region
 {

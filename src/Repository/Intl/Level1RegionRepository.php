@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Repository\Address;
+namespace App\Repository\Intl;
 
-use App\Entity\Address\Level1Region;
+use App\Entity\Intl\Level1Region;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

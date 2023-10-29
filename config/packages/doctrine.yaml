@@ -35,11 +35,11 @@ doctrine:
         dir: '%kernel.project_dir%/config/doctrine/Messenger'
         prefix: 'App\Entity\Messenger'
         alias: AppMessenger
-      AppAddress:
+      AppIntl:
         is_bundle: false
         type: xml
-        dir: '%kernel.project_dir%/config/doctrine/Address'
-        prefix: 'App\Entity\Address'
+        dir: '%kernel.project_dir%/config/doctrine/Intl'
+        prefix: 'App\Entity\Intl'
         alias: AppAddress
 
 when@test:

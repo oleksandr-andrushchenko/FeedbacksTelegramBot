@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Service\Feedback\Telegram\Bot\Conversation;
 
-use App\Entity\Address\Level1Region;
+use App\Entity\Intl\Level1Region;
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBot;
 use App\Entity\Telegram\TelegramBotConversationState;

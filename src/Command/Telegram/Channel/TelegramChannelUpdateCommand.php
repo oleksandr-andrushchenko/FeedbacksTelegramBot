@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Command\Telegram\Channel;
 
 use App\Enum\Telegram\TelegramBotGroupName;
-use App\Exception\Address\Level1RegionNotFoundException;
 use App\Exception\Intl\CountryNotFoundException;
+use App\Exception\Intl\Level1RegionNotFoundException;
 use App\Exception\Intl\LocaleNotFoundException;
 use App\Exception\Telegram\Bot\TelegramBotGroupNotFoundException;
 use App\Exception\Telegram\Bot\TelegramBotNotFoundException;
 use App\Repository\Telegram\Channel\TelegramChannelRepository;
-use App\Service\Address\Level1RegionProvider;
 use App\Service\Intl\CountryProvider;
+use App\Service\Intl\Level1RegionProvider;
 use App\Service\Intl\LocaleProvider;
 use App\Service\Telegram\Channel\TelegramChannelInfoProvider;
 use App\Service\Telegram\Channel\TelegramChannelUpdater;

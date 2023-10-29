@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Address;
+namespace App\Service\Intl;
 
 use App\Entity\Address\Address;
-use App\Entity\Address\Level1Region;
-use App\Repository\Address\Level1RegionRepository;
+use App\Entity\Intl\Level1Region;
+use App\Repository\Intl\Level1RegionRepository;
 use App\Service\IdGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 

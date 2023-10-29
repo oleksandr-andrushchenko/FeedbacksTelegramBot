@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Address\Address;
-use App\Entity\Address\Level1Region;
 use App\Entity\Location;
 use App\Exception\AddressGeocodeFailedException;
 

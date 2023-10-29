@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Exception\Address;
+namespace App\Exception\Intl;
 
 use App\Exception\Exception;
 use Throwable;

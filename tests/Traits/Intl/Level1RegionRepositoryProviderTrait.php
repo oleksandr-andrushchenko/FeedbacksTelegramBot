@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Traits\Address;
+namespace App\Tests\Traits\Intl;
 
-use App\Repository\Address\Level1RegionRepository;
+use App\Repository\Intl\Level1RegionRepository;
 
 trait Level1RegionRepositoryProviderTrait
 {

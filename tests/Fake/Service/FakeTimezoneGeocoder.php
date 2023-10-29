@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Fake\Service;
 
-use App\Entity\Address\Address;
 use App\Entity\Location;
-use App\Service\AddressGeocoderInterface;
 use App\Service\TimezoneGeocoderInterface;
 
 class FakeTimezoneGeocoder implements TimezoneGeocoderInterface

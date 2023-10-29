@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Service\Feedback\Telegram\Bot\Conversation;
 
-use App\Entity\Address\Level1Region;
 use App\Entity\Intl\Country;
+use App\Entity\Intl\Level1Region;
 use App\Entity\Location;
 use App\Entity\Telegram\TelegramBotConversation as Entity;
 use App\Entity\Telegram\TelegramBotConversationState;
 use App\Exception\AddressGeocodeFailedException;
 use App\Exception\TimezoneGeocodeFailedException;
-use App\Service\Address\Level1RegionProvider;
 use App\Service\Feedback\Telegram\Bot\Chat\ChooseActionTelegramChatSender;
 use App\Service\Intl\CountryProvider;
+use App\Service\Intl\Level1RegionProvider;
 use App\Service\Telegram\Bot\Chat\TelegramBotMatchesChatSender;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversation;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;

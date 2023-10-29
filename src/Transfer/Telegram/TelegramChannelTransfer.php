@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Transfer\Telegram;
 
-use App\Entity\Address\Level1Region;
 use App\Entity\Intl\Country;
+use App\Entity\Intl\Level1Region;
 use App\Entity\Intl\Locale;
 use App\Enum\Telegram\TelegramBotGroupName;
 

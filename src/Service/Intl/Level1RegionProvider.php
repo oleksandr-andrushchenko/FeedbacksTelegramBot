@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Address;
+namespace App\Service\Intl;
 
-use App\Entity\Address\Level1Region;
+use App\Entity\Intl\Level1Region;
 use App\Entity\Location;
 use App\Exception\AddressGeocodeFailedException;
 use App\Exception\TimezoneGeocodeFailedException;
-use App\Repository\Address\Level1RegionRepository;
+use App\Repository\Intl\Level1RegionRepository;
 use App\Service\AddressGeocoderInterface;
 use App\Service\TimezoneGeocoderInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Service\Feedback\Telegram\Bot\Conversation;
 
 use App\Entity\Address\Address;
-use App\Entity\Address\Level1Region;
+use App\Entity\Intl\Level1Region;
 use App\Entity\Location;
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBot;
@@ -16,7 +16,7 @@ use App\Service\Feedback\Telegram\Bot\FeedbackTelegramBotGroup;
 use App\Tests\Fake\Service\FakeAddressGeocoder;
 use App\Tests\Fake\Service\FakeTimezoneGeocoder;
 use App\Tests\Functional\Service\Telegram\Bot\TelegramBotCommandFunctionalTestCase;
-use App\Tests\Traits\Address\Level1RegionRepositoryProviderTrait;
+use App\Tests\Traits\Intl\Level1RegionRepositoryProviderTrait;
 use Generator;
 
 class CountryTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctionalTestCase
