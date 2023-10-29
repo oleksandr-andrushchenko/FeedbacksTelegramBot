@@ -39,4 +39,18 @@ enum SearchTermType: int
         self::person_name,
         self::organization_name,
     ];
+
+    public const messenger = [
+        self::instagram_username,
+        self::facebook_username,
+        self::telegram_username,
+        self::twitter_username,
+        self::tiktok_username,
+        self::youtube_username,
+        self::onlyfans_username,
+        self::reddit_username,
+        self::vkontakte_username,
+        self::messenger_username,
+        self::messenger_profile_url,
+    ];
 }
