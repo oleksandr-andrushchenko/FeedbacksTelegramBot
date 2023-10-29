@@ -5,6 +5,13 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
+        <parameter key="app.currencies_file">%app.data_dir%/currencies.json</parameter>
+        <parameter key="app.countries_file">%app.data_dir%/countries.json</parameter>
+        <parameter key="app.level_1_regions_file">%app.data_dir%/level_1_regions.{country}.json</parameter>
+        <parameter key="app.translations_dir">%kernel.project_dir%/translations</parameter>
+        <parameter key="app.country_translation_file">%app.translations_dir%/countries.{locale}.yaml</parameter>
+        <parameter key="app.locale_translation_file">%app.translations_dir%/locales.{locale}.yaml</parameter>
+
         <parameter key="app.locales" type="collection">
             <parameter key="en" type="collection">
                 <parameter key="code">en</parameter>
