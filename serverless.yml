@@ -70,6 +70,15 @@ package:
     - '!public/build/**'
     - '!tests/**'
     - '!var/**'
+    - '!.idea/**'
+    - '!.git/**'
+    - '!tests/**'
+#    - '!.env'
+    - '!.env.dist'
+    - '!.phpunit.result.cache'
+    - '!.editorconfig'
+    - '!editconfig.xml'
+    - '!phpunit.xml'
     # If you want to include files and folders that are part of excluded folders,
     # add them at the end
     - 'var/cache/prod/**'
