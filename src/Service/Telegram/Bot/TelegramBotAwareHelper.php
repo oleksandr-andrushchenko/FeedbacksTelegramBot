@@ -213,17 +213,17 @@ class TelegramBotAwareHelper
 
     public function queryText(string $text, bool $optional = false): string
     {
-        return '<u><b>' . $text . ($optional ? (' (' . $this->trans('query.optional') . ')') : '') . '</b></u>';
+        return '<u><b>' . $text . ($optional ? (' [ ' . $this->trans('query.optional') . ' ]') : '') . '</b></u>';
     }
 
     public function queryTipText(string $text): string
     {
-        return "\n\n" . '• <i>' . $text . '</i>';
+        return "\n\n" . '<i>' . $text . '</i>';
     }
 
     public function alreadyAddedText(string $text): string
     {
-        return "\n\n" . '<u><b>' . $this->trans('query.already_added') . '</b></u>:' . "\n" . ('<b>' . $text . '</b>');
+        return "\n\n" . $this->queryText($this->trans('query.already_added')) . ':' . "\n" . $text;
     }
 
     public function warningText(string $text): string
@@ -254,7 +254,7 @@ class TelegramBotAwareHelper
 
     public function useText(bool $useInput): string
     {
-        return $useInput ? $this->trans('help.use_input') : $this->trans('help.use_keyboard');
+        return '↘️ ' . ($useInput ? $this->trans('help.use_input') : $this->trans('help.use_keyboard'));
     }
 
     public function keyboard(...$buttons): Keyboard

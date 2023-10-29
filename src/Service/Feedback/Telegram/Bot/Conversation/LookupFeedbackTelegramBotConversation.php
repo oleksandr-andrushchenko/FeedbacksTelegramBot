@@ -91,33 +91,22 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
         $query = $tg->queryText($query);
 
         if (!$help) {
-            $parameters = [
-                'should_be' => sprintf('<b>%s</b>', $tg->trans('query.search_term_should_be', domain: 'lookup')),
-            ];
-            $query .= $tg->queryTipText($tg->trans('query.search_term_tip', parameters: $parameters, domain: 'lookup'));
-            $searchTermTypeNames = array_map(
-                fn (SearchTermType $type): string => $this->lcFirster->mbLcFirst(
-                    $this->searchTermTypeProvider->getSearchTermTypeName($type)
-                ),
-                [
-                    SearchTermType::messenger_profile_url,
-                    SearchTermType::phone_number,
-                    SearchTermType::car_number,
-                    SearchTermType::email,
-                ]
+            $query .= $tg->queryTipText(
+                rtrim($tg->view('search_term_types'))
+                . "\n▫️ " . sprintf('<b>[ %s ]</b>', $tg->trans('query.search_term_put_one', domain: 'lookup'))
             );
-            $parameters = [
-                'put_one' => sprintf('<b>%s</b>', $tg->trans('query.search_term_put_one', domain: 'lookup')),
-                'types' => implode(', ', $searchTermTypeNames),
-            ];
-            $query .= $tg->queryTipText($tg->trans('query.search_term_tip_example', parameters: $parameters, domain: 'lookup'));
         }
 
         $searchTerm = $this->state->getSearchTerm();
 
         if ($searchTerm !== null) {
-            $searchTermView = $this->searchTermViewProvider->getSearchTermTelegramView($searchTerm);
-            $query .= $tg->alreadyAddedText($searchTermView, false);
+            $query .= $tg->alreadyAddedText(implode('', [
+                '▫️ ',
+                $this->searchTermTypeProvider->getSearchTermTypeComposeName($searchTerm->getType()),
+                ' [ ',
+                $this->searchTermViewProvider->getSearchTermTelegramMainView($searchTerm),
+                ' ]',
+            ]));
         }
 
         if ($help) {

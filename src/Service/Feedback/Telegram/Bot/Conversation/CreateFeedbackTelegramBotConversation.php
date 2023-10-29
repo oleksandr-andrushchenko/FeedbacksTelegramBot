@@ -137,20 +137,15 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
     public function getSearchTermQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
         $searchTerms = $this->state->getSearchTerms() ?? [];
+        $searchTermCount = count($searchTerms);
 
-        if (count($searchTerms) > 0) {
-            $searchTerm = array_shift($searchTerms);
-        } else {
-            $searchTerm = null;
-        }
-
-        if ($searchTerm === null) {
+        if ($searchTermCount === 0) {
             $query = $this->getStep(1);
             $query .= $tg->trans('query.search_term', domain: 'create');
             $query = $tg->queryText($query);
         } else {
             $query = $this->getStep(1, '**');
-            $searchTermView = $this->searchTermViewProvider->getSearchTermTelegramMainView($searchTerm);
+            $searchTermView = $this->searchTermViewProvider->getSearchTermTelegramMainView($searchTerms[0]);
             $parameters = [
                 'search_term' => $searchTermView,
             ];
@@ -159,41 +154,43 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         }
 
         if (!$help) {
-            if ($searchTerm === null) {
-                $parameters = [
-                    'should_be' => sprintf('<b>%s</b>', $tg->trans('query.search_term_should_be', domain: 'create')),
-                ];
-                $query .= $tg->queryTipText($tg->trans('query.search_term_tip', parameters: $parameters, domain: 'create'));
+            $alreadyAddedTypes = [];
+
+            foreach ($searchTerms as $searchTerm) {
+                $alreadyAddedTypes[] = $searchTerm->getType();
+
+                if (in_array($searchTerm->getType(), SearchTermType::messenger, true)) {
+                    $alreadyAddedTypes[] = SearchTermType::messenger_username;
+                    $alreadyAddedTypes[] = SearchTermType::messenger_profile_url;
+                }
             }
 
-            $searchTermTypeNames = array_map(
-                fn (SearchTermType $type): string => $this->lcFirster->mbLcFirst(
-                    $this->searchTermTypeProvider->getSearchTermTypeName($type)
-                ),
-                [
-                    SearchTermType::messenger_profile_url,
-                    SearchTermType::phone_number,
-                    SearchTermType::car_number,
-                    SearchTermType::email,
-                ]
+            $types = array_filter(
+                SearchTermType::base,
+                static fn (SearchTermType $type): bool => !in_array($type, $alreadyAddedTypes, true)
             );
-            $parameters = [
-                'put_one' => sprintf('<b>%s</b>', $tg->trans('query.search_term_put_one', domain: 'create')),
-                'types' => implode(', ', $searchTermTypeNames),
-            ];
-            $query .= $tg->queryTipText($tg->trans('query.search_term_tip_example', parameters: $parameters, domain: 'create'));
+            $query .= $tg->queryTipText(
+                rtrim($tg->view('search_term_types', context: ['types' => $types]))
+                . "\n▫️ " . sprintf('<b>[ %s ]</b>', $tg->trans('query.search_term_put_one', domain: 'create'))
+            );
         }
 
-        if (count($searchTerms) > 0) {
+        if ($searchTermCount > 0) {
             $searchTermViews = array_map(
-                fn (SearchTermTransfer $searchTerm): string => $this->searchTermViewProvider->getSearchTermTelegramView($searchTerm),
+                fn (SearchTermTransfer $searchTerm): string => implode('', [
+                    '▫️ ',
+                    $this->searchTermTypeProvider->getSearchTermTypeComposeName($searchTerm->getType()),
+                    ' [ ',
+                    $this->searchTermViewProvider->getSearchTermTelegramMainView($searchTerm),
+                    ' ]',
+                ]),
                 $searchTerms
             );
             $query .= $tg->alreadyAddedText(implode("\n", $searchTermViews));
         }
 
         if ($help) {
-            if ($searchTerm === null) {
+            if ($searchTermCount === 0) {
                 $query = $tg->view('create_search_term_help', [
                     'query' => $query,
                 ]);

@@ -1,9 +1,6 @@
 query:
   search_term: Про кого чи про що цей відгук?
-  search_term_should_be: максимально простим
-  search_term_tip: Пошуковий термін повинен бути %should_be%, це те, що інші користувачі будуть вказувати при пошуку.
   search_term_put_one: Вкажіть щось одне
-  search_term_tip_example: 'Наприклад: %types% тощо. %put_one%.'
   search_term_type: Ким або чим є %search_term%?
   extra_search_term: Додайте більше інформації про %search_term%.
   rating: Оцініть ваш досвід з %search_term%.

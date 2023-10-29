@@ -1,9 +1,6 @@
 query:
   search_term: Who or what you would you like to leave feedback on?
-  search_term_should_be: as simple as possible
-  search_term_tip: The search term should be %should_be%, this is what other users will specify when searching.
   search_term_put_one: Specify one thing
-  search_term_tip_example: 'For example: %types% etc. %put_one%.'
   search_term_type: Who or what %search_term% is?
   extra_search_term: Add more info about %search_term%.
   rating: Rate your experience with %search_term%.

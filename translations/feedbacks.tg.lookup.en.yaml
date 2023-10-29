@@ -1,9 +1,6 @@
 query:
   search_term: Who or what you are interested in?
-  search_term_should_be: as simple as possible
-  search_term_tip: The search term should be %should_be%, this is what other users specify when searching for feedbacks.
   search_term_put_one: Specify one thing
-  search_term_tip_example: 'For example: %types% etc. %put_one%.'
   search_term_type: Who or what %search_term% is?
   confirm: Confirm feedback lookups search by %search_term%?
 keyboard:
