@@ -1,5 +1,5 @@
 # Read the documentation at https://www.serverless.com/framework/docs/providers/aws/guide/serverless.yml/
-service: symfony
+service: feedbacks
 
 provider:
   name: aws
