@@ -10,6 +10,8 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class CountryNormalizer implements NormalizerInterface, DenormalizerInterface
 {
+    public const LEVEL_1_REGIONS_DUMPED_KEY = 'l1rd';
+
     /**
      * @param Country $object
      * @param string|null $format
@@ -19,13 +21,14 @@ class CountryNormalizer implements NormalizerInterface, DenormalizerInterface
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
         if ($format === 'internal') {
-            return [
+            return array_filter([
                 'c' => $object->getCode(),
                 'cu' => $object->getCurrencyCode(),
                 'l' => $object->getLocaleCodes(),
                 'p' => $object->getPhoneCode(),
                 't' => $object->getTimezones(),
-            ];
+                self::LEVEL_1_REGIONS_DUMPED_KEY => $object->level1RegionsDumped() ? true : null,
+            ]);
         }
     }
 
@@ -43,6 +46,7 @@ class CountryNormalizer implements NormalizerInterface, DenormalizerInterface
                 $data['l'],
                 $data['p'],
                 $data['t'],
+                $data[self::LEVEL_1_REGIONS_DUMPED_KEY] ?? false,
             );
         }
     }

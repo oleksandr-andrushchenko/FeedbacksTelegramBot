@@ -31,7 +31,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
     public const STEP_CANCEL_PRESSED = 40;
 
     public function __construct(
-        private readonly CountryProvider $provider,
+        private readonly CountryProvider $countryProvider,
         private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
         private readonly TelegramBotMatchesChatSender $botMatchesChatSender,
         private readonly Level1RegionProvider $level1RegionProvider,
@@ -65,12 +65,12 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
 
     public function getGuessCountries(TelegramBotAwareHelper $tg): array
     {
-        return $this->provider->getCountries($tg->getLocaleCode());
+        return $this->countryProvider->getCountries($tg->getLocaleCode());
     }
 
     public function getCountries(): array
     {
-        return $this->provider->getCountries();
+        return $this->countryProvider->getCountries();
     }
 
     /**
@@ -79,7 +79,9 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
      */
     public function getLevel1Regions(TelegramBotAwareHelper $tg): array
     {
-        return $this->level1RegionProvider->getLevel1Regions($tg->getCountryCode());
+        $country = $this->countryProvider->getCountry($tg->getCountryCode());
+
+        return $this->level1RegionProvider->getLevel1Regions($country);
     }
 
     public function gotCancel(TelegramBotAwareHelper $tg, Entity $entity): null
@@ -433,8 +435,8 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
         $user = $tg->getBot()->getMessengerUser()->getUser();
 
         $countryCode = $tg->getCountryCode();
-        $country = $countryCode === null ? null : $this->provider->getCountry($countryCode);
-        $countryName = sprintf('<u>%s</u>', $this->provider->getCountryComposeName($country));
+        $country = $countryCode === null ? null : $this->countryProvider->getCountry($countryCode);
+        $countryName = sprintf('<u>%s</u>', $this->countryProvider->getCountryComposeName($country));
         $parameters = [
             'country' => $countryName,
         ];
@@ -442,9 +444,9 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
 
         $level1RegionId = $user->getLevel1RegionId();
 
-        if ($level1RegionId !== null) {
+        if ($country !== null && $level1RegionId !== null) {
             $message .= "\n";
-            $regionName = sprintf('<u>%s</u>', $this->level1RegionProvider->getLevel1RegionNameById($level1RegionId));
+            $regionName = sprintf('<u>%s</u>', $this->level1RegionProvider->getLevel1RegionNameById($country, $level1RegionId));
             $parameters = [
                 'region' => $regionName,
             ];
@@ -525,7 +527,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
         $user = $tg->getBot()->getMessengerUser()?->getUser();
 
         if ($tg->matchInput($tg->cancelButton()->getText())) {
-            $country = $this->provider->getCountry($user->getCountryCode());
+            $country = $this->countryProvider->getCountry($user->getCountryCode());
             $user->setTimezone($country?->getTimezones()[0] ?? null);
 
             return $this->gotCancel($tg, $entity);
@@ -566,7 +568,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
 
     public function getCountryButton(Country $country, TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($this->provider->getCountryComposeName($country));
+        return $tg->button($this->countryProvider->getCountryComposeName($country));
     }
 
     public function getCountryByButton(?string $button, array $countries, TelegramBotAwareHelper $tg): ?Country
@@ -582,7 +584,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
 
     public function getOtherCountryButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        $icon = $this->provider->getUnknownCountryIcon();
+        $icon = $this->countryProvider->getUnknownCountryIcon();
         $name = $tg->trans('keyboard.other');
 
         return $tg->button($icon . ' ' . $name);
@@ -591,7 +593,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
     public function getTimezones(TelegramBotAwareHelper $tg): array
     {
         // todo: check level1region
-        $country = $this->provider->getCountry($tg->getCountryCode());
+        $country = $this->countryProvider->getCountry($tg->getCountryCode());
 
         return $country->getTimezones();
     }

@@ -20,7 +20,7 @@ class CountryProvider
 
     public function hasCountry(string $code): bool
     {
-        return array_key_exists($code, $this->getData());
+        return array_key_exists($code, $this->getNormalizedData());
     }
 
     public function getCountry(string $code): ?Country
@@ -29,7 +29,7 @@ class CountryProvider
             return null;
         }
 
-        return $this->denormalize($this->getData()[$code]);
+        return $this->denormalize($this->getNormalizedData()[$code]);
     }
 
     public function getCountryByCurrency(string $currencyCode): ?Country
@@ -89,7 +89,7 @@ class CountryProvider
      */
     public function getCountries(string $localeCode = null): array
     {
-        $countries = array_map(fn ($record): Country => $this->denormalize($record), array_values($this->getData()));
+        $countries = array_map(fn (array $record): Country => $this->denormalize($record), array_values($this->getNormalizedData()));
 
         if ($localeCode !== null) {
             $countries = array_filter($countries, static fn (Country $country): bool => in_array($localeCode, $country->getLocaleCodes(), true));
@@ -103,7 +103,7 @@ class CountryProvider
         return $this->denormalizer->denormalize($record, Country::class, format: 'internal');
     }
 
-    private function getData(): array
+    private function getNormalizedData(): array
     {
         static $data = null;
 

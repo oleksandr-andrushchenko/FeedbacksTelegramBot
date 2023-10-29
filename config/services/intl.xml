@@ -43,6 +43,15 @@
             <argument>%app.locales%</argument>
             <tag name="console.command" command="intl:countries:update"/>
         </service>
+        <service id="app.intl_regions_dump_command" class="App\Command\Intl\Level1RegionsDumpCommand" lazy="true">
+            <argument type="service" id="app.intl_country_normalizer"/>
+            <argument type="service" id="app.intl_level_1_region_normalizer"/>
+            <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="app.level_1_region_repository"/>
+            <argument>%app.countries_file%</argument>
+            <argument>%app.level_1_regions_file%</argument>
+            <tag name="console.command" command="intl:level_1_regions:dump"/>
+        </service>
         <service id="app.intl_locales_update_command" class="App\Command\Intl\LocalesUpdateCommand" lazy="true">
             <argument type="service" id="app.intl_i18n_iso_locale_translations_provider"/>
             <argument>%app.locale_translation_file%</argument>
@@ -54,6 +63,9 @@
         </service>
         <service id="app.intl_country_normalizer" class="App\Serializer\Intl\CountryNormalizer">
             <tag name="serializer.normalizer" priority="-959"/>
+        </service>
+        <service id="app.intl_level_1_region_normalizer" class="App\Serializer\Intl\Level1RegionNormalizer">
+            <tag name="serializer.normalizer" priority="-958"/>
         </service>
         <service id="app.intl_telegram_bot_currencies_provider" class="App\Service\Intl\TelegramBotCurrenciesProvider"
                  lazy="true"/>
@@ -103,6 +115,8 @@
             <argument type="service" id="app.level_1_region_upserter"/>
             <argument type="service" id="app.level_1_region_repository"/>
             <argument type="service" id="translator"/>
+            <argument>%app.level_1_regions_file%</argument>
+            <argument type="service" id="app.intl_level_1_region_normalizer"/>
         </service>
     </services>
 </container>

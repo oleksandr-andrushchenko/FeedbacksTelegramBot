@@ -11,7 +11,8 @@ readonly class Country
         private string $currency,
         private array $locales,
         private string $phone,
-        private array $timezones
+        private array $timezones,
+        private bool $level1RegionsDumped,
     )
     {
     }
@@ -39,6 +40,11 @@ readonly class Country
     public function getTimezones(): array
     {
         return $this->timezones;
+    }
+
+    public function level1RegionsDumped(): bool
+    {
+        return $this->level1RegionsDumped;
     }
 
     public function __toString(): string
