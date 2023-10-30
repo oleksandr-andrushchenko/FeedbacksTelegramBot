@@ -43,7 +43,13 @@ class SearchTermTelegramViewProvider
             ];
 
             if ($addSecrets && in_array($searchTerm->getType(), $secretTypes, true)) {
-                $message .= $this->secretsAdder->addSecrets($text);
+                if ($searchTerm->getType() === SearchTermType::phone_number) {
+                    $position = 4;
+                } else {
+                    $position = 2;
+                }
+
+                $message .= $this->secretsAdder->addSecrets($text, position: $position);
             } else {
                 $message .= $text;
             }
