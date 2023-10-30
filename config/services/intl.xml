@@ -9,8 +9,8 @@
         <parameter key="app.countries_file">%app.data_dir%/countries.json</parameter>
         <parameter key="app.level_1_regions_file">%app.data_dir%/level_1_regions.{country}.json</parameter>
         <parameter key="app.translations_dir">%kernel.project_dir%/translations</parameter>
-        <parameter key="app.country_translation_file">%app.translations_dir%/countries.{locale}.yaml</parameter>
-        <parameter key="app.locale_translation_file">%app.translations_dir%/locales.{locale}.yaml</parameter>
+        <parameter key="app.country_translation_file">%app.translations_dir%/country.{locale}.yaml</parameter>
+        <parameter key="app.locale_translation_file">%app.translations_dir%/locale.{locale}.yaml</parameter>
 
         <parameter key="app.locales" type="collection">
             <parameter key="en" type="collection">
@@ -38,6 +38,7 @@
             <argument type="service" id="app.intl_locale_tools_countries_provider"/>
             <argument type="service" id="app.intl_country_normalizer"/>
             <argument>%app.countries_file%</argument>
+            <argument>%app.level_1_regions_file%</argument>
             <argument type="service" id="app.intl_i18n_iso_country_translations_provider"/>
             <argument>%app.country_translation_file%</argument>
             <argument>%app.locales%</argument>

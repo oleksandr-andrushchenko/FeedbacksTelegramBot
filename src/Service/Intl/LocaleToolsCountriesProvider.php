@@ -55,10 +55,16 @@ class LocaleToolsCountriesProvider implements CountriesProviderInterface
                 continue;
             }
 
-            $currencies = array_filter(array_map(static fn (array $currency): ?string => $currency['iso4217'] ?? null, $country['currencies']));
+            if ($code === 'by') {
+                $currencies = [
+                    'BLR',
+                ];
+            } else {
+                $currencies = array_filter(array_map(static fn (array $currency): ?string => $currency['iso4217'] ?? null, $country['currencies']));
 
-            if (count($currencies) === 0) {
-                continue;
+                if (count($currencies) === 0) {
+                    continue;
+                }
             }
 
             $phones = array_filter(array_map(static fn (string $suffix): string => ltrim($country['idd']['prefix'], '+') . $suffix, $country['idd']['suffixes']));
@@ -69,7 +75,7 @@ class LocaleToolsCountriesProvider implements CountriesProviderInterface
 
             $timezones = array_map(static fn (array $timezone): string => $timezone['name'], $country['locale']['timezones']);
 
-            $countries[$code] = new Country($code, $currencies[0], $locales, $phones[0], $timezones);
+            $countries[$code] = new Country($code, $currencies[0], $locales, $phones[0], $timezones, false);
         }
 
         return count($countries) === 0 ? null : array_values($countries);

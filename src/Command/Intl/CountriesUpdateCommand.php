@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command\Intl;
 
+use App\Serializer\Intl\CountryNormalizer;
 use App\Service\Intl\CountriesProviderInterface;
 use App\Service\Intl\CountryTranslationsProviderInterface;
 use Symfony\Component\Console\Command\Command;
@@ -19,6 +20,7 @@ class CountriesUpdateCommand extends Command
         private readonly CountriesProviderInterface $provider,
         private readonly NormalizerInterface $normalizer,
         private readonly string $targetFile,
+        private readonly string $regionsTargetFile,
         private readonly CountryTranslationsProviderInterface $translationsProvider,
         private readonly string $translationTargetFile,
         private readonly array $supportedLocales,
@@ -64,6 +66,12 @@ class CountriesUpdateCommand extends Command
         $data = [];
         foreach ($countries as $country) {
             $data[$country->getCode()] = $this->normalizer->normalize($country, format: 'internal');
+
+            $regionsTargetFile = str_replace('{country}', $country->getCode(), $this->regionsTargetFile);
+
+            if (file_exists($regionsTargetFile)) {
+                $data[$country->getCode()][CountryNormalizer::LEVEL_1_REGIONS_DUMPED_KEY] = true;
+            }
         }
 
         $json = json_encode($data);
