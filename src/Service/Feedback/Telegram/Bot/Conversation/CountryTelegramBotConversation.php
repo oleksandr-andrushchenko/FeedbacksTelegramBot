@@ -32,8 +32,8 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
 
     public function __construct(
         private readonly CountryProvider $countryProvider,
-        private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
-        private readonly TelegramBotMatchesChatSender $botMatchesChatSender,
+        private readonly ChooseActionTelegramChatSender $chooseActionTelegramChatSender,
+        private readonly TelegramBotMatchesChatSender $telegramBotMatchesChatSender,
         private readonly Level1RegionProvider $level1RegionProvider,
         private readonly LoggerInterface $logger,
     )
@@ -96,7 +96,12 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
 
         $tg->stopConversation($entity);
 
-        return $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
+        $this->chooseActionTelegramChatSender->sendActions($tg, text: $message, appendDefault: true);
+
+        $keyboard = $this->chooseActionTelegramChatSender->getKeyboard($tg);
+        $this->telegramBotMatchesChatSender->sendTelegramBotMatchesIfNeed($tg, $keyboard);
+
+        return null;
     }
 
     public function getChangeConfirmQuery(TelegramBotAwareHelper $tg, bool $help = false): string
@@ -150,7 +155,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
         if ($tg->matchInput($tg->noButton()->getText())) {
             $tg->stopConversation($entity);
 
-            return $this->chooseActionChatSender->sendActions($tg);
+            return $this->chooseActionTelegramChatSender->sendActions($tg);
         }
 
         if ($tg->matchInput($tg->helpButton()->getText())) {
@@ -474,10 +479,10 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
         $message .= $this->getCurrentReply($tg);
         $message .= "\n";
 
-        $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
+        $this->chooseActionTelegramChatSender->sendActions($tg, text: $message, appendDefault: true);
 
-        $keyboard = $this->chooseActionChatSender->getKeyboard($tg);
-        $this->botMatchesChatSender->sendTelegramBotMatchesIfNeed($tg, $keyboard);
+        $keyboard = $this->chooseActionTelegramChatSender->getKeyboard($tg);
+        $this->telegramBotMatchesChatSender->sendTelegramBotMatchesIfNeed($tg, $keyboard);
 
         return null;
     }
