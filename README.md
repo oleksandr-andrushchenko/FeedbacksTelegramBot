@@ -52,21 +52,15 @@
 * Implemented request_user for keyboard button when asking for search term type (as telegram user possible type - will receive ID!!)
 * Replace help replies using php not twig
 
-* Location select on start ??
-* Deploy
-* Create groups
 * Create adv
 
 * Sync groups automatically
 * Share link on channel's message with feedbacks (give a chance to discuss the feedback)
-* Add SearchTermParser tests
 * Cache db requests
 * Media uploads (S3)
 * Improve search term text normalization: single-spaces,multi-spaces, case/incese-sensitives
 * Validation for search terms: min/max length, emojis, tags etc.
-* Add already added texts/prev/next for all conversations (for example for country/locale convs)
 * Re-factor: remove dots from questions, searchTerms: duplicates validation
-* Add confirm extra details step for create command ??
 * Make validators configurable via settings (options)
 * More money: lock feedbacks and ask money for it
 * Apply optimization tricks/tips for symfony prod application
