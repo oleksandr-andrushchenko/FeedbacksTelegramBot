@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service\Feedback\Telegram\Bot\Chat;
 
 use App\Enum\Site\SitePage;
-use App\Service\Feedback\Telegram\Bot\Conversation\CountryTelegramBotConversation;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\LocaleProvider;
 use App\Service\Site\SiteUrlGenerator;
@@ -27,35 +26,45 @@ class StartTelegramCommandHandler
     {
         $this->reply($tg);
 
-        if ($tg->getCountryCode() === null) {
-            return $tg->startConversation(CountryTelegramBotConversation::class)->null();
-        }
-
         return $this->chooseActionChatSender->sendActions($tg);
     }
 
     public function reply(TelegramBotAwareHelper $tg): void
     {
+        $domain = 'start';
         $locale = $this->localeProvider->getLocale($tg->getLocaleCode());
-        $parameters = [
-            'username' => $tg->getBot()->getEntity()->getUsername(),
-        ];
-        $privacyPolicyLink = $this->siteUrlGenerator->generate(
-            'app.telegram_site_page',
-            $parameters + ['page' => SitePage::PRIVACY_POLICY->value],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
-        $termsOfUseLink = $this->siteUrlGenerator->generate(
-            'app.telegram_site_page',
-            $parameters + ['page' => SitePage::TERMS_OF_USE->value],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
-        $message = $tg->view('start', [
-            'privacy_policy_link' => $privacyPolicyLink,
-            'terms_of_use_link' => $termsOfUseLink,
-            'country_icon' => $this->countryProvider->getCountryIconByCode($tg->getCountryCode()),
-            'locale_icon' => $this->localeProvider->getLocaleIcon($locale),
-        ]);
+        $message = $tg->infoText($tg->trans('title', domain: $domain));
+//        $message .= "\n\n";
+//        $parameters = [
+//            'username' => $tg->getBot()->getEntity()->getUsername(),
+//        ];
+//        $privacyPolicyLink = $this->siteUrlGenerator->generate(
+//            'app.telegram_site_page',
+//            $parameters + ['page' => SitePage::PRIVACY_POLICY->value],
+//            UrlGeneratorInterface::ABSOLUTE_URL
+//        );
+//        $privacyPolicyAnchor = $tg->trans('privacy_policy', domain: $domain);
+//        $parameters['privacy_policy'] = sprintf('<a href="%s">%s</a>', $privacyPolicyLink, $privacyPolicyAnchor);
+//        $termsOfUseLink = $this->siteUrlGenerator->generate(
+//            'app.telegram_site_page',
+//            $parameters + ['page' => SitePage::TERMS_OF_USE->value],
+//            UrlGeneratorInterface::ABSOLUTE_URL
+//        );
+//        $termsOfUseAnchor = $tg->trans('terms_of_use', domain: $domain);
+//        $parameters['terms_of_use'] = sprintf('<a href="%s">%s</a>', $termsOfUseLink, $termsOfUseAnchor);
+//        $message .= $tg->attentionText($tg->trans('agreements', parameters: $parameters, domain: $domain));
+        $message .= "\n\n";
+        $parameters = [];
+        $parameters['country_command'] = $tg->command('country', icon: $this->countryProvider->getCountryIconByCode($tg->getCountryCode()), html: true);
+        $message .= $tg->infoText($tg->trans('country', parameters: $parameters, domain: $domain));
+        $message .= "\n";
+        $parameters = [];
+        $parameters['locale_command'] = $tg->command('locale', icon: $this->localeProvider->getLocaleIcon($locale), html: true);
+        $message .= $tg->trans('locale', parameters: $parameters, domain: $domain);
+        $message .= "\n";
+        $parameters = [];
+        $parameters['commands_command'] = $tg->command('commands', html: true);
+        $message .= $tg->trans('commands', parameters: $parameters, domain: $domain);
 
         $tg->reply($message);
     }

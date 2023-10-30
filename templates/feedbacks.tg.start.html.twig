@@ -1,8 +1,0 @@
-{% trans_default_domain 'feedbacks.tg.start' %}
-ℹ️ {{ 'title'|trans }}
-
-‼️ {{ 'agreements'|trans({'%privacy_policy%': '<a href="' ~ privacy_policy_link ~ '">' ~ 'privacy_policy'|trans ~ '</a>', '%terms_of_use%': '<a href="' ~ terms_of_use_link ~ '">' ~ 'terms_of_use'|trans ~ '</a>'})|raw }}
-
-ℹ️ {{ 'country'|trans({'%country_command%': include('feedbacks.tg.command.html.twig', {name: 'country', icon: country_icon})})|raw }}
-{{ 'locale'|trans({'%locale_command%': include('feedbacks.tg.command.html.twig', {name: 'locale', icon: locale_icon})})|raw }}
-{{ 'commands'|trans({'%commands_command%': include('feedbacks.tg.command.html.twig', {name: 'commands'})})|raw }}
