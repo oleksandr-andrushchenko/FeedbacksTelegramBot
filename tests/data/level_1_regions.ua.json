@@ -1,0 +1,20 @@
+{
+  "ua_kyiv": {
+    "id": "ua_kyiv",
+    "cc": "ua",
+    "n": "ua_kyiv",
+    "tz": "Europe\/Kiev"
+  },
+  "ua_kyiv_oblast": {
+    "id": "ua_kyiv_oblast",
+    "cc": "ua",
+    "n": "ua_kyiv_oblast",
+    "tz": "Europe\/Kiev"
+  },
+  "ua_lviv_oblast": {
+    "id": "ua_lviv_oblast",
+    "cc": "ua",
+    "n": "ua_lviv_oblast",
+    "tz": "Europe\/Uzhgorod"
+  }
+}

@@ -78,7 +78,13 @@ class Level1RegionProvider
     public function getLevel1RegionNameById(Country $country, string $level1RegionId): ?string
     {
         if ($country->level1RegionsDumped()) {
-            $level1Region = $this->denormalize($this->getNormalizedData($country->getCode())[$level1RegionId]);
+            $normalizedLevel1Region = $this->getNormalizedData($country->getCode())[$level1RegionId] ?? null;
+
+            if ($normalizedLevel1Region === null) {
+                return null;
+            }
+
+            $level1Region = $this->denormalize($normalizedLevel1Region);
         } else {
             $level1Region = $this->repository->find($level1RegionId);
         }
