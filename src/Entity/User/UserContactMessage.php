@@ -43,6 +43,11 @@ class UserContactMessage implements Stringable
         return $this->text;
     }
 
+    public function getTelegramBot(): ?TelegramBot
+    {
+        return $this->telegramBot;
+    }
+
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
