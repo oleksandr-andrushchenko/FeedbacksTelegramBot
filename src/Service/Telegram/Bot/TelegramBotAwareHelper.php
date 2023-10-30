@@ -307,16 +307,17 @@ class TelegramBotAwareHelper
         return $this->button('❌ ' . $this->trans('keyboard.cancel'));
     }
 
-    public function command(string $name, bool $locked = false, bool $html = false): string
+    public function command(string $name, string $icon = null, bool $html = false): string
     {
         if ($html) {
             return $this->view('command', [
                 'name' => $name,
+                'icon' => $icon,
             ]);
         }
 
         return join(' ', [
-            $locked ? '🔒' : $this->trans($name, domain: 'command_icon', locale: 'en'),
+            $icon ?? $this->trans($name, domain: 'command_icon', locale: 'en'),
             $this->trans($name, domain: 'command'),
         ]);
     }
