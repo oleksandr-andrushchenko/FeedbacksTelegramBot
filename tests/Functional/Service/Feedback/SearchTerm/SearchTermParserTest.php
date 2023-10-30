@@ -343,6 +343,7 @@ class SearchTermParserTest extends KernelTestCase
                      '001-212-456-7890',
                      '191-212-456-7890',
                      '(212)456-7890',
+                     '+380 (98) 485 67 35',
                  ] as $text) {
             yield 'phone number: ' . $text => [
                 'text' => $text,
