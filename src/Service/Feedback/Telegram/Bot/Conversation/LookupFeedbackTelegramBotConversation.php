@@ -89,8 +89,12 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
         $query = $tg->queryText($query);
 
         if (!$help) {
+            $types = array_filter(
+                SearchTermType::base,
+                static fn (SearchTermType $type): bool => $type !== SearchTermType::person_name
+            );
             $query .= $tg->queryTipText(
-                rtrim($tg->view('search_term_types'))
+                rtrim($tg->view('search_term_types', context: ['types' => $types]))
                 . "\n▫️ " . sprintf('<b>[ %s ]</b>', $tg->trans('query.search_term_put_one', domain: 'lookup'))
             );
         }
@@ -98,13 +102,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
         $searchTerm = $this->state->getSearchTerm();
 
         if ($searchTerm !== null) {
-            $query .= $tg->alreadyAddedText(implode('', [
-                '▫️ ',
-                $this->searchTermTypeProvider->getSearchTermTypeComposeName($searchTerm->getType()),
-                ' [ ',
-                $this->searchTermTelegramViewProvider->getSearchTermTelegramMainView($searchTerm),
-                ' ]',
-            ]));
+            $query .= $tg->alreadyAddedText('▫️ ' . $this->searchTermTelegramViewProvider->getSearchTermTelegramReverseView($searchTerm));
         }
 
         if ($help) {

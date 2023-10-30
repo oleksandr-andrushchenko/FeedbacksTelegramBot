@@ -5,16 +5,14 @@ declare(strict_types=1);
 namespace App\Service\Feedback\Telegram\View;
 
 use App\Enum\Feedback\SearchTermType;
-use App\Service\Util\String\MbLcFirster;
+use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Transfer\Feedback\SearchTermTransfer;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MultipleSearchTermTelegramViewProvider
 {
     public function __construct(
         private readonly SearchTermTelegramViewProvider $searchTermTelegramViewProvider,
-        private readonly TranslatorInterface $translator,
-        private readonly MbLcFirster $mbLcFirster,
+        private readonly SearchTermTypeProvider $searchTermTypeProvider,
     )
     {
     }
@@ -22,6 +20,11 @@ class MultipleSearchTermTelegramViewProvider
     public function getSearchTermTelegramMainView(SearchTermTransfer $searchTerm): string
     {
         return $this->searchTermTelegramViewProvider->getSearchTermTelegramMainView($searchTerm);
+    }
+
+    public function getSearchTermTelegramReverseView(SearchTermTransfer $searchTerm): string
+    {
+        return $this->searchTermTelegramViewProvider->getSearchTermTelegramReverseView($searchTerm);
     }
 
     /**
@@ -52,36 +55,25 @@ class MultipleSearchTermTelegramViewProvider
 
         $sortedSearchTerms = $this->getSortedSearchTerms($searchTerms);
 
+        /** @var SearchTermTransfer $searchTerm */
         $searchTerm = array_shift($sortedSearchTerms);
 
-        $message = $this->searchTermTelegramViewProvider->getSearchTermTelegramView(
+        $message = $this->searchTermTelegramViewProvider->getSearchTermTelegramMainView(
             $searchTerm,
             addSecrets: $addSecrets,
         );
+        $message .= ' [ ';
 
-        if ($count > 1) {
+        $message .= $this->searchTermTypeProvider->getSearchTermTypeName($searchTerm->getType(), localeCode: $localeCode);
+
+        foreach ($sortedSearchTerms as $searchTerm) {
             $message .= ', ';
-            $message .= $this->mbLcFirster->mbLcFirst(
-                $this->translator->trans('query.additionally', domain: 'feedbacks.tg', locale: $localeCode)
-            );
+            $message .= $this->searchTermTypeProvider->getSearchTermTypeName($searchTerm->getType(), localeCode: $localeCode);
             $message .= ': ';
+            $message .= $this->searchTermTelegramViewProvider->getSearchTermTelegramMainView($searchTerm, addSecrets: $addSecrets);
         }
 
-        $message .= '';
-
-        $message .= implode(
-            ', ',
-            array_filter(
-                array_map(
-                    fn (SearchTermTransfer $searchTerm): string => $this->searchTermTelegramViewProvider->getSearchTermTelegramView(
-                        $searchTerm,
-                        addSecrets: $addSecrets,
-                        forceType: false
-                    ),
-                    $sortedSearchTerms
-                )
-            )
-        );
+        $message .= ' ] ';
 
         return $message;
     }

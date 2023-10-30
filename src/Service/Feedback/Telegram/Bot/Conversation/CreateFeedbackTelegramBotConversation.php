@@ -143,7 +143,10 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $query = $tg->queryText($query);
         } else {
             $query = $this->getStep(1, '**');
-            $searchTermView = $this->multipleSearchTermTelegramViewProvider->getPrimarySearchTermTelegramView($searchTerms);
+            $searchTermView = $this->multipleSearchTermTelegramViewProvider->getPrimarySearchTermTelegramView(
+                $searchTerms,
+                forceType: false
+            );
             $parameters = [
                 'search_term' => $searchTermView,
             ];
@@ -174,17 +177,11 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         }
 
         if ($searchTermCount > 0) {
-            $searchTermViews = array_map(
-                fn (SearchTermTransfer $searchTerm): string => implode('', [
-                    '▫️ ',
-                    $this->searchTermTypeProvider->getSearchTermTypeComposeName($searchTerm->getType()),
-                    ' [ ',
-                    $this->multipleSearchTermTelegramViewProvider->getSearchTermTelegramMainView($searchTerm),
-                    ' ]',
-                ]),
+            $query .= $tg->alreadyAddedText(implode("\n", array_map(
+                fn (SearchTermTransfer $searchTerm): string => '▫️ ' . $this->multipleSearchTermTelegramViewProvider
+                        ->getSearchTermTelegramReverseView($searchTerm),
                 $searchTerms
-            );
-            $query .= $tg->alreadyAddedText(implode("\n", $searchTermViews));
+            )));
         }
 
         if ($help) {
@@ -468,7 +465,10 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
     public function getRatingQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
         $query = $this->getStep(2);
-        $searchTermView = $this->multipleSearchTermTelegramViewProvider->getPrimarySearchTermTelegramView($this->state->getSearchTerms());
+        $searchTermView = $this->multipleSearchTermTelegramViewProvider->getPrimarySearchTermTelegramView(
+            $this->state->getSearchTerms(),
+            forceType: false
+        );
         $parameters = [
             'search_term' => $searchTermView,
         ];
@@ -605,7 +605,10 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
     public function getDescriptionQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
         $query = $this->getStep(3);
-        $searchTermView = $this->multipleSearchTermTelegramViewProvider->getPrimarySearchTermTelegramView($this->state->getSearchTerms());
+        $searchTermView = $this->multipleSearchTermTelegramViewProvider->getPrimarySearchTermTelegramView(
+            $this->state->getSearchTerms(),
+            forceType: false
+        );
         $parameters = [
             'search_term' => $searchTermView,
         ];
@@ -724,7 +727,10 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             localeCode: $tg->getBot()->getEntity()->getLocaleCode()
         );
 
-        $searchTermView = $this->multipleSearchTermTelegramViewProvider->getPrimarySearchTermTelegramView($this->state->getSearchTerms());
+        $searchTermView = $this->multipleSearchTermTelegramViewProvider->getPrimarySearchTermTelegramView(
+            $this->state->getSearchTerms(),
+            forceType: false
+        );
         $parameters = [
             'search_term' => $searchTermView,
         ];

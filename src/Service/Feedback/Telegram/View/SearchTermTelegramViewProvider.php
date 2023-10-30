@@ -78,4 +78,18 @@ class SearchTermTelegramViewProvider
 
         return $message;
     }
+
+    public function getSearchTermTelegramReverseView(
+        SearchTermTransfer $searchTerm,
+        bool $addSecrets = false,
+        string $localeCode = null
+    ): string
+    {
+        $message = $this->searchTermTypeProvider->getSearchTermTypeComposeName($searchTerm->getType(), localeCode: $localeCode);
+        $message .= ' [ ';
+        $message .= $this->getSearchTermTelegramMainView($searchTerm, addSecrets: $addSecrets);
+        $message .= ' ] ';
+
+        return $message;
+    }
 }
