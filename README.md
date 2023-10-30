@@ -66,3 +66,4 @@
 * Apply optimization tricks/tips for symfony prod application
 * move translation out of the repo
 * check doctrine queries, optimize if need
+* if phone number added (create command) and rating is good - ask phone number in order to no allow creation on self
