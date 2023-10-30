@@ -47,50 +47,46 @@ class TelegramBotDescriptionsSyncer
 
     private function getMyDescription(TelegramBot $botEntity): string
     {
-        $localeCode = $botEntity->getLocaleCode();
-        $domain = 'tg.descriptions';
-
-        $privacyPolicyLink = $this->siteUrlGenerator->generate(
-            'app.telegram_site_page',
-            [
-                'username' => $botEntity->getUsername(),
-                'page' => SitePage::PRIVACY_POLICY->value,
-            ],
-            referenceType: UrlGeneratorInterface::ABSOLUTE_URL
-        );
-        $privacyPolicy = $this->translator->trans('privacy_policy', domain: $domain, locale: $localeCode);
-
-        $termsOfUseLink = $this->siteUrlGenerator->generate(
-            'app.telegram_site_page',
-            [
-                'username' => $botEntity->getUsername(),
-                'page' => SitePage::TERMS_OF_USE->value,
-            ],
-            referenceType: UrlGeneratorInterface::ABSOLUTE_URL
-        );
-        $termsOfUse = $this->translator->trans('terms_of_use', domain: $domain, locale: $localeCode);
-
-
         $myDescription = "\n";
         $myDescription .= 'ℹ️ ';
         $myDescription .= $this->getMyShortDescription($botEntity);
-        $myDescription .= "\n\n";
-        $myDescription .= '‼️ ';
-        $myDescription .= $this->translator->trans('agreement', domain: $domain, locale: $localeCode);
 
-        $myDescription .= "\n\n";
-        $myDescription .= '🔹 ';
-        $myDescription .= $privacyPolicy;
-        $myDescription .= ':';
-        $myDescription .= "\n";
-        $myDescription .= $privacyPolicyLink;
-
-        $myDescription .= "\n\n";
-        $myDescription .= '🔹 ';
-        $myDescription .= $termsOfUse;
-        $myDescription .= ':';
-        $myDescription .= "\n";
-        $myDescription .= $termsOfUseLink;
+//        $localeCode = $botEntity->getLocaleCode();
+//        $domain = 'tg.descriptions';
+//        $myDescription .= "\n\n";
+//        $myDescription .= '‼️ ';
+//        $myDescription .= $this->translator->trans('agreement', domain: $domain, locale: $localeCode);
+//
+//        $myDescription .= "\n\n";
+//        $myDescription .= '🔹 ';
+//        $privacyPolicyLink = $this->siteUrlGenerator->generate(
+//            'app.telegram_site_page',
+//            [
+//                'username' => $botEntity->getUsername(),
+//                'page' => SitePage::PRIVACY_POLICY->value,
+//            ],
+//            referenceType: UrlGeneratorInterface::ABSOLUTE_URL
+//        );
+//        $privacyPolicy = $this->translator->trans('privacy_policy', domain: $domain, locale: $localeCode);
+//        $myDescription .= $privacyPolicy;
+//        $myDescription .= ':';
+//        $myDescription .= "\n";
+//        $myDescription .= $privacyPolicyLink;
+//        $myDescription .= "\n\n";
+//        $myDescription .= '🔹 ';
+//        $termsOfUseLink = $this->siteUrlGenerator->generate(
+//            'app.telegram_site_page',
+//            [
+//                'username' => $botEntity->getUsername(),
+//                'page' => SitePage::TERMS_OF_USE->value,
+//            ],
+//            referenceType: UrlGeneratorInterface::ABSOLUTE_URL
+//        );
+//        $termsOfUse = $this->translator->trans('terms_of_use', domain: $domain, locale: $localeCode);
+//        $myDescription .= $termsOfUse;
+//        $myDescription .= ':';
+//        $myDescription .= "\n";
+//        $myDescription .= $termsOfUseLink;
 
         return $myDescription;
     }
