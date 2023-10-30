@@ -243,7 +243,7 @@ class TelegramBotAwareHelper
     public function replyWrong(bool $useInput): self
     {
         $message = $this->trans('reply.wrong');
-        $message .= ' ';
+        $message .= "\n";
         $message .= $this->useText($useInput);
         $message = $this->wrongText($message);
 

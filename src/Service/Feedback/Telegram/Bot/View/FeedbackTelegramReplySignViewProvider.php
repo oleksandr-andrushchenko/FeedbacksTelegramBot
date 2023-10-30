@@ -14,7 +14,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class FeedbackTelegramReplySignViewProvider
 {
     public function __construct(
-        private readonly TelegramChannelRepository $channelRepository,
+        private readonly TelegramChannelRepository $telegramChannelRepository,
         private readonly MessengerUserProfileUrlProvider $messengerUserProfileUrlProvider,
         private readonly TranslatorInterface $translator,
     )
@@ -40,7 +40,7 @@ class FeedbackTelegramReplySignViewProvider
         $message .= sprintf('<a href="%s">%s</a>', $botLink, $text('search'));
 
         if ($channel === null) {
-            $channel = $this->channelRepository->findOnePrimaryByBot($bot->getEntity());
+            $channel = $this->telegramChannelRepository->findOnePrimaryByBot($bot->getEntity());
         }
 
         if ($channel !== null) {

@@ -33,14 +33,20 @@ class SearchTermTypeProvider
         return $icon . ' ' . $name;
     }
 
-    public function sortSearchTermTypes(array $types): array
+    public function sortSearchTermTypes(array $types, array $sortedTypes = null): array
     {
-        $sortedAll = SearchTermType::cases();
+        $sortedTypes = $sortedTypes === null ? SearchTermType::cases() : $sortedTypes;
 
         $sorted = [];
 
-        foreach ($sortedAll as $type) {
+        foreach ($sortedTypes as $type) {
             if (in_array($type, $types, true)) {
+                $sorted[] = $type;
+            }
+        }
+
+        foreach ($types as $type) {
+            if (!in_array($type, $sorted, true)) {
                 $sorted[] = $type;
             }
         }

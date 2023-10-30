@@ -20,12 +20,12 @@ class FeedbackTelegramViewProvider
 {
     public function __construct(
         private readonly SearchTermProvider $searchTermProvider,
-        private readonly MultipleSearchTermTelegramViewProvider $multipleSearchTermViewProvider,
+        private readonly MultipleSearchTermTelegramViewProvider $multipleSearchTermTelegramViewProvider,
         private readonly CountryProvider $countryProvider,
         private readonly TimeProvider $timeProvider,
-        private readonly FeedbackRatingProvider $ratingProvider,
+        private readonly FeedbackRatingProvider $feedbackRatingProvider,
         private readonly TranslatorInterface $translator,
-        private readonly FeedbackTelegramReplySignViewProvider $signViewProvider,
+        private readonly FeedbackTelegramReplySignViewProvider $feedbackTelegramReplySignViewProvider,
     )
     {
     }
@@ -75,7 +75,7 @@ class FeedbackTelegramViewProvider
         $message .= ' ';
         $message .= $this->translator->trans('wrote_about', domain: 'feedbacks.tg.feedback', locale: $localeCode);
         $message .= ' ';
-        $message .= $this->multipleSearchTermViewProvider->getMultipleSearchTermTelegramView(
+        $message .= $this->multipleSearchTermTelegramViewProvider->getMultipleSearchTermTelegramView(
             array_map(
                 fn (FeedbackSearchTerm $searchTerm): SearchTermTransfer => $this->searchTermProvider->getSearchTermByFeedbackSearchTerm($searchTerm),
                 $feedback->getSearchTerms()->toArray()
@@ -95,14 +95,18 @@ class FeedbackTelegramViewProvider
 
         $message .= ' ';
         $message .= '<b>';
-        $rating = $this->ratingProvider->getRatingComposeName($feedback->getRating(), localeCode: $localeCode);
+        $rating = $this->feedbackRatingProvider->getRatingComposeName($feedback->getRating(), localeCode: $localeCode);
         $message .= $rating;
         $message .= '</b>';
 
         if ($showSign) {
             $message .= "\n\n";
 
-            $message .= $this->signViewProvider->getFeedbackTelegramReplySignView($bot, $channel, localeCode: $localeCode);
+            $message .= $this->feedbackTelegramReplySignViewProvider->getFeedbackTelegramReplySignView(
+                $bot,
+                channel: $channel,
+                localeCode: $localeCode
+            );
         }
 
         return $message;

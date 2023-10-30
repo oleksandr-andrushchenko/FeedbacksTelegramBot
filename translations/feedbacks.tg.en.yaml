@@ -9,6 +9,7 @@ query:
   action: Select an action please.
   already_added: Already added
   optional: Optional
+  additionally: Additionally
 
 keyboard:
   yes: Yes

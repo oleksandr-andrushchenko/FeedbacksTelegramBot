@@ -40,7 +40,7 @@ enum SearchTermType: int
         self::organization_name,
     ];
 
-    public const messenger = [
+    public const known_messengers = [
         self::instagram_username,
         self::facebook_username,
         self::telegram_username,
@@ -50,6 +50,10 @@ enum SearchTermType: int
         self::onlyfans_username,
         self::reddit_username,
         self::vkontakte_username,
+    ];
+
+    public const messengers = [
+        ...self::known_messengers,
         self::messenger_username,
         self::messenger_profile_url,
     ];

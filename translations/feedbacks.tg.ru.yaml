@@ -9,6 +9,7 @@ query:
   action: Выберите действие.
   already_added: Уже добавлено
   optional: Необязательно
+  additionally: Дополнительно
 
 keyboard:
   yes: Да

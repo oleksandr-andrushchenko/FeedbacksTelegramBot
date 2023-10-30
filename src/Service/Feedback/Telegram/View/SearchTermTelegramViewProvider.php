@@ -15,7 +15,7 @@ use App\Transfer\Feedback\SearchTermTransfer;
 class SearchTermTelegramViewProvider
 {
     public function __construct(
-        private readonly SearchTermTypeProvider $termTypeProvider,
+        private readonly SearchTermTypeProvider $searchTermTypeProvider,
         private readonly MessengerUserProfileUrlProvider $messengerUserProfileUrlProvider,
         private readonly SearchTermMessengerProvider $searchTermMessengerProvider,
         private readonly SecretsAdder $secretsAdder,
@@ -36,7 +36,13 @@ class SearchTermTelegramViewProvider
         } elseif (in_array($searchTerm->getType(), [SearchTermType::url, SearchTermType::messenger_profile_url], true)) {
             $message .= sprintf('<a href="%s">%s</a>', $searchTerm->getText(), $text);
         } else {
-            if ($addSecrets && in_array($searchTerm->getType(), [SearchTermType::phone_number, SearchTermType::email], true)) {
+            $secretTypes = [
+                SearchTermType::phone_number,
+                SearchTermType::email,
+                SearchTermType::car_number,
+            ];
+
+            if ($addSecrets && in_array($searchTerm->getType(), $secretTypes, true)) {
                 $message .= $this->secretsAdder->addSecrets($text);
             } else {
                 $message .= $text;
@@ -51,14 +57,23 @@ class SearchTermTelegramViewProvider
     public function getSearchTermTelegramView(
         SearchTermTransfer $searchTerm,
         bool $addSecrets = false,
+        bool $forceType = true,
         string $localeCode = null
     ): string
     {
         $message = $this->getSearchTermTelegramMainView($searchTerm, addSecrets: $addSecrets);
 
-        if ($searchTerm->getType() !== null && $searchTerm->getType() !== SearchTermType::unknown) {
-            $searchTermTypeView = $this->termTypeProvider->getSearchTermTypeName($searchTerm->getType(), $localeCode);
-            $message .= ' (' . $searchTermTypeView . ')';
+        $skipTypes = [
+            SearchTermType::person_name,
+            SearchTermType::email,
+            SearchTermType::url,
+            ...SearchTermType::known_messengers,
+        ];
+
+        if ($searchTerm->getType() !== null && ($forceType || !in_array($searchTerm->getType(), $skipTypes, true))) {
+            $message .= ' [ ';
+            $message .= $this->searchTermTypeProvider->getSearchTermTypeName($searchTerm->getType(), $localeCode);
+            $message .= ' ]';
         }
 
         return $message;

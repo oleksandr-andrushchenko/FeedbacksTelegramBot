@@ -17,11 +17,11 @@ class FeedbackSearchTelegramViewProvider
 {
     public function __construct(
         private readonly SearchTermProvider $searchTermProvider,
-        private readonly SearchTermTelegramViewProvider $searchTermViewProvider,
+        private readonly SearchTermTelegramViewProvider $searchTermTelegramViewProvider,
         private readonly CountryProvider $countryProvider,
         private readonly TimeProvider $timeProvider,
         private readonly TranslatorInterface $translator,
-        private readonly FeedbackTelegramReplySignViewProvider $signViewProvider,
+        private readonly FeedbackTelegramReplySignViewProvider $feedbackTelegramReplySignViewProvider,
     )
     {
     }
@@ -30,6 +30,7 @@ class FeedbackSearchTelegramViewProvider
         TelegramBot $bot,
         FeedbackSearch $feedbackSearch,
         int $number = null,
+        bool $addSecrets = false,
         string $localeCode = null,
         TelegramChannel $channel = null,
     ): string
@@ -66,11 +67,18 @@ class FeedbackSearchTelegramViewProvider
         $message .= $this->translator->trans('searched_for', domain: 'feedbacks.tg.feedback_search', locale: $localeCode);
         $message .= ' ';
         $searchTerm = $this->searchTermProvider->getSearchTermByFeedbackSearchTerm($feedbackSearch->getSearchTerm());
-        $message .= $this->searchTermViewProvider->getSearchTermTelegramView($searchTerm, localeCode: $localeCode);
+        $message .= $this->searchTermTelegramViewProvider->getSearchTermTelegramView(
+            $searchTerm,
+            addSecrets: $addSecrets,
+            localeCode: $localeCode
+        );
 
         $message .= "\n\n";
 
-        $message .= $this->signViewProvider->getFeedbackTelegramReplySignView($bot, $channel);
+        $message .= $this->feedbackTelegramReplySignViewProvider->getFeedbackTelegramReplySignView(
+            $bot,
+            channel: $channel
+        );
 
         return $message;
     }

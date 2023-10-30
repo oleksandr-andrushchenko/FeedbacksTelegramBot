@@ -12,7 +12,7 @@ use App\Exception\Feedback\FeedbackCommandLimitExceededException;
 use App\Exception\ValidatorException;
 use App\Service\Feedback\FeedbackLookupCreator;
 use App\Service\Feedback\FeedbackSearchSearcher;
-use App\Service\Feedback\SearchTerm\SearchTermParserOnlyInterface;
+use App\Service\Feedback\SearchTerm\SearchTermParserInterface;
 use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Service\Feedback\Telegram\Bot\Chat\ChooseActionTelegramChatSender;
 use App\Service\Feedback\Telegram\Bot\View\FeedbackSearchTelegramViewProvider;
@@ -20,7 +20,6 @@ use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversation;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
-use App\Service\Util\String\MbLcFirster;
 use App\Service\Validator;
 use App\Transfer\Feedback\FeedbackLookupTransfer;
 use App\Transfer\Feedback\SearchTermTransfer;
@@ -38,14 +37,13 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
     public function __construct(
         private readonly Validator $validator,
-        private readonly SearchTermParserOnlyInterface $searchTermParser,
-        private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
-        private readonly SearchTermTelegramViewProvider $searchTermViewProvider,
+        private readonly SearchTermParserInterface $searchTermParser,
+        private readonly ChooseActionTelegramChatSender $chooseActionTelegramChatSender,
+        private readonly SearchTermTelegramViewProvider $searchTermTelegramViewProvider,
         private readonly SearchTermTypeProvider $searchTermTypeProvider,
-        private readonly FeedbackLookupCreator $creator,
-        private readonly FeedbackSearchSearcher $searcher,
-        private readonly FeedbackSearchTelegramViewProvider $feedbackSearchViewProvider,
-        private readonly MbLcFirster $lcFirster,
+        private readonly FeedbackLookupCreator $feedbackLookupCreator,
+        private readonly FeedbackSearchSearcher $feedbackSearchSearcher,
+        private readonly FeedbackSearchTelegramViewProvider $feedbackSearchTelegramViewProvider,
         private readonly bool $searchTermTypeStep,
         private readonly bool $confirmStep,
     )
@@ -104,7 +102,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 '▫️ ',
                 $this->searchTermTypeProvider->getSearchTermTypeComposeName($searchTerm->getType()),
                 ' [ ',
-                $this->searchTermViewProvider->getSearchTermTelegramMainView($searchTerm),
+                $this->searchTermTelegramViewProvider->getSearchTermTelegramMainView($searchTerm),
                 ' ]',
             ]));
         }
@@ -158,7 +156,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
         $message = $tg->trans('reply.canceled', domain: 'lookup');
         $message = $tg->upsetText($message);
 
-        return $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
+        return $this->chooseActionTelegramChatSender->sendActions($tg, text: $message, appendDefault: true);
     }
 
     public function gotSearchTerm(TelegramBotAwareHelper $tg, Entity $entity): null
@@ -365,7 +363,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
     public function getConfirmQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
         $query = $this->getStep(2);
-        $searchTerm = $this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm());
+        $searchTerm = $this->searchTermTelegramViewProvider->getSearchTermTelegramView($this->state->getSearchTerm());
         $parameters = [
             'search_term' => $searchTerm,
         ];
@@ -401,7 +399,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
     public function getEmptyListReply(TelegramBotAwareHelper $tg): string
     {
-        $searchTerm = $this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm());
+        $searchTerm = $this->searchTermTelegramViewProvider->getSearchTermTelegramView($this->state->getSearchTerm());
         $parameters = [
             'search_term' => $searchTerm,
         ];
@@ -417,7 +415,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
     public function getListReply(TelegramBotAwareHelper $tg, int $count): string
     {
-        $searchTerm = $this->searchTermViewProvider->getSearchTermTelegramView($this->state->getSearchTerm());
+        $searchTerm = $this->searchTermTelegramViewProvider->getSearchTermTelegramView($this->state->getSearchTerm());
         $parameters = [
             'search_term' => $searchTerm,
             'count' => $count,
@@ -432,7 +430,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
             'command' => 'lookup',
             'period' => $limit->getPeriod(),
             'count' => $limit->getCount(),
-            'limits' => $this->creator->getOptions()->getLimits(),
+            'limits' => $this->feedbackLookupCreator->getOptions()->getLimits(),
         ]);
     }
 
@@ -443,7 +441,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $this->validator->validate($this->state);
 
             // todo: use command bus
-            $feedbackLookup = $this->creator->createFeedbackLookup(
+            $feedbackLookup = $this->feedbackLookupCreator->createFeedbackLookup(
                 new FeedbackLookupTransfer(
                     $tg->getBot()->getMessengerUser(),
                     $this->state->getSearchTerm(),
@@ -451,7 +449,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 )
             );
 
-            $feedbackSearches = $this->searcher->searchFeedbackSearches($feedbackLookup);
+            $feedbackSearches = $this->feedbackSearchSearcher->searchFeedbackSearches($feedbackLookup);
             $count = count($feedbackSearches);
 
             if ($count === 0) {
@@ -459,7 +457,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
                 $message = $this->getEmptyListReply($tg);
 
-                return $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
+                return $this->chooseActionTelegramChatSender->sendActions($tg, text: $message, appendDefault: true);
             }
 
             $message = $this->getListReply($tg, $count);
@@ -467,10 +465,11 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $tg->reply($message);
 
             foreach ($feedbackSearches as $index => $feedbackSearch) {
-                $message = $this->feedbackSearchViewProvider->getFeedbackSearchTelegramView(
+                $message = $this->feedbackSearchTelegramViewProvider->getFeedbackSearchTelegramView(
                     $tg->getBot(),
                     $feedbackSearch,
-                    $index + 1
+                    number: $index + 1,
+                    addSecrets: true
                 );
 
                 $tg->reply($message);
@@ -478,7 +477,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
             $tg->stopConversation($entity);
 
-            return $this->chooseActionChatSender->sendActions($tg);
+            return $this->chooseActionTelegramChatSender->sendActions($tg);
         } catch (ValidatorException $exception) {
             $tg->replyWarning($exception->getFirstMessage());
 
@@ -490,7 +489,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
             $tg->stopConversation($entity);
 
-            return $this->chooseActionChatSender->sendActions($tg);
+            return $this->chooseActionTelegramChatSender->sendActions($tg);
         }
     }
 
