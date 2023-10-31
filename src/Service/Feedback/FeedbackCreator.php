@@ -24,13 +24,13 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class FeedbackCreator
 {
     public function __construct(
-        private readonly FeedbackCommandOptions $options,
+        private readonly FeedbackCommandOptions $feedbackCommandOptions,
         private readonly EntityManagerInterface $entityManager,
         private readonly Validator $validator,
-        private readonly FeedbackCommandStatisticProviderInterface $statisticProvider,
-        private readonly FeedbackCommandLimitsChecker $limitsChecker,
-        private readonly FeedbackSubscriptionManager $subscriptionManager,
-        private readonly FeedbackSearchTermUpserter $termUpserter,
+        private readonly FeedbackCommandStatisticProviderInterface $feedbackCommandStatisticProvider,
+        private readonly FeedbackCommandLimitsChecker $feedbackCommandLimitsChecker,
+        private readonly FeedbackSubscriptionManager $feedbackSubscriptionManager,
+        private readonly FeedbackSearchTermUpserter $feedbackSearchTermUpserter,
         private readonly IdGenerator $idGenerator,
         private readonly MessageBusInterface $eventBus,
         private readonly SearchTermMessengerProvider $searchTermMessengerProvider,
@@ -40,30 +40,33 @@ class FeedbackCreator
 
     public function getOptions(): FeedbackCommandOptions
     {
-        return $this->options;
+        return $this->feedbackCommandOptions;
     }
 
     /**
-     * @param FeedbackTransfer $transfer
+     * @param FeedbackTransfer $feedbackTransfer
      * @return Feedback
      * @throws FeedbackCommandLimitExceededException
      * @throws SameMessengerUserException
      * @throws ValidatorException
      */
-    public function createFeedback(FeedbackTransfer $transfer): Feedback
+    public function createFeedback(FeedbackTransfer $feedbackTransfer): Feedback
     {
-        $this->validator->validate($transfer);
+        $this->validator->validate($feedbackTransfer);
 
-        $this->checkSearchTermUser($transfer);
+        $this->checkSearchTermUser($feedbackTransfer);
 
-        $messengerUser = $transfer->getMessengerUser();
-        $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($messengerUser);
+        $messengerUser = $feedbackTransfer->getMessengerUser();
+        $hasActiveSubscription = $this->feedbackSubscriptionManager->hasActiveSubscription($messengerUser);
 
         if (!$hasActiveSubscription) {
-            $this->limitsChecker->checkCommandLimits($messengerUser->getUser(), $this->statisticProvider);
+            $this->feedbackCommandLimitsChecker->checkCommandLimits(
+                $messengerUser->getUser(),
+                $this->feedbackCommandStatisticProvider
+            );
         }
 
-        $feedback = $this->constructFeedback($transfer);
+        $feedback = $this->constructFeedback($feedbackTransfer);
         $this->entityManager->persist($feedback);
 
         $this->eventBus->dispatch(new FeedbackCreatedEvent(feedback: $feedback));
@@ -71,15 +74,15 @@ class FeedbackCreator
         return $feedback;
     }
 
-    public function constructFeedback(FeedbackTransfer $transfer): Feedback
+    public function constructFeedback(FeedbackTransfer $feedbackTransfer): Feedback
     {
-        $messengerUser = $transfer->getMessengerUser();
-        $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($messengerUser);
+        $messengerUser = $feedbackTransfer->getMessengerUser();
+        $hasActiveSubscription = $this->feedbackSubscriptionManager->hasActiveSubscription($messengerUser);
 
         $searchTerms = [];
 
-        foreach ($transfer->getSearchTerms() as $termTransfer) {
-            $searchTerms[] = $this->termUpserter->upsertFeedbackSearchTerm($termTransfer);
+        foreach ($feedbackTransfer->getSearchTerms() as $searchTerm) {
+            $searchTerms[] = $this->feedbackSearchTermUpserter->upsertFeedbackSearchTerm($searchTerm);
         }
 
         return new Feedback(
@@ -87,25 +90,25 @@ class FeedbackCreator
             $messengerUser->getUser(),
             $messengerUser,
             $searchTerms,
-            $transfer->getRating(),
-            description: $transfer->getDescription(),
+            $feedbackTransfer->getRating(),
+            description: $feedbackTransfer->getDescription(),
             hasActiveSubscription: $hasActiveSubscription,
             countryCode: $messengerUser->getUser()->getCountryCode(),
             localeCode: $messengerUser->getUser()->getLocaleCode(),
-            telegramBot: $transfer->getTelegramBot()
+            telegramBot: $feedbackTransfer->getTelegramBot()
         );
     }
 
     /**
-     * @param FeedbackTransfer $transfer
+     * @param FeedbackTransfer $feedbackTransfer
      * @return void
      * @throws SameMessengerUserException
      */
-    private function checkSearchTermUser(FeedbackTransfer $transfer): void
+    private function checkSearchTermUser(FeedbackTransfer $feedbackTransfer): void
     {
-        $messengerUser = $transfer->getMessengerUser();
+        $messengerUser = $feedbackTransfer->getMessengerUser();
 
-        foreach ($transfer->getSearchTerms() as $searchTerm) {
+        foreach ($feedbackTransfer->getSearchTerms() as $searchTerm) {
             $messenger = $this->searchTermMessengerProvider->getSearchTermMessenger($searchTerm->getType());
 
             if (
