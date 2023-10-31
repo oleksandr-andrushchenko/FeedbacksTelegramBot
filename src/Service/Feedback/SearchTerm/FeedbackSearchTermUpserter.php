@@ -13,36 +13,39 @@ use Doctrine\ORM\EntityManagerInterface;
 class FeedbackSearchTermUpserter
 {
     public function __construct(
-        private readonly FeedbackSearchTermRepository $repository,
+        private readonly FeedbackSearchTermRepository $feedbackSearchTermRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly MessengerUserUpserter $messengerUserUpserter,
+        private readonly FeedbackSearchTermTextNormalizer $feedbackSearchTermTextNormalizer
     )
     {
     }
 
-    public function upsertFeedbackSearchTerm(SearchTermTransfer $termTransfer): FeedbackSearchTerm
+    public function upsertFeedbackSearchTerm(SearchTermTransfer $searchTermTransfer): FeedbackSearchTerm
     {
-        if ($termTransfer->getMessengerUser() == null) {
+        if ($searchTermTransfer->getMessengerUser() == null) {
             $messengerUser = null;
         } else {
-            $messengerUser = $this->messengerUserUpserter->upsertMessengerUser($termTransfer->getMessengerUser());
+            $messengerUser = $this->messengerUserUpserter->upsertMessengerUser($searchTermTransfer->getMessengerUser());
         }
 
-        $newTerm = new FeedbackSearchTerm(
-            $termTransfer->getText(),
-            $termTransfer->getNormalizedText() ?? $termTransfer->getText(),
-            $termTransfer->getType(),
+        $feedbackSearchTermNew = new FeedbackSearchTerm(
+            $searchTermTransfer->getText(),
+            $this->feedbackSearchTermTextNormalizer->normalizeFeedbackSearchTermText(
+                $searchTermTransfer->getNormalizedText() ?? $searchTermTransfer->getText()
+            ),
+            $searchTermTransfer->getType(),
             messengerUser: $messengerUser,
         );
 
-        $searchTerms = $this->repository->findByNormalizedText($newTerm->getNormalizedText());
+        $searchTerms = $this->feedbackSearchTermRepository->findByNormalizedText($feedbackSearchTermNew->getNormalizedText());
 
-        $searchTerms = array_filter($searchTerms, static function (FeedbackSearchTerm $searchTerm) use ($newTerm): bool {
-            if ($searchTerm->getText() !== $newTerm->getText()) {
+        $searchTerms = array_filter($searchTerms, static function (FeedbackSearchTerm $feedbackSearchTerm) use ($feedbackSearchTermNew): bool {
+            if ($feedbackSearchTerm->getText() !== $feedbackSearchTermNew->getText()) {
                 return false;
             }
 
-            if ($searchTerm->getType() !== $newTerm->getType()) {
+            if ($feedbackSearchTerm->getType() !== $feedbackSearchTermNew->getType()) {
                 return false;
             }
 
@@ -50,9 +53,9 @@ class FeedbackSearchTermUpserter
         });
 
         if (count($searchTerms) === 0) {
-            $this->entityManager->persist($newTerm);
+            $this->entityManager->persist($feedbackSearchTermNew);
 
-            return $newTerm;
+            return $feedbackSearchTermNew;
         }
 
         return current($searchTerms);

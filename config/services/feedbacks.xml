@@ -541,11 +541,14 @@
             <argument type="service" id="app.intl_country_provider"/>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
+        <service id="app.feedback_search_term_text_normalizer"
+                 class="App\Service\Feedback\SearchTerm\FeedbackSearchTermTextNormalizer" lazy="true"/>
         <service id="app.feedback_search_term_upserter"
                  class="App\Service\Feedback\SearchTerm\FeedbackSearchTermUpserter" lazy="true">
             <argument type="service" id="app.feedback_search_term_repository"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.messenger_user_upserter"/>
+            <argument type="service" id="app.feedback_search_term_text_normalizer"/>
         </service>
         <service id="app.feedback_created_activity_logger"
                  class="App\Message\EventHandler\Feedback\FeedbackCreatedActivityLogger" lazy="true">
