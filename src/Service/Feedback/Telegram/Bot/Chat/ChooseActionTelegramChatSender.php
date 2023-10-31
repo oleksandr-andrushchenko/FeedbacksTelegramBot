@@ -49,11 +49,13 @@ class ChooseActionTelegramChatSender
         $buttons = [];
         $buttons[] = $this->getCreateButton($tg);
         $buttons[] = $this->getSearchButton($tg);
-        $buttons[] = $this->getLookupButton($tg);
+        $buttons[] = $this->getDonateButton($tg);
 
         $messengerUser = $tg->getBot()->getMessengerUser();
 
         if ($messengerUser?->showExtendedKeyboard()) {
+            $buttons[] = $this->getLookupButton($tg);
+
             if (!$this->feedbackSubscriptionManager->hasActiveSubscription($messengerUser)) {
                 $buttons[] = $this->getSubscribeButton($tg);
             } elseif ($this->feedbackSubscriptionManager->hasSubscription($messengerUser)) {
@@ -64,7 +66,7 @@ class ChooseActionTelegramChatSender
             $buttons[] = $this->getLocaleButton($tg);
 //            $buttons[] = $this->getCommandsButton($tg);
             $buttons[] = $this->getLimitsButton($tg);
-            $buttons[] = $this->getPurgeButton($tg);
+//            $buttons[] = $this->getPurgeButton($tg);
 //            $buttons[] = $this->getRestartButton($tg);
             $buttons[] = $this->getContactButton($tg);
             $buttons[] = $this->getShowLessButton($tg);
@@ -102,7 +104,7 @@ class ChooseActionTelegramChatSender
 
     public function getSubscriptionsButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        $hasActiveSubscription = $this->subscriptionManager->hasActiveSubscription($tg->getBot()->getMessengerUser());
+        $hasActiveSubscription = $this->feedbackSubscriptionManager->hasActiveSubscription($tg->getBot()->getMessengerUser());
         $key = 'subscriptions';
 
         $text = $tg->trans($hasActiveSubscription ? $key : 'subscribe', domain: 'command_icon', locale: 'en');
@@ -151,6 +153,11 @@ class ChooseActionTelegramChatSender
     public function getPurgeButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
         return $tg->button($tg->command('purge'));
+    }
+
+    public function getDonateButton(TelegramBotAwareHelper $tg): KeyboardButton
+    {
+        return $tg->button($tg->command('donate'));
     }
 
     public function getContactButton(TelegramBotAwareHelper $tg): KeyboardButton

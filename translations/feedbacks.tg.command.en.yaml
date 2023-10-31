@@ -3,10 +3,11 @@ search: Find Feedbacks
 lookup: Find Lookups
 subscribe: Get Premium
 subscriptions: My Premium
-country: My Country
-locale: My Locale
-limits: About Limits
+country: Change Country
+locale: Change Locale
+limits: Limitations
 purge: Purge Data
+donate: Donate
 contact: Contacts
 commands: About Commands
 restart: Restart

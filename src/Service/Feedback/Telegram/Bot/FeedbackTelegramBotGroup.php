@@ -43,6 +43,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
     public const LOCALE = '/locale';
     public const LIMITS = '/limits';
     public const PURGE = '/purge';
+    public const DONATE = '/donate';
     public const CONTACT = '/contact';
     public const COMMANDS = '/commands';
     public const RESTART = '/restart';
@@ -57,6 +58,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
         'locale' => self::LOCALE,
         'limits' => self::LIMITS,
         'purge' => self::PURGE,
+        'donate' => self::DONATE,
         'contact' => self::CONTACT,
         'commands' => self::COMMANDS,
         'restart' => self::RESTART,
@@ -92,6 +94,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
         yield new TelegramBotCommand(self::LOCALE, fn (): null => $this->locale($tg), menu: true, key: 'locale', beforeConversations: true);
         yield new TelegramBotCommand(self::LIMITS, fn (): null => $this->limits($tg), menu: true, key: 'locale', beforeConversations: true);
         yield new TelegramBotCommand(self::PURGE, fn (): null => $this->purge($tg), menu: true, key: 'purge', beforeConversations: true);
+        yield new TelegramBotCommand(self::DONATE, fn (): null => $this->donate($tg), menu: true, key: 'donate', beforeConversations: true);
         yield new TelegramBotCommand(self::CONTACT, fn (): null => $this->contact($tg), menu: true, key: 'contact', beforeConversations: true);
         yield new TelegramBotCommand(self::COMMANDS, fn (): null => $this->commands($tg), menu: true, key: 'commands', beforeConversations: true);
         yield new TelegramBotCommand(self::RESTART, fn (): null => $this->restart($tg), menu: true, key: 'restart', beforeConversations: true);
@@ -112,6 +115,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
             $this->chooseActionChatSender->getLocaleButton($tg)->getText() => $this->locale($tg),
             $this->chooseActionChatSender->getLimitsButton($tg)->getText() => $this->limits($tg),
             $this->chooseActionChatSender->getPurgeButton($tg)->getText() => $this->purge($tg),
+            $this->chooseActionChatSender->getDonateButton($tg)->getText() => $this->donate($tg),
             $this->chooseActionChatSender->getContactButton($tg)->getText() => $this->contact($tg),
             $this->chooseActionChatSender->getCommandsButton($tg)->getText() => $this->commands($tg),
             $this->chooseActionChatSender->getRestartButton($tg)->getText() => $this->restart($tg),
@@ -245,6 +249,17 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
     public function purge(TelegramBotAwareHelper $tg): null
     {
         return $tg->stopCurrentConversation()->startConversation(PurgeConversationTelegramBotConversation::class)->null();
+    }
+
+    public function donate(TelegramBotAwareHelper $tg): null
+    {
+        $tg->stopCurrentConversation();
+
+        $message = $tg->view('donate');
+
+        $tg->reply($message);
+
+        return $this->chooseActionChatSender->sendActions($tg);
     }
 
     public function contact(TelegramBotAwareHelper $tg): null

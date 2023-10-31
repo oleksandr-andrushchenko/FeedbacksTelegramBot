@@ -3,10 +3,11 @@ search: Найти Отзывы
 lookup: Найти Запросы
 subscribe: Купить Премиум
 subscriptions: Мой Премиум
-country: Моя Страна
-locale: Мой Язык
-limits: О Лимитах
+country: Изменить Страну
+locale: Изменить Язык
+limits: Ограничения
 purge: Удалить Данные
+donate: Донат
 contact: Контакты
 commands: О Командах
 restart: Перезапустить

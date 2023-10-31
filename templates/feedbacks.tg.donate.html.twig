@@ -1,0 +1,12 @@
+{% trans_default_domain 'feedbacks.tg.donate' %}
+🚨 {{ 'title'|trans({'%devs%': '<u><b>' ~ ('title_devs'|trans) ~ '</b></u>', '%infra%': '<u><b>' ~ ('title_infra'|trans) ~ '</b></u>'})|raw }}
+
+🥹 {{ 'subtitle'|trans({'%keep_free%': '<u><b>' ~ ('subtitle_keep_free'|trans) ~ '</b></u>'})|raw }}
+
+🔝 {{ 'benefits'|trans({'%contact_command%': include('feedbacks.tg.command.html.twig', {name: 'contact'}), '%promise%': '<u><b>' ~ ('benefits_promise'|trans) ~ '</b></u>'})|raw }}
+
+ℹ️ {{ 'crypto'|trans }}:
+{% set crypto = {btc: '1CHbuxGjrRSyT3Db1yn3SywcEagWxDND2d', eth: '0x711f949b5cbf6fc3c484c136d5e6fa9cba7802af', doge: 'D67fSU5k8FJESN5NhBjVkaMkCXsgMDUUZj', sol: '81QLVUhPx8LzAfY5CwSbnMpPFQt6F6D3vZFi8GS45Kpf'} %}
+{% for currency,address in crypto %}
+▫️ {{ currency|trans|upper }}: {{ address }}
+{% endfor %}
