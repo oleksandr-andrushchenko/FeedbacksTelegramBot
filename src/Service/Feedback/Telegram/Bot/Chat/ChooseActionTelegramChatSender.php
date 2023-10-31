@@ -14,7 +14,7 @@ use Longman\TelegramBot\Entities\KeyboardButton;
 class ChooseActionTelegramChatSender
 {
     public function __construct(
-        private readonly FeedbackSubscriptionManager $subscriptionManager,
+        private readonly FeedbackSubscriptionManager $feedbackSubscriptionManager,
         private readonly CountryProvider $countryProvider,
         private readonly LocaleProvider $localeProvider,
     )
@@ -54,9 +54,9 @@ class ChooseActionTelegramChatSender
         $messengerUser = $tg->getBot()->getMessengerUser();
 
         if ($messengerUser?->showExtendedKeyboard()) {
-            if (!$this->subscriptionManager->hasActiveSubscription($messengerUser)) {
+            if (!$this->feedbackSubscriptionManager->hasActiveSubscription($messengerUser)) {
                 $buttons[] = $this->getSubscribeButton($tg);
-            } elseif ($this->subscriptionManager->hasSubscription($messengerUser)) {
+            } elseif ($this->feedbackSubscriptionManager->hasSubscription($messengerUser)) {
                 $buttons[] = $this->getSubscriptionsButton($tg);
             }
 
