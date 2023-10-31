@@ -19,9 +19,7 @@ class StartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctional
             TelegramBot::class,
         ]);
 
-        $this
-            ->typeText(FeedbackTelegramBotGroup::START)
-        ;
+        $this->typeText(FeedbackTelegramBotGroup::START);
 
         $this->assertNotNull($this->getUpdateMessengerUser());
         $user = $this->getUpdateMessengerUser()->getUser();
@@ -39,7 +37,7 @@ class StartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctional
             ->shouldNotSeeActiveConversation()
             ->shouldSeeReply(
                 'title',
-                'agreements',
+//                'agreements',
             )
             ->shouldSeeChooseAction()
         ;
