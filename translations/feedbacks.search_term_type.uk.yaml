@@ -1,19 +1,20 @@
 messenger_profile_url: Посилання на профіль користувача соціальної мережі або месенджера
 instagram_username: Нікнейм Instagram
-facebook_username: Нікнейм або айді Facebook
+facebook_username: Нікнейм або ідентифікатор Facebook
 telegram_username: Нікнейм Telegram
 twitter_username: Нікнейм X (Twitter)
 tiktok_username: Нікнейм Tiktok
 youtube_username: Нікнейм Youtube
 onlyfans_username: Нікнейм Onlyfans
 reddit_username: Нікнейм Reddit
-vkontakte_username: Нікнейм або айді VK (Vkontakte)
-messenger_username: Нікнейм або айді користувача соціальної мережі або месенджера
+vkontakte_username: Нікнейм або ідентифікатор VK (Vkontakte)
+messenger_username: Нікнейм або ідентифікатор користувача соціальної мережі або месенджера
 email: Адреса електронної пошти
 person_name: Ім'я особи
 organization_name: Назва компанії або організації
 place_name: Назва місця або адреса
 phone_number: Номер телефону
 car_number: Номер автомобіля
+tax_number: Податковий номер
 unknown: Будь-хто або будь-що
 url: Веб-сайт або веб-сторінка

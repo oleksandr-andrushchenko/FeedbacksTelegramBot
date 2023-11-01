@@ -295,6 +295,10 @@
                  class="App\Service\Feedback\SearchTerm\CarNumberSearchTermParser" lazy="true">
             <tag name="app.feedback_search_term_parser"/>
         </service>
+        <service id="app.feedback_search_term_parser_tax_number"
+                 class="App\Service\Feedback\SearchTerm\TaxNumberSearchTermParser" lazy="true">
+            <tag name="app.feedback_search_term_parser"/>
+        </service>
         <service id="app.feedback_search_term_parser_factory"
                  class="App\Service\Feedback\SearchTerm\SearchTermParserFactory" lazy="true">
             <argument type="tagged_locator" tag="app.feedback_search_term_parser"/>

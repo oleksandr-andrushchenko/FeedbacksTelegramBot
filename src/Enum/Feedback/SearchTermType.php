@@ -27,12 +27,14 @@ enum SearchTermType: int
     case organization_name = 70;
     case place_name = 80;
     case car_number = 1;
+    case tax_number = 2;
 
     public const base = [
         self::messenger_profile_url,
         self::messenger_username,
         self::phone_number,
         self::car_number,
+        self::tax_number,
         self::email,
         self::url,
         self::place_name,

@@ -427,6 +427,18 @@ class SearchTermParserTest extends KernelTestCase
                 'expectedSearchTerm' => new SearchTermTransfer($text, types: [SearchTermType::car_number]),
             ];
         }
+
+        foreach ([
+                     '111-22-3333',
+                     '111223333',
+                     '1234567891',
+                     '12345678910',
+                 ] as $text) {
+            yield 'tax number: ' . $text => [
+                'text' => $text,
+                'expectedSearchTerm' => new SearchTermTransfer($text, types: [SearchTermType::tax_number]),
+            ];
+        }
     }
 
     /**
@@ -828,6 +840,18 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $text => $normalizedText) {
             yield 'car number: ' . $text => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer((string) $text, type: SearchTermType::car_number),
+                'expectedSearchTerm' => (clone $searchTerm)->setNormalizedText($normalizedText),
+            ];
+        }
+
+        foreach ([
+                     '111-22-3333' => '111223333',
+                     '111223333' => null,
+                     '1234567891' => null,
+                     '12345678910' => null,
+                 ] as $text => $normalizedText) {
+            yield 'tax number: ' . $text => [
+                'searchTerm' => $searchTerm = new SearchTermTransfer((string) $text, type: SearchTermType::tax_number),
                 'expectedSearchTerm' => (clone $searchTerm)->setNormalizedText($normalizedText),
             ];
         }
