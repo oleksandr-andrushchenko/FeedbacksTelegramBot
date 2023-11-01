@@ -65,10 +65,6 @@ class FacebookSearchTermParser implements SearchTermParserInterface
 
     private function supportsUsername(string $username): bool
     {
-        if (is_numeric($username)) {
-            return false;
-        }
-
         return preg_match('/^' . $this->getUsernamePattern(false) . '$/im', $username) === 1;
     }
 
