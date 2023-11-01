@@ -55,6 +55,10 @@ class LocaleToolsCountriesProvider implements CountriesProviderInterface
                 continue;
             }
 
+            if ($code === 'pl') {
+                $locales[] = 'uk';
+            }
+
             if ($code === 'by') {
                 $currencies = [
                     'BLR',
