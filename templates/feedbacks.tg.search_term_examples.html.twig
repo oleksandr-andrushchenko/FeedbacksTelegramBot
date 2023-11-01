@@ -1,0 +1,10 @@
+{% trans_default_domain 'feedbacks.tg.search_term_examples' %}
+‼️ {{ 'items'|trans({'%bad%': '<u><b>' ~ 'items_bad'|trans ~ '</b></u>', '%good%': '<u><b>' ~ 'items_good'|trans ~ '</b></u>'})|raw }}:
+
+{% set reasons = {person_name: ['blur'], organization_name: ['overinfo']} %}
+{% for type, reasons in reasons %}
+▫️ {{ type|trans({}, 'feedbacks.search_term_type') }}:
+❌ {{ (type ~ '_bad')|trans|raw }} [ {{ reasons|map((reason) => '<u><b>' ~ ('item_' ~ reason)|trans ~ '</b></u>')|join(', ')|raw }} ]
+✅ {{ (type ~ '_good')|trans|raw }}
+
+{% endfor %}

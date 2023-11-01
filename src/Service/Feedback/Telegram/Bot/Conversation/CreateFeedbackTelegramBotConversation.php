@@ -296,7 +296,10 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         try {
             $this->validator->validate($searchTerm);
         } catch (ValidatorException $exception) {
-            $tg->replyWarning($exception->getFirstMessage());
+            $tg->replyWarning(implode("\n\n", [
+                $tg->queryText($exception->getFirstMessage()),
+                $tg->view('search_term_examples'),
+            ]));
 
             return $this->querySearchTerm($tg);
         }
@@ -411,7 +414,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $this->validator->validate($searchTerm);
         } catch (ValidatorException $exception) {
             $searchTerm->setType(null)->setTypes($original);
-            $tg->replyWarning($exception->getFirstMessage());
+            $tg->replyWarning($tg->queryText($exception->getFirstMessage()));
 
             return $this->querySearchTermType($tg);
         }
@@ -586,7 +589,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $this->validator->validate($this->state);
         } catch (ValidatorException $exception) {
             $this->state->setRating($original);
-            $tg->replyWarning($exception->getFirstMessage());
+            $tg->replyWarning($tg->queryText($exception->getFirstMessage()));
 
             return $this->queryRating($tg, $entity);
         }
@@ -704,7 +707,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $this->validator->validate($this->state);
         } catch (ValidatorException $exception) {
             $this->state->setDescription($original);
-            $tg->replyWarning($exception->getFirstMessage());
+            $tg->replyWarning($tg->queryText($exception->getFirstMessage()));
 
             return $this->queryDescription($tg);
         }
@@ -871,16 +874,16 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             return $this->chooseActionTelegramChatSender->sendActions($tg);
         } catch (ValidatorException $exception) {
             if ($exception->isFirstProperty('rating')) {
-                $tg->replyWarning($exception->getFirstMessage());
+                $tg->replyWarning($tg->queryText($exception->getFirstMessage()));
 
                 return $this->queryRating($tg, $entity);
             } elseif ($exception->isFirstProperty('description')) {
-                $tg->replyWarning($exception->getFirstMessage());
+                $tg->replyWarning($tg->queryText($exception->getFirstMessage()));
 
                 return $this->queryDescription($tg);
             }
 
-            $tg->replyWarning($exception->getFirstMessage());
+            $tg->replyWarning($tg->queryText($exception->getFirstMessage()));
 
             return $this->querySearchTerm($tg);
         } catch (SameMessengerUserException) {

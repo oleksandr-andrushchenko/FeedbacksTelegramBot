@@ -196,7 +196,10 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
         try {
             $this->validator->validate($searchTerm);
         } catch (ValidatorException $exception) {
-            $tg->replyWarning($exception->getFirstMessage());
+            $tg->replyWarning(implode("\n\n", [
+                $tg->queryText($exception->getFirstMessage()),
+                $tg->view('search_term_examples'),
+            ]));
 
             return $this->querySearchTerm($tg);
         }
@@ -307,7 +310,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
         try {
             $this->validator->validate($searchTerm);
         } catch (ValidatorException $exception) {
-            $tg->replyWarning($exception->getFirstMessage());
+            $tg->replyWarning($tg->queryText($exception->getFirstMessage()));
 
             return $this->querySearchTerm($tg);
         }
@@ -477,7 +480,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
             return $this->chooseActionTelegramChatSender->sendActions($tg);
         } catch (ValidatorException $exception) {
-            $tg->replyWarning($exception->getFirstMessage());
+            $tg->replyWarning($tg->queryText($exception->getFirstMessage()));
 
             return $this->querySearchTerm($tg);
         } catch (FeedbackCommandLimitExceededException $exception) {
