@@ -148,7 +148,7 @@ class SubscribeTelegramBotConversation extends TelegramBotConversation implement
             $this->validator->validate($this->state);
             $tg->getBot()->getMessengerUser()?->getUser()->setCurrencyCode($currency->getCode());
         } catch (ValidatorException $exception) {
-            $tg->replyWarning($exception->getFirstMessage());
+            $tg->replyWarning($tg->queryText($exception->getFirstMessage()));
 
             return $this->queryCurrency($tg);
         }
@@ -230,7 +230,7 @@ class SubscribeTelegramBotConversation extends TelegramBotConversation implement
         try {
             $this->validator->validate($this->state);
         } catch (ValidatorException $exception) {
-            $tg->replyWarning($exception->getFirstMessage());
+            $tg->replyWarning($tg->queryText($exception->getFirstMessage()));
 
             return $this->querySubscriptionPlan($tg);
         }
@@ -318,7 +318,7 @@ class SubscribeTelegramBotConversation extends TelegramBotConversation implement
         try {
             $this->validator->validate($this->state);
         } catch (ValidatorException $exception) {
-            $tg->replyWarning($exception->getFirstMessage());
+            $tg->replyWarning($tg->queryText($exception->getFirstMessage()));
 
             return $this->queryPaymentMethod($tg);
         }

@@ -228,7 +228,8 @@ class TelegramBotAwareHelper
 
     public function warningText(string $text): string
     {
-        return '⚠️ ' . $text;
+        return '⛔️ ' . $text;
+//        return '⚠️ ' . $text;
     }
 
     public function replyWarning(string $text): self
