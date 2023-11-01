@@ -3,5 +3,6 @@ text:
   single_line: Search term must contain only one line.
   single_space: Search term cannot have more than one space (skip) in a row.
   allowed_chars: Search term cannot contain special characters (%chars%), search term should be as simple and short as possible.
+  emoji: Search term cannot contain emoji.
   min_length: Search term must contain at least %min_length% characters.
   max_length: Search term cannot contain more than %max_length% characters.

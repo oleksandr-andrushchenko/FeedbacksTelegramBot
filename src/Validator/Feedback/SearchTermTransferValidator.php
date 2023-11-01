@@ -53,6 +53,10 @@ class SearchTermTransferValidator extends ConstraintValidator
             ]);
         }
 
+        if (preg_match($constraint->textEmojiRegex, $value->getText()) === 1) {
+            return $helper->addMessage($constraint->textEmojiMessage);
+        }
+
         if ($textLength < $constraint->textMinLength) {
             $helper->addMessage($constraint->textMinLengthMessage, [
                 'min_length' => $constraint->textMinLength,
