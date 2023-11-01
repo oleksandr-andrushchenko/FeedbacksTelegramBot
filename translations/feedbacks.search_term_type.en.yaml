@@ -1,14 +1,14 @@
 messenger_profile_url: Social network or messenger profile link
 instagram_username: Instagram nickname
-facebook_username: Facebook nickname
+facebook_username: Facebook nickname or id
 telegram_username: Telegram nickname
 twitter_username: X (Twitter) nickname
 tiktok_username: Tiktok nickname
 youtube_username: Youtube nickname
 onlyfans_username: Onlyfans nickname
 reddit_username: Reddit nickname
-vkontakte_username: VK (Vkontakte) nickname
-messenger_username: Social network or messenger user
+vkontakte_username: VK (Vkontakte) nickname or id
+messenger_username: Social network or messenger user's nickname or id
 email: Email address
 person_name: Person name
 organization_name: Company or organization name

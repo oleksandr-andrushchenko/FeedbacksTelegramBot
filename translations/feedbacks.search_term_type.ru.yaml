@@ -1,14 +1,14 @@
 messenger_profile_url: Ссылка на профиль в социальной сети или мессенджере
-instagram_username: Аккаунт Instagram
-facebook_username: Аккаунт Facebook
-telegram_username: Аккаунт Telegram
-twitter_username: Аккаунт X (Twitter)
-tiktok_username: Аккаунт Tiktok
-youtube_username: Аккаунт Youtube
-onlyfans_username: Аккаунт Onlyfans
-reddit_username: Аккаунт Reddit
-vkontakte_username: Аккаунт VK (Vkontakte)
-messenger_username: Пользователь социальной сети или мессенджера
+instagram_username: Никнейм Instagram
+facebook_username: Никнейм или айди Facebook
+telegram_username: Никнейм Telegram
+twitter_username: Никнейм X (Twitter)
+tiktok_username: Никнейм Tiktok
+youtube_username: Никнейм Youtube
+onlyfans_username: Никнейм Onlyfans
+reddit_username: Никнейм Reddit
+vkontakte_username: Никнейм или айди VK (Vkontakte)
+messenger_username: Никнейм или айди пользователя социальной сети или мессенджера
 email: Адрес электронной почты
 person_name: Имя человека
 organization_name: Название компании или организации
