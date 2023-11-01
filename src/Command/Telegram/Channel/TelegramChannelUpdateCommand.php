@@ -131,7 +131,7 @@ class TelegramChannelUpdateCommand extends Command
             $channelTransfer->setLevel1Region($level1Region);
         }
 
-        if ($input->hasOption('no-level-1-region')) {
+        if ($input->getOption('no-level-1-region')) {
             $channelTransfer->setLevel1Region(null);
         }
 
