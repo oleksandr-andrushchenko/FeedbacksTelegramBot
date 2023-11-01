@@ -407,9 +407,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
                 'query.payment',
             ],
             'shouldSeeButtons' => [
-                $this->command('create'),
-                $this->command('search'),
-                $this->command('lookup'),
+                ...$this->chooseActionButtons(),
             ],
             'shouldSeeStep' => SubscribeTelegramBotConversation::STEP_PAYMENT_QUERIED,
         ];
@@ -422,9 +420,7 @@ class SubscribeTelegramBotCommandFunctionalTest extends TelegramBotCommandFuncti
                 'query.payment',
             ],
             'shouldSeeButtons' => [
-                $this->command('create'),
-                $this->command('search'),
-                $this->command('lookup'),
+                ...$this->chooseActionButtons(),
             ],
             'shouldSeeStep' => SubscribeTelegramBotConversation::STEP_PAYMENT_QUERIED,
         ];
