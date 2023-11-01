@@ -9,6 +9,7 @@ use App\Service\Intl\CountriesProviderInterface;
 use App\Service\Intl\CountryTranslationsProviderInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -35,6 +36,7 @@ class CountriesUpdateCommand extends Command
     protected function configure(): void
     {
         $this
+            ->addOption('no-translations', mode: InputOption::VALUE_NONE, description: 'Whether to not update translations')
             ->setDescription('Update countries and country translations')
         ;
     }
@@ -47,7 +49,10 @@ class CountriesUpdateCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $this->updateCountries($io);
-        $this->updateCountryTranslations($io);
+
+        if (!$input->getOption('no-translations')) {
+            $this->updateCountryTranslations($io);
+        }
 
         $io->newLine();
         $io->success('Countries have been updated');
