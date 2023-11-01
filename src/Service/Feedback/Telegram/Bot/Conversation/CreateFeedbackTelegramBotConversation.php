@@ -155,20 +155,20 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         }
 
         if (!$help) {
-            $alreadyAddedTypes = [];
+            $skipTypes = [];
 
             foreach ($searchTerms as $searchTerm) {
-                $alreadyAddedTypes[] = $searchTerm->getType();
+                $skipTypes[] = $searchTerm->getType();
 
                 if (in_array($searchTerm->getType(), SearchTermType::messengers, true)) {
-                    $alreadyAddedTypes[] = SearchTermType::messenger_username;
-                    $alreadyAddedTypes[] = SearchTermType::messenger_profile_url;
+                    $skipTypes[] = SearchTermType::messenger_username;
+                    $skipTypes[] = SearchTermType::messenger_profile_url;
                 }
             }
 
             $types = array_filter(
                 SearchTermType::base,
-                static fn (SearchTermType $type): bool => !in_array($type, $alreadyAddedTypes, true)
+                static fn (SearchTermType $type): bool => !in_array($type, $skipTypes, true)
             );
             $query .= $tg->queryTipText(
                 rtrim($tg->view('search_term_types', context: ['types' => $types]))
