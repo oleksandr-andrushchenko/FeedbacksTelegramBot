@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if ! docker compose run php php bin/phpunit; then
+    echo "some test has been failed"
+    exit 1
+fi
+
 if [ $# -eq 0 ]; then
   echo "stage argument is required"
   exit 1
