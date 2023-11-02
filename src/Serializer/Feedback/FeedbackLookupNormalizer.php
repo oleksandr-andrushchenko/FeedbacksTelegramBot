@@ -22,7 +22,6 @@ class FeedbackLookupNormalizer implements NormalizerInterface
 
             return [
                 'user' => empty($user->getUsername()) ? 'N/A' : sprintf('@%s', $user->getUsername()),
-                'messenger' => $user->getMessenger()->name,
                 'term' => $object->getSearchTerm()->getText(),
                 'type' => $object->getSearchTerm()->getType()->name,
                 'bot' => sprintf('@%s', $object->getTelegramBot()->getUsername()),

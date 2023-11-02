@@ -22,7 +22,6 @@ class FeedbackNormalizer implements NormalizerInterface
 
             $data = [
                 'user' => empty($user->getUsername()) ? 'N/A' : sprintf('@%s', $user->getUsername()),
-                'messenger' => $user->getMessenger()->name,
             ];
 
             foreach ($object->getSearchTerms() as $index => $searchTerm) {
