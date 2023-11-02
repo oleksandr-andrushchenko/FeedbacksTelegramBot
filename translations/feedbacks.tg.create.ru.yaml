@@ -4,7 +4,7 @@ query:
   search_term_type: Кем или чем является %search_term%?
   extra_search_term: Добавьте больше информации о %search_term%.
   rating: Оцените Ваш опыт с %search_term%.
-  description: Оставьте комментарий или добавьте любую информацию о %search_term%.
+  description: Опишите Ваш опыт с %search_term%.
   description_tip: 'Например: расскажите, как прошла ваша встреча, разговор, любое взаимодействие, опишите человека, организацию или место и т.д.'
   confirm_preview: Ваш отзыв будет выглядеть так
   confirm: Создать отзыв?

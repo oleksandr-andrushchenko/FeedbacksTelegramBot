@@ -4,7 +4,7 @@ query:
   search_term_type: Who or what %search_term% is?
   extra_search_term: Add more info about %search_term%.
   rating: Rate your experience with %search_term%.
-  description: Left a comment or add some details about %search_term%.
+  description: Describe your experience with %search_term%.
   description_tip: 'For example: tell how your meeting, conversation, any interaction went, describe the person, organization, place, etc.'
   confirm_preview: Your feedback will look like this
   confirm: Create feedback?
