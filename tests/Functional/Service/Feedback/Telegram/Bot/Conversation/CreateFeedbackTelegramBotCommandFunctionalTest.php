@@ -1989,7 +1989,10 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         $feedback = $feedbackRepository->findOneLast();
         $this->assertNotNull($feedback);
 
-        foreach ($feedback->getSearchTerms() as $index => $searchTerm) {
+        $searchTerms = $feedback->getSearchTerms()->toArray();
+        usort($searchTerms, static fn (FeedbackSearchTerm $a, FeedbackSearchTerm $b): int => $a->getId() <=> $b->getId());
+
+        foreach ($searchTerms as $index => $searchTerm) {
             $this->assertEquals($searchTerms[$index]->getText(), $searchTerm->getText());
             $this->assertEquals($searchTerms[$index]->getType(), $searchTerm->getType());
             $this->assertEquals(
