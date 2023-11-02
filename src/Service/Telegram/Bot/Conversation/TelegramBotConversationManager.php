@@ -72,7 +72,14 @@ class TelegramBotConversationManager
         $botId = $bot->getEntity()->getId();
         $hash = $this->createTelegramConversationHash($messengerUserId, $chatId, $botId);
 
-        $entity = new TelegramBotConversation($hash, $messengerUserId, $chatId, $botId, $class, $state === null ? null : $this->normalizeState($state));
+        $entity = new TelegramBotConversation(
+            $hash,
+            $messengerUserId,
+            $chatId,
+            $botId,
+            $class,
+            $state === null ? null : $this->normalizeState($state)
+        );
         $this->entityManager->persist($entity);
 
         return $entity;
