@@ -18,23 +18,22 @@ class FeedbackNormalizer implements NormalizerInterface
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
         if ($format === 'activity') {
+            $user = $object->getMessengerUser();
+
             $data = [
-                'messenger_username' => sprintf('@%s', $object->getMessengerUser()->getUsername()),
-                'messenger' => $object->getMessengerUser()->getMessenger()->name,
+                'user' => empty($user->getUsername()) ? 'N/A' : sprintf('@%s', $user->getUsername()),
+                'messenger' => $user->getMessenger()->name,
             ];
 
             foreach ($object->getSearchTerms() as $index => $searchTerm) {
-                $data[sprintf('term_%d', $index + 1)] = [
-                    'text' => $searchTerm->getText(),
-                    'type' => $searchTerm->getType()->name,
-                ];
+                $data[sprintf('term%d', $index + 1)] = $searchTerm->getText();
+                $data[sprintf('type%d', $index + 1)] = $searchTerm->getType()->name;
             }
 
             $data = array_merge($data, [
                 'rate' => $object->getRating()->name,
                 'description' => $object->getDescription(),
                 'bot' => sprintf('@%s', $object->getTelegramBot()->getUsername()),
-                'created_at' => $object->getCreatedAt()->getTimestamp(),
             ]);
 
             return $data;

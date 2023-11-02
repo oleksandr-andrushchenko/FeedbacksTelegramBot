@@ -18,13 +18,14 @@ class FeedbackSearchNormalizer implements NormalizerInterface
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
         if ($format === 'activity') {
+            $user = $object->getMessengerUser();
+
             return [
-                'messenger_username' => sprintf('@%s', $object->getMessengerUser()->getUsername()),
-                'messenger' => $object->getMessengerUser()->getMessenger()->name,
-                'search_term' => $object->getSearchTerm()->getText(),
-                'search_term_type' => $object->getSearchTerm()->getType()->name,
+                'user' => empty($user->getUsername()) ? 'N/A' : sprintf('@%s', $user->getUsername()),
+                'messenger' => $user->getMessenger()->name,
+                'term' => $object->getSearchTerm()->getText(),
+                'type' => $object->getSearchTerm()->getType()->name,
                 'bot' => sprintf('@%s', $object->getTelegramBot()->getUsername()),
-                'created_at' => $object->getCreatedAt()->getTimestamp(),
             ];
         }
 
