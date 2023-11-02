@@ -1,1 +1,1 @@
-<u>{{ constant('App\\Service\\Feedback\\Telegram\\Bot\\FeedbackTelegramBotGroup::SUPPORTS')[name] }}</u> {{ icon ?? name|trans({}, 'feedbacks.tg.command_icon', 'en') }} <u>{{ name|trans({}, 'feedbacks.tg.command') }}</u>
+{% if (link is not defined) or link %}<u>{{ constant('App\\Service\\Feedback\\Telegram\\Bot\\FeedbackTelegramBotGroup::SUPPORTS')[name] }}</u> {% endif %}{{ icon ?? name|trans({}, 'feedbacks.tg.command_icon', 'en') }} <u>{{ name|trans({}, 'feedbacks.tg.command') }}</u>

@@ -6,6 +6,7 @@ namespace App\Service\Telegram\Bot;
 
 use App\Entity\Telegram\TelegramBotConversation;
 use App\Entity\Telegram\TelegramBotConversationState;
+use App\Service\Feedback\Telegram\Bot\FeedbackTelegramBotGroup;
 use App\Service\Telegram\Bot\Api\TelegramBotChatActionSenderInterface;
 use App\Service\Telegram\Bot\Api\TelegramBotMessageSenderInterface;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationManager;
@@ -308,19 +309,33 @@ class TelegramBotAwareHelper
         return $this->button('❌ ' . $this->trans('keyboard.cancel'));
     }
 
-    public function command(string $name, string $icon = null, bool $html = false): string
+    public function command(
+        string $name,
+        string $icon = null,
+        bool $link = true,
+        bool $html = false
+    ): string
     {
         if ($html) {
             return $this->view('command', [
+                'link' => $link,
                 'name' => $name,
                 'icon' => $icon,
             ]);
         }
 
-        return join(' ', [
-            $icon ?? $this->trans($name, domain: 'command_icon', locale: 'en'),
-            $this->trans($name, domain: 'command'),
-        ]);
+        $message = '';
+
+        if ($link) {
+            $message .= FeedbackTelegramBotGroup::SUPPORTS[$name];
+            $message .= ' ';
+        }
+
+        $message .= $icon ?? $this->trans($name, domain: 'command_icon', locale: 'en');
+        $message .= ' ';
+        $message .= $this->trans($name, domain: 'command');
+
+        return $message;
     }
 
     public function null(): null

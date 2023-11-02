@@ -15,16 +15,20 @@ class TelegramChannelLinkViewProvider
     {
     }
 
-    public function getTelegramChannelLinkView(TelegramChannel $channel): string
+    public function getTelegramChannelLinkView(TelegramChannel $channel, bool $html = false): string
     {
-        $link = $this->linkProvider->getTelegramLink($channel->getUsername());
-
         if (str_starts_with($channel->getUsername(), '+')) {
             $anchor = $channel->getName();
         } else {
             $anchor = '@' . $channel->getUsername();
         }
 
-        return sprintf('<u><b><a href="%s">%s</a></b></u>', $link, $anchor);
+        if ($html) {
+            $link = $this->linkProvider->getTelegramLink($channel->getUsername());
+
+            return sprintf('<u><b><a href="%s">%s</a></b></u>', $link, $anchor);
+        }
+
+        return $anchor;
     }
 }

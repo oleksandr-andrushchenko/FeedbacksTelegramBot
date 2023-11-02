@@ -792,7 +792,8 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         $channelNamesView = implode(
             ', ',
             array_map(
-                fn (TelegramChannel $channel): string => $this->telegramChannelLinkViewProvider->getTelegramChannelLinkView($channel),
+                fn (TelegramChannel $channel): string => $this->telegramChannelLinkViewProvider
+                    ->getTelegramChannelLinkView($channel, html: true),
                 $channels
             )
         );

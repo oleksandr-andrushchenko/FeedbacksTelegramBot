@@ -34,7 +34,7 @@ class StartTelegramCommandHandler
         $domain = 'start';
         $message = '👋 ' . $tg->queryText($tg->trans('greetings', domain: $domain));
         $message .= "\n\n";
-        $message .= $tg->infoText($tg->trans('title', domain: $domain));
+        $message .= '💫 ' . $tg->trans('title', domain: $domain);
 
         $channel = $this->telegramChannelRepository->findOnePrimaryByBot($tg->getBot()->getEntity());
 
@@ -48,18 +48,18 @@ class StartTelegramCommandHandler
         $message .= "\n\n";
         $message .= $tg->queryText($tg->trans('main_commands', domain: $domain)) . ':';
         $message .= "\n";
-        $message .= $tg->command('create', html: true);
+        $message .= $tg->command('create');
         $message .= "\n";
-        $message .= $tg->command('search', html: true);
+        $message .= $tg->command('search');
         $message .= "\n";
-        $message .= $tg->command('lookup', html: true);
+        $message .= $tg->command('lookup');
         $message .= "\n\n";
         $message .= $tg->queryText($tg->trans('setting_commands', domain: $domain)) . ':';
         $message .= "\n";
-        $message .= $tg->command('country', icon: $this->countryProvider->getCountryIconByCode($tg->getCountryCode()), html: true);
+        $message .= $tg->command('country', icon: $this->countryProvider->getCountryIconByCode($tg->getCountryCode()));
         $message .= "\n";
         $locale = $this->localeProvider->getLocale($tg->getLocaleCode());
-        $message .= $tg->command('locale', icon: $this->localeProvider->getLocaleIcon($locale), html: true);
+        $message .= $tg->command('locale', icon: $this->localeProvider->getLocaleIcon($locale));
 
         $tg->reply($message);
     }
