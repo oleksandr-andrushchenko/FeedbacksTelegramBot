@@ -8,7 +8,7 @@ keyboard:
   change_search_term: Изменить поисковый запрос
 reply:
   canceled: Диалог поиска отзывов отменен.
-  empty_list: По запросу %search_term% отзывов не найдено.
+  empty_list: На данный момент, о %search_term%, отзывов не найдено.
   will_notify: Мы сообщим Вам, когда кто-нибудь будет искать что-то о %search_term%.
   title: '%count% отзыв(-ов) были успешно найдены о %search_term%:'
   limit_exceeded: 'Вы достигли лимита поиска отзывов: %tries_for%. Повторите попытку позже или купите премиум-подписку.'

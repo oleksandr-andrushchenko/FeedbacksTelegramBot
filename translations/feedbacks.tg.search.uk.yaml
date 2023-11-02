@@ -8,7 +8,7 @@ keyboard:
   change_search_term: Змінити пошуковий термін
 reply:
   canceled: Діалог пошуку відгуків скасовано.
-  empty_list: Не знайдено відгуків про %search_term%.
+  empty_list: На даний момент, про %search_term%, відгуків не знайдено.
   will_notify: Ми повідомимо Вам, коли щось з'явиться про %search_term%.
   title: '%count% відгук(-ів) успішно знайдено про %search_term%:'
   limit_exceeded: 'Ви досягли ліміту пошуку відгуків: %tries_for%. Спробуйте пізніше або придбайте преміум-підписку.'
