@@ -18,9 +18,9 @@ class FeedbackCreatedTelegramChannelPublisher
     public function __construct(
         private readonly FeedbackRepository $feedbackRepository,
         private readonly TelegramBotRegistry $telegramBotRegistry,
-        private readonly TelegramChannelMatchesProvider $channelMatchesProvider,
-        private readonly TelegramBotMessageSenderInterface $messageSender,
-        private readonly FeedbackTelegramViewProvider $viewProvider,
+        private readonly TelegramChannelMatchesProvider $telegramChannelMatchesProvider,
+        private readonly TelegramBotMessageSenderInterface $telegramBotMessageSender,
+        private readonly FeedbackTelegramViewProvider $feedbackTelegramViewProvider,
         private readonly LoggerInterface $logger,
     )
     {
@@ -44,14 +44,14 @@ class FeedbackCreatedTelegramChannelPublisher
 
         $bot = $this->telegramBotRegistry->getTelegramBot($telegramBot);
 
-        $channels = $this->channelMatchesProvider->getTelegramChannelMatches(
+        $channels = $this->telegramChannelMatchesProvider->getTelegramChannelMatches(
             $bot->getMessengerUser()->getUser(),
             $bot->getEntity()
         );
 
         foreach ($channels as $channel) {
             try {
-                $message = $this->viewProvider->getFeedbackTelegramView(
+                $message = $this->feedbackTelegramViewProvider->getFeedbackTelegramView(
                     $bot,
                     $feedback,
                     addSecrets: true,
@@ -61,7 +61,7 @@ class FeedbackCreatedTelegramChannelPublisher
                 );
                 $chatId = $channel->getChatId() ?? ('@' . $channel->getUsername());
 
-                $response = $this->messageSender->sendTelegramMessage(
+                $response = $this->telegramBotMessageSender->sendTelegramMessage(
                     $bot->getEntity(),
                     $chatId,
                     $message,
