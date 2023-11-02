@@ -64,11 +64,11 @@ class ChooseActionTelegramChatSender
 
             $buttons[] = $this->getCountryButton($tg);
             $buttons[] = $this->getLocaleButton($tg);
-//            $buttons[] = $this->getCommandsButton($tg);
+            $buttons[] = $this->getCommandsButton($tg);
             $buttons[] = $this->getLimitsButton($tg);
-//            $buttons[] = $this->getPurgeButton($tg);
-//            $buttons[] = $this->getRestartButton($tg);
+            $buttons[] = $this->getRestartButton($tg);
             $buttons[] = $this->getContactButton($tg);
+            $buttons[] = $this->getPurgeButton($tg);
             $buttons[] = $this->getShowLessButton($tg);
         } else {
             $buttons[] = $this->getShowMoreButton($tg);
@@ -177,11 +177,11 @@ class ChooseActionTelegramChatSender
 
     public function getShowMoreButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->trans('keyboard.more'));
+        return $tg->button('⬇️ ' . $tg->trans('keyboard.more'));
     }
 
     public function getShowLessButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->trans('keyboard.less'));
+        return $tg->button('⬆️ ' . $tg->trans('keyboard.less'));
     }
 }
