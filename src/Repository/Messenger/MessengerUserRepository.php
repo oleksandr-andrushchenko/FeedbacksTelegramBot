@@ -41,7 +41,7 @@ class MessengerUserRepository extends ServiceEntityRepository
                 ->setParameter('identifier', $identifier)
                 ->setMaxResults(1)
                 ->getQuery()
-                ->getSingleResult()
+                ->getOneOrNullResult()
             ;
         }
 
