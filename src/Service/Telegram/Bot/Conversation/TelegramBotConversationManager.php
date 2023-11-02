@@ -23,14 +23,14 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class TelegramBotConversationManager
 {
     public function __construct(
-        private readonly TelegramBotAwareHelper $awareHelper,
-        private readonly TelegramBotConversationRepository $repository,
+        private readonly TelegramBotAwareHelper $telegramBotAwareHelper,
+        private readonly TelegramBotConversationRepository $telegramBotConversationRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly NormalizerInterface $conversationStateNormalizer,
         private readonly DenormalizerInterface $conversationStateDenormalizer,
         private readonly ArrayNullFilter $arrayNullFilter,
-        private readonly TelegramBotGroupRegistry $groupRegistry,
-        private readonly TelegramBotChatProvider $chatProvider,
+        private readonly TelegramBotGroupRegistry $telegramBotGroupRegistry,
+        private readonly TelegramBotChatProvider $telegramBotChatProvider,
     )
     {
     }
@@ -38,7 +38,7 @@ class TelegramBotConversationManager
     public function getCurrentTelegramConversation(TelegramBot $bot): ?TelegramBotConversation
     {
         $messengerUser = $bot->getMessengerUser();
-        $chatId = $this->chatProvider->getTelegramChatByUpdate($bot->getUpdate())?->getId();
+        $chatId = $this->telegramBotChatProvider->getTelegramChatByUpdate($bot->getUpdate())?->getId();
 
         if ($messengerUser === null || $chatId === null) {
             return null;
@@ -46,7 +46,7 @@ class TelegramBotConversationManager
 
         $hash = $this->createTelegramConversationHash($messengerUser->getId(), $chatId, $bot->getEntity()->getId());
 
-        return $this->repository->findOneByHash($hash);
+        return $this->telegramBotConversationRepository->findOneByHash($hash);
     }
 
     public function startTelegramConversation(TelegramBot $bot, string $class): void
@@ -68,7 +68,7 @@ class TelegramBotConversationManager
     ): TelegramBotConversation
     {
         $messengerUserId = $bot->getMessengerUser()->getId();
-        $chatId = $this->chatProvider->getTelegramChatByUpdate($bot->getUpdate())?->getId();
+        $chatId = $this->telegramBotChatProvider->getTelegramChatByUpdate($bot->getUpdate())?->getId();
         $botId = $bot->getEntity()->getId();
         $hash = $this->createTelegramConversationHash($messengerUserId, $chatId, $botId);
 
@@ -150,14 +150,14 @@ class TelegramBotConversationManager
         string $method
     ): TelegramBotConversationInterface
     {
-        $group = $this->groupRegistry->getTelegramGroup($bot->getEntity()->getGroup());
+        $group = $this->telegramBotGroupRegistry->getTelegramGroup($bot->getEntity()->getGroup());
         // todo: throw not found exception
         $conversation = $group->getTelegramConversationFactory()->createTelegramConversation($entity->getClass());
 
         $state = $this->denormalizeState($entity->getState(), get_class($conversation->getState()));
         $conversation->setState($state);
 
-        $tg = $this->awareHelper->withTelegramBot($bot);
+        $tg = $this->telegramBotAwareHelper->withTelegramBot($bot);
 
         $conversation->$method($tg, $entity);
 
