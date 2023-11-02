@@ -50,7 +50,7 @@ class FeedbackTelegramViewProvider
         }
 
         $user = $feedback->getMessengerUser()?->getUser();
-        $localeCode = $localeCode ?? $user->getLocaleCode();
+//        $localeCode = $localeCode ?? $user->getLocaleCode();
 
         $message = '';
 
