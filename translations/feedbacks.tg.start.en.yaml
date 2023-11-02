@@ -1,4 +1,5 @@
 greetings: Welcome!
 title: This bot allows you to anonymously search for and write reviews about people, organizations or places.
+channel: Main channel
 main_commands: Basic commands
 setting_commands: Settings

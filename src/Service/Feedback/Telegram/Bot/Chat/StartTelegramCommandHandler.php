@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Service\Feedback\Telegram\Bot\Chat;
 
+use App\Repository\Telegram\Channel\TelegramChannelRepository;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\LocaleProvider;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
+use App\Service\Telegram\Channel\View\TelegramChannelLinkViewProvider;
 
 class StartTelegramCommandHandler
 {
@@ -14,6 +16,8 @@ class StartTelegramCommandHandler
         private readonly ChooseActionTelegramChatSender $chooseActionTelegramChatSender,
         private readonly CountryProvider $countryProvider,
         private readonly LocaleProvider $localeProvider,
+        private readonly TelegramChannelRepository $telegramChannelRepository,
+        private readonly TelegramChannelLinkViewProvider $telegramChannelLinkViewProvider,
     )
     {
     }
@@ -31,6 +35,16 @@ class StartTelegramCommandHandler
         $message = '👋 ' . $tg->queryText($tg->trans('greetings', domain: $domain));
         $message .= "\n\n";
         $message .= $tg->infoText($tg->trans('title', domain: $domain));
+
+        $channel = $this->telegramChannelRepository->findOnePrimaryByBot($tg->getBot()->getEntity());
+
+        if ($channel !== null) {
+            $message .= "\n\n";
+            $message .= $tg->queryText($tg->trans('channel', domain: $domain)) . ':';
+            $message .= "\n";
+            $message .= $this->telegramChannelLinkViewProvider->getTelegramChannelLinkView($channel);
+        }
+
         $message .= "\n\n";
         $message .= $tg->queryText($tg->trans('main_commands', domain: $domain)) . ':';
         $message .= "\n";

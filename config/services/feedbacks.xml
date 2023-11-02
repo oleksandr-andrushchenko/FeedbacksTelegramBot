@@ -419,6 +419,8 @@
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.intl_locale_provider"/>
+            <argument type="service" id="app.telegram_channel_repository"/>
+            <argument type="service" id="app.telegram_channel_link_view_provider"/>
         </service>
         <service id="app.telegram_group_feedbacks"
                  class="App\Service\Feedback\Telegram\Bot\FeedbackTelegramBotGroup" lazy="true">
