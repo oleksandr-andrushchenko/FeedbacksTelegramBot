@@ -43,7 +43,7 @@ class TelegramBotMessengerUserUpserter
             currencyCode: $country->getCurrencyCode(),
             timezone: $country->getTimezones()[0] ?? null,
         );
-        $messengerUser = $this->messengerUserUpserter->upsertMessengerUser($messengerUserTransfer);
+        $messengerUser = $this->messengerUserUpserter->upsertMessengerUser($messengerUserTransfer, withUser: true);
         $this->userUpserter->upsertUserByMessengerUser($messengerUser, $messengerUserTransfer);
 
         return $messengerUser;

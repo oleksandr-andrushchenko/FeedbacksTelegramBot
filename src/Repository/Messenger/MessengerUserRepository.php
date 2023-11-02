@@ -25,16 +25,26 @@ class MessengerUserRepository extends ServiceEntityRepository
         parent::__construct($registry, MessengerUser::class);
     }
 
-    public function findOneByMessengerAndUsername(Messenger $messenger, string $username): ?MessengerUser
+    public function findOneByMessengerAndIdentifier(
+        Messenger $messenger,
+        string $identifier,
+        bool $withUser = false
+    ): ?MessengerUser
     {
-        return $this->findOneBy([
-            'messenger' => $messenger,
-            'username' => $username,
-        ]);
-    }
+        if ($withUser) {
+            return $this->createQueryBuilder('mu')
+                ->select('mu', 'u')
+                ->innerJoin('mu.user', 'u')
+                ->andWhere('mu.messenger = :messenger')
+                ->setParameter('messenger', $messenger)
+                ->andWhere('mu.identifier = :identifier')
+                ->setParameter('identifier', $identifier)
+                ->setMaxResults(1)
+                ->getQuery()
+                ->getSingleResult()
+            ;
+        }
 
-    public function findOneByMessengerAndIdentifier(Messenger $messenger, string $identifier): ?MessengerUser
-    {
         return $this->findOneBy([
             'messenger' => $messenger,
             'identifier' => $identifier,

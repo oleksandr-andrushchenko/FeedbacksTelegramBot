@@ -20,10 +20,12 @@ class MessengerUserUpserter
     {
     }
 
-    public function upsertMessengerUser(MessengerUserTransfer $transfer): MessengerUser
+    public function upsertMessengerUser(MessengerUserTransfer $transfer, bool $withUser = false): MessengerUser
     {
         $messengerUser = $this->repository->findOneByMessengerAndIdentifier(
-            $transfer->getMessenger(), $transfer->getId()
+            $transfer->getMessenger(),
+            $transfer->getId(),
+            withUser: $withUser,
         );
 
         if ($messengerUser === null) {
