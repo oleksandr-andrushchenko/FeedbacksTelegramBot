@@ -16,12 +16,12 @@ class TelegramBotRequest
         private readonly TelegramBot $bot,
         private ?array $response = null,
         private ?DateTimeInterface $createdAt = null,
-        private ?int $id = null,
+        private ?string $id = null,
     )
     {
     }
 
-    public function getId(): ?int
+    public function getId(): ?string
     {
         return $this->id;
     }

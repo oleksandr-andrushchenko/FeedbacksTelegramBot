@@ -9,7 +9,7 @@ use DateTimeInterface;
 class TelegramBotUpdate
 {
     public function __construct(
-        private readonly int $id,
+        private readonly string $id,
         private readonly array $data,
         private readonly TelegramBot $bot,
         private ?DateTimeInterface $createdAt = null,
@@ -17,7 +17,7 @@ class TelegramBotUpdate
     {
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }

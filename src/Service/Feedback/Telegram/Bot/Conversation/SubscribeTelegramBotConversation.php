@@ -386,7 +386,7 @@ class SubscribeTelegramBotConversation extends TelegramBotConversation implement
             $this->paymentManager->sendPaymentRequest(
                 $tg->getBot(),
                 $tg->getBot()->getMessengerUser(),
-                $tg->getChatId(),
+                (string) $tg->getChatId(),
                 $this->state->getPaymentMethod(),
                 $tg->trans('query.payment_invoice_title', $parameters, domain: 'subscribe'),
                 $tg->trans('query.payment_invoice_description', $parameters, domain: 'subscribe'),

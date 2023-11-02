@@ -13,7 +13,7 @@ interface TelegramBotInvoiceSenderInterface
 {
     /**
      * @param TelegramBot $bot
-     * @param int $chatId
+     * @param string $chatId
      * @param string $title
      * @param string $description
      * @param string $payload
@@ -29,7 +29,7 @@ interface TelegramBotInvoiceSenderInterface
      */
     public function sendInvoice(
         TelegramBot $bot,
-        int $chatId,
+        string $chatId,
         string $title,
         string $description,
         string $payload,

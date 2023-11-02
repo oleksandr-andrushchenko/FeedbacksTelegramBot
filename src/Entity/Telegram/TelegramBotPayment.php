@@ -18,7 +18,7 @@ class TelegramBotPayment implements Stringable
     public function __construct(
         private readonly string $id,
         private readonly MessengerUser $messengerUser,
-        private readonly int $chatId,
+        private readonly string $chatId,
         private readonly TelegramBotPaymentMethod $method,
         private readonly string $purpose,
         Money $price,
@@ -44,7 +44,7 @@ class TelegramBotPayment implements Stringable
         return $this->messengerUser;
     }
 
-    public function getChatId(): int
+    public function getChatId(): string
     {
         return $this->chatId;
     }

@@ -146,7 +146,7 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
         $conversation = new TelegramBotConversation(
             $messengerUserId . '-' . $chatId . '-' . $botId,
             $messengerUserId,
-            $chatId,
+            (string) $chatId,
             $botId,
             $class,
             $this->getSerializer()->normalize($state)

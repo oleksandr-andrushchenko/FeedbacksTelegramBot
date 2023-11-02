@@ -138,7 +138,7 @@ class TelegramChannelImporter
                 ->setCountry($country)
                 ->setLocale($locale)
                 ->setLevel1Region($level1Region)
-                ->setChatId(empty($data['chat_id']) ? null : (int) $data['chat_id'])
+                ->setChatId(empty($data['chat_id']) ? null : $data['chat_id'])
                 ->setPrimary($data['primary'] === '1')
             ;
 

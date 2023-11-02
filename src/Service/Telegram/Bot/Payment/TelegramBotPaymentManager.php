@@ -44,7 +44,7 @@ class TelegramBotPaymentManager
     /**
      * @param TelegramBot $bot
      * @param MessengerUser $messengerUser
-     * @param int $chatId
+     * @param string $chatId
      * @param TelegramBotPaymentMethod $paymentMethod
      * @param string $title
      * @param string $description
@@ -58,7 +58,7 @@ class TelegramBotPaymentManager
     public function sendPaymentRequest(
         TelegramBot $bot,
         MessengerUser $messengerUser,
-        int $chatId,
+        string $chatId,
         TelegramBotPaymentMethod $paymentMethod,
         string $title,
         string $description,
@@ -185,7 +185,7 @@ class TelegramBotPaymentManager
         }
 
         if ($user->getPhoneNumber() === null && $orderInfo->getPhoneNumber() !== null) {
-            $user->setPhoneNumber((int) $orderInfo->getPhoneNumber());
+            $user->setPhoneNumber($orderInfo->getPhoneNumber());
         }
 
         if ($user->getEmail() === null && $orderInfo->getEmail() !== null) {

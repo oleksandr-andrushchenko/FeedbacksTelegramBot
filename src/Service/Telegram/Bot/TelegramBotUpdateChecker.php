@@ -44,7 +44,7 @@ class TelegramBotUpdateChecker
         }
 
         $update = new TelegramBotUpdate(
-            $bot->getUpdate()->getUpdateId(),
+            (string) $bot->getUpdate()->getUpdateId(),
             $bot->getUpdate()->getRawData(),
             $bot->getEntity()
         );

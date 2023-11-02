@@ -15,7 +15,7 @@ class TelegramBotInvoiceSender implements TelegramBotInvoiceSenderInterface
 {
     public function sendInvoice(
         TelegramBot $bot,
-        int $chatId,
+        string $chatId,
         string $title,
         string $description,
         string $payload,

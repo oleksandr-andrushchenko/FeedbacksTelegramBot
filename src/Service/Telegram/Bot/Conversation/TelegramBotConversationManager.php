@@ -75,7 +75,7 @@ class TelegramBotConversationManager
         $entity = new TelegramBotConversation(
             $hash,
             $messengerUserId,
-            $chatId,
+            (string) $chatId,
             $botId,
             $class,
             $state === null ? null : $this->normalizeState($state)

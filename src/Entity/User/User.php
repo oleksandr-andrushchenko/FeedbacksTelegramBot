@@ -22,7 +22,7 @@ class User
         private ?string $localeCode = null,
         private ?string $currencyCode = null,
         private ?string $timezone = null,
-        private ?int $phoneNumber = null,
+        private ?string $phoneNumber = null,
         private ?string $email = null,
         private ?DateTimeInterface $subscriptionExpireAt = null,
         private ?DateTimeInterface $createdAt = null,
@@ -98,12 +98,12 @@ class User
         return $this;
     }
 
-    public function getPhoneNumber(): ?int
+    public function getPhoneNumber(): ?string
     {
         return $this->phoneNumber;
     }
 
-    public function setPhoneNumber(?int $phoneNumber): self
+    public function setPhoneNumber(?string $phoneNumber): self
     {
         $this->phoneNumber = $phoneNumber;
 

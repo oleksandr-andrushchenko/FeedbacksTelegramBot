@@ -11,7 +11,7 @@ class TelegramBotConversation
     public function __construct(
         private readonly string $hash,
         private readonly string $messengerUserId,
-        private readonly int $chatId,
+        private readonly string $chatId,
         private readonly int $botId,
         private readonly string $class,
         private ?array $state = null,
@@ -37,7 +37,7 @@ class TelegramBotConversation
         return $this->messengerUserId;
     }
 
-    public function getChatId(): int
+    public function getChatId(): string
     {
         return $this->chatId;
     }

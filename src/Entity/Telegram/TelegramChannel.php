@@ -16,7 +16,7 @@ class TelegramChannel
         private string $countryCode,
         private string $localeCode,
         private ?string $level1RegionId = null,
-        private ?int $chatId = null,
+        private ?string $chatId = null,
         private bool $primary = true,
         private ?DateTimeInterface $createdAt = null,
         private ?DateTimeInterface $updatedAt = null,
@@ -96,12 +96,12 @@ class TelegramChannel
         return $this;
     }
 
-    public function getChatId(): ?int
+    public function getChatId(): ?string
     {
         return $this->chatId;
     }
 
-    public function setChatId(?int $chatId): self
+    public function setChatId(?string $chatId): self
     {
         $this->chatId = $chatId;
 
