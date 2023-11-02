@@ -1,4 +1,4 @@
-items: 'Available commands:'
+items: Available commands
 create: Create feedback (report, complain or gratitude) on user, organization or place.
 search: Search for feedbacks (report, check, verify) on user, organization or place.
 lookup: Search for lookups on interested user, organization or place.
@@ -8,6 +8,7 @@ country: Choose your country.
 locale: Choose your language.
 limits: Command limit list.
 purge: Remove stored user data.
+donate: Donate to the bot
 contact: Contact info, ask a question of left a feedback message.
 commands: Available command list.
 restart: Restore default settings and restart the bot.
