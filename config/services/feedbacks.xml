@@ -358,6 +358,7 @@
             <argument type="service" id="app.feedback_rating_provider"/>
             <argument type="service" id="translator"/>
             <argument type="service" id="app.feedback_telegram_reply_sign_view_provider"/>
+            <argument type="service" id="app.string_mb_lc_firster"/>
         </service>
         <service id="app.feedback_search_term_telegram_view_provider"
                  class="App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider" lazy="true">

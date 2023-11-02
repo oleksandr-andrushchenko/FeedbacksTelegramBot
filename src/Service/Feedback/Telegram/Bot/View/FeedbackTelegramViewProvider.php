@@ -13,6 +13,7 @@ use App\Service\Feedback\Telegram\View\MultipleSearchTermTelegramViewProvider;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\TimeProvider;
 use App\Service\Telegram\Bot\TelegramBot;
+use App\Service\Util\String\MbLcFirster;
 use App\Transfer\Feedback\SearchTermTransfer;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -26,6 +27,7 @@ class FeedbackTelegramViewProvider
         private readonly FeedbackRatingProvider $feedbackRatingProvider,
         private readonly TranslatorInterface $translator,
         private readonly FeedbackTelegramReplySignViewProvider $feedbackTelegramReplySignViewProvider,
+        private readonly MbLcFirster $mbLcFirster,
     )
     {
     }
@@ -68,7 +70,8 @@ class FeedbackTelegramViewProvider
             $message .= ', ';
         }
 
-        $message .= $this->translator->trans('somebody_from', domain: 'feedbacks.tg.feedback', locale: $localeCode);
+        $somebodyFrom = $this->translator->trans('somebody_from', domain: 'feedbacks.tg.feedback', locale: $localeCode);
+        $message .= $showTime ? $this->mbLcFirster->mbLcFirst($somebodyFrom) : $somebodyFrom;
         $message .= ' ';
         $country = $this->countryProvider->getCountryComposeName($country, localeCode: $localeCode);
         $message .= sprintf('<u>%s</u>', $country);
