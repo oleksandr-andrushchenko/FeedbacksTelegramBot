@@ -417,7 +417,6 @@
         <service id="app.start_telegram_command_handler"
                  class="App\Service\Feedback\Telegram\Bot\Chat\StartTelegramCommandHandler" lazy="true">
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
-            <argument type="service" id="app.site_url_generator"/>
             <argument type="service" id="app.intl_country_provider"/>
             <argument type="service" id="app.intl_locale_provider"/>
         </service>

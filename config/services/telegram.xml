@@ -359,7 +359,6 @@
                  class="App\Service\Telegram\Bot\Api\TelegramBotDescriptionsSyncer"
                  lazy="true">
             <argument type="service" id="app.telegram_bot_registry"/>
-            <argument type="service" id="app.site_url_generator"/>
             <argument type="service" id="app.translator"/>
         </service>
         <service id="app.telegram_bot_message_sender" class="App\Service\Telegram\Bot\Api\TelegramBotMessageSender"
