@@ -11,6 +11,7 @@ use App\Service\Telegram\Bot\Api\TelegramBotMessageSenderInterface;
 use App\Service\Telegram\Bot\TelegramBotRegistry;
 use App\Service\Telegram\Channel\TelegramChannelMatchesProvider;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 class FeedbackCreatedTelegramChannelPublisher
 {
@@ -49,32 +50,36 @@ class FeedbackCreatedTelegramChannelPublisher
         );
 
         foreach ($channels as $channel) {
-            $message = $this->viewProvider->getFeedbackTelegramView(
-                $bot,
-                $feedback,
-                addSecrets: true,
-                showTime: false,
-                channel: $channel,
-                localeCode: $channel->getLocaleCode(),
-            );
-            $chatId = $channel->getChatId() ?? ('@' . $channel->getUsername());
+            try {
+                $message = $this->viewProvider->getFeedbackTelegramView(
+                    $bot,
+                    $feedback,
+                    addSecrets: true,
+                    showTime: false,
+                    channel: $channel,
+                    localeCode: $channel->getLocaleCode(),
+                );
+                $chatId = $channel->getChatId() ?? ('@' . $channel->getUsername());
 
-            $response = $this->messageSender->sendTelegramMessage(
-                $bot->getEntity(),
-                $chatId,
-                $message,
-                keepKeyboard: true
-            );
+                $response = $this->messageSender->sendTelegramMessage(
+                    $bot->getEntity(),
+                    $chatId,
+                    $message,
+                    keepKeyboard: true
+                );
 
-            if (!$response->isOk()) {
-                $this->logger->error($response->getDescription());
-                continue;
-            }
+                if (!$response->isOk()) {
+                    $this->logger->error($response->getDescription());
+                    continue;
+                }
 
-            $messageId = $response->getResult()?->getMessageId();
+                $messageId = $response->getResult()?->getMessageId();
 
-            if ($messageId !== null) {
-                $feedback->addChannelMessageId($messageId);
+                if ($messageId !== null) {
+                    $feedback->addChannelMessageId($messageId);
+                }
+            } catch (Throwable $exception) {
+                $this->logger->error($exception);
             }
         }
     }

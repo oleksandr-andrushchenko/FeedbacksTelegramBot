@@ -8,6 +8,7 @@ use App\Entity\Feedback\Command\FeedbackCommandOptions;
 use App\Message\Event\Feedback\FeedbackSearchCreatedEvent;
 use App\Repository\Feedback\FeedbackSearchRepository;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 class FeedbackSearchCreatedActivityLogger
 {
@@ -33,6 +34,10 @@ class FeedbackSearchCreatedActivityLogger
             return;
         }
 
-        $this->activityLogger->info($search);
+        try {
+            $this->activityLogger->info($search);
+        } catch (Throwable $exception) {
+            $this->logger->error($exception);
+        }
     }
 }

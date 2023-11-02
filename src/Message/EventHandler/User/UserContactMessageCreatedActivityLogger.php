@@ -7,6 +7,7 @@ namespace App\Message\EventHandler\User;
 use App\Message\Event\User\UserContactMessageCreatedEvent;
 use App\Repository\User\UserContactMessageRepository;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 class UserContactMessageCreatedActivityLogger
 {
@@ -27,6 +28,10 @@ class UserContactMessageCreatedActivityLogger
             return;
         }
 
-        $this->activityLogger->info($message);
+        try {
+            $this->activityLogger->info($message);
+        } catch (Throwable $exception) {
+            $this->logger->error($exception);
+        }
     }
 }

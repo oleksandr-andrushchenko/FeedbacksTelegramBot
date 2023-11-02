@@ -8,6 +8,7 @@ use App\Entity\Feedback\Command\FeedbackCommandOptions;
 use App\Message\Event\Feedback\FeedbackLookupCreatedEvent;
 use App\Repository\Feedback\FeedbackLookupRepository;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 class FeedbackLookupCreatedActivityLogger
 {
@@ -33,6 +34,10 @@ class FeedbackLookupCreatedActivityLogger
             return;
         }
 
-        $this->activityLogger->info($lookup);
+        try {
+            $this->activityLogger->info($lookup);
+        } catch (Throwable $exception) {
+            $this->logger->error($exception);
+        }
     }
 }

@@ -8,6 +8,7 @@ use App\Entity\Feedback\Command\FeedbackCommandOptions;
 use App\Message\Event\Feedback\FeedbackCreatedEvent;
 use App\Repository\Feedback\FeedbackRepository;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 class FeedbackCreatedActivityLogger
 {
@@ -33,6 +34,10 @@ class FeedbackCreatedActivityLogger
             return;
         }
 
-        $this->activityLogger->info($feedback);
+        try {
+            $this->activityLogger->info($feedback);
+        } catch (Throwable $exception) {
+            $this->logger->error($exception);
+        }
     }
 }
