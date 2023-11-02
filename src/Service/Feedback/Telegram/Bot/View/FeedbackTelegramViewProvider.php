@@ -91,9 +91,9 @@ class FeedbackTelegramViewProvider
             $message .= '<tg-spoiler>';
             $message .= $feedback->getDescription();
             $message .= '</tg-spoiler>';
+            $message .= "\n";
         }
 
-        $message .= ' ';
         $message .= '<b>';
         $rating = $this->feedbackRatingProvider->getRatingComposeName($feedback->getRating(), localeCode: $localeCode);
         $message .= $rating;
