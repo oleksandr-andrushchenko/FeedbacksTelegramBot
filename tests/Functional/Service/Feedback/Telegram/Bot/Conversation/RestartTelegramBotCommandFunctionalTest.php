@@ -32,8 +32,7 @@ class RestartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
             ->typeText($input)
             ->shouldSeeActiveConversation(
                 RestartConversationTelegramBotConversation::class,
-                (new TelegramBotConversationState())
-                    ->setStep(RestartConversationTelegramBotConversation::STEP_CONFIRM_QUERIED)
+                new TelegramBotConversationState(RestartConversationTelegramBotConversation::STEP_CONFIRM_QUERIED)
             )
             ->shouldSeeReply(
                 'query.confirm',
@@ -66,8 +65,7 @@ class RestartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
 
         $this->createConversation(
             RestartConversationTelegramBotConversation::class,
-            (new TelegramBotConversationState())
-                ->setStep(RestartConversationTelegramBotConversation::STEP_CONFIRM_QUERIED)
+            new TelegramBotConversationState(RestartConversationTelegramBotConversation::STEP_CONFIRM_QUERIED)
         );
 
         $this
