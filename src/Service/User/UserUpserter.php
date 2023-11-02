@@ -8,7 +8,6 @@ use App\Entity\Messenger\MessengerUser;
 use App\Entity\User\User;
 use App\Service\IdGenerator;
 use App\Transfer\Messenger\MessengerUserTransfer;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 
 class UserUpserter
@@ -31,8 +30,6 @@ class UserUpserter
             $this->entityManager->persist($user);
 
             $messengerUser->setUser($user);
-        } else {
-            $user->setUpdatedAt(new DateTimeImmutable());
         }
 
         if (empty($user->getUsername()) && !empty($messengerUser->getUsername())) {

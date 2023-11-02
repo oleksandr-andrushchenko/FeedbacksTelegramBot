@@ -8,7 +8,6 @@ use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBot;
 use App\Entity\User\User;
 use App\Enum\Feedback\Rating;
-use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -30,7 +29,7 @@ class Feedback implements Stringable
         private readonly ?string $localeCode = null,
         private ?array $channelMessageIds = null,
         private readonly ?TelegramBot $telegramBot = null,
-        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
+        private ?DateTimeInterface $createdAt = null,
     )
     {
         $this->searchTerms = new ArrayCollection();
@@ -114,9 +113,16 @@ class Feedback implements Stringable
         return $this->telegramBot;
     }
 
-    public function getCreatedAt(): DateTimeInterface
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function setCreatedAt(?DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 
     public function __toString(): string

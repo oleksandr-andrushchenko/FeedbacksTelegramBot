@@ -6,7 +6,6 @@ namespace App\Entity\Messenger;
 
 use App\Entity\User\User;
 use App\Enum\Messenger\Messenger;
-use DateTimeImmutable;
 use DateTimeInterface;
 
 class MessengerUser
@@ -19,7 +18,7 @@ class MessengerUser
         private ?string $name = null,
         private ?User $user = null,
         private bool $showExtendedKeyboard = false,
-        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
+        private ?DateTimeInterface $createdAt = null,
         private ?DateTimeInterface $updatedAt = null,
     )
     {
@@ -88,9 +87,16 @@ class MessengerUser
         return $this;
     }
 
-    public function getCreatedAt(): DateTimeInterface
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function setCreatedAt(?DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 
     public function getUpdatedAt(): ?DateTimeInterface

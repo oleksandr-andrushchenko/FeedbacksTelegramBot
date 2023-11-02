@@ -6,7 +6,6 @@ namespace App\Entity\User;
 
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBot;
-use DateTimeImmutable;
 use DateTimeInterface;
 use Stringable;
 
@@ -18,7 +17,7 @@ class UserContactMessage implements Stringable
         private readonly User $user,
         private readonly string $text,
         private readonly ?TelegramBot $telegramBot,
-        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
+        private ?DateTimeInterface $createdAt = null,
     )
     {
     }
@@ -48,9 +47,16 @@ class UserContactMessage implements Stringable
         return $this->telegramBot;
     }
 
-    public function getCreatedAt(): DateTimeInterface
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function setCreatedAt(?DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 
     public function __toString(): string

@@ -21,7 +21,6 @@ use App\Service\Intl\CurrencyProvider;
 use App\Service\Telegram\Bot\Api\TelegramBotInvoiceSenderInterface;
 use App\Service\Telegram\Bot\TelegramBot;
 use App\Service\IdGenerator;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Entities\Payments\LabeledPrice;
 use Longman\TelegramBot\Entities\Payments\OrderInfo;
@@ -126,7 +125,6 @@ class TelegramBotPaymentManager
         ]);
 
         $payment->setStatus(TelegramBotPaymentStatus::PRE_CHECKOUT_RECEIVED);
-        $payment->setUpdatedAt(new DateTimeImmutable());
 
         $this->eventBus->dispatch(new TelegramBotPaymentPreCheckoutEvent(payment: $payment));
 
@@ -148,7 +146,6 @@ class TelegramBotPaymentManager
         $this->updateUserByOrderInfo($bot->getMessengerUser()->getUser(), $successfulPayment->getOrderInfo());
 
         $payment->setStatus(TelegramBotPaymentStatus::SUCCESSFUL_PAYMENT_RECEIVED);
-        $payment->setUpdatedAt(new DateTimeImmutable());
 
         $this->eventBus->dispatch(new TelegramBotPaymentSuccessfulEvent(payment: $payment));
 

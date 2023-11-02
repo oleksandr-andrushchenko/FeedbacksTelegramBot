@@ -6,7 +6,6 @@ namespace App\Service\Telegram\Bot;
 
 use App\Entity\Telegram\TelegramBot;
 use App\Transfer\Telegram\TelegramBotTransfer;
-use DateTimeImmutable;
 
 class TelegramBotUpdater
 {
@@ -58,8 +57,6 @@ class TelegramBotUpdater
         if ($botTransfer->primaryPassed()) {
             $bot->setPrimary($botTransfer->primary());
         }
-
-        $bot->setUpdatedAt(new DateTimeImmutable());
 
         $this->validator->validateTelegramBot($bot);
     }

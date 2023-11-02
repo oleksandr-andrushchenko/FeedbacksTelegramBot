@@ -6,7 +6,6 @@ namespace App\Service\Telegram\Channel;
 
 use App\Entity\Telegram\TelegramChannel;
 use App\Transfer\Telegram\TelegramChannelTransfer;
-use DateTimeImmutable;
 
 class TelegramChannelUpdater
 {
@@ -46,8 +45,6 @@ class TelegramChannelUpdater
         if ($channelTransfer->chatIdPassed()) {
             $channel->setChatId($channelTransfer->getChatId());
         }
-
-        $channel->setUpdatedAt(new DateTimeImmutable());
 
         $this->validator->validateTelegramChannel($channel);
     }

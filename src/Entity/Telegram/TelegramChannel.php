@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Entity\Telegram;
 
 use App\Enum\Telegram\TelegramBotGroupName;
-use DateTimeImmutable;
 use DateTimeInterface;
 
 class TelegramChannel
@@ -19,7 +18,7 @@ class TelegramChannel
         private ?string $level1RegionId = null,
         private ?int $chatId = null,
         private bool $primary = true,
-        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
+        private ?DateTimeInterface $createdAt = null,
         private ?DateTimeInterface $updatedAt = null,
         private ?DateTimeInterface $deletedAt = null,
         private ?int $id = null,
@@ -121,9 +120,16 @@ class TelegramChannel
         return $this;
     }
 
-    public function getCreatedAt(): DateTimeInterface
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function setCreatedAt(?DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 
     public function getUpdatedAt(): ?DateTimeInterface

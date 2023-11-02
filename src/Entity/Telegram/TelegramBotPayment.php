@@ -7,7 +7,6 @@ namespace App\Entity\Telegram;
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Money;
 use App\Enum\Telegram\TelegramBotPaymentStatus;
-use DateTimeImmutable;
 use DateTimeInterface;
 use Stringable;
 
@@ -27,7 +26,7 @@ class TelegramBotPayment implements Stringable
         private ?array $preCheckoutQuery = null,
         private ?array $successfulPayment = null,
         private ?TelegramBotPaymentStatus $status = TelegramBotPaymentStatus::REQUEST_SENT,
-        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
+        private ?DateTimeInterface $createdAt = null,
         private ?DateTimeInterface $updatedAt = null,
     )
     {
@@ -106,9 +105,16 @@ class TelegramBotPayment implements Stringable
         return $this;
     }
 
-    public function getCreatedAt(): DateTimeInterface
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function setCreatedAt(?DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 
     public function getUpdatedAt(): ?DateTimeInterface

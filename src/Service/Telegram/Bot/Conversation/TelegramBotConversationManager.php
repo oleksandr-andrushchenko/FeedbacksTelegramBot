@@ -13,7 +13,6 @@ use App\Service\Telegram\Bot\TelegramBot;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
 use App\Service\Telegram\Bot\TelegramBotChatProvider;
 use App\Service\Util\Array\ArrayNullFilter;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -158,7 +157,6 @@ class TelegramBotConversationManager
         $state = $this->normalizeState($conversation->getState());
 
         $entity->setState($state);
-        $entity->setUpdatedAt(new DateTimeImmutable());
 
         return $conversation;
     }

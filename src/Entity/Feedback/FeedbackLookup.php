@@ -7,7 +7,6 @@ namespace App\Entity\Feedback;
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBot;
 use App\Entity\User\User;
-use DateTimeImmutable;
 use DateTimeInterface;
 use Stringable;
 
@@ -22,7 +21,7 @@ class FeedbackLookup implements Stringable
         private readonly ?string $countryCode = null,
         private readonly ?string $localeCode = null,
         private readonly ?TelegramBot $telegramBot = null,
-        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
+        private ?DateTimeInterface $createdAt = null,
     )
     {
     }
@@ -67,9 +66,16 @@ class FeedbackLookup implements Stringable
         return $this->telegramBot;
     }
 
-    public function getCreatedAt(): DateTimeInterface
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function setCreatedAt(?DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 
     public function __toString(): string

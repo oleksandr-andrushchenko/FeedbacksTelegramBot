@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Entity\Telegram;
 
 use App\Enum\Telegram\TelegramBotPaymentMethodName;
-use DateTimeImmutable;
 use DateTimeInterface;
 
 class TelegramBotPaymentMethod
@@ -15,7 +14,7 @@ class TelegramBotPaymentMethod
         private readonly TelegramBotPaymentMethodName $name,
         private readonly string $token,
         private readonly array $currencyCodes,
-        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
+        private ?DateTimeInterface $createdAt = null,
         private ?DateTimeInterface $deletedAt = null,
         private ?int $id = null,
     )
@@ -47,9 +46,16 @@ class TelegramBotPaymentMethod
         return $this->currencyCodes;
     }
 
-    public function getCreatedAt(): DateTimeInterface
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function setCreatedAt(?DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 
     public function getDeletedAt(): ?DateTimeInterface

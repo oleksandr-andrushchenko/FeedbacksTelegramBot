@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity\Telegram;
 
-use DateTimeImmutable;
 use DateTimeInterface;
 
 class TelegramBotStoppedConversation
@@ -16,7 +15,7 @@ class TelegramBotStoppedConversation
         private readonly string $class,
         private readonly array $state,
         private readonly DateTimeInterface $startedAt,
-        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
+        private ?DateTimeInterface $createdAt = null,
         private ?int $id = null,
     )
     {
@@ -57,8 +56,15 @@ class TelegramBotStoppedConversation
         return $this->startedAt;
     }
 
-    public function getCreatedAt(): DateTimeInterface
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function setCreatedAt(?DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 }

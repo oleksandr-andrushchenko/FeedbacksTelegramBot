@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Entity\User;
 
 use App\Entity\Location;
-use DateTimeImmutable;
 use DateTimeInterface;
 
 class User
@@ -26,7 +25,7 @@ class User
         private ?int $phoneNumber = null,
         private ?string $email = null,
         private ?DateTimeInterface $subscriptionExpireAt = null,
-        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
+        private ?DateTimeInterface $createdAt = null,
         private ?DateTimeInterface $updatedAt = null,
         private ?DateTimeInterface $purgedAt = null,
     )
@@ -181,9 +180,16 @@ class User
         return $this;
     }
 
-    public function getCreatedAt(): DateTimeInterface
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function setCreatedAt(?DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 
     public function getUpdatedAt(): ?DateTimeInterface

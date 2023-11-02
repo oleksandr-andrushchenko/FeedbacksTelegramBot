@@ -7,7 +7,6 @@ namespace App\Entity\Feedback;
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBotPayment;
 use App\Enum\Feedback\FeedbackSubscriptionPlanName;
-use DateTimeImmutable;
 use DateTimeInterface;
 use Stringable;
 
@@ -19,7 +18,7 @@ class FeedbackUserSubscription implements Stringable
         private readonly FeedbackSubscriptionPlanName $subscriptionPlan,
         private readonly DateTimeInterface $expireAt,
         private readonly ?TelegramBotPayment $payment = null,
-        private readonly DateTimeInterface $createdAt = new DateTimeImmutable(),
+        private ?DateTimeInterface $createdAt = null,
         private ?DateTimeInterface $updatedAt = null,
     )
     {
@@ -50,9 +49,16 @@ class FeedbackUserSubscription implements Stringable
         return $this->expireAt;
     }
 
-    public function getCreatedAt(): DateTimeInterface
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function setCreatedAt(?DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 
     public function getUpdatedAt(): ?DateTimeInterface
