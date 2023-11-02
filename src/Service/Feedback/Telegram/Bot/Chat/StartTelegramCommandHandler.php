@@ -28,20 +28,24 @@ class StartTelegramCommandHandler
     public function reply(TelegramBotAwareHelper $tg): void
     {
         $domain = 'start';
-        $locale = $this->localeProvider->getLocale($tg->getLocaleCode());
-        $message = $tg->infoText($tg->trans('title', domain: $domain));
+        $message = '👋 ' . $tg->queryText($tg->trans('greetings', domain: $domain));
         $message .= "\n\n";
-        $parameters = [];
-        $parameters['country_command'] = $tg->command('country', icon: $this->countryProvider->getCountryIconByCode($tg->getCountryCode()), html: true);
-        $message .= $tg->infoText($tg->trans('country', parameters: $parameters, domain: $domain));
+        $message .= $tg->infoText($tg->trans('title', domain: $domain));
+        $message .= "\n\n";
+        $message .= $tg->queryText($tg->trans('main_commands', domain: $domain)) . ':';
         $message .= "\n";
-        $parameters = [];
-        $parameters['locale_command'] = $tg->command('locale', icon: $this->localeProvider->getLocaleIcon($locale), html: true);
-        $message .= $tg->trans('locale', parameters: $parameters, domain: $domain);
+        $message .= $tg->command('create', html: true);
         $message .= "\n";
-        $parameters = [];
-        $parameters['commands_command'] = $tg->command('commands', html: true);
-        $message .= $tg->trans('commands', parameters: $parameters, domain: $domain);
+        $message .= $tg->command('search', html: true);
+        $message .= "\n";
+        $message .= $tg->command('lookup', html: true);
+        $message .= "\n\n";
+        $message .= $tg->queryText($tg->trans('setting_commands', domain: $domain)) . ':';
+        $message .= "\n";
+        $message .= $tg->command('country', icon: $this->countryProvider->getCountryIconByCode($tg->getCountryCode()), html: true);
+        $message .= "\n";
+        $locale = $this->localeProvider->getLocale($tg->getLocaleCode());
+        $message .= $tg->command('locale', icon: $this->localeProvider->getLocaleIcon($locale), html: true);
 
         $tg->reply($message);
     }

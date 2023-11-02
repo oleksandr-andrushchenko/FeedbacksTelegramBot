@@ -1,7 +1,4 @@
-title: This bot allows you to search and create feedbacks anonymously on persons, organizations or places.
-agreements: By continue using this bot you are agree with our %privacy_policy% and %terms_of_use%.
-privacy_policy: Privacy Policy
-terms_of_use: Terms of Use
-commands: All commands - %commands_command%.
-country: Change country - %country_command%.
-locale: Change locale - %locale_command%.
+greetings: Welcome!
+title: This bot allows you to anonymously search for and write reviews about people, organizations or places.
+main_commands: Basic commands
+setting_commands: Settings
