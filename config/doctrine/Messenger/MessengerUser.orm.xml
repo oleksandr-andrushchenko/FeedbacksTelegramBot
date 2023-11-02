@@ -7,6 +7,10 @@
     <entity name="App\Entity\Messenger\MessengerUser"
             repository-class="App\Repository\Messenger\MessengerUserRepository" table="messenger_users">
 
+        <indexes>
+            <index fields="messenger,identifier"/>
+        </indexes>
+
         <id name="id" column="id" type="string" length="32"/>
 
         <field name="messenger" column="messenger" type="smallint" enum-type="App\Enum\Messenger\Messenger">
