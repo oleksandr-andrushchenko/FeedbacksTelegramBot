@@ -115,7 +115,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         $validators = [
             ['empty', '', 'text.not_blank'],
             ['multiple lines', "first_line\nsecond_line", 'text.single_line'],
-            ['forbidden chars', 'qweqwe, sdf', 'text.allowed_chars'],
+            ['forbidden chars', 'qweqwe; sdf', 'text.allowed_chars'],
             ['too short', 'q', 'text.min_length'],
             ['too long', str_repeat('q', 256 + 1), 'text.max_length'],
         ];
