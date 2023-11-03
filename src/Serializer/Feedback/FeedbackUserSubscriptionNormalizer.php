@@ -18,13 +18,18 @@ class FeedbackUserSubscriptionNormalizer implements NormalizerInterface
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
         if ($format === 'activity') {
-            return [
-                'messenger_username' => sprintf('@%s', $object->getMessengerUser()->getUsername()),
-                'messenger' => $object->getMessengerUser()->getMessenger()->name,
-                'plan' => $object->getSubscriptionPlan()->name,
-                'bot' => sprintf('@%s', $object->getTelegramBot()->getUsername()),
-                'created_at' => $object->getCreatedAt()->getTimestamp(),
-            ];
+            $user = $object->getMessengerUser();
+
+            $data = [];
+
+            if (empty($user->getUsername())) {
+                $data['user'] = sprintf('@%s', $user->getUsername());
+            }
+
+            $data['plan'] = $object->getSubscriptionPlan()->name;
+            $data['bot'] = sprintf('@%s', $object->getTelegramBot()->getUsername());
+
+            return $data;
         }
 
         return [];

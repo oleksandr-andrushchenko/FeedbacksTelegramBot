@@ -20,12 +20,17 @@ class FeedbackSearchNormalizer implements NormalizerInterface
         if ($format === 'activity') {
             $user = $object->getMessengerUser();
 
-            return [
-                'user' => empty($user->getUsername()) ? 'N/A' : sprintf('@%s', $user->getUsername()),
-                'term' => $object->getSearchTerm()->getText(),
-                'type' => $object->getSearchTerm()->getType()->name,
-                'bot' => sprintf('@%s', $object->getTelegramBot()->getUsername()),
-            ];
+            $data = [];
+
+            if (empty($user->getUsername())) {
+                $data['user'] = sprintf('@%s', $user->getUsername());
+            }
+
+            $data[$object->getSearchTerm()->getText()] = $object->getSearchTerm()->getType()->name;
+
+            $data['bot'] = sprintf('@%s', $object->getTelegramBot()->getUsername());
+
+            return $data;
         }
 
         return [];

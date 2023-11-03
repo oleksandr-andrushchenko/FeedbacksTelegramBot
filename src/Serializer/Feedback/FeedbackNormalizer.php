@@ -20,20 +20,19 @@ class FeedbackNormalizer implements NormalizerInterface
         if ($format === 'activity') {
             $user = $object->getMessengerUser();
 
-            $data = [
-                'user' => empty($user->getUsername()) ? 'N/A' : sprintf('@%s', $user->getUsername()),
-            ];
+            $data = [];
 
-            foreach ($object->getSearchTerms() as $index => $searchTerm) {
-                $data[sprintf('term%d', $index + 1)] = $searchTerm->getText();
-                $data[sprintf('type%d', $index + 1)] = $searchTerm->getType()->name;
+            if (empty($user->getUsername())) {
+                $data['user'] = sprintf('@%s', $user->getUsername());
             }
 
-            $data = array_merge($data, [
-                'rate' => $object->getRating()->name,
-                'description' => $object->getDescription(),
-                'bot' => sprintf('@%s', $object->getTelegramBot()->getUsername()),
-            ]);
+            foreach ($object->getSearchTerms() as $searchTerm) {
+                $data[$searchTerm->getText()] = $searchTerm->getType()->name;
+            }
+
+            $data['rate'] = $object->getRating()->name;
+            $data['description'] = $object->getDescription();
+            $data['bot'] = sprintf('@%s', $object->getTelegramBot()->getUsername());
 
             return $data;
         }
