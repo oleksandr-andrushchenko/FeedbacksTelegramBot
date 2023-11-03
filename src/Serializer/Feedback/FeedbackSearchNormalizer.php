@@ -26,7 +26,7 @@ class FeedbackSearchNormalizer implements NormalizerInterface
                 $data['user'] = sprintf('@%s', $user->getUsername());
             }
 
-            $data[$object->getSearchTerm()->getText()] = $object->getSearchTerm()->getType()->name;
+            $data[$object->getSearchTerm()->getType()->name] = $object->getSearchTerm()->getText();
 
             $data['bot'] = sprintf('@%s', $object->getTelegramBot()->getUsername());
 

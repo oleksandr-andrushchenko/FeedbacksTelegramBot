@@ -27,7 +27,7 @@ class FeedbackNormalizer implements NormalizerInterface
             }
 
             foreach ($object->getSearchTerms() as $searchTerm) {
-                $data[$searchTerm->getText()] = $searchTerm->getType()->name;
+                $data[$searchTerm->getType()->name] = $searchTerm->getText();
             }
 
             $data['rate'] = $object->getRating()->name;
