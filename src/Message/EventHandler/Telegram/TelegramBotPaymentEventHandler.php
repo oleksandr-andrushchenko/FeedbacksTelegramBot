@@ -11,7 +11,7 @@ use App\Message\Event\Telegram\TelegramBotPaymentSuccessfulEvent;
 use App\Repository\Telegram\Bot\TelegramBotPaymentRepository;
 use Psr\Log\LoggerInterface;
 
-class TelegramBotPaymentActivityLogger
+class TelegramBotPaymentEventHandler
 {
     public function __construct(
         private readonly TelegramBotPaymentRepository $paymentRepository,

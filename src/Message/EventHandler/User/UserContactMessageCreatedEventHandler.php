@@ -9,7 +9,7 @@ use App\Repository\User\UserContactMessageRepository;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-class UserContactMessageCreatedActivityLogger
+class UserContactMessageCreatedEventHandler
 {
     public function __construct(
         private readonly UserContactMessageRepository $messageRepository,

@@ -12,7 +12,7 @@ use App\Service\Telegram\Channel\TelegramChannelMatchesProvider;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-class FeedbackCreatedTelegramChannelPublisher
+class FeedbackSendToTelegramChannelConfirmReceivedEventHandler
 {
     public function __construct(
         private readonly FeedbackRepository $feedbackRepository,

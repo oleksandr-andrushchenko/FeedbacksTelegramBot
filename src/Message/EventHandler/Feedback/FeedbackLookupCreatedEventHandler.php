@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace App\Message\EventHandler\Feedback;
 
 use App\Entity\Feedback\Command\FeedbackCommandOptions;
-use App\Message\Event\Feedback\FeedbackCreatedEvent;
-use App\Repository\Feedback\FeedbackRepository;
+use App\Message\Event\Feedback\FeedbackLookupCreatedEvent;
+use App\Repository\Feedback\FeedbackLookupRepository;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-class FeedbackCreatedActivityLogger
+class FeedbackLookupCreatedEventHandler
 {
     public function __construct(
-        private readonly FeedbackRepository $feedbackRepository,
+        private readonly FeedbackLookupRepository $lookupRepository,
         private readonly FeedbackCommandOptions $options,
         private readonly LoggerInterface $activityLogger,
         private readonly LoggerInterface $logger,
@@ -21,21 +21,21 @@ class FeedbackCreatedActivityLogger
     {
     }
 
-    public function __invoke(FeedbackCreatedEvent $event): void
+    public function __invoke(FeedbackLookupCreatedEvent $event): void
     {
         if (!$this->options->shouldLogActivities()) {
             return;
         }
 
-        $feedback = $event->getFeedback() ?? $this->feedbackRepository->find($event->getFeedbackId());
+        $lookup = $event->getLookup() ?? $this->lookupRepository->find($event->getLookupId());
 
-        if ($feedback === null) {
-            $this->logger->warning(sprintf('No feedback was found in %s for %s id', __CLASS__, $event->getFeedbackId()));
+        if ($lookup === null) {
+            $this->logger->warning(sprintf('No feedback lookup was found in %s for %s id', __CLASS__, $event->getLookupId()));
             return;
         }
 
         try {
-            $this->activityLogger->info($feedback);
+            $this->activityLogger->info($lookup);
         } catch (Throwable $exception) {
             $this->logger->error($exception);
         }

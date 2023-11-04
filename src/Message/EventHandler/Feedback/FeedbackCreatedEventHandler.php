@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace App\Message\EventHandler\Feedback;
 
 use App\Entity\Feedback\Command\FeedbackCommandOptions;
-use App\Message\Event\Feedback\FeedbackSearchCreatedEvent;
-use App\Repository\Feedback\FeedbackSearchRepository;
+use App\Message\Event\Feedback\FeedbackCreatedEvent;
+use App\Repository\Feedback\FeedbackRepository;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-class FeedbackSearchCreatedActivityLogger
+class FeedbackCreatedEventHandler
 {
     public function __construct(
-        private readonly FeedbackSearchRepository $searchRepository,
+        private readonly FeedbackRepository $feedbackRepository,
         private readonly FeedbackCommandOptions $options,
         private readonly LoggerInterface $activityLogger,
         private readonly LoggerInterface $logger,
@@ -21,21 +21,21 @@ class FeedbackSearchCreatedActivityLogger
     {
     }
 
-    public function __invoke(FeedbackSearchCreatedEvent $event): void
+    public function __invoke(FeedbackCreatedEvent $event): void
     {
         if (!$this->options->shouldLogActivities()) {
             return;
         }
 
-        $search = $event->getSearch() ?? $this->searchRepository->find($event->getSearchId());
+        $feedback = $event->getFeedback() ?? $this->feedbackRepository->find($event->getFeedbackId());
 
-        if ($search === null) {
-            $this->logger->warning(sprintf('No feedback search was found in %s for %s id', __CLASS__, $event->getSearchId()));
+        if ($feedback === null) {
+            $this->logger->warning(sprintf('No feedback was found in %s for %s id', __CLASS__, $event->getFeedbackId()));
             return;
         }
 
         try {
-            $this->activityLogger->info($search);
+            $this->activityLogger->info($feedback);
         } catch (Throwable $exception) {
             $this->logger->error($exception);
         }

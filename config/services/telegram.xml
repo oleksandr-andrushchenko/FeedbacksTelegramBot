@@ -487,8 +487,8 @@
                  class="App\Service\Telegram\Channel\View\TelegramChannelLinkViewProvider" lazy="true">
             <argument type="service" id="app.telegram_link_provider"/>
         </service>
-        <service id="app.telegram_bot_payment_activity_logger"
-                 class="App\Message\EventHandler\Telegram\TelegramBotPaymentActivityLogger" lazy="true">
+        <service id="app.telegram_bot_payment_event_handler"
+                 class="App\Message\EventHandler\Telegram\TelegramBotPaymentEventHandler" lazy="true">
             <argument type="service" id="app.telegram_bot_payment_repository"/>
             <argument type="service" id="app.activity_logger"/>
             <argument type="service" id="logger"/>

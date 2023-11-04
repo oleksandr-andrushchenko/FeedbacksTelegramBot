@@ -8,7 +8,7 @@ use App\Message\Event\Feedback\FeedbackUserSubscriptionCreatedEvent;
 use App\Repository\Feedback\FeedbackUserSubscriptionRepository;
 use Psr\Log\LoggerInterface;
 
-class FeedbackUserSubscriptionCreatedActivityLogger
+class FeedbackUserSubscriptionCreatedEventHandler
 {
     public function __construct(
         private readonly FeedbackUserSubscriptionRepository $subscriptionRepository,

@@ -556,8 +556,8 @@
             <argument type="service" id="app.messenger_user_upserter"/>
             <argument type="service" id="app.feedback_search_term_text_normalizer"/>
         </service>
-        <service id="app.feedback_created_activity_logger"
-                 class="App\Message\EventHandler\Feedback\FeedbackCreatedActivityLogger" lazy="true">
+        <service id="app.feedback_created_event_handler"
+                 class="App\Message\EventHandler\Feedback\FeedbackCreatedEventHandler" lazy="true">
             <argument type="service" id="app.feedback_repository"/>
             <argument type="service" id="app.feedback_create_command_options"/>
             <argument type="service" id="app.activity_logger"/>
@@ -565,8 +565,9 @@
             <tag name="messenger.message_handler" handles="App\Message\Event\Feedback\FeedbackCreatedEvent"
                  bus="app.event_bus"/>
         </service>
-        <service id="app.feedback_created_telegram_channel_publisher"
-                 class="App\Message\EventHandler\Feedback\FeedbackCreatedTelegramChannelPublisher" lazy="true">
+        <service id="app.feedback_send_to_telegram_channel_confirm_received_event_handler"
+                 class="App\Message\EventHandler\Feedback\FeedbackSendToTelegramChannelConfirmReceivedEventHandler"
+                 lazy="true">
             <argument type="service" id="app.feedback_repository"/>
             <argument type="service" id="app.telegram_channel_matches_provider"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>
@@ -576,8 +577,8 @@
                  handles="App\Message\Event\Feedback\FeedbackSendToTelegramChannelConfirmReceivedEvent"
                  bus="app.event_bus"/>
         </service>
-        <service id="app.feedback_lookup_created_activity_logger"
-                 class="App\Message\EventHandler\Feedback\FeedbackLookupCreatedActivityLogger" lazy="true">
+        <service id="app.feedback_lookup_created_event_handler"
+                 class="App\Message\EventHandler\Feedback\FeedbackLookupCreatedEventHandler" lazy="true">
             <argument type="service" id="app.feedback_lookup_repository"/>
             <argument type="service" id="app.feedback_lookup_command_options"/>
             <argument type="service" id="app.activity_logger"/>
@@ -585,8 +586,8 @@
             <tag name="messenger.message_handler" handles="App\Message\Event\Feedback\FeedbackLookupCreatedEvent"
                  bus="app.event_bus"/>
         </service>
-        <service id="app.feedback_search_created_activity_logger"
-                 class="App\Message\EventHandler\Feedback\FeedbackSearchCreatedActivityLogger" lazy="true">
+        <service id="app.feedback_search_created_event_handler"
+                 class="App\Message\EventHandler\Feedback\FeedbackSearchCreatedEventHandler" lazy="true">
             <argument type="service" id="app.feedback_search_repository"/>
             <argument type="service" id="app.feedback_search_command_options"/>
             <argument type="service" id="app.activity_logger"/>
@@ -594,8 +595,8 @@
             <tag name="messenger.message_handler" handles="App\Message\Event\Feedback\FeedbackSearchCreatedEvent"
                  bus="app.event_bus"/>
         </service>
-        <service id="app.feedback_user_subscription_created_activity_logger"
-                 class="App\Message\EventHandler\Feedback\FeedbackUserSubscriptionCreatedActivityLogger" lazy="true">
+        <service id="app.feedback_user_subscription_created_event_handler"
+                 class="App\Message\EventHandler\Feedback\FeedbackUserSubscriptionCreatedEventHandler" lazy="true">
             <argument type="service" id="app.feedback_user_subscription_repository"/>
             <argument type="service" id="app.activity_logger"/>
             <argument type="service" id="logger"/>
