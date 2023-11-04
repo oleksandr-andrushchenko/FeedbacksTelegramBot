@@ -545,6 +545,7 @@
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
             <argument type="service" id="app.start_telegram_command_handler"/>
             <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="app.telegram_bot_locale_switcher"/>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.feedback_search_term_text_normalizer"

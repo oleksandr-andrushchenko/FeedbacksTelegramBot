@@ -12,6 +12,7 @@ use App\Service\Intl\CountryProvider;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversation;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
+use App\Service\Telegram\Bot\TelegramBotLocaleSwitcher;
 
 class RestartConversationTelegramBotConversation extends TelegramBotConversation implements TelegramBotConversationInterface
 {
@@ -19,9 +20,10 @@ class RestartConversationTelegramBotConversation extends TelegramBotConversation
     public const STEP_CANCEL_PRESSED = 20;
 
     public function __construct(
-        private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
-        private readonly StartTelegramCommandHandler $startHandler,
+        private readonly ChooseActionTelegramChatSender $chooseActionTelegramChatSender,
+        private readonly StartTelegramCommandHandler $startTelegramCommandHandler,
         private readonly CountryProvider $countryProvider,
+        private readonly TelegramBotLocaleSwitcher $telegramBotLocaleSwitcher,
     )
     {
         parent::__construct(new TelegramBotConversationState());
@@ -74,7 +76,7 @@ class RestartConversationTelegramBotConversation extends TelegramBotConversation
         $message = $tg->trans('reply.canceled', domain: 'restart');
         $message = $tg->upsetText($message);
 
-        return $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
+        return $this->chooseActionTelegramChatSender->sendActions($tg, text: $message, appendDefault: true);
     }
 
     public function gotConfirm(TelegramBotAwareHelper $tg, Entity $entity): null
@@ -82,7 +84,7 @@ class RestartConversationTelegramBotConversation extends TelegramBotConversation
         if ($tg->matchInput($tg->noButton()->getText())) {
             $tg->stopConversation($entity);
 
-            return $this->chooseActionChatSender->sendActions($tg);
+            return $this->chooseActionTelegramChatSender->sendActions($tg);
         }
 
         if ($tg->matchInput($tg->helpButton()->getText())) {
@@ -113,11 +115,13 @@ class RestartConversationTelegramBotConversation extends TelegramBotConversation
 
         $tg->stopConversation($entity);
 
+        $this->telegramBotLocaleSwitcher->switchLocale($tg->getLocaleCode());
+
         $message = $tg->trans('reply.ok', domain: 'restart');
         $message = $tg->okText($message);
 
         $tg->reply($message);
 
-        return $this->startHandler->handleStart($tg);
+        return $this->startTelegramCommandHandler->handleStart($tg);
     }
 }
