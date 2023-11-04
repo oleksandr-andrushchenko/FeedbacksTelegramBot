@@ -48,18 +48,18 @@ class StartTelegramCommandHandler
         $message .= "\n\n";
         $message .= $tg->queryText($tg->trans('main_commands', domain: $domain)) . ':';
         $message .= "\n";
-        $message .= $tg->command('create');
+        $message .= $tg->command('create', link: true);
         $message .= "\n";
-        $message .= $tg->command('search');
+        $message .= $tg->command('search', link: true);
         $message .= "\n";
-        $message .= $tg->command('lookup');
+        $message .= $tg->command('lookup', link: true);
         $message .= "\n\n";
         $message .= $tg->queryText($tg->trans('setting_commands', domain: $domain)) . ':';
         $message .= "\n";
-        $message .= $tg->command('country', icon: $this->countryProvider->getCountryIconByCode($tg->getCountryCode()));
+        $message .= $tg->command('country', icon: $this->countryProvider->getCountryIconByCode($tg->getCountryCode()), link: true);
         $message .= "\n";
         $locale = $this->localeProvider->getLocale($tg->getLocaleCode());
-        $message .= $tg->command('locale', icon: $this->localeProvider->getLocaleIcon($locale));
+        $message .= $tg->command('locale', icon: $this->localeProvider->getLocaleIcon($locale), link: true);
 
         $tg->reply($message);
     }

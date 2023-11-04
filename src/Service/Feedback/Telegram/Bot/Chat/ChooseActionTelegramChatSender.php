@@ -84,22 +84,22 @@ class ChooseActionTelegramChatSender
 
     public function getCreateButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->command('create', link: false));
+        return $tg->button($tg->command('create'));
     }
 
     public function getSearchButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->command('search', link: false));
+        return $tg->button($tg->command('search'));
     }
 
     public function getLookupButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->command('lookup', link: false));
+        return $tg->button($tg->command('lookup'));
     }
 
     public function getSubscribeButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->command('subscribe', link: false));
+        return $tg->button($tg->command('subscribe'));
     }
 
     public function getSubscriptionsButton(TelegramBotAwareHelper $tg): KeyboardButton
@@ -119,7 +119,7 @@ class ChooseActionTelegramChatSender
         $countryCode = $tg->getCountryCode();
 
         if ($countryCode === null) {
-            return $tg->button($tg->command('country', link: false));
+            return $tg->button($tg->command('country'));
         }
 
         $text = $this->countryProvider->getCountryIconByCode($countryCode);
@@ -135,7 +135,7 @@ class ChooseActionTelegramChatSender
         $locale = $localeCode === null ? null : $this->localeProvider->getLocale($localeCode);
 
         if ($locale === null) {
-            return $tg->button($tg->command('locale', link: false));
+            return $tg->button($tg->command('locale'));
         }
 
         $text = $this->localeProvider->getLocaleIcon($locale);
@@ -147,32 +147,32 @@ class ChooseActionTelegramChatSender
 
     public function getLimitsButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->command('limits', link: false));
+        return $tg->button($tg->command('limits'));
     }
 
     public function getPurgeButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->command('purge', link: false));
+        return $tg->button($tg->command('purge'));
     }
 
     public function getDonateButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->command('donate', link: false));
+        return $tg->button($tg->command('donate'));
     }
 
     public function getContactButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->command('contact', link: false));
+        return $tg->button($tg->command('contact'));
     }
 
     public function getCommandsButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->command('commands', link: false));
+        return $tg->button($tg->command('commands'));
     }
 
     public function getRestartButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->command('restart', link: false));
+        return $tg->button($tg->command('restart'));
     }
 
     public function getShowMoreButton(TelegramBotAwareHelper $tg): KeyboardButton

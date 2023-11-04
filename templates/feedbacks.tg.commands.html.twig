@@ -2,7 +2,7 @@
 ℹ️ <u><b>{{ 'items'|trans }}</b></u>:
 
 {% for name,command in constant('App\\Service\\Feedback\\Telegram\\Bot\\FeedbackTelegramBotGroup::SUPPORTS') %}
-▫️ {% include 'feedbacks.tg.command.html.twig' with {name: name} %}:
+▫️ {% include 'feedbacks.tg.command.html.twig' with {name: name, html: true, link: true} %}:
 {{ name|trans }}
 {% endfor %}
 

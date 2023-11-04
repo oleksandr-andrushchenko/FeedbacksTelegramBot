@@ -1,1 +1,7 @@
-{% if (link is not defined) or link %}<u>{{ constant('App\\Service\\Feedback\\Telegram\\Bot\\FeedbackTelegramBotGroup::SUPPORTS')[name] }}</u> {% endif %}{{ icon ?? name|trans({}, 'feedbacks.tg.command_icon', 'en') }} <u>{{ name|trans({}, 'feedbacks.tg.command') }}</u>
+{% apply spaceless %}
+    {%- if html is defined and html %}
+        {% if link is defined and link %}<u>{{ constant('App\\Service\\Feedback\\Telegram\\Bot\\FeedbackTelegramBotGroup::SUPPORTS')[name] }}</u>{% endif %} {{ icon ?? name|trans({}, 'feedbacks.tg.command_icon', 'en') }} <u>{{ name|trans({}, 'feedbacks.tg.command') }}</u>
+    {% else %}
+        {% if link is defined and link %}{{ constant('App\\Service\\Feedback\\Telegram\\Bot\\FeedbackTelegramBotGroup::SUPPORTS')[name] }}{% endif %} {{ icon ?? name|trans({}, 'feedbacks.tg.command_icon', 'en') }} {{ name|trans({}, 'feedbacks.tg.command') }}
+    {% endif -%}
+{% endapply %}
