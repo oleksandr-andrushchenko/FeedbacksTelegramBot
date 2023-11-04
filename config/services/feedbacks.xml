@@ -518,7 +518,6 @@
             <argument type="service" id="app.intl_currency_provider"/>
             <argument type="service" id="app.money_formatter"/>
             <argument type="service" id="app.telegram_bot_repository"/>
-            <argument type="service" id="app.feedback_subscription_plan_provider"/>
             <argument type="service" id="app.telegram_bot_user_provider"/>
             <argument type="service" id="logger"/>
             <tag name="app.telegram_conversation_feedbacks"/>
