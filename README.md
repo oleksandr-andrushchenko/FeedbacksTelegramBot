@@ -67,3 +67,8 @@
 * move translation out of the repo
 * check doctrine queries, optimize if need
 * if phone number added (create command) and rating is good - ask phone number in order to no allow creation on self
+* facebook bot
+* process old non-stopped conversations
+* process new feedbacks (on me, on interested people) notification
+* process new feedbacks search (on me, on interested people) notification
+* add notification about new feedbacks in the channel
