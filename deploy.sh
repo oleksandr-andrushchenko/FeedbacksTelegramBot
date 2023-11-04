@@ -1,10 +1,5 @@
 #!/bin/bash
 
-if ! docker compose run php php bin/phpunit; then
-    echo "some test has been failed"
-    exit 1
-fi
-
 if [ $# -eq 0 ]; then
   echo "stage argument is required"
   exit 1
@@ -19,6 +14,18 @@ if [[ ${stages[@]} =~ $value ]]; then
 else
   echo "invalid stage"
   exit 1
+fi
+
+kernelLogDir=$(docker compose run php sed -n '29p' vendor/bref/symfony-bridge/src/BrefKernel.php)
+
+if [[ $kernelLogDir == //* ]]; then
+    echo "kernel log dir has been changed"
+    exit 1
+fi
+
+if ! docker compose run php php bin/phpunit; then
+    echo "some test has been failed"
+    exit 1
 fi
 
 docker compose run php composer install --prefer-dist --optimize-autoloader --no-dev
