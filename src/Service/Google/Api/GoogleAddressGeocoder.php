@@ -50,16 +50,26 @@ class GoogleAddressGeocoder implements AddressGeocoderInterface
             throw new AddressGeocodeFailedException($location, $json);
         }
 
-        $address = $this->findByAddressComponents($data['results']);
+        $results = $data['results'];
 
-        if ($address === null) {
-            throw new AddressGeocodeFailedException($location, $json);
+        foreach ([true, false] as $alpaOnly) {
+            $address = $this->findByAddressComponents($results, alphaOnly: $alpaOnly);
+
+            if ($address !== null) {
+                return $address;
+            }
+
+            $address = $this->findByCombinedAddressComponents($results, alphaOnly: $alpaOnly);
+
+            if ($address !== null) {
+                return $address;
+            }
         }
 
-        return $address;
+        throw new AddressGeocodeFailedException($location, $json);
     }
 
-    private function findByAddressComponents(array $results): ?Address
+    private function findByAddressComponents(array $results, bool $alphaOnly = false): ?Address
     {
         foreach ($results as $result) {
             if (
@@ -74,36 +84,68 @@ class GoogleAddressGeocoder implements AddressGeocoderInterface
 
             $country = $this->findAddressComponent('country', $addressComponents);
 
-            if ($country === null) {
-                continue;
-            }
-
-            $countryCode = $country->getShortName();
-
-            if ($this->hasNonAlpha($countryCode)) {
+            if (!$this->validateCountryComponent($country, alphaOnly: $alphaOnly)) {
                 continue;
             }
 
             $administrativeAreaLevel1 = $this->findAddressComponent('administrative_area_level_1', $addressComponents);
 
-            if ($administrativeAreaLevel1 === null) {
+            if (!$this->validateAdministrativeAreaLevel1Component($administrativeAreaLevel1, alphaOnly: $alphaOnly)) {
                 continue;
             }
 
-            $level1RegionCode = $administrativeAreaLevel1->getShortName();
+            return $this->constructAddressFromComponents($country, $administrativeAreaLevel1);
+        }
 
-            if ($this->hasNonAlpha($level1RegionCode)) {
-                $level1RegionCode = $administrativeAreaLevel1->getLongName();
-            }
+        return null;
+    }
 
-            if ($this->hasNonAlpha($level1RegionCode)) {
+    private function findByCombinedAddressComponents(array $results, bool $alphaOnly = false): ?Address
+    {
+        $components = [
+            'country' => null,
+            'administrative_area_level_1' => null,
+        ];
+        $shouldStop = static fn (): bool => count(array_filter($components)) === count($components);
+
+        foreach ($results as $result) {
+            if (
+                !is_array($result)
+                || !isset($result['address_components'])
+                || !is_array($result['address_components'])
+            ) {
                 continue;
             }
 
-            return new Address(
-                strtolower($countryCode),
-                $this->keepAlphaOnly($level1RegionCode),
-            );
+            $addressComponents = $result['address_components'];
+
+            if (!isset($components['country'])) {
+                $country = $this->findAddressComponent('country', $addressComponents);
+
+                if ($this->validateCountryComponent($country, alphaOnly: $alphaOnly)) {
+                    $components['country'] = $country;
+                }
+
+                if ($shouldStop()) {
+                    break;
+                }
+            }
+
+            if (!isset($components['administrative_area_level_1'])) {
+                $administrativeAreaLevel1 = $this->findAddressComponent('administrative_area_level_1', $addressComponents);
+
+                if ($this->validateAdministrativeAreaLevel1Component($administrativeAreaLevel1, alphaOnly: $alphaOnly)) {
+                    $components['administrative_area_level_1'] = $administrativeAreaLevel1;
+                }
+
+                if ($shouldStop()) {
+                    break;
+                }
+            }
+        }
+
+        if ($shouldStop()) {
+            return $this->constructAddressFromComponents(...$components);
         }
 
         return null;
@@ -120,21 +162,43 @@ class GoogleAddressGeocoder implements AddressGeocoderInterface
         return null;
     }
 
+    private function validateCountryComponent(?AddressComponent $country, bool $alphaOnly = false): bool
+    {
+        if ($country === null) {
+            return false;
+        }
+
+        if ($alphaOnly && $this->hasNonAlpha($country->getShortName())) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    private function validateAdministrativeAreaLevel1Component(?AddressComponent $administrativeAreaLevel1, bool $alphaOnly = false): bool
+    {
+        if ($administrativeAreaLevel1 === null) {
+            return false;
+        }
+
+        if ($alphaOnly && $this->hasNonAlpha($administrativeAreaLevel1->getShortName())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function constructAddressFromComponents(AddressComponent $country, AddressComponent $administrativeAreaLevel1): Address
+    {
+        return new Address(
+            $country->getShortName(),
+            $administrativeAreaLevel1->getShortName()
+        );
+    }
+
     private function hasNonAlpha(string $text): bool
     {
         return preg_match('/[^a-zA-Z-\s\–]/i', $text) > 0;
-    }
-
-    private function keepAlphaOnly(string $text): string
-    {
-        return preg_replace(
-            '/-+/i',
-            '-',
-            preg_replace(
-                '/[\–]/i',
-                '-',
-                $text
-            )
-        );
     }
 }
