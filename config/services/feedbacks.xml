@@ -604,8 +604,8 @@
         </service>
         <service id="app.feedback_search_term_messenger_provider"
                  class="App\Service\Feedback\SearchTerm\SearchTermMessengerProvider" lazy="true"/>
-        <service id="app.publish_unpublished_feedbacks_in_telegram_channel_command"
-                 class="App\Command\Feedback\Telegram\PublishUnpublishedFeedbacksInTelegramChannel" lazy="true">
+        <service id="app.feedbacks_publish_unpublished_command"
+                 class="App\Command\Feedback\Telegram\FeedbacksPublishUnpublishedCommand" lazy="true">
             <argument type="service" id="app.feedback_repository"/>
             <argument type="service" id="app.event_bus"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>

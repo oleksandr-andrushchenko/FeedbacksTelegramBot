@@ -213,7 +213,8 @@ class TelegramBotAwareHelper
 
     public function queryText(string $text, bool $optional = false): string
     {
-        return '<u><b>' . $text . ($optional ? (' [ ' . $this->trans('query.optional') . ' ]') : '') . '</b></u>';
+//        return '<u><b>' . $text . ($optional ? (' [ ' . $this->trans('query.optional') . ' ]') : '') . '</b></u>';
+        return '<b>' . $text . ($optional ? (' [ ' . $this->trans('query.optional') . ' ]') : '') . '</b>';
     }
 
     public function queryTipText(string $text): string

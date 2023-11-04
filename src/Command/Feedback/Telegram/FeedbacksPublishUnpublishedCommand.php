@@ -16,7 +16,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class PublishUnpublishedFeedbacksInTelegramChannel extends Command
+class FeedbacksPublishUnpublishedCommand extends Command
 {
     public function __construct(
         private readonly FeedbackRepository $feedbackRepository,
