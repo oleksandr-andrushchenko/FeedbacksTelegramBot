@@ -12,7 +12,7 @@ use App\Repository\Telegram\Channel\TelegramChannelRepository;
 class TelegramChannelMatchesProvider
 {
     public function __construct(
-        private readonly TelegramChannelRepository $repository,
+        private readonly TelegramChannelRepository $telegramChannelRepository,
     )
     {
     }
@@ -22,9 +22,31 @@ class TelegramChannelMatchesProvider
      * @param TelegramBot $bot
      * @return TelegramChannel[]
      */
+    public function getCachedTelegramChannelMatches(User $user, TelegramBot $bot): array
+    {
+        static $cache = [];
+
+        $key = implode('-', [
+            $bot->getGroup()->value,
+            $bot->getCountryCode(),
+            $user->getLevel1RegionId(),
+        ]);
+
+        if (!isset($cache[$key])) {
+            $cache[$key] = $this->getTelegramChannelMatches($user, $bot);
+        }
+
+        return $cache[$key];
+    }
+
+    /**
+     * @param User $user
+     * @param TelegramBot $bot
+     * @return TelegramChannel[]
+     */
     public function getTelegramChannelMatches(User $user, TelegramBot $bot): array
     {
-        $channels = $this->repository->findPrimaryByGroupAndCountry($bot->getGroup(), $bot->getCountryCode());
+        $channels = $this->telegramChannelRepository->findPrimaryByGroupAndCountry($bot->getGroup(), $bot->getCountryCode());
 
         if (count($channels) === 0) {
             return [];
