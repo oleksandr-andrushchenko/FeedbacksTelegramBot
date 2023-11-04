@@ -271,7 +271,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
     {
         $tg->stopCurrentConversation();
 
-        $message = $tg->view('commands');
+        $message = $tg->view('commands', context: ['commands' => self::SUPPORTS]);
 
         $tg->reply($message);
 
