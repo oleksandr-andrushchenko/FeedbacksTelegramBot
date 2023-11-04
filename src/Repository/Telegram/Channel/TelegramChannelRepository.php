@@ -66,19 +66,6 @@ class TelegramChannelRepository extends ServiceEntityRepository
 
     /**
      * @param TelegramBotGroupName $group
-     * @return TelegramChannel[]
-     */
-    public function findPrimaryByGroup(TelegramBotGroupName $group): array
-    {
-        return $this->findBy([
-            'group' => $group,
-            'primary' => true,
-            'deletedAt' => null,
-        ]);
-    }
-
-    /**
-     * @param TelegramBotGroupName $group
      * @param string $countryCode
      * @return TelegramChannel[]
      */

@@ -568,7 +568,6 @@
         <service id="app.feedback_created_telegram_channel_publisher"
                  class="App\Message\EventHandler\Feedback\FeedbackCreatedTelegramChannelPublisher" lazy="true">
             <argument type="service" id="app.feedback_repository"/>
-            <argument type="service" id="app.telegram_bot_registry"/>
             <argument type="service" id="app.telegram_channel_matches_provider"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>
             <argument type="service" id="app.feedback_telegram_view_provider"/>
@@ -605,5 +604,12 @@
         </service>
         <service id="app.feedback_search_term_messenger_provider"
                  class="App\Service\Feedback\SearchTerm\SearchTermMessengerProvider" lazy="true"/>
+        <service id="app.publish_unpublished_feedbacks_in_telegram_channel_command"
+                 class="App\Command\Feedback\Telegram\PublishUnpublishedFeedbacksInTelegramChannel" lazy="true">
+            <argument type="service" id="app.feedback_repository"/>
+            <argument type="service" id="app.event_bus"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <tag name="console.command" command="feedbacks:telegram:publish-unpublished"/>
+        </service>
     </services>
 </container>

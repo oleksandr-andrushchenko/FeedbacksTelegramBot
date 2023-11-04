@@ -8,7 +8,7 @@ use App\Entity\Telegram\TelegramChannel;
 use App\Enum\Messenger\Messenger;
 use App\Repository\Telegram\Channel\TelegramChannelRepository;
 use App\Service\Messenger\MessengerUserProfileUrlProvider;
-use App\Service\Telegram\Bot\TelegramBot;
+use App\Entity\Telegram\TelegramBot;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FeedbackTelegramReplySignViewProvider
@@ -27,12 +27,12 @@ class FeedbackTelegramReplySignViewProvider
         string $localeCode = null,
     ): string
     {
-        $localeCode = $localeCode ?? $bot->getEntity()->getLocaleCode();
+        $localeCode = $localeCode ?? $bot->getLocaleCode();
         $text = fn ($key): string => $this->translator->trans('sign.' . $key, domain: 'feedbacks.tg', locale: $localeCode);
 
         $botLink = $this->messengerUserProfileUrlProvider->getMessengerUserProfileUrl(
             Messenger::telegram,
-            $bot->getEntity()->getUsername()
+            $bot->getUsername()
         );
         $message = '➕ ';
         $message .= sprintf('<a href="%s">%s</a>', $botLink, $text('create'));
@@ -40,7 +40,7 @@ class FeedbackTelegramReplySignViewProvider
         $message .= sprintf('<a href="%s">%s</a>', $botLink, $text('search'));
 
         if ($channel === null) {
-            $channel = $this->telegramChannelRepository->findOnePrimaryByBot($bot->getEntity());
+            $channel = $this->telegramChannelRepository->findOnePrimaryByBot($bot);
         }
 
         if ($channel !== null) {

@@ -12,7 +12,7 @@ use App\Service\Feedback\SearchTerm\SearchTermProvider;
 use App\Service\Feedback\Telegram\View\MultipleSearchTermTelegramViewProvider;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\TimeProvider;
-use App\Service\Telegram\Bot\TelegramBot;
+use App\Entity\Telegram\TelegramBot;
 use App\Service\Util\String\MbLcFirster;
 use App\Transfer\Feedback\SearchTermTransfer;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -49,7 +49,7 @@ class FeedbackTelegramViewProvider
             $country = $this->countryProvider->getCountry($feedback->getCountryCode());
         }
 
-        $user = $feedback->getMessengerUser()?->getUser();
+        $user = $feedback->getUser();
 //        $localeCode = $localeCode ?? $user->getLocaleCode();
 
         $message = '';

@@ -76,7 +76,7 @@ class FeedbackSearchTelegramViewProvider
         $message .= "\n\n";
 
         $message .= $this->feedbackTelegramReplySignViewProvider->getFeedbackTelegramReplySignView(
-            $bot,
+            $bot->getEntity(),
             channel: $channel
         );
 

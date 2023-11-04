@@ -461,7 +461,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
             foreach ($feedbacks as $index => $feedback) {
                 $message = $this->feedbackTelegramViewProvider->getFeedbackTelegramView(
-                    $tg->getBot(),
+                    $tg->getBot()->getEntity(),
                     $feedback,
                     number: $index + 1,
                     addSecrets: true

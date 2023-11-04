@@ -8,7 +8,6 @@ use App\Message\Event\Feedback\FeedbackSendToTelegramChannelConfirmReceivedEvent
 use App\Repository\Feedback\FeedbackRepository;
 use App\Service\Feedback\Telegram\Bot\View\FeedbackTelegramViewProvider;
 use App\Service\Telegram\Bot\Api\TelegramBotMessageSenderInterface;
-use App\Service\Telegram\Bot\TelegramBotRegistry;
 use App\Service\Telegram\Channel\TelegramChannelMatchesProvider;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -17,7 +16,6 @@ class FeedbackCreatedTelegramChannelPublisher
 {
     public function __construct(
         private readonly FeedbackRepository $feedbackRepository,
-        private readonly TelegramBotRegistry $telegramBotRegistry,
         private readonly TelegramChannelMatchesProvider $telegramChannelMatchesProvider,
         private readonly TelegramBotMessageSenderInterface $telegramBotMessageSender,
         private readonly FeedbackTelegramViewProvider $feedbackTelegramViewProvider,
@@ -35,19 +33,16 @@ class FeedbackCreatedTelegramChannelPublisher
             return;
         }
 
-        $telegramBot = $event->getTelegramBot() ?? $feedback->getTelegramBot();
+        $bot = $feedback->getTelegramBot();
 
-        if ($telegramBot === null) {
+        if ($bot === null) {
             $this->logger->notice(sprintf('No telegram bot was found in %s for %s id', __CLASS__, $event->getFeedbackId()));
             return;
         }
 
-        $bot = $this->telegramBotRegistry->getTelegramBot($telegramBot);
+        $showTime = $event->showTime() ?? false;
 
-        $channels = $this->telegramChannelMatchesProvider->getTelegramChannelMatches(
-            $bot->getMessengerUser()->getUser(),
-            $bot->getEntity()
-        );
+        $channels = $this->telegramChannelMatchesProvider->getCachedTelegramChannelMatches($feedback->getUser(), $bot);
 
         foreach ($channels as $channel) {
             try {
@@ -55,14 +50,15 @@ class FeedbackCreatedTelegramChannelPublisher
                     $bot,
                     $feedback,
                     addSecrets: true,
-                    showTime: false,
+                    showTime: $showTime,
                     channel: $channel,
                     localeCode: $channel->getLocaleCode(),
                 );
+
                 $chatId = $channel->getChatId() ?? ('@' . $channel->getUsername());
 
                 $response = $this->telegramBotMessageSender->sendTelegramMessage(
-                    $bot->getEntity(),
+                    $bot,
                     $chatId,
                     $message,
                     keepKeyboard: true
