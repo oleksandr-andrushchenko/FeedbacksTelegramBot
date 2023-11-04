@@ -25,7 +25,14 @@ class ActivityLogger extends AbstractLogger implements LoggerInterface
         }
 
         $updated = method_exists($message, 'getUpdatedAt') && $message->getUpdatedAt() !== null;
-        $envelop = sprintf('"%s" has been %s(?)', get_class($message), $updated ? 'updated' : 'created');
+        $class = get_class($message);
+
+        $classPrefix = 'App\Entity';
+        if (str_starts_with($class, $classPrefix)) {
+            $class = substr($class, strlen($classPrefix));
+        }
+
+        $envelop = sprintf('"%s" has been %s(?)', $class, $updated ? 'updated' : 'created');
         $context = $this->normalizer->normalize($message, 'activity');
 
         $this->logger->log($level, $envelop, $context);
