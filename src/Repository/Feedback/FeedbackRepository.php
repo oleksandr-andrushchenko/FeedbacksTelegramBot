@@ -6,7 +6,10 @@ namespace App\Repository\Feedback;
 
 use App\Entity\Feedback\Feedback;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
+use DateTimeInterface;
 
 /**
  * @extends ServiceEntityRepository<Feedback>
@@ -26,5 +29,34 @@ class FeedbackRepository extends ServiceEntityRepository
     public function findOneLast(): ?Feedback
     {
         return $this->findOneBy([], ['createdAt' => 'DESC']);
+    }
+
+    /**
+     * @param DateTimeInterface $from
+     * @param DateTimeInterface $to
+     * @return Paginator|Feedback[]
+     */
+    public function findUnpublishedByPeriod(DateTimeInterface $from, DateTimeInterface $to): Paginator
+    {
+        $queryBuilder = $this->createQueryBuilder('f');
+
+        $query = $queryBuilder
+            ->select('f', 'u', 'mu', 'tb', 'st')
+            ->innerJoin('f.user', 'u')
+            ->innerJoin('f.messengerUser', 'mu')
+            ->innerJoin('f.telegramBot', 'tb')
+            ->innerJoin('f.searchTerms', 'st')
+            ->andWhere(
+                $queryBuilder->expr()->isNull('f.channelMessageIds')
+            )
+            ->andWhere(
+                $queryBuilder->expr()->gte('f.createdAt', ':createdAtFrom'),
+                $queryBuilder->expr()->lt('f.createdAt', ':createdAtTo'),
+            )
+            ->setParameter('createdAtFrom', $from, Types::DATE_IMMUTABLE)
+            ->setParameter('createdAtTo', $to, Types::DATE_IMMUTABLE)
+        ;
+
+        return new Paginator($query);
     }
 }
