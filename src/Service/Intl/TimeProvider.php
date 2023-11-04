@@ -22,7 +22,7 @@ class TimeProvider
         $localeCode = $localeCode ?? $this->translator->getLocale();
         $parameters = [
             'day' => $dateTime->format('d'),
-            'month' => $this->getMonth($dateTime->format('m')),
+            'month' => $this->getMonth($dateTime->format('m'), localeCode: $localeCode),
             'year' => $dateTime->format('Y'),
         ];
 
@@ -48,7 +48,7 @@ class TimeProvider
         $localeCode = $localeCode ?? $this->translator->getLocale();
         $parameters = [
             'day' => $dateTime->format('d'),
-            'short_month' => $this->getShortMonth($dateTime->format('m')),
+            'short_month' => $this->getShortMonth($dateTime->format('m'), localeCode: $localeCode),
             'year' => $dateTime->format('Y'),
         ];
 
@@ -76,7 +76,7 @@ class TimeProvider
         if ($year1 === $year2 && $month1 === $month2) {
             $parameters = [
                 'day' => $day1 . ' - ' . $day2,
-                'short_month' => $this->getShortMonth($month1),
+                'short_month' => $this->getShortMonth($month1, localeCode: $localeCode),
                 'year' => $year1,
             ];
 
@@ -86,9 +86,9 @@ class TimeProvider
         if ($year1 === $year2) {
             $parameters = [
                 'day1' => $day1,
-                'short_month1' => $this->getShortMonth($month1),
+                'short_month1' => $this->getShortMonth($month1, localeCode: $localeCode),
                 'day2' => $day2,
-                'short_month2' => $this->getShortMonth($month2),
+                'short_month2' => $this->getShortMonth($month2, localeCode: $localeCode),
                 'year' => $year1,
             ];
 
@@ -114,14 +114,14 @@ class TimeProvider
         return $this->trans('short_datetime', $parameters, $localeCode);
     }
 
-    private function getMonth(int|string $num): string
+    private function getMonth(int|string $num, string $localeCode = null): string
     {
-        return $this->trans(sprintf('month.%d', $num));
+        return $this->trans(sprintf('month.%d', $num), localeCode: $localeCode);
     }
 
-    private function getShortMonth(int|string $num): string
+    private function getShortMonth(int|string $num, string $localeCode = null): string
     {
-        return $this->trans(sprintf('short_month.%d', $num));
+        return $this->trans(sprintf('short_month.%d', $num), localeCode: $localeCode);
     }
 
     private function trans(string $id, array $parameters = [], string $localeCode = null): string
