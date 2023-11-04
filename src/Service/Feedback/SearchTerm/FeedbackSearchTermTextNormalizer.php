@@ -8,6 +8,7 @@ class FeedbackSearchTermTextNormalizer
 {
     public function normalizeFeedbackSearchTermText(string $text): string
     {
+        return trim($text);
         return mb_strtolower(
             trim(
                 $text
