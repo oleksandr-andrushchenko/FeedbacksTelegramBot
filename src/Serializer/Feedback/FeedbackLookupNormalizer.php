@@ -22,7 +22,7 @@ class FeedbackLookupNormalizer implements NormalizerInterface
 
             $data = [];
 
-            if (empty($user->getUsername())) {
+            if (!empty($user->getUsername())) {
                 $data['user'] = sprintf('@%s', $user->getUsername());
             }
 
