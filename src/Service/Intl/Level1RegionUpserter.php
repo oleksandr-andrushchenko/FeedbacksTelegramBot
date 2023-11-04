@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class Level1RegionUpserter
 {
     public function __construct(
-        private readonly Level1RegionRepository $repository,
+        private readonly Level1RegionRepository $level1RegionRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly IdGenerator $idGenerator,
     )
@@ -30,7 +30,8 @@ class Level1RegionUpserter
 
     public function upsertLevel1RegionByCountryAndName(string $countryCode, string $name): Level1Region
     {
-        $level1Region = $this->repository->findOneByCountryAndName($countryCode, $name);
+        $countryCode = strtolower($countryCode);
+        $level1Region = $this->level1RegionRepository->findOneByCountryAndName($countryCode, $name);
 
         if ($level1Region === null) {
             $level1Region = new Level1Region(
