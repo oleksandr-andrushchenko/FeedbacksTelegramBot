@@ -51,22 +51,13 @@ class CreateFeedbackTelegramBotConversationState extends TelegramBotConversation
             break;
         }
 
-        $this->searchTerms = array_unique(array_values(array_filter($this->searchTerms)));
+        $this->searchTerms = array_values($this->searchTerms);
 
         if (count($this->searchTerms) === 0) {
             $this->searchTerms = null;
         }
 
         return $this;
-    }
-
-    public function getFirstSearchTerm(): ?SearchTermTransfer
-    {
-        if ($this->searchTerms === null || count($this->searchTerms) === 0) {
-            return null;
-        }
-
-        return $this->searchTerms[0];
     }
 
     public function getLastSearchTerm(): ?SearchTermTransfer
