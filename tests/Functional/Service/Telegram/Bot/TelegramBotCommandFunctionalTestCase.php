@@ -341,11 +341,11 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
         $buttons = [
             $this->command('create'),
             $this->command('search'),
-            $this->command('donate'),
+            $this->command('lookup'),
         ];
         if ($extended) {
             $buttons = array_merge($buttons, [
-                $this->command('lookup'),
+                $this->command('donate'),
                 $subscribe ? $this->command('subscribe') : $this->command('subscriptions'),
                 $this->command('country'),
                 $this->command('locale'),
@@ -378,7 +378,7 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
         return [
             $this->commandButton('create'),
             $this->commandButton('search'),
-            $this->commandButton('donate'),
+            $this->commandButton('lookup'),
         ];
     }
 

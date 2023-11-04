@@ -49,12 +49,12 @@ class ChooseActionTelegramChatSender
         $buttons = [];
         $buttons[] = $this->getCreateButton($tg);
         $buttons[] = $this->getSearchButton($tg);
-        $buttons[] = $this->getDonateButton($tg);
+        $buttons[] = $this->getLookupButton($tg);
 
         $messengerUser = $tg->getBot()->getMessengerUser();
 
         if ($messengerUser?->showExtendedKeyboard()) {
-            $buttons[] = $this->getLookupButton($tg);
+            $buttons[] = $this->getDonateButton($tg);
 
             if (!$this->feedbackSubscriptionManager->hasActiveSubscription($messengerUser)) {
                 $buttons[] = $this->getSubscribeButton($tg);

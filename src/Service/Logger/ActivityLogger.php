@@ -29,7 +29,7 @@ class ActivityLogger extends AbstractLogger implements LoggerInterface
 
         $classPrefix = 'App\Entity';
         if (str_starts_with($class, $classPrefix)) {
-            $class = substr($class, strlen($classPrefix));
+            $class = substr($class, strlen($classPrefix) + 1);
         }
 
         $envelop = sprintf('"%s" has been %s(?)', $class, $updated ? 'updated' : 'created');
