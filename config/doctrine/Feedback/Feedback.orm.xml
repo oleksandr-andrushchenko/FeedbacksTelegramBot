@@ -7,6 +7,10 @@
     <entity name="App\Entity\Feedback\Feedback" repository-class="App\Repository\Feedback\FeedbackRepository"
             table="feedbacks">
 
+        <indexes>
+            <index fields="createdAt"/>
+        </indexes>
+
         <id name="id" column="id" type="string" length="32"/>
 
         <many-to-one field="user" target-entity="App\Entity\User\User"/>
