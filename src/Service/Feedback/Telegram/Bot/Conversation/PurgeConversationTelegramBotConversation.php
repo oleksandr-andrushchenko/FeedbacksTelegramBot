@@ -21,8 +21,8 @@ class PurgeConversationTelegramBotConversation extends TelegramBotConversation i
 
     public function __construct(
         private readonly UserDataPurger $userDataPurger,
-        private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
-        private readonly TelegramBotLocaleSwitcher $localeSwitcher,
+        private readonly ChooseActionTelegramChatSender $chooseActionTelegramChatSender,
+        private readonly TelegramBotLocaleSwitcher $telegramBotLocaleSwitcher,
     )
     {
         parent::__construct(new TelegramBotConversationState());
@@ -75,7 +75,7 @@ class PurgeConversationTelegramBotConversation extends TelegramBotConversation i
         $message = $tg->trans('reply.canceled', domain: 'purge');
         $message = $tg->upsetText($message);
 
-        return $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
+        return $this->chooseActionTelegramChatSender->sendActions($tg, text: $message, appendDefault: true);
     }
 
     public function gotConfirm(TelegramBotAwareHelper $tg, Entity $entity): null
@@ -83,7 +83,7 @@ class PurgeConversationTelegramBotConversation extends TelegramBotConversation i
         if ($tg->matchInput($tg->noButton()->getText())) {
             $tg->stopConversation($entity);
 
-            return $this->chooseActionChatSender->sendActions($tg);
+            return $this->chooseActionTelegramChatSender->sendActions($tg);
         }
 
         if ($tg->matchInput($tg->helpButton()->getText())) {
@@ -106,14 +106,13 @@ class PurgeConversationTelegramBotConversation extends TelegramBotConversation i
 
         $this->userDataPurger->purgeUserData($user);
 
-        // todo: implement default setting provider (by telegram object) and implement everywhere and here as well
-        $this->localeSwitcher->setLocale($user->getLocaleCode() ?? $tg->getBot()->getEntity()->getLocaleCode());
+        $this->telegramBotLocaleSwitcher->setLocale($tg->getBot()->getEntity()->getLocaleCode());
 
         $message = $tg->trans('reply.ok', domain: 'purge');
         $message = $tg->okText($message);
 
         $tg->stopConversation($entity);
 
-        return $this->chooseActionChatSender->sendActions($tg, $message);
+        return $this->chooseActionTelegramChatSender->sendActions($tg, $message);
     }
 }

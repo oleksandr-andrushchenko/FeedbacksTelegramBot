@@ -24,10 +24,10 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
     public const STEP_CANCEL_PRESSED = 30;
 
     public function __construct(
-        private readonly LocaleProvider $provider,
-        private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
-        private readonly TelegramBotLocaleSwitcher $localeSwitcher,
-        private readonly TelegramBotMatchesChatSender $botMatchesChatSender,
+        private readonly LocaleProvider $localeProvider,
+        private readonly ChooseActionTelegramChatSender $chooseActionTelegramChatSender,
+        private readonly TelegramBotLocaleSwitcher $telegramBotLocaleSwitcher,
+        private readonly TelegramBotMatchesChatSender $telegramBotMatchesChatSender,
     )
     {
         parent::__construct(new TelegramBotConversationState());
@@ -54,7 +54,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
      */
     public function getGuessLocales(TelegramBotAwareHelper $tg): array
     {
-        return $this->provider->getLocales(countryCode: $tg->getCountryCode());
+        return $this->localeProvider->getLocales(countryCode: $tg->getCountryCode());
     }
 
     /**
@@ -62,7 +62,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
      */
     public function getLocales(): array
     {
-        return $this->provider->getLocales();
+        return $this->localeProvider->getLocales();
     }
 
     public function gotCancel(TelegramBotAwareHelper $tg, Entity $entity): null
@@ -77,14 +77,14 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
 
         $tg->stopConversation($entity);
 
-        return $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
+        return $this->chooseActionTelegramChatSender->sendActions($tg, text: $message, appendDefault: true);
     }
 
     public function getCurrentLocaleReply(TelegramBotAwareHelper $tg): string
     {
         $localeCode = $tg->getLocaleCode();
-        $locale = $localeCode === null ? null : $this->provider->getLocale($localeCode);
-        $localeName = sprintf('<u>%s</u>', $this->provider->getLocaleComposeName($locale));
+        $locale = $localeCode === null ? null : $this->localeProvider->getLocale($localeCode);
+        $localeName = sprintf('<u>%s</u>', $this->localeProvider->getLocaleComposeName($locale));
         $parameters = [
             'locale' => $localeName,
         ];
@@ -132,7 +132,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
         if ($tg->matchInput($tg->noButton()->getText())) {
             $tg->stopConversation($entity);
 
-            return $this->chooseActionChatSender->sendActions($tg);
+            return $this->chooseActionTelegramChatSender->sendActions($tg);
         }
 
         if ($tg->matchInput($tg->helpButton()->getText())) {
@@ -251,7 +251,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
             $tg->getBot()->getMessengerUser()->getUser()
                 ->setLocaleCode($locale->getCode())
             ;
-            $this->localeSwitcher->switchLocale($locale);
+            $this->telegramBotLocaleSwitcher->switchLocale($locale);
         }
 
         $tg->stopConversation($entity);
@@ -259,10 +259,10 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
         $message = $this->getGotLocaleReply($tg);
         $message .= "\n";
 
-        $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
+        $this->chooseActionTelegramChatSender->sendActions($tg, text: $message, appendDefault: true);
 
-        $keyboard = $this->chooseActionChatSender->getKeyboard($tg);
-        $this->botMatchesChatSender->sendTelegramBotMatchesIfNeed($tg, $keyboard);
+        $keyboard = $this->chooseActionTelegramChatSender->getKeyboard($tg);
+        $this->telegramBotMatchesChatSender->sendTelegramBotMatchesIfNeed($tg, $keyboard);
 
         return null;
     }
@@ -279,7 +279,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
 
     public function getLocaleButton(Locale $locale, TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($this->provider->getLocaleComposeName($locale));
+        return $tg->button($this->localeProvider->getLocaleComposeName($locale));
     }
 
     public function getLocaleByButton(string $button, array $locales, TelegramBotAwareHelper $tg): ?Locale
@@ -295,7 +295,7 @@ class LocaleTelegramBotConversation extends TelegramBotConversation implements T
 
     public function getOtherLocaleButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        $icon = $this->provider->getUnknownLocaleIcon();
+        $icon = $this->localeProvider->getUnknownLocaleIcon();
         $name = $tg->trans('keyboard.other');
 
         return $tg->button($icon . ' ' . $name);

@@ -22,8 +22,8 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
     public const STEP_CANCEL_PRESSED = 30;
 
     public function __construct(
-        private readonly UserContactMessageCreator $messageCreator,
-        private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
+        private readonly UserContactMessageCreator $userContactMessageCreator,
+        private readonly ChooseActionTelegramChatSender $chooseActionTelegramChatSender,
         private readonly ContactOptionsFactory $contactOptionsFactory,
     )
     {
@@ -87,7 +87,7 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
         if ($tg->matchInput($tg->noButton()->getText())) {
             $tg->stopConversation($entity);
 
-            return $this->chooseActionChatSender->sendActions($tg);
+            return $this->chooseActionTelegramChatSender->sendActions($tg);
         }
 
         if ($tg->matchInput($tg->helpButton()->getText())) {
@@ -145,7 +145,7 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
         $message = $tg->trans('reply.canceled', domain: 'contact');
         $message = $tg->upsetText($message);
 
-        return $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
+        return $this->chooseActionTelegramChatSender->sendActions($tg, text: $message, appendDefault: true);
     }
 
     public function gotMessage(TelegramBotAwareHelper $tg, Entity $entity): null
@@ -165,7 +165,7 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
         }
 
         try {
-            $this->messageCreator->createUserContactMessage(
+            $this->userContactMessageCreator->createUserContactMessage(
                 new UserContactMessageTransfer(
                     $tg->getBot()->getMessengerUser(),
                     $tg->getBot()->getMessengerUser()->getUser(),
@@ -179,7 +179,7 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
             $message = $tg->trans('reply.ok', domain: 'contact');
             $message = $tg->okText($message);
 
-            return $this->chooseActionChatSender->sendActions($tg, $message);
+            return $this->chooseActionTelegramChatSender->sendActions($tg, $message);
         } catch (ValidatorException $exception) {
             $tg->replyWarning($exception->getFirstMessage());
 
