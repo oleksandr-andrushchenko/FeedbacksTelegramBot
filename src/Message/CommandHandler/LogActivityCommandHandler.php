@@ -32,10 +32,10 @@ class LogActivityCommandHandler
     {
     }
 
-    public function __invoke(LogActivityCommand $event): void
+    public function __invoke(LogActivityCommand $command): void
     {
-        if ($event->getEntity() === null) {
-            $repository = match ($event->getEntityClass()) {
+        if ($command->getEntity() === null) {
+            $repository = match ($command->getEntityClass()) {
                 Feedback::class => $this->feedbackRepository,
                 FeedbackSearch::class => $this->feedbackSearchRepository,
                 FeedbackLookup::class => $this->feedbackLookupRepository,
@@ -45,17 +45,29 @@ class LogActivityCommandHandler
             };
 
             if ($repository === null) {
-                $this->logger->warning(sprintf('No repository was found for %s entity class', $event->getEntityClass()));
+                $this->logger->warning(
+                    sprintf(
+                        'No repository was found for %s entity class',
+                        $command->getEntityClass()
+                    )
+                );
                 return;
             }
 
-            $entity = $repository->find($event->getEntityId());
+            $entity = $repository->find($command->getEntityId());
         } else {
-            $entity = $event->getEntity();
+            $entity = $command->getEntity();
         }
 
         if ($entity === null) {
-            $this->logger->warning(sprintf('No entity was found in %s for %s & %s id', __CLASS__, $event->getEntityClass(), $event->getEntityId()));
+            $this->logger->warning(
+                sprintf(
+                    'No entity was found in %s for %s & %s id',
+                    __CLASS__,
+                    $command->getEntityClass(),
+                    $command->getEntityId()
+                )
+            );
             return;
         }
 
