@@ -725,8 +725,8 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         $feedbackView = $this->feedbackTelegramViewProvider->getFeedbackTelegramView(
             $tg->getBot()->getEntity(),
             $this->feedbackCreator->constructFeedback($this->constructTransfer($tg)),
-            showSign: false,
-            showTime: false,
+            sign: false,
+            time: false,
             localeCode: $tg->getBot()->getEntity()->getLocaleCode()
         );
 
@@ -809,8 +809,8 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $feedbackView = $this->feedbackTelegramViewProvider->getFeedbackTelegramView(
                 $tg->getBot()->getEntity(),
                 $feedback,
-                showSign: false,
-                showTime: false,
+                sign: false,
+                time: false,
                 localeCode: $tg->getBot()->getEntity()->getLocaleCode()
             );
 

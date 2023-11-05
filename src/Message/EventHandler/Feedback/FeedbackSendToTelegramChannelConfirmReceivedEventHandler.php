@@ -49,8 +49,8 @@ class FeedbackSendToTelegramChannelConfirmReceivedEventHandler
                 $message = $this->feedbackTelegramViewProvider->getFeedbackTelegramView(
                     $bot,
                     $feedback,
-                    addSecrets: true,
-                    showTime: $showTime,
+                    secrets: true,
+                    time: $showTime,
                     channel: $channel,
                     localeCode: $channel->getLocaleCode(),
                 );

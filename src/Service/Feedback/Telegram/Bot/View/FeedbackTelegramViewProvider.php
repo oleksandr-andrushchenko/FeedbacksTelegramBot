@@ -36,9 +36,9 @@ class FeedbackTelegramViewProvider
         TelegramBot $bot,
         Feedback $feedback,
         int $number = null,
-        bool $addSecrets = false,
-        bool $showSign = true,
-        bool $showTime = true,
+        bool $secrets = false,
+        bool $sign = true,
+        bool $time = true,
         TelegramChannel $channel = null,
         string $localeCode = null,
     ): string
@@ -60,7 +60,7 @@ class FeedbackTelegramViewProvider
             $message .= "\n";
         }
 
-        if ($showTime) {
+        if ($time) {
             $createdAt = $this->timeProvider->getDate(
                 $feedback->getCreatedAt(),
                 timezone: $user->getTimezone(),
@@ -71,7 +71,7 @@ class FeedbackTelegramViewProvider
         }
 
         $somebodyFrom = $this->translator->trans('somebody_from', domain: 'feedbacks.tg.feedback', locale: $localeCode);
-        $message .= $showTime ? $this->mbLcFirster->mbLcFirst($somebodyFrom) : $somebodyFrom;
+        $message .= $time ? $this->mbLcFirster->mbLcFirst($somebodyFrom) : $somebodyFrom;
         $message .= ' ';
         $country = $this->countryProvider->getCountryComposeName($country, localeCode: $localeCode);
         $message .= sprintf('<u>%s</u>', $country);
@@ -83,7 +83,7 @@ class FeedbackTelegramViewProvider
                 fn (FeedbackSearchTerm $searchTerm): SearchTermTransfer => $this->searchTermProvider->getFeedbackSearchTermTransfer($searchTerm),
                 $feedback->getSearchTerms()->toArray()
             ),
-            addSecrets: $addSecrets,
+            addSecrets: $secrets,
             localeCode: $localeCode
         );
         $message .= ':';
@@ -102,7 +102,7 @@ class FeedbackTelegramViewProvider
         $message .= $rating;
         $message .= '</b>';
 
-        if ($showSign) {
+        if ($sign) {
             $message .= "\n\n";
 
             $message .= $this->feedbackTelegramReplySignViewProvider->getFeedbackTelegramReplySignView(

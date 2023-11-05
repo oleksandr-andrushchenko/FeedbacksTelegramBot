@@ -12,7 +12,7 @@ interface TelegramBotMessageSenderInterface
 {
     public function sendTelegramMessage(
         TelegramBot $botEntity,
-        int $chatId,
+        string|int $chatId,
         string $text,
         Keyboard $keyboard = null,
         string $parseMode = 'HTML',
