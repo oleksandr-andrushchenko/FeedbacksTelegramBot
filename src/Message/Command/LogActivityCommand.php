@@ -44,4 +44,12 @@ readonly class LogActivityCommand
     {
         return $this->entity;
     }
+
+    public function __sleep(): array
+    {
+        return [
+            'entityClass',
+            'entityId',
+        ];
+    }
 }
