@@ -171,9 +171,9 @@
         </service>
         <service id="app.feedback_command_options_factory"
                  class="App\Service\Feedback\Command\FeedbackCommandOptionsFactory" lazy="true"/>
-        <service id="app.feedback_command_statistic_provider_factory"
-                 class="App\Service\Feedback\Command\FeedbackCommandStatisticProviderFactory" lazy="true">
-            <argument type="tagged_locator" tag="app.feedback_command_statistic_provider"/>
+        <service id="app.feedback_user_statistic_provider_registry"
+                 class="App\Service\Feedback\Statistic\FeedbackUserStatisticProviderRegistry" lazy="true">
+            <argument type="tagged_locator" tag="app.feedback_user_statistic_provider"/>
         </service>
         <service id="app.feedback_command_limits_checker"
                  class="App\Service\Feedback\Command\FeedbackCommandLimitsChecker" lazy="true">
@@ -304,11 +304,12 @@
             <argument>%app.feedback_subscription_plans%</argument>
             <argument type="service" id="translator"/>
         </service>
-        <service id="app.feedback_statistic_provider" class="App\Service\Feedback\Statistic\FeedbackStatisticProvider"
+        <service id="app.feedback_statistic_provider"
+                 class="App\Service\Feedback\Statistic\FeedbackUserStatisticProvider"
                  lazy="true">
             <argument type="service" id="app.feedback_create_command_options"/>
             <argument type="service" id="app.feedback_repository"/>
-            <tag name="app.feedback_command_statistic_provider"/>
+            <tag name="app.feedback_user_statistic_provider"/>
         </service>
         <service id="app.feedback_subscription_manager"
                  class="App\Service\Feedback\Subscription\FeedbackSubscriptionManager" lazy="true">
@@ -319,16 +320,16 @@
             <argument type="service" id="app.event_bus"/>
         </service>
         <service id="app.feedback_search_statistic_provider"
-                 class="App\Service\Feedback\Statistic\FeedbackSearchStatisticProvider" lazy="true">
+                 class="App\Service\Feedback\Statistic\FeedbackSearchUserStatisticProvider" lazy="true">
             <argument type="service" id="app.feedback_search_command_options"/>
             <argument type="service" id="app.feedback_search_repository"/>
-            <tag name="app.feedback_command_statistic_provider"/>
+            <tag name="app.feedback_user_statistic_provider"/>
         </service>
         <service id="app.feedback_lookup_statistic_provider"
-                 class="App\Service\Feedback\Statistic\FeedbackLookupStatisticProvider" lazy="true">
+                 class="App\Service\Feedback\Statistic\FeedbackLookupUserStatisticProvider" lazy="true">
             <argument type="service" id="app.feedback_lookup_command_options"/>
             <argument type="service" id="app.feedback_lookup_repository"/>
-            <tag name="app.feedback_command_statistic_provider"/>
+            <tag name="app.feedback_user_statistic_provider"/>
         </service>
         <service id="app.feedback_search_term_provider" class="App\Service\Feedback\SearchTerm\SearchTermProvider"
                  lazy="true"/>

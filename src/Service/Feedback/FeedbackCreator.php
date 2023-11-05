@@ -11,9 +11,9 @@ use App\Exception\Messenger\SameMessengerUserException;
 use App\Exception\ValidatorException;
 use App\Message\Event\Feedback\FeedbackCreatedEvent;
 use App\Service\Feedback\Command\FeedbackCommandLimitsChecker;
-use App\Service\Feedback\Command\FeedbackCommandStatisticProviderInterface;
 use App\Service\Feedback\SearchTerm\FeedbackSearchTermUpserter;
 use App\Service\Feedback\SearchTerm\SearchTermMessengerProvider;
+use App\Service\Feedback\Statistic\FeedbackUserStatisticProviderInterface;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\IdGenerator;
 use App\Service\Validator;
@@ -27,7 +27,7 @@ class FeedbackCreator
         private readonly FeedbackCommandOptions $feedbackCommandOptions,
         private readonly EntityManagerInterface $entityManager,
         private readonly Validator $validator,
-        private readonly FeedbackCommandStatisticProviderInterface $feedbackCommandStatisticProvider,
+        private readonly FeedbackUserStatisticProviderInterface $feedbackCommandStatisticProvider,
         private readonly FeedbackCommandLimitsChecker $feedbackCommandLimitsChecker,
         private readonly FeedbackSubscriptionManager $feedbackSubscriptionManager,
         private readonly FeedbackSearchTermUpserter $feedbackSearchTermUpserter,

@@ -6,24 +6,23 @@ namespace App\Service\Feedback\Statistic;
 
 use App\Entity\Feedback\Command\FeedbackCommandOptions;
 use App\Entity\User\User;
-use App\Repository\Feedback\FeedbackRepository;
-use App\Service\Feedback\Command\FeedbackCommandStatisticProviderInterface;
+use App\Repository\Feedback\FeedbackSearchRepository;
 use DateTimeImmutable;
 use Generator;
 
-class FeedbackStatisticProvider implements FeedbackCommandStatisticProviderInterface
+class FeedbackSearchUserStatisticProvider implements FeedbackUserStatisticProviderInterface
 {
     public function __construct(
         private readonly FeedbackCommandOptions $feedbackCommandOptions,
-        private readonly FeedbackRepository $feedbackRepository,
+        private readonly FeedbackSearchRepository $feedbackSearchRepository,
     )
     {
     }
 
-    public function getStatistics(User $user): Generator
+    public function getUserStatistics(User $user): Generator
     {
         foreach ($this->getLimits() as $limit) {
-            yield $limit->getPeriod() => $this->feedbackRepository
+            yield $limit->getPeriod() => $this->feedbackSearchRepository
                 ->countByUserAndFromWithoutActiveSubscription(
                     $user,
                     new DateTimeImmutable(sprintf('-1 %s', $limit->getPeriod()))

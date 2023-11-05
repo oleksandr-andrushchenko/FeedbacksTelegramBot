@@ -10,8 +10,8 @@ use App\Exception\Feedback\FeedbackCommandLimitExceededException;
 use App\Exception\ValidatorException;
 use App\Message\Event\Feedback\FeedbackSearchCreatedEvent;
 use App\Service\Feedback\Command\FeedbackCommandLimitsChecker;
-use App\Service\Feedback\Command\FeedbackCommandStatisticProviderInterface;
 use App\Service\Feedback\SearchTerm\FeedbackSearchTermUpserter;
+use App\Service\Feedback\Statistic\FeedbackUserStatisticProviderInterface;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\IdGenerator;
 use App\Service\Validator;
@@ -25,7 +25,7 @@ class FeedbackSearchCreator
         private readonly FeedbackCommandOptions $options,
         private readonly EntityManagerInterface $entityManager,
         private readonly Validator $validator,
-        private readonly FeedbackCommandStatisticProviderInterface $statisticProvider,
+        private readonly FeedbackUserStatisticProviderInterface $statisticProvider,
         private readonly FeedbackCommandLimitsChecker $limitsChecker,
         private readonly FeedbackSubscriptionManager $subscriptionManager,
         private readonly FeedbackSearchTermUpserter $termUpserter,

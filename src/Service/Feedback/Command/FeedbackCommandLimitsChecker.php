@@ -6,6 +6,7 @@ namespace App\Service\Feedback\Command;
 
 use App\Entity\User\User;
 use App\Exception\Feedback\FeedbackCommandLimitExceededException;
+use App\Service\Feedback\Statistic\FeedbackUserStatisticProviderInterface;
 
 class FeedbackCommandLimitsChecker
 {
@@ -17,17 +18,17 @@ class FeedbackCommandLimitsChecker
 
     /**
      * @param User $user
-     * @param FeedbackCommandStatisticProviderInterface $statisticProvider
+     * @param FeedbackUserStatisticProviderInterface $statisticProvider
      * @return void
      * @throws FeedbackCommandLimitExceededException
      */
-    public function checkCommandLimits(User $user, FeedbackCommandStatisticProviderInterface $statisticProvider): void
+    public function checkCommandLimits(User $user, FeedbackUserStatisticProviderInterface $statisticProvider): void
     {
         if (!$this->checkLimits) {
             return;
         }
 
-        $statistics = $statisticProvider->getStatistics($user);
+        $statistics = $statisticProvider->getUserStatistics($user);
         $limits = $statisticProvider->getLimits();
 
         foreach ($statistics as $period => $current) {
