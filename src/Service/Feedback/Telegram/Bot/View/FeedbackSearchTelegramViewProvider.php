@@ -66,7 +66,7 @@ class FeedbackSearchTelegramViewProvider
         $message .= ' ';
         $message .= $this->translator->trans('searched_for', domain: 'feedbacks.tg.feedback_search', locale: $localeCode);
         $message .= ' ';
-        $searchTerm = $this->searchTermProvider->getSearchTermByFeedbackSearchTerm($feedbackSearch->getSearchTerm());
+        $searchTerm = $this->searchTermProvider->getFeedbackSearchTermTransfer($feedbackSearch->getSearchTerm());
         $message .= $this->searchTermTelegramViewProvider->getSearchTermTelegramView(
             $searchTerm,
             addSecrets: $addSecrets,

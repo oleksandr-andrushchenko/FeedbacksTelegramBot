@@ -80,7 +80,7 @@ class FeedbackTelegramViewProvider
         $message .= ' ';
         $message .= $this->multipleSearchTermTelegramViewProvider->getMultipleSearchTermTelegramView(
             array_map(
-                fn (FeedbackSearchTerm $searchTerm): SearchTermTransfer => $this->searchTermProvider->getSearchTermByFeedbackSearchTerm($searchTerm),
+                fn (FeedbackSearchTerm $searchTerm): SearchTermTransfer => $this->searchTermProvider->getFeedbackSearchTermTransfer($searchTerm),
                 $feedback->getSearchTerms()->toArray()
             ),
             addSecrets: $addSecrets,
