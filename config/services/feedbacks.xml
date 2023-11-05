@@ -291,13 +291,13 @@
                  class="App\Service\Feedback\SearchTerm\TaxNumberSearchTermParser" lazy="true">
             <tag name="app.feedback_search_term_parser"/>
         </service>
-        <service id="app.feedback_search_term_parser_factory"
-                 class="App\Service\Feedback\SearchTerm\SearchTermParserFactory" lazy="true">
+        <service id="app.feedback_search_term_parser_registry"
+                 class="App\Service\Feedback\SearchTerm\SearchTermParserRegistry" lazy="true">
             <argument type="tagged_locator" tag="app.feedback_search_term_parser"/>
         </service>
         <service id="app.feedback_search_term_parser" class="App\Service\Feedback\SearchTerm\SearchTermParser"
                  lazy="true">
-            <argument type="service" id="app.feedback_search_term_parser_factory"/>
+            <argument type="service" id="app.feedback_search_term_parser_registry"/>
         </service>
         <service id="app.feedback_subscription_plan_provider"
                  class="App\Service\Feedback\Subscription\FeedbackSubscriptionPlanProvider" lazy="true">
