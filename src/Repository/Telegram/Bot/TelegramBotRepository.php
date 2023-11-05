@@ -39,10 +39,6 @@ class TelegramBotRepository extends ServiceEntityRepository
         ]);
     }
 
-    /**
-     * @param TelegramBotGroupName $group
-     * @return TelegramBot[]
-     */
     public function findByGroup(TelegramBotGroupName $group): array
     {
         return $this->findBy([
@@ -51,10 +47,6 @@ class TelegramBotRepository extends ServiceEntityRepository
         ]);
     }
 
-    /**
-     * @param TelegramBotGroupName $group
-     * @return TelegramBot[]
-     */
     public function findPrimaryByGroup(TelegramBotGroupName $group): array
     {
         return $this->findBy([
@@ -64,11 +56,6 @@ class TelegramBotRepository extends ServiceEntityRepository
         ]);
     }
 
-    /**
-     * @param TelegramBotGroupName $group
-     * @param string $countryCode
-     * @return TelegramBot[]
-     */
     public function findByGroupAndCountry(TelegramBotGroupName $group, string $countryCode): array
     {
         return $this->findBy([
@@ -84,6 +71,16 @@ class TelegramBotRepository extends ServiceEntityRepository
             'group' => $bot->getGroup(),
             'countryCode' => $bot->getCountryCode(),
             'localeCode' => $bot->getLocaleCode(),
+            'primary' => true,
+            'deletedAt' => null,
+        ]);
+    }
+
+    public function findPrimaryByGroupAndIds(TelegramBotGroupName $group, array $ids): array
+    {
+        return $this->findBy([
+            'ids' => $ids,
+            'group' => $group,
             'primary' => true,
             'deletedAt' => null,
         ]);
