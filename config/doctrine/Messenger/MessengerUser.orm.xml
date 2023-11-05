@@ -8,7 +8,8 @@
             repository-class="App\Repository\Messenger\MessengerUserRepository" table="messenger_users">
 
         <indexes>
-            <index fields="messenger,identifier"/>
+            <index fields="identifier"/>
+            <index fields="username"/>
         </indexes>
 
         <id name="id" column="id" type="string" length="32"/>

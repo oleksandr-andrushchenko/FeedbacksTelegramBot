@@ -32,23 +32,43 @@ class MessengerUserRepository extends ServiceEntityRepository
     ): ?MessengerUser
     {
         if ($withUser) {
-            return $this->createQueryBuilder('mu')
+            $users = $this->createQueryBuilder('mu')
                 ->select('mu', 'u')
                 ->innerJoin('mu.user', 'u')
-                ->andWhere('mu.messenger = :messenger')
-                ->setParameter('messenger', $messenger)
                 ->andWhere('mu.identifier = :identifier')
                 ->setParameter('identifier', $identifier)
                 ->setMaxResults(1)
                 ->getQuery()
-                ->getOneOrNullResult()
+                ->getResult()
             ;
+        } else {
+            $users = $this->findBy([
+                'identifier' => $identifier,
+            ]);
         }
 
-        return $this->findOneBy([
-            'messenger' => $messenger,
-            'identifier' => $identifier,
+        foreach ($users as $user) {
+            if ($user->getMessenger() === $messenger) {
+                return $user;
+            }
+        }
+
+        return null;
+    }
+
+    public function findOneByMessengerAndUsername(Messenger $messenger, string $username): ?MessengerUser
+    {
+        $users = $this->findBy([
+            'username' => $username,
         ]);
+
+        foreach ($users as $user) {
+            if ($user->getMessenger() === $messenger) {
+                return $user;
+            }
+        }
+
+        return null;
     }
 
     public function findByUser(User $user): array
