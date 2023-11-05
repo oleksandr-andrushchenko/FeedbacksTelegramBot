@@ -18,6 +18,7 @@ class MessengerUser
         private ?string $name = null,
         private ?User $user = null,
         private bool $showExtendedKeyboard = false,
+        private ?array $botIds = null,
         private ?DateTimeInterface $createdAt = null,
         private ?DateTimeInterface $updatedAt = null,
     )
@@ -83,6 +84,26 @@ class MessengerUser
     public function setShowExtendedKeyboard(bool $showExtendedKeyboard): self
     {
         $this->showExtendedKeyboard = $showExtendedKeyboard;
+
+        return $this;
+    }
+
+    /**
+     * @return int[]|null
+     */
+    public function getBotIds(): ?array
+    {
+        return $this->botIds;
+    }
+
+    public function addBotId(int $botId): self
+    {
+        if ($this->botIds === null) {
+            $this->botIds = [];
+        }
+
+        $this->botIds[] = $botId;
+        $this->botIds = array_filter(array_unique($this->botIds));
 
         return $this;
     }

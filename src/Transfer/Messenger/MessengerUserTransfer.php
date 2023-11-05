@@ -17,6 +17,7 @@ readonly class MessengerUserTransfer
         private ?string $localeCode = null,
         private ?string $currencyCode = null,
         private ?string $timezone = null,
+        private ?int $botId = null,
     )
     {
     }
@@ -59,5 +60,10 @@ readonly class MessengerUserTransfer
     public function getTimezone(): ?string
     {
         return $this->timezone;
+    }
+
+    public function getBotId(): ?int
+    {
+        return $this->botId;
     }
 }

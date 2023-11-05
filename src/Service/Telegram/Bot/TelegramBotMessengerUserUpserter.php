@@ -33,7 +33,7 @@ class TelegramBotMessengerUserUpserter
         $countryCode = $bot->getEntity()->getCountryCode();
         $country = $this->countryProvider->getCountry($countryCode);
 
-        $messengerUserTransfer = new MessengerUserTransfer(
+        $transfer = new MessengerUserTransfer(
             Messenger::telegram,
             (string) $user->getId(),
             username: $user->getUsername(),
@@ -42,9 +42,10 @@ class TelegramBotMessengerUserUpserter
             localeCode: $bot->getEntity()->getLocaleCode(),
             currencyCode: $country->getCurrencyCode(),
             timezone: $country->getTimezones()[0] ?? null,
+            botId: $bot->getEntity()->getId()
         );
-        $messengerUser = $this->messengerUserUpserter->upsertMessengerUser($messengerUserTransfer, withUser: true);
-        $this->userUpserter->upsertUserByMessengerUser($messengerUser, $messengerUserTransfer);
+        $messengerUser = $this->messengerUserUpserter->upsertMessengerUser($transfer, withUser: true);
+        $this->userUpserter->upsertUserByMessengerUser($messengerUser, $transfer);
 
         return $messengerUser;
     }

@@ -21,12 +21,17 @@
         <field name="identifier" column="identifier"/>
         <field name="name" column="name" nullable="true"/>
         <field name="username" column="username" nullable="true"/>
+
         <many-to-one field="user" target-entity="App\Entity\User\User"/>
+
         <field name="showExtendedKeyboard" column="show_extended_keyboard" type="boolean">
             <options>
                 <option name="default">0</option>
             </options>
         </field>
+
+        <field name="botIds" column="bot_ids" type="simple_array" nullable="true"/>
+
         <field name="createdAt" column="created_at" type="datetime_immutable"/>
         <field name="updatedAt" column="updated_at" type="datetime_immutable" nullable="true"/>
     </entity>

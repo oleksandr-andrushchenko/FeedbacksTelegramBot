@@ -43,6 +43,9 @@ class MessengerUserUpserter
         if (empty($messengerUser->getName()) && !empty($transfer->getName())) {
             $messengerUser->setName($transfer->getName());
         }
+        if (!empty($transfer->getBotId())) {
+            $messengerUser->addBotId($transfer->getBotId());
+        }
 
         return $messengerUser;
     }
