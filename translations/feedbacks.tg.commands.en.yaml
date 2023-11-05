@@ -4,7 +4,7 @@ search: Search for feedbacks (report, check, verify) on user, organization or pl
 lookup: Search for lookups on interested user, organization or place.
 subscribe: Buy premium subscription to stay unlimited.
 subscriptions: List your premium subscriptions.
-country: Choose your country.
+country: Choose your country and region.
 locale: Choose your language.
 limits: Command limit list.
 purge: Remove stored user data.
