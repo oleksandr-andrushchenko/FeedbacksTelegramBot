@@ -64,5 +64,17 @@
         </service>
         <service id="app.address_geocoder" alias="app.google_address_geocoder"/>
         <service id="app.timezone_geocoder" alias="app.google_timezone_geocoder"/>
+        <service id="app.log_activity_command_handler" class="App\Message\CommandHandler\LogActivityCommandHandler"
+                 lazy="true">
+            <argument type="service" id="app.feedback_repository"/>
+            <argument type="service" id="app.feedback_search_repository"/>
+            <argument type="service" id="app.feedback_lookup_repository"/>
+            <argument type="service" id="app.telegram_bot_payment_repository"/>
+            <argument type="service" id="app.user_contact_message_repository"/>
+            <argument type="service" id="app.activity_logger"/>
+            <argument type="service" id="logger"/>
+            <tag name="messenger.message_handler" handles="App\Message\Command\LogActivityCommand"
+                 bus="app.command_bus"/>
+        </service>
     </services>
 </container>

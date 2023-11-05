@@ -490,17 +490,14 @@
         <service id="app.telegram_bot_payment_event_handler"
                  class="App\Message\EventHandler\Telegram\TelegramBotPaymentEventHandler" lazy="true">
             <argument type="service" id="app.telegram_bot_payment_repository"/>
-            <argument type="service" id="app.activity_logger"/>
             <argument type="service" id="logger"/>
+            <argument type="service" id="app.command_bus"/>
             <tag name="messenger.message_handler"
-                 handles="App\Message\Event\Telegram\TelegramBotPaymentCreatedEvent" method="invokeCreated"
-                 bus="app.event_bus"/>
+                 handles="App\Message\Event\Telegram\TelegramBotPaymentCreatedEvent" bus="app.event_bus"/>
             <tag name="messenger.message_handler"
-                 handles="App\Message\Event\Telegram\TelegramBotPaymentPreCheckoutEvent" method="invokePreCheckout"
-                 bus="app.event_bus"/>
+                 handles="App\Message\Event\Telegram\TelegramBotPaymentPreCheckoutEvent" bus="app.event_bus"/>
             <tag name="messenger.message_handler"
-                 handles="App\Message\Event\Telegram\TelegramBotPaymentSuccessfulEvent" method="invokeSuccessful"
-                 bus="app.event_bus"/>
+                 handles="App\Message\Event\Telegram\TelegramBotPaymentSuccessfulEvent" bus="app.event_bus"/>
         </service>
     </services>
 </container>

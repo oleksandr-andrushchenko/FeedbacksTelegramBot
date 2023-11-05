@@ -5,10 +5,6 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="app.log_activities_create_feedback">%app.log_activities%</parameter>
-        <parameter key="app.log_activities_search_feedback">%app.log_activities%</parameter>
-        <parameter key="app.log_activities_lookup_feedback">%app.log_activities%</parameter>
-
         <parameter key="app.check_feedbacks_limits">true</parameter>
 
         <parameter key="app.feedbacks_contact_options" type="collection">
@@ -25,7 +21,6 @@
                 <parameter key="month">200</parameter>
                 <parameter key="year">500</parameter>
             </parameter>
-            <parameter key="log_activities">%app.log_activities_create_feedback%</parameter>
         </parameter>
 
         <parameter key="app.feedback_search_command_options" type="collection">
@@ -34,7 +29,6 @@
                 <parameter key="month">50</parameter>
                 <parameter key="year">300</parameter>
             </parameter>
-            <parameter key="log_activities">%app.log_activities_search_feedback%</parameter>
         </parameter>
 
         <parameter key="app.feedback_lookup_command_options" type="collection">
@@ -43,7 +37,6 @@
                 <parameter key="month">30</parameter>
                 <parameter key="year">120</parameter>
             </parameter>
-            <parameter key="log_activities">%app.log_activities_lookup_feedback%</parameter>
         </parameter>
 
         <parameter key="app.feedback_subscription_plans" type="collection">
@@ -81,8 +74,7 @@
         <service id="app.feedback_search_repository" class="App\Repository\Feedback\FeedbackSearchRepository">
             <argument type="service" id="doctrine"/>
         </service>
-        <service id="app.feedback_lookup_repository"
-                 class="App\Repository\Feedback\FeedbackLookupRepository">
+        <service id="app.feedback_lookup_repository" class="App\Repository\Feedback\FeedbackLookupRepository">
             <argument type="service" id="doctrine"/>
         </service>
         <service id="app.feedback_user_subscription_repository"
@@ -92,8 +84,8 @@
         <service id="app.feedback_search_term_repository" class="App\Repository\Feedback\FeedbackSearchTermRepository">
             <argument type="service" id="doctrine"/>
         </service>
-        <service id="app.feedback_search_term_validator"
-                 class="App\Validator\Feedback\SearchTermTransferValidator" lazy="true">
+        <service id="app.feedback_search_term_validator" class="App\Validator\Feedback\SearchTermTransferValidator"
+                 lazy="true">
             <argument type="service" id="app.validator_helper"/>
             <tag name="validator.constraint_validator" alias="app.feedback_search_term_validator"/>
         </service>
@@ -559,9 +551,8 @@
         <service id="app.feedback_created_event_handler"
                  class="App\Message\EventHandler\Feedback\FeedbackCreatedEventHandler" lazy="true">
             <argument type="service" id="app.feedback_repository"/>
-            <argument type="service" id="app.feedback_create_command_options"/>
-            <argument type="service" id="app.activity_logger"/>
             <argument type="service" id="logger"/>
+            <argument type="service" id="app.command_bus"/>
             <tag name="messenger.message_handler" handles="App\Message\Event\Feedback\FeedbackCreatedEvent"
                  bus="app.event_bus"/>
         </service>
@@ -580,26 +571,24 @@
         <service id="app.feedback_lookup_created_event_handler"
                  class="App\Message\EventHandler\Feedback\FeedbackLookupCreatedEventHandler" lazy="true">
             <argument type="service" id="app.feedback_lookup_repository"/>
-            <argument type="service" id="app.feedback_lookup_command_options"/>
-            <argument type="service" id="app.activity_logger"/>
             <argument type="service" id="logger"/>
+            <argument type="service" id="app.command_bus"/>
             <tag name="messenger.message_handler" handles="App\Message\Event\Feedback\FeedbackLookupCreatedEvent"
                  bus="app.event_bus"/>
         </service>
         <service id="app.feedback_search_created_event_handler"
                  class="App\Message\EventHandler\Feedback\FeedbackSearchCreatedEventHandler" lazy="true">
             <argument type="service" id="app.feedback_search_repository"/>
-            <argument type="service" id="app.feedback_search_command_options"/>
-            <argument type="service" id="app.activity_logger"/>
             <argument type="service" id="logger"/>
+            <argument type="service" id="app.command_bus"/>
             <tag name="messenger.message_handler" handles="App\Message\Event\Feedback\FeedbackSearchCreatedEvent"
                  bus="app.event_bus"/>
         </service>
         <service id="app.feedback_user_subscription_created_event_handler"
                  class="App\Message\EventHandler\Feedback\FeedbackUserSubscriptionCreatedEventHandler" lazy="true">
             <argument type="service" id="app.feedback_user_subscription_repository"/>
-            <argument type="service" id="app.activity_logger"/>
             <argument type="service" id="logger"/>
+            <argument type="service" id="app.command_bus"/>
             <tag name="messenger.message_handler"
                  handles="App\Message\Event\Feedback\FeedbackUserSubscriptionCreatedEvent" bus="app.event_bus"/>
         </service>

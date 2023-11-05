@@ -33,15 +33,16 @@ framework:
 
     routing:
       # Route your messages to the transports
-      'App\Message\Event\Feedback\FeedbackCreatedEvent': sync
-      'App\Message\Event\Feedback\FeedbackLookupCreatedEvent': sync
-      'App\Message\Event\Feedback\FeedbackSearchCreatedEvent': sync
-      'App\Message\Event\Feedback\FeedbackSendToTelegramChannelConfirmReceivedEvent': sync
-      'App\Message\Event\Feedback\FeedbackUserSubscriptionCreatedEvent': sync
-      'App\Message\Event\Telegram\TelegramBotPaymentCreatedEvent': sync
-      'App\Message\Event\Telegram\TelegramBotPaymentPreCheckoutEvent': sync
-      'App\Message\Event\Telegram\TelegramBotPaymentSuccessfulEvent': sync
-      'App\Message\Event\User\UserContactMessageCreatedEvent': sync
+      App\Message\Command\LogActivityCommand: sync
+      App\Message\Event\Feedback\FeedbackCreatedEvent: sync
+      App\Message\Event\Feedback\FeedbackLookupCreatedEvent: sync
+      App\Message\Event\Feedback\FeedbackSearchCreatedEvent: sync
+      App\Message\Event\Feedback\FeedbackSendToTelegramChannelConfirmReceivedEvent: sync
+      App\Message\Event\Feedback\FeedbackUserSubscriptionCreatedEvent: sync
+      App\Message\Event\Telegram\TelegramBotPaymentCreatedEvent: sync
+      App\Message\Event\Telegram\TelegramBotPaymentPreCheckoutEvent: sync
+      App\Message\Event\Telegram\TelegramBotPaymentSuccessfulEvent: sync
+      App\Message\Event\User\UserContactMessageCreatedEvent: sync
 
 # when@test:
 #    framework:

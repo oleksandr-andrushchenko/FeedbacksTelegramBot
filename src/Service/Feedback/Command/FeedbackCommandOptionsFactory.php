@@ -18,7 +18,6 @@ class FeedbackCommandOptionsFactory
 
         return new FeedbackCommandOptions(
             $limits,
-            $options['log_activities'],
         );
     }
 }

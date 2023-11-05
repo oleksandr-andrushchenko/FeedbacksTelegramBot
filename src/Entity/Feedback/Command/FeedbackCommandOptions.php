@@ -8,7 +8,6 @@ readonly class FeedbackCommandOptions
 {
     public function __construct(
         private array $limits,
-        private bool $shouldLogActivities,
     )
     {
     }
@@ -19,10 +18,5 @@ readonly class FeedbackCommandOptions
     public function getLimits(): array
     {
         return $this->limits;
-    }
-
-    public function shouldLogActivities(): bool
-    {
-        return $this->shouldLogActivities;
     }
 }

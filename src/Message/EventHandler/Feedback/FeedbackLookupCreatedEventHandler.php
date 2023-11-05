@@ -4,29 +4,24 @@ declare(strict_types=1);
 
 namespace App\Message\EventHandler\Feedback;
 
-use App\Entity\Feedback\Command\FeedbackCommandOptions;
+use App\Message\Command\LogActivityCommand;
 use App\Message\Event\Feedback\FeedbackLookupCreatedEvent;
 use App\Repository\Feedback\FeedbackLookupRepository;
 use Psr\Log\LoggerInterface;
-use Throwable;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class FeedbackLookupCreatedEventHandler
 {
     public function __construct(
         private readonly FeedbackLookupRepository $lookupRepository,
-        private readonly FeedbackCommandOptions $options,
-        private readonly LoggerInterface $activityLogger,
         private readonly LoggerInterface $logger,
+        private readonly MessageBusInterface $commandBus,
     )
     {
     }
 
     public function __invoke(FeedbackLookupCreatedEvent $event): void
     {
-        if (!$this->options->shouldLogActivities()) {
-            return;
-        }
-
         $lookup = $event->getLookup() ?? $this->lookupRepository->find($event->getLookupId());
 
         if ($lookup === null) {
@@ -34,10 +29,6 @@ class FeedbackLookupCreatedEventHandler
             return;
         }
 
-        try {
-            $this->activityLogger->info($lookup);
-        } catch (Throwable $exception) {
-            $this->logger->error($exception);
-        }
+        $this->commandBus->dispatch(new LogActivityCommand(entity: $lookup));
     }
 }

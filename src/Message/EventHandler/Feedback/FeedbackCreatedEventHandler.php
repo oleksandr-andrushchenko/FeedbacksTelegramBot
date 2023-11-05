@@ -4,29 +4,24 @@ declare(strict_types=1);
 
 namespace App\Message\EventHandler\Feedback;
 
-use App\Entity\Feedback\Command\FeedbackCommandOptions;
+use App\Message\Command\LogActivityCommand;
 use App\Message\Event\Feedback\FeedbackCreatedEvent;
 use App\Repository\Feedback\FeedbackRepository;
 use Psr\Log\LoggerInterface;
-use Throwable;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class FeedbackCreatedEventHandler
 {
     public function __construct(
         private readonly FeedbackRepository $feedbackRepository,
-        private readonly FeedbackCommandOptions $options,
-        private readonly LoggerInterface $activityLogger,
         private readonly LoggerInterface $logger,
+        private readonly MessageBusInterface $commandBus,
     )
     {
     }
 
     public function __invoke(FeedbackCreatedEvent $event): void
     {
-        if (!$this->options->shouldLogActivities()) {
-            return;
-        }
-
         $feedback = $event->getFeedback() ?? $this->feedbackRepository->find($event->getFeedbackId());
 
         if ($feedback === null) {
@@ -34,10 +29,6 @@ class FeedbackCreatedEventHandler
             return;
         }
 
-        try {
-            $this->activityLogger->info($feedback);
-        } catch (Throwable $exception) {
-            $this->logger->error($exception);
-        }
+        $this->commandBus->dispatch(new LogActivityCommand(entity: $feedback));
     }
 }
