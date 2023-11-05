@@ -20,8 +20,8 @@ class Level1RegionProvider
     public function __construct(
         private readonly AddressGeocoderInterface $addressGeocoder,
         private readonly TimezoneGeocoderInterface $timezoneGeocoder,
-        private readonly Level1RegionUpserter $upserter,
-        private readonly Level1RegionRepository $repository,
+        private readonly Level1RegionUpserter $level1RegionUpserter,
+        private readonly Level1RegionRepository $level1RegionRepository,
         private readonly TranslatorInterface $translator,
         private readonly string $sourceFile,
         private readonly DenormalizerInterface $denormalizer,
@@ -38,7 +38,7 @@ class Level1RegionProvider
     public function getLevel1RegionByLocation(Location $location): Level1Region
     {
         $address = $this->addressGeocoder->geocodeAddress($location);
-        $level1Region = $this->upserter->upsertLevel1RegionByAddress($address);
+        $level1Region = $this->level1RegionUpserter->upsertLevel1RegionByAddress($address);
 
         if ($level1Region->getTimezone() === null) {
             $timezone = $this->timezoneGeocoder->geocodeTimezone($location);
@@ -50,7 +50,7 @@ class Level1RegionProvider
 
     public function getLevel1RegionByCountryAndName(string $countryCode, string $name, string $timezone = null): ?Level1Region
     {
-        $level1Region = $this->upserter->upsertLevel1RegionByCountryAndName($countryCode, $name);
+        $level1Region = $this->level1RegionUpserter->upsertLevel1RegionByCountryAndName($countryCode, $name);
 
         if ($level1Region->getTimezone() === null && $timezone !== null) {
             $level1Region->setTimezone($timezone);
@@ -72,7 +72,7 @@ class Level1RegionProvider
             );
         }
 
-        return $this->repository->findByCountry($country->getCode());
+        return $this->level1RegionRepository->findByCountry($country->getCode());
     }
 
     public function getLevel1RegionNameById(Country $country, string $level1RegionId): ?string
@@ -86,7 +86,7 @@ class Level1RegionProvider
 
             $level1Region = $this->denormalize($normalizedLevel1Region);
         } else {
-            $level1Region = $this->repository->find($level1RegionId);
+            $level1Region = $this->level1RegionRepository->find($level1RegionId);
         }
 
         if ($level1Region === null) {

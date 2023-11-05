@@ -20,7 +20,7 @@ class TelegramChannelImportCommand extends Command
 {
     public function __construct(
         private readonly string $dataDir,
-        private readonly TelegramChannelImporter $importer,
+        private readonly TelegramChannelImporter $telegramChannelImporter,
         private readonly DryRunner $dryRunner,
         private readonly EntityManagerInterface $entityManager,
     )
@@ -65,7 +65,7 @@ class TelegramChannelImportCommand extends Command
         }
 
         $logger = static fn (string $message) => $io->note($message);
-        $func = fn () => $this->importer->importTelegramChannels($filename, $logger);
+        $func = fn () => $this->telegramChannelImporter->importTelegramChannels($filename, $logger);
 
         if ($dryRun) {
             $result = $this->dryRunner->dryRun($func, readUncommitted: true);

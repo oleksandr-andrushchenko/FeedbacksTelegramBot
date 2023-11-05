@@ -24,9 +24,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TelegramBotCreateCommand extends Command
 {
     public function __construct(
-        private readonly TelegramBotCreator $creator,
+        private readonly TelegramBotCreator $telegramBotCreator,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TelegramBotInfoProvider $infoProvider,
+        private readonly TelegramBotInfoProvider $telegramBotInfoProvider,
         private readonly CountryProvider $countryProvider,
         private readonly LocaleProvider $localeProvider,
     )
@@ -100,11 +100,11 @@ class TelegramBotCreateCommand extends Command
         $botTransfer->setAdminIds($input->getOption('admin-id'));
         $botTransfer->setPrimary($input->getOption('primary'));
 
-        $bot = $this->creator->createTelegramBot($botTransfer);
+        $bot = $this->telegramBotCreator->createTelegramBot($botTransfer);
 
         $this->entityManager->flush();
 
-        $row = $this->infoProvider->getTelegramBotInfo($bot);
+        $row = $this->telegramBotInfoProvider->getTelegramBotInfo($bot);
 
         $io->createTable()
             ->setHeaders(array_keys($row))

@@ -12,7 +12,7 @@ use Psr\Log\LoggerInterface;
 class TelegramBotUpdateChecker
 {
     public function __construct(
-        private readonly TelegramBotUpdateRepository $updateRepository,
+        private readonly TelegramBotUpdateRepository $telegramBotUpdateRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
         private readonly bool $saveOnly = false,
@@ -31,7 +31,7 @@ class TelegramBotUpdateChecker
         }
 
         if (!$this->saveOnly) {
-            $update = $this->updateRepository->find($bot->getUpdate()?->getUpdateId());
+            $update = $this->telegramBotUpdateRepository->find($bot->getUpdate()?->getUpdateId());
 
             if ($update !== null) {
                 $this->logger->debug('Duplicate telegram update received, processing aborted', [

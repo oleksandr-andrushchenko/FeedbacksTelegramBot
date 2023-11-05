@@ -13,15 +13,15 @@ use Longman\TelegramBot\Entities\Keyboard;
 class TelegramBotMatchesChatSender
 {
     public function __construct(
-        private readonly TelegramBotMatchesProvider $provider,
-        private readonly TelegramBotLinkViewProvider $linkViewProvider,
+        private readonly TelegramBotMatchesProvider $telegramBotMatchesProvider,
+        private readonly TelegramBotLinkViewProvider $telegramBotLinkViewProvider,
     )
     {
     }
 
     public function sendTelegramBotMatchesIfNeed(TelegramBotAwareHelper $tg, Keyboard $keyboard = null): void
     {
-        $bots = $this->provider->getTelegramBotMatches(
+        $bots = $this->telegramBotMatchesProvider->getTelegramBotMatches(
             $tg->getBot()->getMessengerUser()->getUser(),
             $tg->getBot()->getEntity()
         );
@@ -42,7 +42,7 @@ class TelegramBotMatchesChatSender
         $message .= implode(
             "\n",
             array_map(
-                fn (TelegramBot $bot): string => $this->linkViewProvider->getTelegramBotLinkView($bot),
+                fn (TelegramBot $bot): string => $this->telegramBotLinkViewProvider->getTelegramBotLinkView($bot),
                 $bots
             )
         );

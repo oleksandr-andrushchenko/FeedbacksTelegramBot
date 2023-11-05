@@ -12,7 +12,7 @@ use Longman\TelegramBot\Entities\ServerResponse;
 class TelegramBotMessageSender implements TelegramBotMessageSenderInterface
 {
     public function __construct(
-        private readonly TelegramBotRegistry $registry,
+        private readonly TelegramBotRegistry $telegramBotRegistry,
     )
     {
     }
@@ -29,7 +29,7 @@ class TelegramBotMessageSender implements TelegramBotMessageSenderInterface
         bool $keepKeyboard = false
     ): ServerResponse
     {
-        $bot = $this->registry->getTelegramBot($botEntity);
+        $bot = $this->telegramBotRegistry->getTelegramBot($botEntity);
 
         $data = [
             'chat_id' => $chatId,

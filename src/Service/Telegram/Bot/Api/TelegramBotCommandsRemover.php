@@ -12,8 +12,8 @@ use App\Service\Telegram\Bot\TelegramBotRegistry;
 class TelegramBotCommandsRemover
 {
     public function __construct(
-        private readonly TelegramBotRegistry $registry,
-        private readonly TelegramBotMyCommandsProvider $provider,
+        private readonly TelegramBotRegistry $telegramBotRegistry,
+        private readonly TelegramBotMyCommandsProvider $telegramBotMyCommandsProvider,
         private ?array $myCommands = null,
     )
     {
@@ -26,10 +26,10 @@ class TelegramBotCommandsRemover
      */
     public function removeTelegramCommands(TelegramBot $botEntity): void
     {
-        $bot = $this->registry->getTelegramBot($botEntity);
+        $bot = $this->telegramBotRegistry->getTelegramBot($botEntity);
         $this->myCommands = [];
 
-        foreach ($this->provider->getTelegramMyCommands($bot) as $myCommands) {
+        foreach ($this->telegramBotMyCommandsProvider->getTelegramMyCommands($bot) as $myCommands) {
             $data = [
                 'scope' => $myCommands->getScope()->jsonSerialize(),
             ];

@@ -7,7 +7,7 @@ namespace App\Service\Telegram\Bot;
 class TelegramBotNonAdminUpdateChecker
 {
     public function __construct(
-        private readonly TelegramBotUserProvider $userProvider,
+        private readonly TelegramBotUserProvider $telegramBotUserProvider,
     )
     {
     }
@@ -22,7 +22,7 @@ class TelegramBotNonAdminUpdateChecker
             return false;
         }
 
-        $currentUser = $this->userProvider->getTelegramUserByUpdate($bot->getUpdate());
+        $currentUser = $this->telegramBotUserProvider->getTelegramUserByUpdate($bot->getUpdate());
 
         if (in_array($currentUser?->getId(), $bot->getEntity()->getAdminIds(), true)) {
             return false;

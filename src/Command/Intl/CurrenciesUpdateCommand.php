@@ -15,7 +15,7 @@ use RuntimeException;
 class CurrenciesUpdateCommand extends Command
 {
     public function __construct(
-        private readonly CurrenciesProviderInterface $provider,
+        private readonly CurrenciesProviderInterface $currenciesProvider,
         private readonly NormalizerInterface $normalizer,
         private readonly string $targetFile,
     )
@@ -40,7 +40,7 @@ class CurrenciesUpdateCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $currencies = $this->provider->getCurrencies();
+        $currencies = $this->currenciesProvider->getCurrencies();
 
         if ($currencies === null) {
             throw new RuntimeException('Unable to fetch currencies');

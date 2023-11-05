@@ -9,7 +9,7 @@ use App\Entity\Telegram\TelegramBot as TelegramBotEntity;
 class TelegramBotRegistry
 {
     public function __construct(
-        private readonly TelegramBotFactory $factory,
+        private readonly TelegramBotFactory $telegramBotFactory,
         /**
          * @var TelegramBot[]|null
          */
@@ -27,7 +27,7 @@ class TelegramBotRegistry
             return $this->cache[$username];
         }
 
-        $this->cache[$username] = $this->factory->createTelegramBot($entity);
+        $this->cache[$username] = $this->telegramBotFactory->createTelegramBot($entity);
 
         return $this->cache[$username];
     }

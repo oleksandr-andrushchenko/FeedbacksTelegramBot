@@ -10,8 +10,8 @@ use Psr\Log\LoggerInterface;
 class TelegramBotFactory
 {
     public function __construct(
-        private readonly TelegramBotClientRegistry $clientRegistry,
-        private readonly TelegramBotRequestChecker $requestChecker,
+        private readonly TelegramBotClientRegistry $telegramBotClientRegistry,
+        private readonly TelegramBotRequestChecker $telegramBotRequestChecker,
         private readonly LoggerInterface $logger,
     )
     {
@@ -21,8 +21,8 @@ class TelegramBotFactory
     {
         return new TelegramBot(
             $entity,
-            $this->clientRegistry,
-            $this->requestChecker,
+            $this->telegramBotClientRegistry,
+            $this->telegramBotRequestChecker,
             $this->logger,
         );
     }

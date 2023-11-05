@@ -21,8 +21,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class AddressReverseGeocodeCommand extends Command
 {
     public function __construct(
-        private readonly AddressGeocoderInterface $geocoder,
-        private readonly AddressInfoProvider $infoProvider,
+        private readonly AddressGeocoderInterface $addressGeocoder,
+        private readonly AddressInfoProvider $addressInfoProvider,
         private readonly DryRunner $dryRunner,
         private readonly EntityManagerInterface $entityManager,
     )
@@ -57,7 +57,7 @@ class AddressReverseGeocodeCommand extends Command
         $dryRun = $input->getOption('dry-run');
 
         try {
-            $func = fn () => $this->geocoder->geocodeAddress($location);
+            $func = fn () => $this->addressGeocoder->geocodeAddress($location);
 
             if ($dryRun) {
                 $address = $this->dryRunner->dryRun($func);
@@ -71,7 +71,7 @@ class AddressReverseGeocodeCommand extends Command
             return Command::SUCCESS;
         }
 
-        $row = $this->infoProvider->getAddressInfo($address);
+        $row = $this->addressInfoProvider->getAddressInfo($address);
         $io->createTable()
             ->setHeaders(array_keys($row))
             ->setRows([$row])

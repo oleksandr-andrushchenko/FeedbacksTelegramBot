@@ -21,8 +21,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TelegramBotPaymentMethodRemoveCommand extends Command
 {
     public function __construct(
-        private readonly TelegramBotRepository $botRepository,
-        private readonly TelegramBotPaymentMethodRepository $repository,
+        private readonly TelegramBotRepository $telegramBotRepository,
+        private readonly TelegramBotPaymentMethodRepository $telegramBotPaymentMethodRepository,
         private readonly EntityManagerInterface $entityManager,
     )
     {
@@ -49,7 +49,7 @@ class TelegramBotPaymentMethodRemoveCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $username = $input->getArgument('username');
-        $bot = $this->botRepository->findOneByUsername($username);
+        $bot = $this->telegramBotRepository->findOneByUsername($username);
 
         if ($bot === null) {
             throw new TelegramBotNotFoundException($username);
@@ -62,7 +62,7 @@ class TelegramBotPaymentMethodRemoveCommand extends Command
             throw new TelegramBotPaymentMethodNotFoundException($methodName);
         }
 
-        $paymentMethod = $this->repository->findOneActiveByBotAndName($bot, $name);
+        $paymentMethod = $this->telegramBotPaymentMethodRepository->findOneActiveByBotAndName($bot, $name);
 
         if ($paymentMethod === null) {
             throw new TelegramBotPaymentMethodNotFoundException($methodName);

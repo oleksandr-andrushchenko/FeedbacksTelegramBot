@@ -12,7 +12,7 @@ class TelegramBotCreator
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly TelegramBotValidator $validator,
+        private readonly TelegramBotValidator $telegramBotValidator,
     )
     {
     }
@@ -38,7 +38,7 @@ class TelegramBotCreator
             primary: $botTransfer->primary() ?? true,
         );
 
-        $this->validator->validateTelegramBot($bot);
+        $this->telegramBotValidator->validateTelegramBot($bot);
 
         $this->entityManager->persist($bot);
 

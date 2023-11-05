@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository\Feedback;
 
 use App\Entity\Feedback\Feedback;
+use App\Entity\User\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -29,6 +30,21 @@ class FeedbackRepository extends ServiceEntityRepository
     public function findOneLast(): ?Feedback
     {
         return $this->findOneBy([], ['createdAt' => 'DESC']);
+    }
+
+    public function countByUserAndFromWithoutActiveSubscription(User $user, DateTimeInterface $from): int
+    {
+        return (int) $this->createQueryBuilder('f')
+            ->select('COUNT(f.id)')
+            ->andWhere('f.createdAt >= :createdAtFrom')
+            ->setParameter('createdAtFrom', $from)
+            ->andWhere('f.user = :user')
+            ->setParameter('user', $user)
+            ->andWhere('f.hasActiveSubscription = :hasActiveSubscription')
+            ->setParameter('hasActiveSubscription', false)
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
     }
 
     /**

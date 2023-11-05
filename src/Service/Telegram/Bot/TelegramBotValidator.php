@@ -12,7 +12,7 @@ use LogicException;
 class TelegramBotValidator
 {
     public function __construct(
-        private readonly TelegramBotRepository $repository,
+        private readonly TelegramBotRepository $telegramBotRepository,
         private readonly CountryProvider $countryProvider,
     )
     {
@@ -26,7 +26,7 @@ class TelegramBotValidator
     public function validateTelegramBot(TelegramBot $bot): void
     {
         if ($bot->primary()) {
-            $existing = $this->repository->findOnePrimaryByBot($bot);
+            $existing = $this->telegramBotRepository->findOnePrimaryByBot($bot);
 
             if ($existing !== null && $existing->getId() !== $bot->getId()) {
                 throw new LogicException(sprintf('"%s" Primary Telegram bot already has the same settings', $existing->getUsername()));

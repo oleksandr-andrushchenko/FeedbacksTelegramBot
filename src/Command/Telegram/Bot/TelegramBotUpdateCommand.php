@@ -26,10 +26,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TelegramBotUpdateCommand extends Command
 {
     public function __construct(
-        private readonly TelegramBotRepository $repository,
-        private readonly TelegramBotUpdater $updater,
+        private readonly TelegramBotRepository $telegramBotRepository,
+        private readonly TelegramBotUpdater $telegramBotUpdater,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TelegramBotInfoProvider $infoProvider,
+        private readonly TelegramBotInfoProvider $telegramBotInfoProvider,
         private readonly CountryProvider $countryProvider,
         private readonly LocaleProvider $localeProvider,
     )
@@ -67,7 +67,7 @@ class TelegramBotUpdateCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $username = $input->getArgument('username');
-        $bot = $this->repository->findOneByUsername($username);
+        $bot = $this->telegramBotRepository->findOneByUsername($username);
 
         if ($bot === null) {
             throw new TelegramBotNotFoundException($username);
@@ -145,11 +145,11 @@ class TelegramBotUpdateCommand extends Command
             $botTransfer->setPrimary($input->getOption('primary'));
         }
 
-        $this->updater->updateTelegramBot($bot, $botTransfer);
+        $this->telegramBotUpdater->updateTelegramBot($bot, $botTransfer);
 
         $this->entityManager->flush();
 
-        $row = $this->infoProvider->getTelegramBotInfo($bot);
+        $row = $this->telegramBotInfoProvider->getTelegramBotInfo($bot);
 
         $io->createTable()
             ->setHeaders(array_keys($row))

@@ -17,8 +17,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TelegramChannelShowAllCommand extends Command
 {
     public function __construct(
-        private readonly TelegramChannelRepository $repository,
-        private readonly TelegramChannelInfoProvider $infoProvider,
+        private readonly TelegramChannelRepository $telegramChannelRepository,
+        private readonly TelegramChannelInfoProvider $telegramChannelInfoProvider,
     )
     {
         parent::__construct();
@@ -53,7 +53,7 @@ class TelegramChannelShowAllCommand extends Command
             }
         }
 
-        $channels = $this->repository->findAll();
+        $channels = $this->telegramChannelRepository->findAll();
 
         $table = [];
         $index = 0;
@@ -67,7 +67,7 @@ class TelegramChannelShowAllCommand extends Command
                 [
                     '#' => $index + 1,
                 ],
-                $this->infoProvider->getTelegramChannelInfo($channel)
+                $this->telegramChannelInfoProvider->getTelegramChannelInfo($channel)
             );
 
             $index++;

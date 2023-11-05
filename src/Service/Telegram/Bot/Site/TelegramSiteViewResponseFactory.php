@@ -23,14 +23,14 @@ class TelegramSiteViewResponseFactory
         private readonly CountryProvider $countryProvider,
         private readonly LocaleProvider $localeProvider,
         private readonly ContactOptionsFactory $contactOptionsFactory,
-        private readonly TelegramBotRepository $botRepository,
+        private readonly TelegramBotRepository $telegramBotRepository,
     )
     {
     }
 
     public function createViewResponse(SitePage $page, string $username, bool $switcher = false): Response
     {
-        $bot = $this->botRepository->findOneByUsername($username);
+        $bot = $this->telegramBotRepository->findOneByUsername($username);
 
         if ($bot === null) {
             throw new NotFoundHttpException();
@@ -58,7 +58,7 @@ class TelegramSiteViewResponseFactory
                 'locale_icon' => $this->localeProvider->getLocaleIcon($this->localeProvider->getLocale($bot->getLocaleCode())),
             ];
 
-            $bots = $this->botRepository->findByGroup($group);
+            $bots = $this->telegramBotRepository->findByGroup($group);
         } else {
             $botMap = static fn (TelegramBot $bot): array => [
                 'username' => $bot->getUsername(),

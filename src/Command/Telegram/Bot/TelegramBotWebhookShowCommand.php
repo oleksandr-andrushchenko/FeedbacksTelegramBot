@@ -16,8 +16,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TelegramBotWebhookShowCommand extends Command
 {
     public function __construct(
-        private readonly TelegramBotRepository $repository,
-        private readonly TelegramBotWebhookInfoProvider $infoProvider,
+        private readonly TelegramBotRepository $telegramBotRepository,
+        private readonly TelegramBotWebhookInfoProvider $telegramBotWebhookInfoProvider,
     )
     {
         parent::__construct();
@@ -42,13 +42,13 @@ class TelegramBotWebhookShowCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $username = $input->getArgument('username');
-        $bot = $this->repository->findOneByUsername($username);
+        $bot = $this->telegramBotRepository->findOneByUsername($username);
 
         if ($bot === null) {
             throw new TelegramBotNotFoundException($username);
         }
 
-        $row = $this->infoProvider->getTelegramWebhookInfo($bot);
+        $row = $this->telegramBotWebhookInfoProvider->getTelegramWebhookInfo($bot);
 
         $io->createTable()
             ->setHeaders(array_keys($row))

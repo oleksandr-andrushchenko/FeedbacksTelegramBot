@@ -10,7 +10,7 @@ use Longman\TelegramBot\Telegram as TelegramClient;
 class TelegramBotClientRegistry
 {
     public function __construct(
-        private readonly TelegramBotClientFactory $clientFactory,
+        private readonly TelegramBotClientFactory $telegramBotClientFactory,
         private ?array $cache = null,
     )
     {
@@ -25,6 +25,6 @@ class TelegramBotClientRegistry
             return $this->cache[$key];
         }
 
-        return $this->cache[$key] = $this->clientFactory->createTelegramClient($bot);
+        return $this->cache[$key] = $this->telegramBotClientFactory->createTelegramClient($bot);
     }
 }

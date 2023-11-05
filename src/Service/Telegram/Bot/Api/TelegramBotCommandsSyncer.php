@@ -15,9 +15,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class TelegramBotCommandsSyncer
 {
     public function __construct(
-        private readonly TelegramBotRegistry $registry,
+        private readonly TelegramBotRegistry $telegramBotRegistry,
         private readonly TranslatorInterface $translator,
-        private readonly TelegramBotMyCommandsProvider $provider,
+        private readonly TelegramBotMyCommandsProvider $telegramBotMyCommandsProvider,
         private ?array $myCommands = null,
     )
     {
@@ -26,10 +26,10 @@ class TelegramBotCommandsSyncer
 
     public function syncTelegramCommands(TelegramBotEntity $botEntity): void
     {
-        $bot = $this->registry->getTelegramBot($botEntity);
+        $bot = $this->telegramBotRegistry->getTelegramBot($botEntity);
         $this->myCommands = [];
 
-        foreach ($this->provider->getTelegramMyCommands($bot) as $myCommands) {
+        foreach ($this->telegramBotMyCommandsProvider->getTelegramMyCommands($bot) as $myCommands) {
             $data = [
                 'scope' => $myCommands->getScope()->jsonSerialize(),
                 'commands' => array_map(

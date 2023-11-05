@@ -11,8 +11,8 @@ use App\Service\Telegram\Bot\TelegramBotAwareHelper;
 class SubscriptionsTelegramChatSender
 {
     public function __construct(
-        private readonly FeedbackSubscriptionManager $subscriptionManager,
-        private readonly SubscriptionTelegramViewProvider $subscriptionViewProvider
+        private readonly FeedbackSubscriptionManager $feedbackSubscriptionManager,
+        private readonly SubscriptionTelegramViewProvider $subscriptionTelegramViewProvider
     )
     {
     }
@@ -20,7 +20,7 @@ class SubscriptionsTelegramChatSender
     public function sendFeedbackSubscriptions(TelegramBotAwareHelper $tg): null
     {
         $messangerUser = $tg->getBot()->getMessengerUser();
-        $subscriptions = $this->subscriptionManager->getSubscriptions($messangerUser);
+        $subscriptions = $this->feedbackSubscriptionManager->getSubscriptions($messangerUser);
 
         $count = count($subscriptions);
 
@@ -39,7 +39,7 @@ class SubscriptionsTelegramChatSender
         $tg->reply($message);
 
         foreach (array_reverse($subscriptions, true) as $index => $subscription) {
-            $message = $this->subscriptionViewProvider->getSubscriptionTelegramView($tg, $subscription, $index + 1);
+            $message = $this->subscriptionTelegramViewProvider->getSubscriptionTelegramView($tg, $subscription, $index + 1);
 
             $tg->reply($message);
         }

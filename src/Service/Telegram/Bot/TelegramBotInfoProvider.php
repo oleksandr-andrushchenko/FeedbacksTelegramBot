@@ -11,14 +11,14 @@ use App\Repository\Telegram\Bot\TelegramBotPaymentMethodRepository;
 class TelegramBotInfoProvider
 {
     public function __construct(
-        private readonly TelegramBotPaymentMethodRepository $paymentMethodRepository,
+        private readonly TelegramBotPaymentMethodRepository $telegramBotPaymentMethodRepository,
     )
     {
     }
 
     public function getTelegramBotInfo(TelegramBot $bot, bool $full = true): array
     {
-        $paymentMethods = $this->paymentMethodRepository->findActiveByBot($bot);
+        $paymentMethods = $this->telegramBotPaymentMethodRepository->findActiveByBot($bot);
         $paymentMethodNames = array_map(
             static fn (TelegramBotPaymentMethod $paymentMethod): string => sprintf(
                 '%s (%s)',

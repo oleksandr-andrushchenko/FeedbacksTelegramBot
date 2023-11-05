@@ -9,14 +9,14 @@ use App\Entity\Telegram\TelegramBot;
 class TelegramBotDescriptionsInfoProvider
 {
     public function __construct(
-        private readonly TelegramBotRegistry $registry,
+        private readonly TelegramBotRegistry $telegramBotRegistry,
     )
     {
     }
 
     public function getTelegramBotDescriptionsInfo(TelegramBot $botEntity): array
     {
-        $bot = $this->registry->getTelegramBot($botEntity);
+        $bot = $this->telegramBotRegistry->getTelegramBot($botEntity);
 
         $data = [];
 

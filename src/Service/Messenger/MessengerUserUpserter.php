@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class MessengerUserUpserter
 {
     public function __construct(
-        private readonly MessengerUserRepository $repository,
+        private readonly MessengerUserRepository $messengerUserRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly IdGenerator $idGenerator,
     )
@@ -22,7 +22,7 @@ class MessengerUserUpserter
 
     public function upsertMessengerUser(MessengerUserTransfer $transfer, bool $withUser = false): MessengerUser
     {
-        $messengerUser = $this->repository->findOneByMessengerAndIdentifier(
+        $messengerUser = $this->messengerUserRepository->findOneByMessengerAndIdentifier(
             $transfer->getMessenger(),
             $transfer->getId(),
             withUser: $withUser,

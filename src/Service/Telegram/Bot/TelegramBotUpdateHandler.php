@@ -22,20 +22,20 @@ class TelegramBotUpdateHandler
 {
     public function __construct(
         private readonly string $environment,
-        private readonly TelegramBotUpdateFactory $updateFactory,
-        private readonly TelegramBotUpdateChecker $updateChecker,
-        private readonly TelegramBotNonAdminUpdateChecker $nonAdminUpdateChecker,
-        private readonly TelegramBotConversationManager $conversationManager,
-        private readonly TelegramBotMessengerUserUpserter $messengerUserUpserter,
-        private readonly TelegramBotGroupRegistry $groupRegistry,
-        private readonly TelegramBotCommandFinder $commandFinder,
-        private readonly TelegramBotPaymentManager $paymentManager,
-        private readonly TelegramBotLocaleSwitcher $localeSwitcher,
-        private readonly TelegramBotInputProvider $inputProvider,
-        private readonly TelegramBotRegistry $registry,
-        private readonly TelegramBotRepository $botRepository,
-        private readonly TelegramBotAwareHelper $awareHelper,
-        private readonly TelegramBotLinkViewProvider $botLinkViewProvider,
+        private readonly TelegramBotUpdateFactory $telegramBotUpdateFactory,
+        private readonly TelegramBotUpdateChecker $telegramBotUpdateChecker,
+        private readonly TelegramBotNonAdminUpdateChecker $telegramBotNonAdminUpdateChecker,
+        private readonly TelegramBotConversationManager $telegramBotConversationManager,
+        private readonly TelegramBotMessengerUserUpserter $telegramBotMessengerUserUpserter,
+        private readonly TelegramBotGroupRegistry $telegramBotGroupRegistry,
+        private readonly TelegramBotCommandFinder $telegramBotCommandFinder,
+        private readonly TelegramBotPaymentManager $telegramBotPaymentManager,
+        private readonly TelegramBotLocaleSwitcher $telegramBotLocaleSwitcher,
+        private readonly TelegramBotInputProvider $telegramBotInputProvider,
+        private readonly TelegramBotRegistry $telegramBotRegistry,
+        private readonly TelegramBotRepository $telegramBotRepository,
+        private readonly TelegramBotAwareHelper $telegramBotAwareHelper,
+        private readonly TelegramBotLinkViewProvider $telegramBotLinkViewProvider,
         private readonly LoggerInterface $logger,
     )
     {
@@ -52,37 +52,37 @@ class TelegramBotUpdateHandler
      */
     public function handleTelegramBotUpdate(TelegramBot $botEntity, Request $request): void
     {
-        $bot = $this->registry->getTelegramBot($botEntity);
-        $update = $this->updateFactory->createUpdate($bot, $request);
+        $bot = $this->telegramBotRegistry->getTelegramBot($botEntity);
+        $update = $this->telegramBotUpdateFactory->createUpdate($bot, $request);
         $bot->setUpdate($update);
 
         // todo: remove on production
-        if ($this->nonAdminUpdateChecker->checkNonAdminUpdate($bot)) {
+        if ($this->telegramBotNonAdminUpdateChecker->checkNonAdminUpdate($bot)) {
             return;
         }
 
-        if ($this->updateChecker->checkTelegramUpdate($bot)) {
+        if ($this->telegramBotUpdateChecker->checkTelegramUpdate($bot)) {
             return;
         }
 
-        $messengerUser = $this->messengerUserUpserter->upsertTelegramMessengerUser($bot);
+        $messengerUser = $this->telegramBotMessengerUserUpserter->upsertTelegramMessengerUser($bot);
 
         $bot->setMessengerUser($messengerUser);
-        $this->localeSwitcher->syncLocale($bot, $request);
+        $this->telegramBotLocaleSwitcher->syncLocale($bot, $request);
 
         TelegramLog::initialize($this->logger, $this->logger);
 
         try {
-            $group = $this->groupRegistry->getTelegramGroup($bot->getEntity()->getGroup());
+            $group = $this->telegramBotGroupRegistry->getTelegramGroup($bot->getEntity()->getGroup());
 
             if ($update->getPreCheckoutQuery() !== null) {
                 if (!$bot->deleted() && $bot->getEntity()->acceptPayments()) {
-                    $this->paymentManager->acceptPreCheckoutQuery($bot, $update->getPreCheckoutQuery());
+                    $this->telegramBotPaymentManager->acceptPreCheckoutQuery($bot, $update->getPreCheckoutQuery());
                 }
                 return;
             } elseif ($update->getMessage()?->getSuccessfulPayment() !== null) {
                 if (!$bot->deleted() && $bot->getEntity()->acceptPayments()) {
-                    $payment = $this->paymentManager->acceptSuccessfulPayment($bot, $update->getMessage()->getSuccessfulPayment());
+                    $payment = $this->telegramBotPaymentManager->acceptSuccessfulPayment($bot, $update->getMessage()->getSuccessfulPayment());
                     $group->acceptTelegramPayment($bot, $payment);
                 }
                 return;
@@ -93,17 +93,17 @@ class TelegramBotUpdateHandler
             }
 
             if ($bot->deleted() || !$bot->primary()) {
-                $newBot = $this->botRepository->findOnePrimaryByBot($bot->getEntity());
+                $newBot = $this->telegramBotRepository->findOnePrimaryByBot($bot->getEntity());
 
                 if ($newBot === null) {
                     $this->logger->warning('Primary bot has not been found to replace deleted/non-primary one', [
                         'bot_id' => $bot->getEntity()->getId(),
                     ]);
                 } else {
-                    $tg = $this->awareHelper->withTelegramBot($bot);
+                    $tg = $this->telegramBotAwareHelper->withTelegramBot($bot);
                     $message = $tg->trans('reply.use_primary');
                     $message .= ":\n\n";
-                    $message .= $this->botLinkViewProvider->getTelegramBotLinkView($newBot);
+                    $message .= $this->telegramBotLinkViewProvider->getTelegramBotLinkView($newBot);
                     $message = $tg->attentionText($message);
                     $tg->reply($message);
                 }
@@ -111,16 +111,16 @@ class TelegramBotUpdateHandler
                 return;
             }
 
-            $text = $this->inputProvider->getTelegramInputByUpdate($bot->getUpdate());
+            $text = $this->telegramBotInputProvider->getTelegramInputByUpdate($bot->getUpdate());
             $commands = $group->getTelegramCommands($bot);
 
-            if ($beforeConversationCommand = $this->commandFinder->findBeforeConversationCommand($text, $commands)) {
+            if ($beforeConversationCommand = $this->telegramBotCommandFinder->findBeforeConversationCommand($text, $commands)) {
                 call_user_func($beforeConversationCommand->getCallback());
-            } elseif ($conversation = $this->conversationManager->getCurrentTelegramConversation($bot)) {
-                $this->conversationManager->continueTelegramConversation($bot, $conversation);
-            } elseif ($command = $this->commandFinder->findCommand($text, $commands)) {
+            } elseif ($conversation = $this->telegramBotConversationManager->getCurrentTelegramConversation($bot)) {
+                $this->telegramBotConversationManager->continueTelegramConversation($bot, $conversation);
+            } elseif ($command = $this->telegramBotCommandFinder->findCommand($text, $commands)) {
                 call_user_func($command->getCallback());
-            } elseif ($fallbackCommand = $this->commandFinder->findFallbackCommand($commands)) {
+            } elseif ($fallbackCommand = $this->telegramBotCommandFinder->findFallbackCommand($commands)) {
                 call_user_func($fallbackCommand->getCallback());
             }
         } catch (Throwable $exception) {
@@ -129,7 +129,7 @@ class TelegramBotUpdateHandler
             }
             $this->logger->error($exception);
 
-            if ($errorCommand = $this->commandFinder->findErrorCommand($commands)) {
+            if ($errorCommand = $this->telegramBotCommandFinder->findErrorCommand($commands)) {
                 call_user_func($errorCommand->getCallback(), $exception);
             }
         }

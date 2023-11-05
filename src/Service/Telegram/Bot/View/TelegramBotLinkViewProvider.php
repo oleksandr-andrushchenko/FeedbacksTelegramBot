@@ -14,7 +14,7 @@ class TelegramBotLinkViewProvider
     public function __construct(
         private readonly CountryProvider $countryProvider,
         private readonly LocaleProvider $localeProvider,
-        private readonly TelegramLinkProvider $linkProvider,
+        private readonly TelegramLinkProvider $telegramLinkProvider,
     )
     {
     }
@@ -24,7 +24,7 @@ class TelegramBotLinkViewProvider
         $countryIcon = $this->countryProvider->getCountryIconByCode($bot->getCountryCode());
         $locale = $this->localeProvider->getLocale($bot->getLocaleCode());
         $localeIcon = $this->localeProvider->getLocaleIcon($locale);
-        $link = $this->linkProvider->getTelegramLink($bot->getUsername());
+        $link = $this->telegramLinkProvider->getTelegramLink($bot->getUsername());
 
         $localeIcon = $countryIcon === $localeIcon ? '' : ('/' . $localeIcon);
 

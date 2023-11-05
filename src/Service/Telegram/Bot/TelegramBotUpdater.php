@@ -10,7 +10,7 @@ use App\Transfer\Telegram\TelegramBotTransfer;
 class TelegramBotUpdater
 {
     public function __construct(
-        private readonly TelegramBotValidator $validator,
+        private readonly TelegramBotValidator $telegramBotValidator,
     )
     {
     }
@@ -58,6 +58,6 @@ class TelegramBotUpdater
             $bot->setPrimary($botTransfer->primary());
         }
 
-        $this->validator->validateTelegramBot($bot);
+        $this->telegramBotValidator->validateTelegramBot($bot);
     }
 }

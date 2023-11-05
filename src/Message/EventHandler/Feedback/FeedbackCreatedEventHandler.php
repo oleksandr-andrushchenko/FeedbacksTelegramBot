@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Message\EventHandler\Feedback;
 
+use App\Message\Command\Feedback\NotifyFeedbackSearchUsersCommand;
+use App\Message\Command\Feedback\NotifyFeedbackSearchTermUserCommand;
 use App\Message\Command\LogActivityCommand;
 use App\Message\Event\Feedback\FeedbackCreatedEvent;
 use App\Repository\Feedback\FeedbackRepository;
@@ -30,5 +32,7 @@ class FeedbackCreatedEventHandler
         }
 
         $this->commandBus->dispatch(new LogActivityCommand(entity: $feedback));
+        $this->commandBus->dispatch(new NotifyFeedbackSearchTermUserCommand(feedback: $feedback));
+        $this->commandBus->dispatch(new NotifyFeedbackSearchUsersCommand(feedback: $feedback));
     }
 }

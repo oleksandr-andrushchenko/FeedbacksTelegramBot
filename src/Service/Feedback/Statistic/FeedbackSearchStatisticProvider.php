@@ -14,8 +14,8 @@ use Generator;
 class FeedbackSearchStatisticProvider implements FeedbackCommandStatisticProviderInterface
 {
     public function __construct(
-        private readonly FeedbackCommandOptions $options,
-        private readonly FeedbackSearchRepository $repository,
+        private readonly FeedbackCommandOptions $feedbackCommandOptions,
+        private readonly FeedbackSearchRepository $feedbackSearchRepository,
     )
     {
     }
@@ -23,25 +23,17 @@ class FeedbackSearchStatisticProvider implements FeedbackCommandStatisticProvide
     public function getStatistics(User $user): Generator
     {
         foreach ($this->getLimits() as $limit) {
-            $count = $this->repository
-                ->createQueryBuilder('fs')
-                ->select('COUNT(fs.id)')
-                ->andWhere('fs.createdAt >= :createdAtFrom')
-                ->setParameter('createdAtFrom', new DateTimeImmutable(sprintf('-1 %s', $limit->getPeriod())))
-                ->andWhere('fs.user = :user')
-                ->setParameter('user', $user)
-                ->andWhere('fs.hasActiveSubscription = :hasActiveSubscription')
-                ->setParameter('hasActiveSubscription', false)
-                ->getQuery()
-                ->getSingleScalarResult()
+            yield $limit->getPeriod() => $this->feedbackSearchRepository
+                ->countByUserAndFromWithoutActiveSubscription(
+                    $user,
+                    new DateTimeImmutable(sprintf('-1 %s', $limit->getPeriod()))
+                )
             ;
-
-            yield $limit->getPeriod() => is_string($count) ? (int) $count : $count;
         }
     }
 
     public function getLimits(): array
     {
-        return $this->options->getLimits();
+        return $this->feedbackCommandOptions->getLimits();
     }
 }

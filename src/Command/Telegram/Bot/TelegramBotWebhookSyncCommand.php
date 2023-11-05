@@ -18,10 +18,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TelegramBotWebhookSyncCommand extends Command
 {
     public function __construct(
-        private readonly TelegramBotRepository $repository,
-        private readonly TelegramBotWebhookSyncer $updater,
+        private readonly TelegramBotRepository $telegramBotRepository,
+        private readonly TelegramBotWebhookSyncer $telegramBotWebhookSyncer,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TelegramBotWebhookInfoProvider $infoProvider,
+        private readonly TelegramBotWebhookInfoProvider $telegramBotWebhookInfoProvider,
     )
     {
         parent::__construct();
@@ -46,16 +46,16 @@ class TelegramBotWebhookSyncCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $username = $input->getArgument('username');
-        $bot = $this->repository->findOneByUsername($username);
+        $bot = $this->telegramBotRepository->findOneByUsername($username);
 
         if ($bot === null) {
             throw new TelegramBotNotFoundException($username);
         }
 
-        $this->updater->syncTelegramWebhook($bot);
+        $this->telegramBotWebhookSyncer->syncTelegramWebhook($bot);
         $this->entityManager->flush();
 
-        $row = $this->infoProvider->getTelegramWebhookInfo($bot);
+        $row = $this->telegramBotWebhookInfoProvider->getTelegramWebhookInfo($bot);
 
         $io->createTable()
             ->setHeaders(array_keys($row))

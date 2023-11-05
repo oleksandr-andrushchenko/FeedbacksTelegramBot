@@ -28,10 +28,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TelegramChannelUpdateCommand extends Command
 {
     public function __construct(
-        private readonly TelegramChannelRepository $repository,
-        private readonly TelegramChannelUpdater $updater,
+        private readonly TelegramChannelRepository $telegramChannelRepository,
+        private readonly TelegramChannelUpdater $telegramChannelUpdater,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TelegramChannelInfoProvider $infoProvider,
+        private readonly TelegramChannelInfoProvider $telegramChannelInfoProvider,
         private readonly CountryProvider $countryProvider,
         private readonly LocaleProvider $localeProvider,
         private readonly Level1RegionProvider $level1RegionProvider,
@@ -67,7 +67,7 @@ class TelegramChannelUpdateCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $username = $input->getArgument('username');
-        $channel = $this->repository->findOneByUsername($username);
+        $channel = $this->telegramChannelRepository->findOneByUsername($username);
 
         if ($channel === null) {
             throw new TelegramBotNotFoundException($username);
@@ -143,11 +143,11 @@ class TelegramChannelUpdateCommand extends Command
             $channelTransfer->setPrimary($input->getOption('primary'));
         }
 
-        $this->updater->updateTelegramChannel($channel, $channelTransfer);
+        $this->telegramChannelUpdater->updateTelegramChannel($channel, $channelTransfer);
 
         $this->entityManager->flush();
 
-        $row = $this->infoProvider->getTelegramChannelInfo($channel);
+        $row = $this->telegramChannelInfoProvider->getTelegramChannelInfo($channel);
 
         $io->createTable()
             ->setHeaders(array_keys($row))

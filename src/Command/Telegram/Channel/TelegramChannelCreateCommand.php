@@ -26,9 +26,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TelegramChannelCreateCommand extends Command
 {
     public function __construct(
-        private readonly TelegramChannelCreator $creator,
+        private readonly TelegramChannelCreator $telegramChannelCreator,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TelegramChannelInfoProvider $infoProvider,
+        private readonly TelegramChannelInfoProvider $telegramChannelInfoProvider,
         private readonly CountryProvider $countryProvider,
         private readonly LocaleProvider $localeProvider,
         private readonly Level1RegionProvider $level1RegionProvider,
@@ -110,11 +110,11 @@ class TelegramChannelCreateCommand extends Command
         $channelTransfer->setChatId($input->getOption('chat-id'));
         $channelTransfer->setPrimary($input->getOption('primary'));
 
-        $channel = $this->creator->createTelegramChannel($channelTransfer);
+        $channel = $this->telegramChannelCreator->createTelegramChannel($channelTransfer);
 
         $this->entityManager->flush();
 
-        $row = $this->infoProvider->getTelegramChannelInfo($channel);
+        $row = $this->telegramChannelInfoProvider->getTelegramChannelInfo($channel);
 
         $io->createTable()
             ->setHeaders(array_keys($row))

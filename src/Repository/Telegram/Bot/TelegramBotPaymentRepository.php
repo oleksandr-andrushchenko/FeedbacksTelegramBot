@@ -22,4 +22,11 @@ class TelegramBotPaymentRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, TelegramBotPayment::class);
     }
+
+    public function findOneByUuid(string $uuid): ?TelegramBotPayment
+    {
+        return $this->findOneBy([
+            'uuid' => $uuid,
+        ]);
+    }
 }

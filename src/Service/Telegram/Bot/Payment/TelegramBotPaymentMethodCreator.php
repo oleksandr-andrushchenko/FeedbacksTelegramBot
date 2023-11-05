@@ -20,13 +20,13 @@ class TelegramBotPaymentMethodCreator
     }
 
     /**
-     * @param TelegramBotPaymentMethodTransfer $paymentMethodTransfer
+     * @param TelegramBotPaymentMethodTransfer $transfer
      * @return TelegramBotPaymentMethod
      * @throws CurrencyNotFoundException
      */
-    public function createTelegramPaymentMethod(TelegramBotPaymentMethodTransfer $paymentMethodTransfer): TelegramBotPaymentMethod
+    public function createTelegramPaymentMethod(TelegramBotPaymentMethodTransfer $transfer): TelegramBotPaymentMethod
     {
-        $currencyCodes = $paymentMethodTransfer->getCurrencies();
+        $currencyCodes = $transfer->getCurrencies();
         foreach ($currencyCodes as $currencyCode) {
             if (!$this->currencyProvider->hasCurrency($currencyCode)) {
                 throw new CurrencyNotFoundException($currencyCode);
@@ -34,9 +34,9 @@ class TelegramBotPaymentMethodCreator
         }
 
         $paymentMethod = new TelegramBotPaymentMethod(
-            $paymentMethodTransfer->getBot(),
-            $paymentMethodTransfer->getName(),
-            $paymentMethodTransfer->getToken(),
+            $transfer->getBot(),
+            $transfer->getName(),
+            $transfer->getToken(),
             $currencyCodes,
         );
         $this->entityManager->persist($paymentMethod);

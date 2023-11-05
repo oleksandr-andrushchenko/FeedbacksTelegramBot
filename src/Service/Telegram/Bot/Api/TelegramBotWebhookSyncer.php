@@ -11,16 +11,16 @@ use App\Service\Telegram\Bot\TelegramBotWebhookUrlGenerator;
 class TelegramBotWebhookSyncer
 {
     public function __construct(
-        private readonly TelegramBotRegistry $registry,
-        private readonly TelegramBotWebhookUrlGenerator $webhookUrlGenerator,
+        private readonly TelegramBotRegistry $telegramBotRegistry,
+        private readonly TelegramBotWebhookUrlGenerator $telegramBotWebhookUrlGenerator,
     )
     {
     }
 
     public function syncTelegramWebhook(TelegramBot $botEntity): void
     {
-        $bot = $this->registry->getTelegramBot($botEntity);
-        $url = $this->webhookUrlGenerator->generate($bot->getEntity()->getUsername());
+        $bot = $this->telegramBotRegistry->getTelegramBot($botEntity);
+        $url = $this->telegramBotWebhookUrlGenerator->generate($bot->getEntity()->getUsername());
 
         $bot->setWebhook($url);
 

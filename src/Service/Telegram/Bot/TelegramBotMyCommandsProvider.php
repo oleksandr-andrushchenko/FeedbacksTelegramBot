@@ -13,7 +13,7 @@ use Longman\TelegramBot\Entities\BotCommandScope\BotCommandScopeDefault;
 class TelegramBotMyCommandsProvider
 {
     public function __construct(
-        private readonly TelegramBotGroupRegistry $groupRegistry,
+        private readonly TelegramBotGroupRegistry $telegramBotGroupRegistry,
     )
     {
     }
@@ -24,7 +24,7 @@ class TelegramBotMyCommandsProvider
      */
     public function getTelegramMyCommands(TelegramBot $bot): iterable
     {
-        $group = $this->groupRegistry->getTelegramGroup($bot->getEntity()->getGroup());
+        $group = $this->telegramBotGroupRegistry->getTelegramGroup($bot->getEntity()->getGroup());
 
         $realCommands = array_values(
             array_filter($group->getTelegramCommands($bot), static fn ($command): bool => $command instanceof TelegramBotCommand)

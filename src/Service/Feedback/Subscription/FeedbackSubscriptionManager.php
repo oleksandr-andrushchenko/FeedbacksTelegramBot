@@ -18,8 +18,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class FeedbackSubscriptionManager
 {
     public function __construct(
-        private readonly FeedbackSubscriptionPlanProvider $subscriptionPlanProvider,
-        private readonly FeedbackUserSubscriptionRepository $subscriptionRepository,
+        private readonly FeedbackSubscriptionPlanProvider $feedbackSubscriptionPlanProvider,
+        private readonly FeedbackUserSubscriptionRepository $feedbackUserSubscriptionRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly IdGenerator $idGenerator,
         private readonly MessageBusInterface $eventBus,
@@ -30,7 +30,7 @@ class FeedbackSubscriptionManager
     public function createByTelegramPayment(TelegramBotPayment $payment): FeedbackUserSubscription
     {
         $subscriptionPlanName = FeedbackSubscriptionPlanName::fromName($payment->getPurpose());
-        $subscriptionPlan = $this->subscriptionPlanProvider->getSubscriptionPlan($subscriptionPlanName);
+        $subscriptionPlan = $this->feedbackSubscriptionPlanProvider->getSubscriptionPlan($subscriptionPlanName);
 
         $subscription = new FeedbackUserSubscription(
             $this->idGenerator->generateId(),
@@ -54,9 +54,7 @@ class FeedbackSubscriptionManager
      */
     public function getSubscriptions(MessengerUser $messengerUser): array
     {
-        return $this->subscriptionRepository->findBy([
-            'messengerUser' => $messengerUser,
-        ]);
+        return $this->feedbackUserSubscriptionRepository->findByMessengerUser($messengerUser);
     }
 
     public function getActiveSubscription(MessengerUser $messengerUser): ?FeedbackUserSubscription

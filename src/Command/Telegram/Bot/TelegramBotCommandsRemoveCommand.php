@@ -17,8 +17,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TelegramBotCommandsRemoveCommand extends Command
 {
     public function __construct(
-        private readonly TelegramBotRepository $repository,
-        private readonly TelegramBotCommandsRemover $remover,
+        private readonly TelegramBotRepository $telegramBotRepository,
+        private readonly TelegramBotCommandsRemover $telegramBotCommandsRemover,
         private readonly EntityManagerInterface $entityManager,
     )
     {
@@ -44,18 +44,18 @@ class TelegramBotCommandsRemoveCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $username = $input->getArgument('username');
-        $bot = $this->repository->findOneByUsername($username);
+        $bot = $this->telegramBotRepository->findOneByUsername($username);
 
         if ($bot === null) {
             throw new TelegramBotNotFoundException($username);
         }
 
-        $this->remover->removeTelegramCommands($bot);
+        $this->telegramBotCommandsRemover->removeTelegramCommands($bot);
 
         $this->entityManager->flush();
 
         $row = [];
-        $myCommands = $this->remover->getMyCommands();
+        $myCommands = $this->telegramBotCommandsRemover->getMyCommands();
 
         foreach ($myCommands as $myCommandsItem) {
             $value = sprintf('%s + %s', $myCommandsItem->getLocaleCode(), $myCommandsItem->getScope()->toJson());

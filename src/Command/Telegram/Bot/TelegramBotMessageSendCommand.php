@@ -16,8 +16,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TelegramBotMessageSendCommand extends Command
 {
     public function __construct(
-        private readonly TelegramBotRepository $repository,
-        private readonly TelegramBotMessageSenderInterface $sender,
+        private readonly TelegramBotRepository $telegramBotRepository,
+        private readonly TelegramBotMessageSenderInterface $telegramBotMessageSender,
     )
     {
         parent::__construct();
@@ -44,7 +44,7 @@ class TelegramBotMessageSendCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $username = $input->getArgument('username');
-        $bot = $this->repository->findOneByUsername($username);
+        $bot = $this->telegramBotRepository->findOneByUsername($username);
 
         if ($bot === null) {
             throw new TelegramBotNotFoundException($username);
@@ -54,7 +54,7 @@ class TelegramBotMessageSendCommand extends Command
         $chatId = is_numeric($chatId) ? $chatId : ('@' . $chatId);
         $text = $input->getArgument('text');
 
-        $this->sender->sendTelegramMessage($bot, $chatId, $text);
+        $this->telegramBotMessageSender->sendTelegramMessage($bot, $chatId, $text);
 
         $io->success('Message has been successfully sent');
 

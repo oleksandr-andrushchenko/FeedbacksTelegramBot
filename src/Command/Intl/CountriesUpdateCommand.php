@@ -18,11 +18,11 @@ use RuntimeException;
 class CountriesUpdateCommand extends Command
 {
     public function __construct(
-        private readonly CountriesProviderInterface $provider,
+        private readonly CountriesProviderInterface $countriesProvider,
         private readonly NormalizerInterface $normalizer,
         private readonly string $targetFile,
         private readonly string $regionsTargetFile,
-        private readonly CountryTranslationsProviderInterface $translationsProvider,
+        private readonly CountryTranslationsProviderInterface $countryTranslationsProvider,
         private readonly string $translationTargetFile,
         private readonly array $supportedLocales,
     )
@@ -62,7 +62,7 @@ class CountriesUpdateCommand extends Command
 
     private function updateCountries(SymfonyStyle $io): void
     {
-        $countries = $this->provider->getCountries();
+        $countries = $this->countriesProvider->getCountries();
 
         if ($countries === null) {
             throw new RuntimeException('Unable to fetch countries');
@@ -91,7 +91,7 @@ class CountriesUpdateCommand extends Command
 
     private function updateCountryTranslations(SymfonyStyle $io): void
     {
-        $translations = $this->translationsProvider->getCountryTranslations();
+        $translations = $this->countryTranslationsProvider->getCountryTranslations();
 
         if ($translations === null) {
             throw new RuntimeException('Unable to fetch country translations');

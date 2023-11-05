@@ -47,9 +47,9 @@ class TelegramBot
     private ?MessengerUser $messengerUser;
 
     public function __construct(
-        private readonly TelegramBotEntity $entity,
-        private readonly TelegramBotClientRegistry $clientRegistry,
-        private readonly TelegramBotRequestChecker $requestChecker,
+        private readonly TelegramBotEntity $telegramBot,
+        private readonly TelegramBotClientRegistry $telegramBotClientRegistry,
+        private readonly TelegramBotRequestChecker $telegramBotRequestChecker,
         private readonly LoggerInterface $logger,
     )
     {
@@ -59,7 +59,7 @@ class TelegramBot
 
     public function getEntity(): TelegramBotEntity
     {
-        return $this->entity;
+        return $this->telegramBot;
     }
 
     public function getUpdate(): ?Update
@@ -104,7 +104,7 @@ class TelegramBot
      */
     public function __call(string $name, array $arguments): mixed
     {
-        $request = $this->requestChecker->checkTelegramRequest($this, $name, $arguments[0] ?? null);
+        $request = $this->telegramBotRequestChecker->checkTelegramRequest($this, $name, $arguments[0] ?? null);
         $response = $this->request($name, $arguments);
 
         if ($response instanceof ServerResponse) {
@@ -172,6 +172,6 @@ class TelegramBot
 
     private function getClient(): TelegramClient
     {
-        return $this->clientRegistry->getTelegramClient($this->getEntity());
+        return $this->telegramBotClientRegistry->getTelegramClient($this->getEntity());
     }
 }

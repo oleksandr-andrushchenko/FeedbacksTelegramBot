@@ -16,8 +16,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TelegramBotDescriptionsShowCommand extends Command
 {
     public function __construct(
-        private readonly TelegramBotRepository $repository,
-        private readonly TelegramBotDescriptionsInfoProvider $infoProvider,
+        private readonly TelegramBotRepository $telegramBotRepository,
+        private readonly TelegramBotDescriptionsInfoProvider $telegramBotDescriptionsInfoProvider,
     )
     {
         parent::__construct();
@@ -42,13 +42,13 @@ class TelegramBotDescriptionsShowCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $username = $input->getArgument('username');
-        $bot = $this->repository->findOneByUsername($username);
+        $bot = $this->telegramBotRepository->findOneByUsername($username);
 
         if ($bot === null) {
             throw new TelegramBotNotFoundException($username);
         }
 
-        $row = $this->infoProvider->getTelegramBotDescriptionsInfo($bot);
+        $row = $this->telegramBotDescriptionsInfoProvider->getTelegramBotDescriptionsInfo($bot);
 
         $io->createTable()
             ->setHeaders(array_keys($row))

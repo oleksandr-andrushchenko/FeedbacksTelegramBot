@@ -21,10 +21,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TelegramBotPaymentMethodCreateCommand extends Command
 {
     public function __construct(
-        private readonly TelegramBotRepository $botRepository,
-        private readonly TelegramBotPaymentMethodCreator $creator,
+        private readonly TelegramBotRepository $telegramBotRepository,
+        private readonly TelegramBotPaymentMethodCreator $telegramBotPaymentMethodCreator,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TelegramBotPaymentMethodInfoProvider $infoProvider,
+        private readonly TelegramBotPaymentMethodInfoProvider $telegramBotPaymentMethodInfoProvider,
     )
     {
         parent::__construct();
@@ -52,7 +52,7 @@ class TelegramBotPaymentMethodCreateCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $username = $input->getArgument('username');
-        $bot = $this->botRepository->findOneByUsername($username);
+        $bot = $this->telegramBotRepository->findOneByUsername($username);
 
         if ($bot === null) {
             throw new TelegramBotNotFoundException($username);
@@ -72,11 +72,11 @@ class TelegramBotPaymentMethodCreateCommand extends Command
             $input->getArgument('currencies')
         );
 
-        $paymentMethod = $this->creator->createTelegramPaymentMethod($paymentMethodTransfer);
+        $paymentMethod = $this->telegramBotPaymentMethodCreator->createTelegramPaymentMethod($paymentMethodTransfer);
 
         $this->entityManager->flush();
 
-        $row = $this->infoProvider->getTelegramPaymentInfo($paymentMethod);
+        $row = $this->telegramBotPaymentMethodInfoProvider->getTelegramPaymentInfo($paymentMethod);
 
         $io->createTable()
             ->setHeaders(array_keys($row))

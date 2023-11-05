@@ -17,8 +17,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TelegramBotShowAllCommand extends Command
 {
     public function __construct(
-        private readonly TelegramBotRepository $repository,
-        private readonly TelegramBotInfoProvider $infoProvider,
+        private readonly TelegramBotRepository $telegramBotRepository,
+        private readonly TelegramBotInfoProvider $telegramBotInfoProvider,
     )
     {
         parent::__construct();
@@ -56,7 +56,7 @@ class TelegramBotShowAllCommand extends Command
 
         $full = $input->getOption('full');
 
-        $bots = $this->repository->findAll();
+        $bots = $this->telegramBotRepository->findAll();
 
         $table = [];
         $index = 0;
@@ -70,7 +70,7 @@ class TelegramBotShowAllCommand extends Command
                 [
                     '#' => $index + 1,
                 ],
-                $this->infoProvider->getTelegramBotInfo($bot, $full)
+                $this->telegramBotInfoProvider->getTelegramBotInfo($bot, $full)
             );
 
             $index++;

@@ -14,7 +14,7 @@ use RuntimeException;
 class LocalesUpdateCommand extends Command
 {
     public function __construct(
-        private readonly LocaleTranslationsProviderInterface $translationsProvider,
+        private readonly LocaleTranslationsProviderInterface $localeTranslationsProvider,
         private readonly string $translationTargetFile,
         private readonly array $supportedLocales,
     )
@@ -49,7 +49,7 @@ class LocalesUpdateCommand extends Command
 
     private function updateLocaleTranslations(SymfonyStyle $io): void
     {
-        $translations = $this->translationsProvider->getLocaleTranslations();
+        $translations = $this->localeTranslationsProvider->getLocaleTranslations();
 
         if ($translations === null) {
             throw new RuntimeException('Unable to fetch locale translations');

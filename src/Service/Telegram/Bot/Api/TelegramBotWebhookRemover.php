@@ -10,14 +10,14 @@ use App\Service\Telegram\Bot\TelegramBotRegistry;
 class TelegramBotWebhookRemover
 {
     public function __construct(
-        private readonly TelegramBotRegistry $registry,
+        private readonly TelegramBotRegistry $telegramBotRegistry,
     )
     {
     }
 
     public function removeTelegramWebhook(TelegramBot $botEntity): void
     {
-        $bot = $this->registry->getTelegramBot($botEntity);
+        $bot = $this->telegramBotRegistry->getTelegramBot($botEntity);
 
         $bot->deleteWebhook();
 

@@ -20,7 +20,7 @@ class TelegramBotImportCommand extends Command
 {
     public function __construct(
         private readonly string $dataDir,
-        private readonly TelegramBotImporter $importer,
+        private readonly TelegramBotImporter $telegramBotImporter,
         private readonly DryRunner $dryRunner,
         private readonly EntityManagerInterface $entityManager,
     )
@@ -65,7 +65,7 @@ class TelegramBotImportCommand extends Command
         }
 
         $logger = static fn (string $message) => $io->note($message);
-        $func = fn () => $this->importer->importTelegramBots($filename, $logger);
+        $func = fn () => $this->telegramBotImporter->importTelegramBots($filename, $logger);
 
         if ($dryRun) {
             $result = $this->dryRunner->dryRun($func, readUncommitted: true);

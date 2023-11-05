@@ -18,10 +18,10 @@ use Throwable;
 class TelegramController
 {
     public function __construct(
-        private readonly TelegramBotRepository $repository,
-        private readonly TelegramBotUpdateHandler $updateHandler,
+        private readonly TelegramBotRepository $telegramBotRepository,
+        private readonly TelegramBotUpdateHandler $telegramBotUpdateHandler,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TelegramSiteViewResponseFactory $viewResponseFactory,
+        private readonly TelegramSiteViewResponseFactory $telegramSiteViewResponseFactory,
         private readonly LoggerInterface $logger,
     )
     {
@@ -37,13 +37,13 @@ class TelegramController
             $switcher = $request->getSession()->get('switcher', false);
         }
 
-        return $this->viewResponseFactory->createViewResponse($page, $username, $switcher);
+        return $this->telegramSiteViewResponseFactory->createViewResponse($page, $username, $switcher);
     }
 
     public function webhook(string $username, Request $request): Response
     {
         try {
-            $bot = $this->repository->findAnyOneByUsername($username);
+            $bot = $this->telegramBotRepository->findAnyOneByUsername($username);
 
             if ($bot === null) {
                 throw new TelegramBotNotFoundException($username);
@@ -51,7 +51,7 @@ class TelegramController
 
             // todo: push to ordered queue (amqp)
             // todo: use command bus
-            $this->updateHandler->handleTelegramBotUpdate($bot, $request);
+            $this->telegramBotUpdateHandler->handleTelegramBotUpdate($bot, $request);
             $this->entityManager->flush();
 
             return new Response('ok');

@@ -18,8 +18,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TelegramBotWebhookRemoveCommand extends Command
 {
     public function __construct(
-        private readonly TelegramBotRepository $repository,
-        private readonly TelegramBotWebhookRemover $remover,
+        private readonly TelegramBotRepository $telegramBotRepository,
+        private readonly TelegramBotWebhookRemover $telegramBotWebhookRemover,
         private readonly EntityManagerInterface $entityManager,
     )
     {
@@ -45,7 +45,7 @@ class TelegramBotWebhookRemoveCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $username = $input->getArgument('username');
-        $bot = $this->repository->findOneByUsername($username);
+        $bot = $this->telegramBotRepository->findOneByUsername($username);
 
         if ($bot === null) {
             throw new TelegramBotNotFoundException($username);
@@ -77,7 +77,7 @@ class TelegramBotWebhookRemoveCommand extends Command
             return Command::SUCCESS;
         }
 
-        $this->remover->removeTelegramWebhook($bot);
+        $this->telegramBotWebhookRemover->removeTelegramWebhook($bot);
 
         $this->entityManager->flush();
 

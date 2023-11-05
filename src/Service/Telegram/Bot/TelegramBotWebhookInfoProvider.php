@@ -10,7 +10,7 @@ use Longman\TelegramBot\Entities\WebhookInfo;
 class TelegramBotWebhookInfoProvider
 {
     public function __construct(
-        private readonly TelegramBotRegistry $registry,
+        private readonly TelegramBotRegistry $telegramBotRegistry,
     )
     {
     }
@@ -21,7 +21,7 @@ class TelegramBotWebhookInfoProvider
      */
     public function getTelegramWebhookInfo(TelegramBotEntity $entity): array
     {
-        $bot = $this->registry->getTelegramBot($entity);
+        $bot = $this->telegramBotRegistry->getTelegramBot($entity);
         /** @var WebhookInfo $info */
         $info = $bot->getWebhookInfo()->getResult();
 

@@ -17,8 +17,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TelegramBotCommandsSyncCommand extends Command
 {
     public function __construct(
-        private readonly TelegramBotRepository $repository,
-        private readonly TelegramBotCommandsSyncer $updater,
+        private readonly TelegramBotRepository $telegramBotRepository,
+        private readonly TelegramBotCommandsSyncer $telegramBotCommandsSyncer,
         private readonly EntityManagerInterface $entityManager,
     )
     {
@@ -44,17 +44,17 @@ class TelegramBotCommandsSyncCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $username = $input->getArgument('username');
-        $bot = $this->repository->findOneByUsername($username);
+        $bot = $this->telegramBotRepository->findOneByUsername($username);
 
         if ($bot === null) {
             throw new TelegramBotNotFoundException($username);
         }
 
-        $this->updater->syncTelegramCommands($bot);
+        $this->telegramBotCommandsSyncer->syncTelegramCommands($bot);
         $this->entityManager->flush();
 
         $row = [];
-        $myCommands = $this->updater->getMyCommands();
+        $myCommands = $this->telegramBotCommandsSyncer->getMyCommands();
 
         foreach ($myCommands as $myCommandsItem) {
             $value = sprintf('%s + %s', $myCommandsItem->getLocaleCode(), $myCommandsItem->getScope()->toJson());

@@ -18,8 +18,8 @@ class SubscriptionTelegramViewProvider
         private readonly TimeProvider $timeProvider,
         private readonly CurrencyProvider $currencyProvider,
         private readonly MoneyFormatter $moneyFormatter,
-        private readonly FeedbackSubscriptionPlanProvider $subscriptionPlanProvider,
-        private readonly FeedbackSubscriptionManager $manager,
+        private readonly FeedbackSubscriptionPlanProvider $feedbackSubscriptionPlanProvider,
+        private readonly FeedbackSubscriptionManager $feedbackSubscriptionManager,
     )
     {
     }
@@ -37,10 +37,10 @@ class SubscriptionTelegramViewProvider
 
         $parameters = [
             'number' => $number,
-            'subscription_plan' => $this->subscriptionPlanProvider->getSubscriptionPlanName($subscriptionPlan),
+            'subscription_plan' => $this->feedbackSubscriptionPlanProvider->getSubscriptionPlanName($subscriptionPlan),
             'currency' => $this->currencyProvider->getCurrencyComposeName($currency),
             'price' => $this->moneyFormatter->formatMoney($price, native: true),
-            'is_subscription_active' => $this->manager->isSubscriptionActive($subscription),
+            'is_subscription_active' => $this->feedbackSubscriptionManager->isSubscriptionActive($subscription),
             'period' => $this->timeProvider->getShortDateInterval(
                 $subscription->getCreatedAt(),
                 $subscription->getExpireAt(),

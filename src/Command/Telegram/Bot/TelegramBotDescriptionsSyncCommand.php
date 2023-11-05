@@ -18,10 +18,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TelegramBotDescriptionsSyncCommand extends Command
 {
     public function __construct(
-        private readonly TelegramBotRepository $repository,
-        private readonly TelegramBotDescriptionsSyncer $updater,
+        private readonly TelegramBotRepository $telegramBotRepository,
+        private readonly TelegramBotDescriptionsSyncer $telegramBotDescriptionsSyncer,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TelegramBotDescriptionsInfoProvider $infoProvider,
+        private readonly TelegramBotDescriptionsInfoProvider $telegramBotDescriptionsInfoProvider,
     )
     {
         parent::__construct();
@@ -46,16 +46,16 @@ class TelegramBotDescriptionsSyncCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $username = $input->getArgument('username');
-        $bot = $this->repository->findOneByUsername($username);
+        $bot = $this->telegramBotRepository->findOneByUsername($username);
 
         if ($bot === null) {
             throw new TelegramBotNotFoundException($username);
         }
 
-        $this->updater->syncTelegramDescriptions($bot);
+        $this->telegramBotDescriptionsSyncer->syncTelegramDescriptions($bot);
         $this->entityManager->flush();
 
-        $row = $this->infoProvider->getTelegramBotDescriptionsInfo($bot);
+        $row = $this->telegramBotDescriptionsInfoProvider->getTelegramBotDescriptionsInfo($bot);
 
         $io->createTable()
             ->setHeaders(array_keys($row))

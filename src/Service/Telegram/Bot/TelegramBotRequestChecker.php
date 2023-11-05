@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class TelegramBotRequestChecker
 {
     public function __construct(
-        private readonly TelegramBotRequestRepository $requestRepository,
+        private readonly TelegramBotRequestRepository $telegramBotRequestRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly bool $saveOnly = false,
         private readonly int $waitingTimeout = 60,
@@ -94,7 +94,7 @@ class TelegramBotRequestChecker
                     throw new TelegramBotException('Timed out while waiting for a request spot!');
                 }
 
-                $limits = $this->requestRepository->getLimits($chatId, $inlineMessageId);
+                $limits = $this->telegramBotRequestRepository->getLimits($chatId, $inlineMessageId);
 
                 if ($limits === null) {
                     break;

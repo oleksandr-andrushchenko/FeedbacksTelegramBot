@@ -31,10 +31,10 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class TelegramBotPaymentManager
 {
     public function __construct(
-        private readonly TelegramBotInvoiceSenderInterface $invoiceSender,
+        private readonly TelegramBotInvoiceSenderInterface $telegramBotInvoiceSender,
         private readonly CurrencyProvider $currencyProvider,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TelegramBotPaymentRepository $paymentRepository,
+        private readonly TelegramBotPaymentRepository $telegramBotPaymentRepository,
         private readonly IdGenerator $idGenerator,
         private readonly MessageBusInterface $eventBus,
     )
@@ -86,7 +86,7 @@ class TelegramBotPaymentManager
 
         $this->eventBus->dispatch(new TelegramBotPaymentCreatedEvent(payment: $payment));
 
-        $this->invoiceSender->sendInvoice(
+        $this->telegramBotInvoiceSender->sendInvoice(
             $bot,
             $payment->getChatId(),
             $title,
@@ -167,7 +167,7 @@ class TelegramBotPaymentManager
             throw new TelegramBotUnknownPaymentException();
         }
 
-        $payment = $this->paymentRepository->findOneBy(['uuid' => $uuid]);
+        $payment = $this->telegramBotPaymentRepository->findOneByUuid($uuid);
 
         if ($payment === null) {
             throw new TelegramBotPaymentNotFoundException();

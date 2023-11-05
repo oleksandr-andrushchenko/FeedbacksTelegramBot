@@ -21,13 +21,13 @@ class TelegramBotAwareHelper
     private TelegramBot $bot;
 
     public function __construct(
-        private readonly TelegramBotKeyboardFactory $keyboardFactory,
-        private readonly TelegramBotMessageSenderInterface $messageSender,
+        private readonly TelegramBotKeyboardFactory $telegramBotKeyboardFactory,
+        private readonly TelegramBotMessageSenderInterface $telegramBotMessageSender,
         private readonly TranslatorInterface $translator,
-        private readonly TelegramBotConversationManager $conversationManager,
-        private readonly TelegramBotChatActionSenderInterface $chatActionSender,
-        private readonly TelegramBotChatProvider $chatProvider,
-        private readonly TelegramBotInputProvider $inputProvider,
+        private readonly TelegramBotConversationManager $telegramBotConversationManager,
+        private readonly TelegramBotChatActionSenderInterface $telegramBotChatActionSender,
+        private readonly TelegramBotChatProvider $telegramBotChatProvider,
+        private readonly TelegramBotInputProvider $telegramBotInputProvider,
         private readonly Environment $twig,
     )
     {
@@ -48,7 +48,7 @@ class TelegramBotAwareHelper
 
     public function getInput(): ?string
     {
-        $input = $this->inputProvider->getTelegramInputByUpdate($this->getBot()->getUpdate());
+        $input = $this->telegramBotInputProvider->getTelegramInputByUpdate($this->getBot()->getUpdate());
 
         if ($input === null) {
             return null;
@@ -68,7 +68,7 @@ class TelegramBotAwareHelper
 
     public function getChatId(): ?int
     {
-        return $this->chatProvider->getTelegramChatByUpdate($this->getBot()->getUpdate())?->getId();
+        return $this->telegramBotChatProvider->getTelegramChatByUpdate($this->getBot()->getUpdate())?->getId();
     }
 
     public function getLocation(): ?Location
@@ -104,28 +104,28 @@ class TelegramBotAwareHelper
 
     public function startConversation(string $class): static
     {
-        $this->conversationManager->startTelegramConversation($this->getBot(), $class);
+        $this->telegramBotConversationManager->startTelegramConversation($this->getBot(), $class);
 
         return $this;
     }
 
     public function executeConversation(string $class, TelegramBotConversationState $state, string $method): static
     {
-        $this->conversationManager->executeTelegramConversation($this->getBot(), $class, $state, $method);
+        $this->telegramBotConversationManager->executeTelegramConversation($this->getBot(), $class, $state, $method);
 
         return $this;
     }
 
     public function stopCurrentConversation(): static
     {
-        $this->conversationManager->stopCurrentTelegramConversation($this->getBot());
+        $this->telegramBotConversationManager->stopCurrentTelegramConversation($this->getBot());
 
         return $this;
     }
 
     public function stopConversation(TelegramBotConversation $conversation): static
     {
-        $this->conversationManager->stopTelegramConversation($conversation);
+        $this->telegramBotConversationManager->stopTelegramConversation($conversation);
 
         return $this;
     }
@@ -147,12 +147,12 @@ class TelegramBotAwareHelper
         bool $keepKeyboard = false
     ): static
     {
-        $this->chatActionSender->sendChatAction(
+        $this->telegramBotChatActionSender->sendChatAction(
             $this->getBot(),
             $this->getChatId(),
             ChatAction::TYPING
         );
-        $this->messageSender->sendTelegramMessage(
+        $this->telegramBotMessageSender->sendTelegramMessage(
             $this->getBot()->getEntity(),
             $this->getChatId(),
             $text,
@@ -261,17 +261,17 @@ class TelegramBotAwareHelper
 
     public function keyboard(...$buttons): Keyboard
     {
-        return $this->keyboardFactory->createTelegramKeyboard(...$buttons);
+        return $this->telegramBotKeyboardFactory->createTelegramKeyboard(...$buttons);
     }
 
     public function button(string $text): KeyboardButton
     {
-        return $this->keyboardFactory->createTelegramButton($text);
+        return $this->telegramBotKeyboardFactory->createTelegramButton($text);
     }
 
     public function locationButton(string $text): KeyboardButton
     {
-        return $this->keyboardFactory->createTelegramButton($text, requestLocation: true);
+        return $this->telegramBotKeyboardFactory->createTelegramButton($text, requestLocation: true);
     }
 
     public function yesButton(): KeyboardButton

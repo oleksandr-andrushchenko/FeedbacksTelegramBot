@@ -14,7 +14,7 @@ use App\Service\User\UserUpserter;
 class TelegramBotMessengerUserUpserter
 {
     public function __construct(
-        private readonly TelegramBotUserProvider $userProvider,
+        private readonly TelegramBotUserProvider $telegramBotUserProvider,
         private readonly MessengerUserUpserter $messengerUserUpserter,
         private readonly UserUpserter $userUpserter,
         private readonly CountryProvider $countryProvider,
@@ -24,7 +24,7 @@ class TelegramBotMessengerUserUpserter
 
     public function upsertTelegramMessengerUser(TelegramBot $bot): ?MessengerUser
     {
-        $user = $this->userProvider->getTelegramUserByUpdate($bot->getUpdate());
+        $user = $this->telegramBotUserProvider->getTelegramUserByUpdate($bot->getUpdate());
 
         if ($user === null) {
             return null;

@@ -11,7 +11,7 @@ use App\Repository\Telegram\Bot\TelegramBotRepository;
 class TelegramBotMatchesProvider
 {
     public function __construct(
-        private readonly TelegramBotRepository $repository,
+        private readonly TelegramBotRepository $telegramBotRepository,
     )
     {
     }
@@ -23,7 +23,7 @@ class TelegramBotMatchesProvider
      */
     public function getTelegramBotMatches(User $user, TelegramBot $bot): array
     {
-        $bots = $this->repository->findPrimaryByGroup($bot->getGroup());
+        $bots = $this->telegramBotRepository->findPrimaryByGroup($bot->getGroup());
 
         if (count($bots) === 0) {
             return [];
