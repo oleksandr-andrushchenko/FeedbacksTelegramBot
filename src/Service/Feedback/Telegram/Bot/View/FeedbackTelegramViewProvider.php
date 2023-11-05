@@ -35,10 +35,10 @@ class FeedbackTelegramViewProvider
     public function getFeedbackTelegramView(
         TelegramBot $bot,
         Feedback $feedback,
-        int $number = null,
-        bool $secrets = false,
-        bool $sign = true,
-        bool $time = true,
+        int $numberToAdd = null,
+        bool $addSecrets = false,
+        bool $addSign = true,
+        bool $addTime = true,
         TelegramChannel $channel = null,
         string $localeCode = null,
     ): string
@@ -50,17 +50,16 @@ class FeedbackTelegramViewProvider
         }
 
         $user = $feedback->getUser();
-//        $localeCode = $localeCode ?? $user->getLocaleCode();
 
         $message = '';
 
-        if ($number !== null) {
+        if ($numberToAdd !== null) {
             $message .= $this->translator->trans('icon.number', domain: 'feedbacks.tg', locale: $localeCode);
-            $message .= $number;
+            $message .= $numberToAdd;
             $message .= "\n";
         }
 
-        if ($time) {
+        if ($addTime) {
             $createdAt = $this->timeProvider->getDate(
                 $feedback->getCreatedAt(),
                 timezone: $user->getTimezone(),
@@ -71,7 +70,7 @@ class FeedbackTelegramViewProvider
         }
 
         $somebodyFrom = $this->translator->trans('somebody_from', domain: 'feedbacks.tg.feedback', locale: $localeCode);
-        $message .= $time ? $this->mbLcFirster->mbLcFirst($somebodyFrom) : $somebodyFrom;
+        $message .= $addTime ? $this->mbLcFirster->mbLcFirst($somebodyFrom) : $somebodyFrom;
         $message .= ' ';
         $country = $this->countryProvider->getCountryComposeName($country, localeCode: $localeCode);
         $message .= sprintf('<u>%s</u>', $country);
@@ -83,7 +82,7 @@ class FeedbackTelegramViewProvider
                 fn (FeedbackSearchTerm $searchTerm): SearchTermTransfer => $this->searchTermProvider->getFeedbackSearchTermTransfer($searchTerm),
                 $feedback->getSearchTerms()->toArray()
             ),
-            addSecrets: $secrets,
+            addSecrets: $addSecrets,
             localeCode: $localeCode
         );
         $message .= ':';
@@ -102,7 +101,7 @@ class FeedbackTelegramViewProvider
         $message .= $rating;
         $message .= '</b>';
 
-        if ($sign) {
+        if ($addSign) {
             $message .= "\n\n";
 
             $message .= $this->feedbackTelegramReplySignViewProvider->getFeedbackTelegramReplySignView(
