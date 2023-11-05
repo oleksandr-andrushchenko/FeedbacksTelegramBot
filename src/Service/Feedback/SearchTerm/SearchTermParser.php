@@ -9,15 +9,15 @@ use App\Transfer\Feedback\SearchTermTransfer;
 class SearchTermParser implements SearchTermParserInterface
 {
     public function __construct(
-        private readonly SearchTermParserFactory $parserFactory,
+        private readonly SearchTermParserFactory $searchTermParserFactory,
     )
     {
     }
 
     public function supportsSearchTerm(SearchTermTransfer $searchTerm): bool
     {
-        foreach ($this->parserFactory->createSearchTermParsers() as $parser) {
-            if ($parser->supportsSearchTerm($searchTerm)) {
+        foreach ($this->searchTermParserFactory->createSearchTermParsers() as $searchTermParser) {
+            if ($searchTermParser->supportsSearchTerm($searchTerm)) {
                 return true;
             }
         }
@@ -31,9 +31,9 @@ class SearchTermParser implements SearchTermParserInterface
             return;
         }
 
-        foreach ($this->parserFactory->createSearchTermParsers() as $parser) {
-            if ($parser->supportsSearchTerm($searchTerm)) {
-                $parser->parseWithGuessType($searchTerm);
+        foreach ($this->searchTermParserFactory->createSearchTermParsers() as $searchTermParser) {
+            if ($searchTermParser->supportsSearchTerm($searchTerm)) {
+                $searchTermParser->parseWithGuessType($searchTerm);
             }
         }
     }
@@ -44,9 +44,9 @@ class SearchTermParser implements SearchTermParserInterface
             return;
         }
 
-        foreach ($this->parserFactory->createSearchTermParsers() as $parser) {
-            if ($parser->supportsSearchTerm($searchTerm)) {
-                $parser->parseWithKnownType($searchTerm);
+        foreach ($this->searchTermParserFactory->createSearchTermParsers() as $searchTermParser) {
+            if ($searchTermParser->supportsSearchTerm($searchTerm)) {
+                $searchTermParser->parseWithKnownType($searchTerm);
             }
         }
     }
