@@ -72,3 +72,6 @@
 * process new feedbacks (on me, on interested people) notification
 * process new feedbacks search (on me, on interested people) notification
 * add notification about new feedbacks in the channel
+* cache bots as files
+* update bot_ids for messenger users
+* check and handle bot exit event (update messengerUser, for what: to know if send notifications for example, to understand how many people left the bot)
