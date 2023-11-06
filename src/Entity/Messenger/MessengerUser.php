@@ -108,6 +108,17 @@ class MessengerUser
         return $this;
     }
 
+    public function removeBotId(int $botId): self
+    {
+        if ($this->botIds === null) {
+            return $this;
+        }
+
+        $this->botIds = array_unique(array_diff($this->botIds, [$botId]));
+
+        return $this;
+    }
+
     public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
