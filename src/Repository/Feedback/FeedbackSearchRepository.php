@@ -44,4 +44,21 @@ class FeedbackSearchRepository extends ServiceEntityRepository
             ->getSingleScalarResult()
         ;
     }
+
+    /**
+     * @param string $normalizeText
+     * @param int $maxResults
+     * @return FeedbackSearch[]
+     */
+    public function findByNormalizedText(string $normalizeText, int $maxResults = 100): array
+    {
+        return $this->createQueryBuilder('fs')
+            ->innerJoin('fs.searchTerm', 't')
+            ->andWhere('t.normalizedText = :normalizedText')
+            ->setParameter('normalizedText', $normalizeText)
+            ->setMaxResults($maxResults)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

@@ -48,6 +48,23 @@ class FeedbackRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param string $normalizedText
+     * @param int $maxResults
+     * @return Feedback[]
+     */
+    public function findByNormalizedText(string $normalizedText, int $maxResults = 100): array
+    {
+        return $this->createQueryBuilder('f')
+            ->innerJoin('f.searchTerms', 't')
+            ->andWhere('t.normalizedText = :normalizedText')
+            ->setParameter('normalizedText', $normalizedText)
+            ->setMaxResults($maxResults)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    /**
      * @param DateTimeInterface $from
      * @param DateTimeInterface $to
      * @return Paginator|Feedback[]
