@@ -13,7 +13,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class FeedbackSearchCreatedEventHandler
 {
     public function __construct(
-        private readonly FeedbackSearchRepository $searchRepository,
+        private readonly FeedbackSearchRepository $feedbackSearchRepository,
         private readonly LoggerInterface $logger,
         private readonly MessageBusInterface $commandBus,
     )
@@ -22,7 +22,7 @@ class FeedbackSearchCreatedEventHandler
 
     public function __invoke(FeedbackSearchCreatedEvent $event): void
     {
-        $search = $event->getSearch() ?? $this->searchRepository->find($event->getSearchId());
+        $search = $event->getSearch() ?? $this->feedbackSearchRepository->find($event->getSearchId());
 
         if ($search === null) {
             $this->logger->warning(sprintf('No feedback search was found in %s for %s id', __CLASS__, $event->getSearchId()));
