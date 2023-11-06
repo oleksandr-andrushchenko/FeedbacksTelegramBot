@@ -79,7 +79,7 @@ class TelegramBotRepository extends ServiceEntityRepository
     public function findPrimaryByGroupAndIds(TelegramBotGroupName $group, array $ids): array
     {
         return $this->findBy([
-            'ids' => $ids,
+            'id' => $ids,
             'group' => $group,
             'primary' => true,
             'deletedAt' => null,
