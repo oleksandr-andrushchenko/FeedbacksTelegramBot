@@ -43,10 +43,12 @@ framework:
       # Route your messages to the transports
       App\Message\Command\LogActivityCommand: sync
       App\Message\Command\Feedback\NotifyFeedbackSearchTermUsersCommand: sync
+      App\Message\Command\Feedback\NotifyFeedbackSearchUsersCommand: sync
       App\Message\Event\Feedback\FeedbackCreatedEvent: sync
       App\Message\Event\Feedback\FeedbackLookupCreatedEvent: sync
       App\Message\Event\Feedback\FeedbackSearchCreatedEvent: sync
       App\Message\Event\Feedback\FeedbackSearchTermUserTelegramNotificationCreatedEvent: sync
+      App\Message\Event\Feedback\FeedbackSearchUserTelegramNotificationCreatedEvent: sync
       App\Message\Event\Feedback\FeedbackSendToTelegramChannelConfirmReceivedEvent: sync
       App\Message\Event\Feedback\FeedbackUserSubscriptionCreatedEvent: sync
       App\Message\Event\Telegram\TelegramBotPaymentCreatedEvent: sync
