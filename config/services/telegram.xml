@@ -335,7 +335,6 @@
             <argument type="service" id="app.telegram_bot_command_finder"/>
             <argument type="service" id="app.telegram_bot_payment_manager"/>
             <argument type="service" id="app.telegram_bot_locale_switcher"/>
-            <argument type="service" id="app.telegram_input_provider"/>
             <argument type="service" id="app.telegram_bot_registry"/>
             <argument type="service" id="app.telegram_bot_repository"/>
             <argument type="service" id="app.telegram_bot_aware_helper"/>

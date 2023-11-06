@@ -31,7 +31,6 @@ class TelegramBotUpdateHandler
         private readonly TelegramBotHandlerFinder $telegramBotHandlerFinder,
         private readonly TelegramBotPaymentManager $telegramBotPaymentManager,
         private readonly TelegramBotLocaleSwitcher $telegramBotLocaleSwitcher,
-        private readonly TelegramBotInputProvider $telegramBotInputProvider,
         private readonly TelegramBotRegistry $telegramBotRegistry,
         private readonly TelegramBotRepository $telegramBotRepository,
         private readonly TelegramBotAwareHelper $telegramBotAwareHelper,
