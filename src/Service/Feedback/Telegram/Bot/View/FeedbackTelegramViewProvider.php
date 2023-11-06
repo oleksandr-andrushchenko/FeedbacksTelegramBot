@@ -39,6 +39,7 @@ class FeedbackTelegramViewProvider
         bool $addSecrets = false,
         bool $addSign = true,
         bool $addTime = true,
+        bool $addQuotes = false,
         TelegramChannel $channel = null,
         string $localeCode = null,
     ): string
@@ -52,6 +53,10 @@ class FeedbackTelegramViewProvider
         $user = $feedback->getUser();
 
         $message = '';
+
+        if ($addQuotes) {
+            $message .= '<i>';
+        }
 
         if ($numberToAdd !== null) {
             $message .= $this->translator->trans('icon.number', domain: 'feedbacks.tg', locale: $localeCode);
@@ -100,6 +105,10 @@ class FeedbackTelegramViewProvider
         $rating = $this->feedbackRatingProvider->getRatingComposeName($feedback->getRating(), localeCode: $localeCode);
         $message .= $rating;
         $message .= '</b>';
+
+        if ($addQuotes) {
+            $message .= '</i>';
+        }
 
         if ($addSign) {
             $message .= "\n\n";
