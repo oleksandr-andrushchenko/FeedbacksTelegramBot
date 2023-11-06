@@ -28,7 +28,10 @@ sign:
   channel: Subscribe
 
 reply:
-  fail: "Unknown error has occurred,\n1) Make sure everything properly filled and repeat; or\n2) Try %contact_command% command; or\n3) Try again later please."
+  fail: Unknown error has occurred, we are working on it already
+  fail_1: If the keyboard has disappeared - send any text
+  fail_2: Try %contact_command% command
+  faiL_3: Try again later please
   not_accept_payments: To purchase a subscription, contact us %contact_command% or try again later.
   better_bot_match: You may be interested in the following bots
   wrong: I don't understand you.

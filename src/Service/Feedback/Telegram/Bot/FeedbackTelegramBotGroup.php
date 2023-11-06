@@ -153,8 +153,13 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
 
     public function exception(TelegramBotAwareHelper $tg): null
     {
-        $message = $tg->trans('reply.fail', [
-            'contact_command' => sprintf('<u>%s</u>', $tg->command('contact', html: true, link: true)),
+        $message = implode("\n▫️", [
+            $tg->queryText($tg->trans('reply.fail')) . ':',
+            $tg->trans('reply.fail_1'),
+            $tg->trans('reply.fail_2', [
+                'contact_command' => $tg->command('contact', html: true, link: true),
+            ]),
+            $tg->trans('reply.fail_3'),
         ]);
         $message = $tg->failText($message);
 
