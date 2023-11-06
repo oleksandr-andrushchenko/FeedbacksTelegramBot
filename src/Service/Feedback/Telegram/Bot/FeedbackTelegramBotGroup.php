@@ -65,21 +65,21 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
     ];
 
     public function __construct(
-        TelegramBotAwareHelper $awareHelper,
-        TelegramBotConversationFactory $conversationFactory,
-        private readonly FeedbackSubscriptionManager $subscriptionManager,
-        private readonly SubscriptionsTelegramChatSender $subscriptionsChatSender,
-        private readonly ChooseActionTelegramChatSender $chooseActionChatSender,
-        private readonly StartTelegramCommandHandler $startHandler,
-        private readonly SubscriptionTelegramViewProvider $subscriptionViewProvider,
+        TelegramBotAwareHelper $telegramBotAwareHelper,
+        TelegramBotConversationFactory $telegramBotConversationFactory,
+        private readonly FeedbackSubscriptionManager $feedbackSubscriptionManager,
+        private readonly SubscriptionsTelegramChatSender $subscriptionsTelegramChatSender,
+        private readonly ChooseActionTelegramChatSender $chooseActionTelegramChatSender,
+        private readonly StartTelegramCommandHandler $startTelegramCommandHandler,
+        private readonly SubscriptionTelegramViewProvider $subscriptionTelegramViewProvider,
         private readonly TimeProvider $timeProvider,
-        private readonly FeedbackSubscriptionPlanProvider $subscriptionPlanProvider,
-        private readonly FeedbackCommandOptions $createOptions,
-        private readonly FeedbackCommandOptions $searchOptions,
-        private readonly FeedbackCommandOptions $lookupOptions,
+        private readonly FeedbackSubscriptionPlanProvider $feedbackSubscriptionPlanProvider,
+        private readonly FeedbackCommandOptions $feedbackCreateCommandOptions,
+        private readonly FeedbackCommandOptions $feedbackSearchCommandOptions,
+        private readonly FeedbackCommandOptions $feedbackLookupCommandOptions,
     )
     {
-        parent::__construct($awareHelper, $conversationFactory);
+        parent::__construct($telegramBotAwareHelper, $telegramBotConversationFactory);
     }
 
     protected function getHandlers(TelegramBotAwareHelper $tg): iterable
@@ -106,21 +106,21 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
     public function fallback(TelegramBotAwareHelper $tg): null
     {
         return match ($tg->getInput()) {
-            $this->chooseActionChatSender->getCreateButton($tg)->getText() => $this->create($tg),
-            $this->chooseActionChatSender->getSearchButton($tg)->getText() => $this->search($tg),
-            $this->chooseActionChatSender->getLookupButton($tg)->getText() => $this->lookup($tg),
-            $this->chooseActionChatSender->getSubscribeButton($tg)->getText() => $this->subscribe($tg),
-            $this->chooseActionChatSender->getSubscriptionsButton($tg)->getText() => $this->subscriptions($tg),
-            $this->chooseActionChatSender->getCountryButton($tg)->getText() => $this->country($tg),
-            $this->chooseActionChatSender->getLocaleButton($tg)->getText() => $this->locale($tg),
-            $this->chooseActionChatSender->getLimitsButton($tg)->getText() => $this->limits($tg),
-            $this->chooseActionChatSender->getPurgeButton($tg)->getText() => $this->purge($tg),
-            $this->chooseActionChatSender->getDonateButton($tg)->getText() => $this->donate($tg),
-            $this->chooseActionChatSender->getContactButton($tg)->getText() => $this->contact($tg),
-            $this->chooseActionChatSender->getCommandsButton($tg)->getText() => $this->commands($tg),
-            $this->chooseActionChatSender->getRestartButton($tg)->getText() => $this->restart($tg),
-            $this->chooseActionChatSender->getShowLessButton($tg)->getText() => $this->less($tg),
-            $this->chooseActionChatSender->getShowMoreButton($tg)->getText() => $this->more($tg),
+            $this->chooseActionTelegramChatSender->getCreateButton($tg)->getText() => $this->create($tg),
+            $this->chooseActionTelegramChatSender->getSearchButton($tg)->getText() => $this->search($tg),
+            $this->chooseActionTelegramChatSender->getLookupButton($tg)->getText() => $this->lookup($tg),
+            $this->chooseActionTelegramChatSender->getSubscribeButton($tg)->getText() => $this->subscribe($tg),
+            $this->chooseActionTelegramChatSender->getSubscriptionsButton($tg)->getText() => $this->subscriptions($tg),
+            $this->chooseActionTelegramChatSender->getCountryButton($tg)->getText() => $this->country($tg),
+            $this->chooseActionTelegramChatSender->getLocaleButton($tg)->getText() => $this->locale($tg),
+            $this->chooseActionTelegramChatSender->getLimitsButton($tg)->getText() => $this->limits($tg),
+            $this->chooseActionTelegramChatSender->getPurgeButton($tg)->getText() => $this->purge($tg),
+            $this->chooseActionTelegramChatSender->getDonateButton($tg)->getText() => $this->donate($tg),
+            $this->chooseActionTelegramChatSender->getContactButton($tg)->getText() => $this->contact($tg),
+            $this->chooseActionTelegramChatSender->getCommandsButton($tg)->getText() => $this->commands($tg),
+            $this->chooseActionTelegramChatSender->getRestartButton($tg)->getText() => $this->restart($tg),
+            $this->chooseActionTelegramChatSender->getShowLessButton($tg)->getText() => $this->less($tg),
+            $this->chooseActionTelegramChatSender->getShowMoreButton($tg)->getText() => $this->more($tg),
             default => $this->wrong($tg)
         };
     }
@@ -143,14 +143,14 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
 
         $tg->stopCurrentConversation();
 
-        return $this->chooseActionChatSender->sendActions($tg);
+        return $this->chooseActionTelegramChatSender->sendActions($tg);
     }
 
     public function start(TelegramBotAwareHelper $tg): null
     {
         $tg->stopCurrentConversation();
 
-        return $this->startHandler->handleStart($tg);
+        return $this->startTelegramCommandHandler->handleStart($tg);
     }
 
     public function create(TelegramBotAwareHelper $tg): null
@@ -173,7 +173,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
         $tg->stopCurrentConversation();
 
         $messengerUser = $tg->getBot()->getMessengerUser();
-        $activeSubscription = $this->subscriptionManager->getActiveSubscription($messengerUser);
+        $activeSubscription = $this->feedbackSubscriptionManager->getActiveSubscription($messengerUser);
 
         if ($activeSubscription === null) {
             return $tg->startConversation(SubscribeTelegramBotConversation::class)->null();
@@ -183,27 +183,27 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
 
         $tg->reply($message);
 
-        $message = $this->subscriptionViewProvider->getSubscriptionTelegramView($tg, $activeSubscription);
+        $message = $this->subscriptionTelegramViewProvider->getSubscriptionTelegramView($tg, $activeSubscription);
 
         $tg->reply($message);
 
-        return $this->chooseActionChatSender->sendActions($tg);
+        return $this->chooseActionTelegramChatSender->sendActions($tg);
     }
 
     public function subscriptions(TelegramBotAwareHelper $tg): null
     {
         $tg->stopCurrentConversation();
 
-        $this->subscriptionsChatSender->sendFeedbackSubscriptions($tg);
+        $this->subscriptionsTelegramChatSender->sendFeedbackSubscriptions($tg);
 
-        return $this->chooseActionChatSender->sendActions($tg);
+        return $this->chooseActionTelegramChatSender->sendActions($tg);
     }
 
     public function acceptPayment(TelegramBotPayment $payment, TelegramBotAwareHelper $tg): void
     {
-        $subscription = $this->subscriptionManager->createByTelegramPayment($payment);
+        $subscription = $this->feedbackSubscriptionManager->createByTelegramPayment($payment);
 
-        $plan = $this->subscriptionPlanProvider->getSubscriptionPlanName($subscription->getSubscriptionPlan());
+        $plan = $this->feedbackSubscriptionPlanProvider->getSubscriptionPlanName($subscription->getSubscriptionPlan());
         $expireAt = $this->timeProvider->getDatetime($subscription->getExpireAt());
         $parameters = [
             'plan' => $plan,
@@ -216,7 +216,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
 
         $tg->stopCurrentConversation();
 
-        $this->chooseActionChatSender->sendActions($tg);
+        $this->chooseActionTelegramChatSender->sendActions($tg);
     }
 
     public function country(TelegramBotAwareHelper $tg): null
@@ -235,15 +235,15 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
 
         $message = $tg->view('limits', [
             'commands' => [
-                'create' => $this->createOptions->getLimits(),
-                'search' => $this->searchOptions->getLimits(),
-                'lookup' => $this->lookupOptions->getLimits(),
+                'create' => $this->feedbackCreateCommandOptions->getLimits(),
+                'search' => $this->feedbackSearchCommandOptions->getLimits(),
+                'lookup' => $this->feedbackLookupCommandOptions->getLimits(),
             ],
         ]);
 
         $tg->reply($message);
 
-        return $this->chooseActionChatSender->sendActions($tg);
+        return $this->chooseActionTelegramChatSender->sendActions($tg);
     }
 
     public function purge(TelegramBotAwareHelper $tg): null
@@ -259,7 +259,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
 
         $tg->reply($message);
 
-        return $this->chooseActionChatSender->sendActions($tg);
+        return $this->chooseActionTelegramChatSender->sendActions($tg);
     }
 
     public function contact(TelegramBotAwareHelper $tg): null
@@ -275,7 +275,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
 
         $tg->reply($message);
 
-        return $this->chooseActionChatSender->sendActions($tg);
+        return $this->chooseActionTelegramChatSender->sendActions($tg);
     }
 
     public function restart(TelegramBotAwareHelper $tg): null
@@ -287,14 +287,14 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
     {
         $tg->getBot()->getMessengerUser()->setShowExtendedKeyboard(true);
 
-        return $this->chooseActionChatSender->sendActions($tg);
+        return $this->chooseActionTelegramChatSender->sendActions($tg);
     }
 
     public function less(TelegramBotAwareHelper $tg): null
     {
         $tg->getBot()->getMessengerUser()->setShowExtendedKeyboard(false);
 
-        return $this->chooseActionChatSender->sendActions($tg);
+        return $this->chooseActionTelegramChatSender->sendActions($tg);
     }
 
     public function wrong(TelegramBotAwareHelper $tg): ?string
@@ -302,6 +302,6 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
         $message = $tg->trans('reply.wrong');
         $message = $tg->wrongText($message);
 
-        return $this->chooseActionChatSender->sendActions($tg, text: $message, appendDefault: true);
+        return $this->chooseActionTelegramChatSender->sendActions($tg, text: $message, appendDefault: true);
     }
 }
