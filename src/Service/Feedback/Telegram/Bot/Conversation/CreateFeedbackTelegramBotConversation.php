@@ -722,13 +722,6 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
     public function getConfirmQuery(TelegramBotAwareHelper $tg, bool $help = false): string
     {
         $query = $this->getStep(4);
-        $feedbackView = $this->feedbackTelegramViewProvider->getFeedbackTelegramView(
-            $tg->getBot()->getEntity(),
-            $this->feedbackCreator->constructFeedback($this->constructTransfer($tg)),
-            addSign: false,
-            addTime: false,
-            localeCode: $tg->getBot()->getEntity()->getLocaleCode()
-        );
 
         $searchTermView = $this->multipleSearchTermTelegramViewProvider->getPrimarySearchTermTelegramView(
             $this->state->getSearchTerms(),
@@ -741,7 +734,14 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         $query .= ":";
         $query = $tg->queryText($query);
         $query .= "\n\n";
-        $query .= sprintf('<i>%s</i>', $feedbackView);
+        $query .= $this->feedbackTelegramViewProvider->getFeedbackTelegramView(
+            $tg->getBot()->getEntity(),
+            $this->feedbackCreator->constructFeedback($this->constructTransfer($tg)),
+            addSign: false,
+            addTime: false,
+            addQuotes: true,
+            localeCode: $tg->getBot()->getEntity()->getLocaleCode()
+        );
         $query .= "\n\n";
         $query .= $tg->queryText($tg->trans('query.confirm', parameters: $parameters, domain: 'create'));
 
