@@ -7,12 +7,14 @@ namespace App\Message\CommandHandler;
 use App\Entity\Feedback\Feedback;
 use App\Entity\Feedback\FeedbackLookup;
 use App\Entity\Feedback\FeedbackSearch;
+use App\Entity\Feedback\FeedbackSearchTermUserTelegramNotification;
 use App\Entity\Telegram\TelegramBotPayment;
 use App\Entity\User\UserContactMessage;
 use App\Message\Command\LogActivityCommand;
 use App\Repository\Feedback\FeedbackLookupRepository;
 use App\Repository\Feedback\FeedbackRepository;
 use App\Repository\Feedback\FeedbackSearchRepository;
+use App\Repository\Feedback\FeedbackSearchTermUserTelegramNotificationRepository;
 use App\Repository\Telegram\Bot\TelegramBotPaymentRepository;
 use App\Repository\User\UserContactMessageRepository;
 use Psr\Log\LoggerInterface;
@@ -23,6 +25,7 @@ class LogActivityCommandHandler
     public function __construct(
         private readonly FeedbackRepository $feedbackRepository,
         private readonly FeedbackSearchRepository $feedbackSearchRepository,
+        private readonly FeedbackSearchTermUserTelegramNotificationRepository $feedbackSearchTermUserTelegramNotificationRepository,
         private readonly FeedbackLookupRepository $feedbackLookupRepository,
         private readonly TelegramBotPaymentRepository $telegramBotPaymentRepository,
         private readonly UserContactMessageRepository $userContactMessageRepository,
@@ -38,6 +41,7 @@ class LogActivityCommandHandler
             $repository = match ($command->getEntityClass()) {
                 Feedback::class => $this->feedbackRepository,
                 FeedbackSearch::class => $this->feedbackSearchRepository,
+                FeedbackSearchTermUserTelegramNotification::class => $this->feedbackSearchTermUserTelegramNotificationRepository,
                 FeedbackLookup::class => $this->feedbackLookupRepository,
                 TelegramBotPayment::class => $this->telegramBotPaymentRepository,
                 UserContactMessage::class => $this->userContactMessageRepository,

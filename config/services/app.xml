@@ -68,6 +68,7 @@
                  lazy="true">
             <argument type="service" id="app.feedback_repository"/>
             <argument type="service" id="app.feedback_search_repository"/>
+            <argument type="service" id="app.feedback_search_term_user_telegram_notification_repository"/>
             <argument type="service" id="app.feedback_lookup_repository"/>
             <argument type="service" id="app.telegram_bot_payment_repository"/>
             <argument type="service" id="app.user_contact_message_repository"/>
