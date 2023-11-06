@@ -19,6 +19,7 @@ class MessengerUser
         private ?User $user = null,
         private bool $showExtendedKeyboard = false,
         private ?array $botIds = null,
+        private ?array $usernameHistory = null,
         private ?DateTimeInterface $createdAt = null,
         private ?DateTimeInterface $updatedAt = null,
     )
@@ -115,6 +116,18 @@ class MessengerUser
         }
 
         $this->botIds = array_unique(array_diff($this->botIds, [$botId]));
+
+        return $this;
+    }
+
+    public function addUsernameHistory(string $username): self
+    {
+        if ($this->usernameHistory === null) {
+            $this->usernameHistory = [];
+        }
+
+        $this->usernameHistory[] = $username;
+        $this->usernameHistory = array_filter(array_unique($this->usernameHistory));
 
         return $this;
     }

@@ -37,7 +37,7 @@ class MessengerUserUpserter
             $this->entityManager->persist($messengerUser);
         }
 
-        if (empty($messengerUser->getUsername()) && !empty($transfer->getUsername())) {
+        if (!empty($transfer->getUsername())) {
             $messengerUser->setUsername($transfer->getUsername());
         }
         if (empty($messengerUser->getName()) && !empty($transfer->getName())) {
