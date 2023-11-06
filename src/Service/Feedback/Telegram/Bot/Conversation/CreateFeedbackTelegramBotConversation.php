@@ -11,7 +11,7 @@ use App\Entity\Telegram\TelegramChannel;
 use App\Enum\Feedback\Rating;
 use App\Enum\Feedback\SearchTermType;
 use App\Exception\Feedback\FeedbackCommandLimitExceededException;
-use App\Exception\Messenger\SameMessengerUserException;
+use App\Exception\Feedback\FeedbackOnOneselfException;
 use App\Exception\ValidatorException;
 use App\Message\Event\Feedback\FeedbackSendToTelegramChannelConfirmReceivedEvent;
 use App\Repository\Feedback\FeedbackRepository;
@@ -887,9 +887,9 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $tg->replyWarning($tg->queryText($exception->getFirstMessage()));
 
             return $this->querySearchTerm($tg);
-        } catch (SameMessengerUserException) {
+        } catch (FeedbackOnOneselfException) {
             $message = $tg->trans('reply.on_self_forbidden', domain: 'create');
-            $message = $tg->failText($message);
+            $message = $tg->forbiddenText($message);
 
             $tg->reply($message);
 

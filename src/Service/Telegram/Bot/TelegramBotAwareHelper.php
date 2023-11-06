@@ -227,7 +227,7 @@ class TelegramBotAwareHelper
         return "\n\n" . $this->queryText($this->trans('query.already_added')) . ':' . "\n" . $text;
     }
 
-    public function warningText(string $text): string
+    public function forbiddenText(string $text): string
     {
         return '⛔️ ' . $text;
 //        return '⚠️ ' . $text;
@@ -235,7 +235,7 @@ class TelegramBotAwareHelper
 
     public function replyWarning(string $text): self
     {
-        $message = $this->warningText($text);
+        $message = $this->forbiddenText($text);
 
         $this->reply($message);
 
