@@ -556,7 +556,10 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
         ];
         $message = $tg->trans('reply.will_notify', $parameters, domain: 'search');
 
-        return $tg->okText($message);
+        $message = $tg->okText($tg->queryText($message));
+        $message .= "\n";
+
+        return $message;
     }
 
     public function gotCreateConfirm(TelegramBotAwareHelper $tg, Entity $entity): null
@@ -566,7 +569,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
             $message = $this->getWillNotifyReply($tg);
 
-            return $this->chooseActionTelegramChatSender->sendActions($tg, $message);
+            return $this->chooseActionTelegramChatSender->sendActions($tg, $message, appendDefault: true);
         }
 
         if ($tg->matchInput($tg->helpButton()->getText())) {

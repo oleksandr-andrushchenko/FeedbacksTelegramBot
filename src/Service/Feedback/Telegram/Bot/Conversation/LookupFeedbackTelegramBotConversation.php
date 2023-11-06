@@ -406,10 +406,11 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
         ];
         $message = $tg->trans('reply.empty_list', $parameters, domain: 'lookup');
         $message = $tg->upsetText($message);
-        $message2 = $tg->trans('reply.will_notify', $parameters, domain: 'lookup');
-        $message2 = $tg->okText($message2);
         $message .= "\n\n";
+        $message2 = $tg->trans('reply.will_notify', $parameters, domain: 'lookup');
+        $message2 = $tg->okText($tg->queryText($message2));
         $message .= $message2;
+        $message .= "\n";
 
         return $message;
     }
