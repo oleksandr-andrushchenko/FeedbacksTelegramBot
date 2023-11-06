@@ -30,6 +30,23 @@ class FeedbackLookupRepository extends ServiceEntityRepository
         return $this->findOneBy([], ['createdAt' => 'DESC']);
     }
 
+    /**
+     * @param string $normalizeText
+     * @param int $maxResults
+     * @return FeedbackLookup[]
+     */
+    public function findByNormalizedText(string $normalizeText, int $maxResults = 100): array
+    {
+        return $this->createQueryBuilder('fl')
+            ->innerJoin('fl.searchTerm', 't')
+            ->andWhere('t.normalizedText = :normalizedText')
+            ->setParameter('normalizedText', $normalizeText)
+            ->setMaxResults($maxResults)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     public function countByUserAndFromWithoutActiveSubscription(User $user, DateTimeInterface $from): int
     {
         return (int) $this->createQueryBuilder('fl')
