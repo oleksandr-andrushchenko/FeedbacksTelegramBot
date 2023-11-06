@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram\Bot\Group;
 
-use App\Entity\Telegram\TelegramBotCommandInterface;
+use App\Entity\Telegram\TelegramBotHandlerInterface;
 use App\Entity\Telegram\TelegramBotPayment;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationFactory;
 use App\Service\Telegram\Bot\TelegramBot;
@@ -12,9 +12,10 @@ use App\Service\Telegram\Bot\TelegramBot;
 interface TelegramBotGroupInterface
 {
     /**
-     * @return TelegramBotCommandInterface[]
+     * @param TelegramBot $bot
+     * @return TelegramBotHandlerInterface[]
      */
-    public function getTelegramCommands(TelegramBot $bot): iterable;
+    public function getTelegramHandlers(TelegramBot $bot): iterable;
 
     public function getTelegramConversationFactory(): TelegramBotConversationFactory;
 

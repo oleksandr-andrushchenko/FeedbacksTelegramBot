@@ -5,27 +5,28 @@ declare(strict_types=1);
 namespace App\Entity\Telegram;
 
 use Closure;
+use Longman\TelegramBot\Entities\Update;
 
-readonly class TelegramBotCommand implements TelegramBotCommandInterface
+readonly class TelegramBotCommandHandler extends TelegramBotHandler implements TelegramBotHandlerInterface
 {
     public function __construct(
         private string $name,
         private Closure $callback,
         private bool $menu = false,
         private ?string $key = null,
-        private bool $beforeConversations = false,
+        bool $force = false,
     )
     {
+        $force2 = $force;
+        parent::__construct(
+            static fn (Update $update, bool $force = false): bool => $update->getMessage()?->getText() === $name && (($force && $force2) || !$force),
+            $this->callback
+        );
     }
 
     public function getName(): string
     {
         return $this->name;
-    }
-
-    public function getCallback(): Closure
-    {
-        return $this->callback;
     }
 
     public function isMenu(): bool
@@ -36,10 +37,5 @@ readonly class TelegramBotCommand implements TelegramBotCommandInterface
     public function getKey(): ?string
     {
         return $this->key;
-    }
-
-    public function getBeforeConversations(): bool
-    {
-        return $this->beforeConversations;
     }
 }

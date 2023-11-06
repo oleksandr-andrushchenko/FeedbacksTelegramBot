@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Telegram\Bot\Api;
 
 use App\Entity\Telegram\TelegramBot as TelegramBotEntity;
-use App\Entity\Telegram\TelegramBotCommand;
+use App\Entity\Telegram\TelegramBotCommandHandler;
 use App\Entity\Telegram\TelegramBotMyCommands;
 use App\Service\Telegram\Bot\TelegramBot;
 use App\Service\Telegram\Bot\TelegramBotMyCommandsProvider;
@@ -33,11 +33,11 @@ class TelegramBotCommandsSyncer
             $data = [
                 'scope' => $myCommands->getScope()->jsonSerialize(),
                 'commands' => array_map(
-                    fn (TelegramBotCommand $command): array => [
-                        'command' => $command->getName(),
-                        'description' => $this->getDescription($bot, $command, $myCommands),
+                    fn (TelegramBotCommandHandler $commandHandler): array => [
+                        'command' => $commandHandler->getName(),
+                        'description' => $this->getDescription($bot, $commandHandler, $myCommands),
                     ],
-                    $myCommands->getCommands()
+                    $myCommands->getCommandHandlers()
                 ),
             ];
 
@@ -59,15 +59,15 @@ class TelegramBotCommandsSyncer
 
     private function getDescription(
         TelegramBot $bot,
-        TelegramBotCommand $command,
+        TelegramBotCommandHandler $commandHandler,
         TelegramBotMyCommands $myCommands
     ): string
     {
         $domain = sprintf('%s.tg.command', $bot->getEntity()->getGroup()->name);
         $locale = $myCommands->getLocaleCode();
 
-        $icon = $this->translator->trans($command->getKey(), domain: $domain, locale: $locale);
-        $name = $this->translator->trans($command->getKey(), domain: $domain, locale: $locale);
+        $icon = $this->translator->trans($commandHandler->getKey(), domain: $domain, locale: $locale);
+        $name = $this->translator->trans($commandHandler->getKey(), domain: $domain, locale: $locale);
 
         return sprintf('%s %s', $icon, $name);
     }

@@ -312,7 +312,7 @@
                  class="App\Service\Telegram\Bot\TelegramBotNonAdminUpdateChecker" lazy="true">
             <argument type="service" id="app.telegram_bot_user_provider"/>
         </service>
-        <service id="app.telegram_bot_command_finder" class="App\Service\Telegram\Bot\TelegramBotCommandFinder"
+        <service id="app.telegram_bot_command_finder" class="App\Service\Telegram\Bot\TelegramBotHandlerFinder"
                  lazy="true"/>
         <service id="app.telegram_bot_update_factory" class="App\Service\Telegram\Bot\TelegramBotUpdateFactory"
                  lazy="true">

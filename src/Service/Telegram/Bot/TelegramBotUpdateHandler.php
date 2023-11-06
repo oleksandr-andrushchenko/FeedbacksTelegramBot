@@ -28,7 +28,7 @@ class TelegramBotUpdateHandler
         private readonly TelegramBotConversationManager $telegramBotConversationManager,
         private readonly TelegramBotMessengerUserUpserter $telegramBotMessengerUserUpserter,
         private readonly TelegramBotGroupRegistry $telegramBotGroupRegistry,
-        private readonly TelegramBotCommandFinder $telegramBotCommandFinder,
+        private readonly TelegramBotHandlerFinder $telegramBotHandlerFinder,
         private readonly TelegramBotPaymentManager $telegramBotPaymentManager,
         private readonly TelegramBotLocaleSwitcher $telegramBotLocaleSwitcher,
         private readonly TelegramBotInputProvider $telegramBotInputProvider,
@@ -111,17 +111,16 @@ class TelegramBotUpdateHandler
                 return;
             }
 
-            $text = $this->telegramBotInputProvider->getTelegramInputByUpdate($bot->getUpdate());
-            $commands = $group->getTelegramCommands($bot);
+            $handlers = $group->getTelegramHandlers($bot);
 
-            if ($beforeConversationCommand = $this->telegramBotCommandFinder->findBeforeConversationCommand($text, $commands)) {
-                call_user_func($beforeConversationCommand->getCallback());
+            if ($handler = $this->telegramBotHandlerFinder->findOneHandler($bot->getUpdate(), $handlers, force: true)) {
+                call_user_func($handler->getCallback());
             } elseif ($conversation = $this->telegramBotConversationManager->getCurrentTelegramConversation($bot)) {
                 $this->telegramBotConversationManager->continueTelegramConversation($bot, $conversation);
-            } elseif ($command = $this->telegramBotCommandFinder->findCommand($text, $commands)) {
-                call_user_func($command->getCallback());
-            } elseif ($fallbackCommand = $this->telegramBotCommandFinder->findFallbackCommand($commands)) {
-                call_user_func($fallbackCommand->getCallback());
+            } elseif ($handler = $this->telegramBotHandlerFinder->findOneHandler($bot->getUpdate(), $handlers)) {
+                call_user_func($handler->getCallback());
+            } elseif ($handler = $this->telegramBotHandlerFinder->findOneFallbackHandler($handlers)) {
+                call_user_func($handler->getCallback());
             }
         } catch (Throwable $exception) {
             if ($this->environment === 'test') {
@@ -129,8 +128,8 @@ class TelegramBotUpdateHandler
             }
             $this->logger->error($exception);
 
-            if ($errorCommand = $this->telegramBotCommandFinder->findErrorCommand($commands)) {
-                call_user_func($errorCommand->getCallback(), $exception);
+            if ($handler = $this->telegramBotHandlerFinder->findOneErrorHandler($handlers)) {
+                call_user_func($handler->getCallback(), $exception);
             }
         }
     }

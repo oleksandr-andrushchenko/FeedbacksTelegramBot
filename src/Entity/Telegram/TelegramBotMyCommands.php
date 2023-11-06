@@ -18,9 +18,9 @@ class TelegramBotMyCommands
     }
 
     /**
-     * @return string[]|TelegramBotCommand[]
+     * @return TelegramBotCommandHandler[]
      */
-    public function getCommands(): array
+    public function getCommandHandlers(): array
     {
         return $this->commands;
     }

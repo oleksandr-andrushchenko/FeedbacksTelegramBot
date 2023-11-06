@@ -59,12 +59,12 @@ class TelegramBotCommandsRemoveCommand extends Command
 
         foreach ($myCommands as $myCommandsItem) {
             $value = sprintf('%s + %s', $myCommandsItem->getLocaleCode(), $myCommandsItem->getScope()->toJson());
-            foreach ($myCommandsItem->getCommands() as $command) {
-                if (!isset($row[$command->getName()])) {
-                    $row[$command->getName()] = [];
+            foreach ($myCommandsItem->getCommandHandlers() as $commandHandler) {
+                if (!isset($row[$commandHandler->getName()])) {
+                    $row[$commandHandler->getName()] = [];
                 }
 
-                $row[$command->getName()][] = $value;
+                $row[$commandHandler->getName()][] = $value;
             }
         }
 

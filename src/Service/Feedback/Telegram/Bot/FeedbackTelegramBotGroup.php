@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Service\Feedback\Telegram\Bot;
 
 use App\Entity\Feedback\Command\FeedbackCommandOptions;
-use App\Entity\Telegram\ErrorTelegramBotCommand;
-use App\Entity\Telegram\FallbackTelegramBotCommand;
-use App\Entity\Telegram\TelegramBotCommand;
+use App\Entity\Telegram\TelegramBotErrorHandler;
+use App\Entity\Telegram\TelegramBotFallbackHandler;
+use App\Entity\Telegram\TelegramBotCommandHandler;
 use App\Entity\Telegram\TelegramBotPayment;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionPlanProvider;
@@ -82,25 +82,25 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
         parent::__construct($awareHelper, $conversationFactory);
     }
 
-    protected function getCommands(TelegramBotAwareHelper $tg): iterable
+    protected function getHandlers(TelegramBotAwareHelper $tg): iterable
     {
-        yield new TelegramBotCommand(self::START, fn (): null => $this->start($tg), menu: false);
-        yield new TelegramBotCommand(self::CREATE, fn (): null => $this->create($tg), menu: true, key: 'create', beforeConversations: true);
-        yield new TelegramBotCommand(self::SEARCH, fn (): null => $this->search($tg), menu: true, key: 'search', beforeConversations: true);
-        yield new TelegramBotCommand(self::LOOKUP, fn (): null => $this->lookup($tg), menu: true, key: 'lookup', beforeConversations: true);
-        yield new TelegramBotCommand(self::SUBSCRIBE, fn (): null => $this->subscribe($tg), menu: true, key: 'subscribe', beforeConversations: true);
-        yield new TelegramBotCommand(self::SUBSCRIPTIONS, fn (): null => $this->subscriptions($tg), menu: true, key: 'subscriptions', beforeConversations: true);
-        yield new TelegramBotCommand(self::COUNTRY, fn (): null => $this->country($tg), menu: true, key: 'country', beforeConversations: true);
-        yield new TelegramBotCommand(self::LOCALE, fn (): null => $this->locale($tg), menu: true, key: 'locale', beforeConversations: true);
-        yield new TelegramBotCommand(self::LIMITS, fn (): null => $this->limits($tg), menu: true, key: 'locale', beforeConversations: true);
-        yield new TelegramBotCommand(self::PURGE, fn (): null => $this->purge($tg), menu: true, key: 'purge', beforeConversations: true);
-        yield new TelegramBotCommand(self::DONATE, fn (): null => $this->donate($tg), menu: true, key: 'donate', beforeConversations: true);
-        yield new TelegramBotCommand(self::CONTACT, fn (): null => $this->contact($tg), menu: true, key: 'contact', beforeConversations: true);
-        yield new TelegramBotCommand(self::COMMANDS, fn (): null => $this->commands($tg), menu: true, key: 'commands', beforeConversations: true);
-        yield new TelegramBotCommand(self::RESTART, fn (): null => $this->restart($tg), menu: true, key: 'restart', beforeConversations: true);
+        yield new TelegramBotCommandHandler(self::START, fn (): null => $this->start($tg), menu: false);
+        yield new TelegramBotCommandHandler(self::CREATE, fn (): null => $this->create($tg), menu: true, key: 'create', force: true);
+        yield new TelegramBotCommandHandler(self::SEARCH, fn (): null => $this->search($tg), menu: true, key: 'search', force: true);
+        yield new TelegramBotCommandHandler(self::LOOKUP, fn (): null => $this->lookup($tg), menu: true, key: 'lookup', force: true);
+        yield new TelegramBotCommandHandler(self::SUBSCRIBE, fn (): null => $this->subscribe($tg), menu: true, key: 'subscribe', force: true);
+        yield new TelegramBotCommandHandler(self::SUBSCRIPTIONS, fn (): null => $this->subscriptions($tg), menu: true, key: 'subscriptions', force: true);
+        yield new TelegramBotCommandHandler(self::COUNTRY, fn (): null => $this->country($tg), menu: true, key: 'country', force: true);
+        yield new TelegramBotCommandHandler(self::LOCALE, fn (): null => $this->locale($tg), menu: true, key: 'locale', force: true);
+        yield new TelegramBotCommandHandler(self::LIMITS, fn (): null => $this->limits($tg), menu: true, key: 'locale', force: true);
+        yield new TelegramBotCommandHandler(self::PURGE, fn (): null => $this->purge($tg), menu: true, key: 'purge', force: true);
+        yield new TelegramBotCommandHandler(self::DONATE, fn (): null => $this->donate($tg), menu: true, key: 'donate', force: true);
+        yield new TelegramBotCommandHandler(self::CONTACT, fn (): null => $this->contact($tg), menu: true, key: 'contact', force: true);
+        yield new TelegramBotCommandHandler(self::COMMANDS, fn (): null => $this->commands($tg), menu: true, key: 'commands', force: true);
+        yield new TelegramBotCommandHandler(self::RESTART, fn (): null => $this->restart($tg), menu: true, key: 'restart', force: true);
 
-        yield new FallbackTelegramBotCommand(fn (): null => $this->fallback($tg));
-        yield new ErrorTelegramBotCommand(fn (Throwable $exception): null => $this->exception($tg));
+        yield new TelegramBotFallbackHandler(fn (): null => $this->fallback($tg));
+        yield new TelegramBotErrorHandler(fn (Throwable $exception): null => $this->exception($tg));
     }
 
     public function fallback(TelegramBotAwareHelper $tg): null

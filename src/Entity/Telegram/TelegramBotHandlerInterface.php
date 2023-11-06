@@ -6,7 +6,9 @@ namespace App\Entity\Telegram;
 
 use Closure;
 
-interface TelegramBotCommandInterface
+interface TelegramBotHandlerInterface
 {
+    public function getSupports(): Closure;
+
     public function getCallback(): Closure;
 }

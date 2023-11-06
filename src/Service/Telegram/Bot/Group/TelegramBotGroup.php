@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Telegram\Bot\Group;
 
-use App\Entity\Telegram\TelegramBotCommandInterface;
+use App\Entity\Telegram\TelegramBotHandlerInterface;
 use App\Entity\Telegram\TelegramBotPayment;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationFactory;
 use App\Service\Telegram\Bot\TelegramBot;
@@ -21,19 +21,15 @@ abstract class TelegramBotGroup implements TelegramBotGroupInterface
 
     /**
      * @param TelegramBotAwareHelper $tg
-     * @return TelegramBotCommandInterface[]
+     * @return TelegramBotHandlerInterface[]
      */
-    abstract protected function getCommands(TelegramBotAwareHelper $tg): iterable;
+    abstract protected function getHandlers(TelegramBotAwareHelper $tg): iterable;
 
-    /**
-     * @param TelegramBot $bot
-     * @return array|TelegramBotCommandInterface[]
-     */
-    final public function getTelegramCommands(TelegramBot $bot): array
+    final public function getTelegramHandlers(TelegramBot $bot): array
     {
         $tg = $this->awareHelper->withTelegramBot($bot);
 
-        return iterator_to_array($this->getCommands($tg));
+        return iterator_to_array($this->getHandlers($tg));
     }
 
     final public function getTelegramConversationFactory(): TelegramBotConversationFactory
