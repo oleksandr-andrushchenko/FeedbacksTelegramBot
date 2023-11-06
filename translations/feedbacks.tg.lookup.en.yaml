@@ -8,6 +8,6 @@ keyboard:
 reply:
   canceled: Lookup search dialog has been canceled.
   empty_list: No lookups were found by %search_term%.
-  will_notify: We'll let you know when somebody search for %search_term%.
+  will_notify: We'll let you know when somebody search anything for %search_term%.
   title: 'There are %count% lookup(-s) have been successfully found by %search_term%:'
   limit_exceeded: 'You have reached feedback lookup searching limit: %tries_for%. Try again later or buy premium subscription please.'
