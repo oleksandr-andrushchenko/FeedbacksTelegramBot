@@ -21,6 +21,7 @@ class TelegramBotUserProvider
             'getChosenInlineResult',
             'getCallbackQuery',
             'getPreCheckoutQuery',
+            'getMyChatMember',
         ];
         foreach ($updateMethods as $updateMethod) {
             $object = call_user_func([$update, $updateMethod]);
