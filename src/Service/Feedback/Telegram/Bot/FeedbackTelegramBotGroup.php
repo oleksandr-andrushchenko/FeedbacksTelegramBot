@@ -8,6 +8,7 @@ use App\Entity\Feedback\Command\FeedbackCommandOptions;
 use App\Entity\Telegram\TelegramBotErrorHandler;
 use App\Entity\Telegram\TelegramBotFallbackHandler;
 use App\Entity\Telegram\TelegramBotCommandHandler;
+use App\Entity\Telegram\TelegramBotMyChatMemberHandler;
 use App\Entity\Telegram\TelegramBotPayment;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionPlanProvider;
@@ -84,6 +85,8 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
 
     protected function getHandlers(TelegramBotAwareHelper $tg): iterable
     {
+        yield new TelegramBotMyChatMemberHandler(fn (): null => $this->myChatMemberHandler($tg));
+
         yield new TelegramBotCommandHandler(self::START, fn (): null => $this->start($tg), menu: false);
         yield new TelegramBotCommandHandler(self::CREATE, fn (): null => $this->create($tg), menu: true, key: 'create', force: true);
         yield new TelegramBotCommandHandler(self::SEARCH, fn (): null => $this->search($tg), menu: true, key: 'search', force: true);
@@ -129,7 +132,22 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
     {
         $update = $tg->getBot()->getUpdate();
 
+        if ($update->getMyChatMember() !== null) {
+            return true;
+        }
+
         return $update->getMessage()?->getChat()->getType() === 'private';
+    }
+
+    public function myChatMemberHandler(TelegramBotAwareHelper $tg): null
+    {
+        $myChatMember = $tg->getBot()->getUpdate()->getMyChatMember();
+
+        if ($myChatMember->getNewChatMember()?->getStatus() === 'kicked') {
+            $tg->getBot()->getMessengerUser()->removeBotId($tg->getBot()->getEntity()->getId());
+        }
+
+        return null;
     }
 
     public function exception(TelegramBotAwareHelper $tg): null
