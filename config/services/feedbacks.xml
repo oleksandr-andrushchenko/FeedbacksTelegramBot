@@ -25,7 +25,7 @@
 
         <parameter key="app.feedback_search_command_options" type="collection">
             <parameter key="limits" type="collection">
-                <parameter key="day">5</parameter>
+                <parameter key="day">10</parameter>
                 <parameter key="month">50</parameter>
                 <parameter key="year">300</parameter>
             </parameter>
@@ -33,7 +33,7 @@
 
         <parameter key="app.feedback_lookup_command_options" type="collection">
             <parameter key="limits" type="collection">
-                <parameter key="day">1</parameter>
+                <parameter key="day">10</parameter>
                 <parameter key="month">30</parameter>
                 <parameter key="year">120</parameter>
             </parameter>
@@ -61,10 +61,10 @@
         <parameter key="app.create.send_to_channel_confirm_step">true</parameter>
 
         <parameter key="app.search.search_term_type_step">true</parameter>
-        <parameter key="app.search.confirm_step">true</parameter>
+        <parameter key="app.search.confirm_step">false</parameter>
 
         <parameter key="app.lookup.search_term_type_step">true</parameter>
-        <parameter key="app.lookup.confirm_step">true</parameter>
+        <parameter key="app.lookup.confirm_step">false</parameter>
     </parameters>
 
     <services>
