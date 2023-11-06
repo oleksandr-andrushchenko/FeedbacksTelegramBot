@@ -60,7 +60,7 @@ class InstagramSearchTermParser implements SearchTermParserInterface
 
     private function getUsernamePattern(bool $url): string
     {
-        return ($url ? '' : '@?') . '\w(?!.*?\.{2})[\w.]{1,28}\w';
+        return ($url ? '' : '@?') . '(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}';
     }
 
     private function normalizeUsername(string $username): string
