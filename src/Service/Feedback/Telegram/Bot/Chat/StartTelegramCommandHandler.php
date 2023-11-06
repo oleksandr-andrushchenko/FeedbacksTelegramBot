@@ -24,12 +24,18 @@ class StartTelegramCommandHandler
 
     public function handleStart(TelegramBotAwareHelper $tg): null
     {
-        $this->reply($tg);
+        $query = $this->getReplyQuery($tg);
 
-        return $this->chooseActionTelegramChatSender->sendActions($tg);
+        $tg->reply($query);
+
+        $message = $this->chooseActionTelegramChatSender->getQuery($tg);
+        $message .= "\n";
+        $message .= $tg->useText(false);
+
+        return $this->chooseActionTelegramChatSender->sendActions($tg, text: $message);
     }
 
-    public function reply(TelegramBotAwareHelper $tg): void
+    private function getReplyQuery(TelegramBotAwareHelper $tg): string
     {
         $domain = 'start';
         $message = '👋 ' . $tg->queryText($tg->trans('greetings', domain: $domain));
@@ -61,6 +67,6 @@ class StartTelegramCommandHandler
         $locale = $this->localeProvider->getLocale($tg->getLocaleCode());
         $message .= $tg->command('locale', icon: $this->localeProvider->getLocaleIcon($locale), link: true);
 
-        $tg->reply($message);
+        return $message;
     }
 }
