@@ -467,9 +467,9 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
             foreach ($feedbackSearches as $index => $feedbackSearch) {
                 $message = $this->feedbackSearchTelegramViewProvider->getFeedbackSearchTelegramView(
-                    $tg->getBot(),
+                    $tg->getBot()->getEntity(),
                     $feedbackSearch,
-                    number: $index + 1,
+                    numberToAdd: $index + 1,
                     addSecrets: true
                 );
 

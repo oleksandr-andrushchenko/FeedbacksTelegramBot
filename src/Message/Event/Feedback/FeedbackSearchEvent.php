@@ -27,12 +27,12 @@ readonly abstract class FeedbackSearchEvent
         }
     }
 
-    public function getSearch(): ?FeedbackSearch
+    public function getFeedbackSearch(): ?FeedbackSearch
     {
         return $this->search;
     }
 
-    public function getSearchId(): ?string
+    public function getFeedbackSearchId(): ?string
     {
         return $this->searchId;
     }

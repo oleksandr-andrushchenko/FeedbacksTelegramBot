@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Message\EventHandler\Feedback;
 
+use App\Message\Command\Feedback\NotifyFeedbackLookupUsersCommand;
 use App\Message\Command\LogActivityCommand;
 use App\Message\Event\Feedback\FeedbackSearchCreatedEvent;
 use App\Repository\Feedback\FeedbackSearchRepository;
@@ -22,13 +23,14 @@ class FeedbackSearchCreatedEventHandler
 
     public function __invoke(FeedbackSearchCreatedEvent $event): void
     {
-        $search = $event->getSearch() ?? $this->feedbackSearchRepository->find($event->getSearchId());
+        $search = $event->getFeedbackSearch() ?? $this->feedbackSearchRepository->find($event->getFeedbackSearchId());
 
         if ($search === null) {
-            $this->logger->warning(sprintf('No feedback search was found in %s for %s id', __CLASS__, $event->getSearchId()));
+            $this->logger->warning(sprintf('No feedback search was found in %s for %s id', __CLASS__, $event->getFeedbackSearchId()));
             return;
         }
 
         $this->commandBus->dispatch(new LogActivityCommand(entity: $search));
+        $this->commandBus->dispatch(new NotifyFeedbackLookupUsersCommand(search: $search));
     }
 }

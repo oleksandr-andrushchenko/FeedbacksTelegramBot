@@ -10,7 +10,7 @@ use App\Service\Feedback\SearchTerm\SearchTermProvider;
 use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\TimeProvider;
-use App\Service\Telegram\Bot\TelegramBot;
+use App\Entity\Telegram\TelegramBot;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FeedbackSearchTelegramViewProvider
@@ -29,8 +29,9 @@ class FeedbackSearchTelegramViewProvider
     public function getFeedbackSearchTelegramView(
         TelegramBot $bot,
         FeedbackSearch $feedbackSearch,
-        int $number = null,
+        int $numberToAdd = null,
         bool $addSecrets = false,
+        bool $addQuotes = false,
         string $localeCode = null,
         TelegramChannel $channel = null,
     ): string
@@ -42,13 +43,16 @@ class FeedbackSearchTelegramViewProvider
         }
 
         $user = $feedbackSearch->getMessengerUser()?->getUser();
-//        $localeCode = $localeCode ?? $user->getLocaleCode();
 
         $message = '';
 
-        if ($number !== null) {
+        if ($addQuotes) {
+            $message .= '<i>';
+        }
+
+        if ($numberToAdd !== null) {
             $message .= $this->translator->trans('icon.number', domain: 'feedbacks.tg', locale: $localeCode);
-            $message .= $number;
+            $message .= $numberToAdd;
             $message .= "\n";
         }
 
@@ -73,11 +77,16 @@ class FeedbackSearchTelegramViewProvider
             localeCode: $localeCode
         );
 
+        if ($addQuotes) {
+            $message .= '</i>';
+        }
+
         $message .= "\n\n";
 
         $message .= $this->feedbackTelegramReplySignViewProvider->getFeedbackTelegramReplySignView(
-            $bot->getEntity(),
-            channel: $channel
+            $bot,
+            channel: $channel,
+            localeCode: $localeCode
         );
 
         return $message;
