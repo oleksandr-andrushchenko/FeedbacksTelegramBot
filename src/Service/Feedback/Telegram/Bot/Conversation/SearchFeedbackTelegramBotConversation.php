@@ -448,7 +448,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 )
             );
 
-            $feedbacks = $this->feedbackSearcher->searchFeedbacks($feedbackSearch);
+            $feedbacks = $this->feedbackSearcher->searchFeedbacks($feedbackSearch->getSearchTerm());
             $count = count($feedbacks);
 
             if ($count === 0) {

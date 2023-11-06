@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Feedback;
 
 use App\Entity\Feedback\Feedback;
-use App\Entity\Feedback\FeedbackSearch;
+use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Enum\Feedback\SearchTermType;
 use App\Repository\Feedback\FeedbackRepository;
 
@@ -18,32 +18,28 @@ class FeedbackSearcher
     }
 
     /**
-     * @param FeedbackSearch $feedbackSearch
-     * @param int $limit
+     * @param FeedbackSearchTerm $feedbackSearchTerm
+     * @param int $maxResults
      * @return Feedback[]
      */
-    public function searchFeedbacks(FeedbackSearch $feedbackSearch, int $limit = 20): array
+    public function searchFeedbacks(FeedbackSearchTerm $feedbackSearchTerm, int $maxResults = 20): array
     {
-        $feedbacks = $this->feedbackRepository->createQueryBuilder('f')
-            ->innerJoin('f.searchTerms', 't')
-            ->andWhere('t.normalizedText = :searchTermNormalizedText')
-            ->setParameter('searchTermNormalizedText', $feedbackSearch->getSearchTerm()->getNormalizedText())
-            ->setMaxResults(100)
-            ->getQuery()
-            ->getResult()
-        ;
+        $feedbacks = $this->feedbackRepository->findByNormalizedText(
+            $feedbackSearchTerm->getNormalizedText(),
+            maxResults: $maxResults
+        );
 
         // todo: if search term type is unknown - need to make multi-searches with normalized search term type for each possible type
         // todo: for example: search term=+1 (561) 314-5672, its a phone number, stored as: 15613145672, but search with unknown type will give FALSE (+1 (561) 314-5672 === 15613145672)
         // todo: coz it wasnt parsed to selected seearch term type
 
-        $feedbacks = array_filter($feedbacks, static function (Feedback $feedback) use ($feedbackSearch): bool {
+        $feedbacks = array_filter($feedbacks, static function (Feedback $feedback) use ($feedbackSearchTerm): bool {
             foreach ($feedback->getSearchTerms() as $searchTerm) {
-                if ($searchTerm->getNormalizedText() === $feedbackSearch->getSearchTerm()->getNormalizedText()) {
+                if ($searchTerm->getNormalizedText() === $feedbackSearchTerm->getNormalizedText()) {
                     if (
-                        $feedbackSearch->getSearchTerm()->getType() !== SearchTermType::unknown
+                        $feedbackSearchTerm->getType() !== SearchTermType::unknown
                         && $searchTerm->getType() !== SearchTermType::unknown
-                        && $feedbackSearch->getSearchTerm()->getType() !== $searchTerm->getType()
+                        && $feedbackSearchTerm->getType() !== $searchTerm->getType()
                     ) {
                         return false;
                     }
@@ -58,6 +54,6 @@ class FeedbackSearcher
         $feedbacks = array_values($feedbacks);
         $feedbacks = array_reverse($feedbacks, true);
 
-        return array_slice($feedbacks, 0, $limit, true);
+        return array_slice($feedbacks, 0, $maxResults, true);
     }
 }

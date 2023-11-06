@@ -450,7 +450,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 )
             );
 
-            $feedbackSearches = $this->feedbackSearchSearcher->searchFeedbackSearches($feedbackLookup);
+            $feedbackSearches = $this->feedbackSearchSearcher->searchFeedbackSearches($feedbackLookup->getSearchTerm());
             $count = count($feedbackSearches);
 
             if ($count === 0) {
