@@ -18,6 +18,10 @@
             <join-column nullable="false"/>
         </many-to-one>
 
+        <many-to-one field="feedback" target-entity="App\Entity\Feedback\Feedback">
+            <join-column nullable="false"/>
+        </many-to-one>
+
         <many-to-one field="feedbackSearch" target-entity="App\Entity\Feedback\FeedbackSearch">
             <join-column nullable="false"/>
         </many-to-one>
