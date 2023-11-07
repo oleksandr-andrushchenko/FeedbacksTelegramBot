@@ -10,7 +10,7 @@ use WeakMap;
 class TelegramBotGroupRegistry
 {
     public function __construct(
-        private readonly TelegramBotGroupFactory $channelFactory,
+        private readonly TelegramBotGroupFactory $telegramBotGroupFactory,
         private ?WeakMap $cache = null,
     )
     {
@@ -23,6 +23,6 @@ class TelegramBotGroupRegistry
             return $this->cache[$name];
         }
 
-        return $this->cache[$name] = $this->channelFactory->createTelegramChannel($name);
+        return $this->cache[$name] = $this->telegramBotGroupFactory->createTelegramBotGroup($name);
     }
 }

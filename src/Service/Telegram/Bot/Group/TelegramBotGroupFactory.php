@@ -10,13 +10,13 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 class TelegramBotGroupFactory
 {
     public function __construct(
-        private readonly ServiceLocator $channelServiceLocator,
+        private readonly ServiceLocator $serviceLocator,
     )
     {
     }
 
-    public function createTelegramChannel(TelegramBotGroupName $name): TelegramBotGroupInterface
+    public function createTelegramBotGroup(TelegramBotGroupName $name): TelegramBotGroupInterface
     {
-        return $this->channelServiceLocator->get($name->name);
+        return $this->serviceLocator->get($name->name);
     }
 }
