@@ -32,6 +32,22 @@ class FeedbackTelegramViewProvider
     {
     }
 
+    public function getFeedbackSearchTermsTelegramView(
+        Feedback $feedback,
+        bool $addSecrets = false,
+        string $localeCode = null,
+    ): string
+    {
+        return $this->multipleSearchTermTelegramViewProvider->getMultipleSearchTermTelegramView(
+            array_map(
+                fn (FeedbackSearchTerm $searchTerm): SearchTermTransfer => $this->searchTermProvider->getFeedbackSearchTermTransfer($searchTerm),
+                $feedback->getSearchTerms()->toArray()
+            ),
+            addSecrets: $addSecrets,
+            localeCode: $localeCode
+        );
+    }
+
     public function getFeedbackTelegramView(
         TelegramBot $bot,
         Feedback $feedback,
@@ -65,11 +81,7 @@ class FeedbackTelegramViewProvider
         }
 
         if ($addTime) {
-            $createdAt = $this->timeProvider->getDate(
-                $feedback->getCreatedAt(),
-                timezone: $user->getTimezone(),
-                localeCode: $localeCode
-            );
+            $createdAt = $this->timeProvider->getDate($feedback->getCreatedAt(), timezone: $user->getTimezone(), localeCode: $localeCode);
             $message .= $createdAt;
             $message .= ', ';
         }
@@ -82,14 +94,7 @@ class FeedbackTelegramViewProvider
         $message .= ' ';
         $message .= $this->translator->trans('wrote_about', domain: 'feedbacks.tg.feedback', locale: $localeCode);
         $message .= ' ';
-        $message .= $this->multipleSearchTermTelegramViewProvider->getMultipleSearchTermTelegramView(
-            array_map(
-                fn (FeedbackSearchTerm $searchTerm): SearchTermTransfer => $this->searchTermProvider->getFeedbackSearchTermTransfer($searchTerm),
-                $feedback->getSearchTerms()->toArray()
-            ),
-            addSecrets: $addSecrets,
-            localeCode: $localeCode
-        );
+        $message .= $this->getFeedbackSearchTermsTelegramView($feedback, addSecrets: $addSecrets, localeCode: $localeCode);
         $message .= ':';
 
         $message .= "\n\n";
@@ -113,11 +118,7 @@ class FeedbackTelegramViewProvider
         if ($addSign) {
             $message .= "\n\n";
 
-            $message .= $this->feedbackTelegramReplySignViewProvider->getFeedbackTelegramReplySignView(
-                $bot,
-                channel: $channel,
-                localeCode: $localeCode
-            );
+            $message .= $this->feedbackTelegramReplySignViewProvider->getFeedbackTelegramReplySignView($bot, channel: $channel, localeCode: $localeCode);
         }
 
         return $message;
