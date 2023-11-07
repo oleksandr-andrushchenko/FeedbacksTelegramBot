@@ -49,7 +49,6 @@ class FeedbackLookupUsersTelegramNotifier implements FeedbackLookupUsersNotifier
                 $messengerUser !== null
                 && $messengerUser->getMessenger() === Messenger::telegram
                 && $messengerUser->getId() !== $feedbackSearch->getMessengerUser()->getId()
-//                && $messengerUser->getUser()->getId() !== $feedback->getMessengerUser()->getUser()->getId()
             ) {
                 $this->notify($messengerUser, $searchTerm, $feedbackSearch, $feedbackLookup);
             }
