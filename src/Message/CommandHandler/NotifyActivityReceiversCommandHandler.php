@@ -8,6 +8,7 @@ use App\Entity\Feedback\Feedback;
 use App\Entity\Feedback\FeedbackLookup;
 use App\Entity\Feedback\FeedbackLookupUserTelegramNotification;
 use App\Entity\Feedback\FeedbackSearch;
+use App\Entity\Feedback\FeedbackSearchSearchTermUserTelegramNotification;
 use App\Entity\Feedback\FeedbackSearchTermUserTelegramNotification;
 use App\Entity\Feedback\FeedbackSearchUserTelegramNotification;
 use App\Entity\Telegram\TelegramBotPayment;
@@ -17,6 +18,7 @@ use App\Repository\Feedback\FeedbackLookupRepository;
 use App\Repository\Feedback\FeedbackLookupUserTelegramNotificationRepository;
 use App\Repository\Feedback\FeedbackRepository;
 use App\Repository\Feedback\FeedbackSearchRepository;
+use App\Repository\Feedback\FeedbackSearchSearchTermUserTelegramNotificationRepository;
 use App\Repository\Feedback\FeedbackSearchTermUserTelegramNotificationRepository;
 use App\Repository\Feedback\FeedbackSearchUserTelegramNotificationRepository;
 use App\Repository\Telegram\Bot\TelegramBotPaymentRepository;
@@ -30,6 +32,7 @@ class NotifyActivityReceiversCommandHandler
         private readonly FeedbackRepository $feedbackRepository,
         private readonly FeedbackSearchRepository $feedbackSearchRepository,
         private readonly FeedbackSearchTermUserTelegramNotificationRepository $feedbackSearchTermUserTelegramNotificationRepository,
+        private readonly FeedbackSearchSearchTermUserTelegramNotificationRepository $feedbackSearchSearchTermUserTelegramNotificationRepository,
         private readonly FeedbackSearchUserTelegramNotificationRepository $feedbackSearchUserTelegramNotificationRepository,
         private readonly FeedbackLookupUserTelegramNotificationRepository $feedbackLookupUserTelegramNotificationRepository,
         private readonly FeedbackLookupRepository $feedbackLookupRepository,
@@ -48,6 +51,7 @@ class NotifyActivityReceiversCommandHandler
                 Feedback::class => $this->feedbackRepository,
                 FeedbackSearch::class => $this->feedbackSearchRepository,
                 FeedbackSearchTermUserTelegramNotification::class => $this->feedbackSearchTermUserTelegramNotificationRepository,
+                FeedbackSearchSearchTermUserTelegramNotification::class => $this->feedbackSearchSearchTermUserTelegramNotificationRepository,
                 FeedbackSearchUserTelegramNotification::class => $this->feedbackSearchUserTelegramNotificationRepository,
                 FeedbackLookupUserTelegramNotification::class => $this->feedbackLookupUserTelegramNotificationRepository,
                 FeedbackLookup::class => $this->feedbackLookupRepository,

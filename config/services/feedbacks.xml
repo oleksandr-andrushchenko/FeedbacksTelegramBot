@@ -88,6 +88,10 @@
                  class="App\Repository\Feedback\FeedbackSearchTermUserTelegramNotificationRepository">
             <argument type="service" id="doctrine"/>
         </service>
+        <service id="app.feedback_search_search_term_user_telegram_notification_repository"
+                 class="App\Repository\Feedback\FeedbackSearchSearchTermUserTelegramNotificationRepository">
+            <argument type="service" id="doctrine"/>
+        </service>
         <service id="app.feedback_search_user_telegram_notification_repository"
                  class="App\Repository\Feedback\FeedbackSearchUserTelegramNotificationRepository">
             <argument type="service" id="doctrine"/>
@@ -740,6 +744,47 @@
         </service>
         <service id="app.feedback_lookup_searcher" class="App\Service\Feedback\FeedbackLookupSearcher" lazy="true">
             <argument type="service" id="app.feedback_lookup_repository"/>
+        </service>
+        <service id="app.notify_feedback_search_search_term_users_command_handler"
+                 class="App\Message\CommandHandler\Feedback\NotifyFeedbackSearchSearchTermUsersCommandHandler"
+                 lazy="true">
+            <argument type="service" id="app.feedback_search_repository"/>
+            <argument type="service" id="logger"/>
+            <argument type="service" id="app.feedback_search_search_term_users_notifier"/>
+            <tag name="messenger.message_handler"
+                 handles="App\Message\Command\Feedback\NotifyFeedbackSearchSearchTermUsersCommand"
+                 bus="app.command_bus"/>
+        </service>
+        <service id="app.feedback_search_search_term_users_notifier_registry"
+                 class="App\Service\Feedback\Notify\FeedbackSearchSearchTermUsersNotifierRegistry" lazy="true">
+            <argument type="tagged_locator" tag="app.feedback_search_search_term_users_notifier"/>
+        </service>
+        <service id="app.feedback_search_search_term_users_notifier"
+                 class="App\Service\Feedback\Notify\FeedbackSearchSearchTermUsersNotifier" lazy="true">
+            <argument type="service" id="app.feedback_search_search_term_users_notifier_registry"/>
+        </service>
+        <service id="app.feedback_search_search_term_users_telegram_notifier"
+                 class="App\Service\Feedback\Notify\FeedbackSearchSearchTermUsersTelegramNotifier" lazy="true">
+            <argument type="service" id="app.feedback_search_term_messenger_provider"/>
+            <argument type="service" id="app.messenger_user_repository"/>
+            <argument type="service" id="app.telegram_bot_repository"/>
+            <argument type="service" id="translator"/>
+            <argument type="service" id="app.feedback_search_telegram_view_provider"/>
+            <argument type="service" id="app.telegram_bot_message_sender"/>
+            <argument type="service" id="app.id_generator"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.event_bus"/>
+            <tag name="app.feedback_search_search_term_users_notifier"/>
+        </service>
+        <service id="app.feedback_search_search_term_user_telegram_notification_created_event_handler"
+                 class="App\Message\EventHandler\Feedback\FeedbackSearchSearchTermUserTelegramNotificationCreatedEventHandler"
+                 lazy="true">
+            <argument type="service" id="app.feedback_search_search_term_user_telegram_notification_repository"/>
+            <argument type="service" id="logger"/>
+            <argument type="service" id="app.command_bus"/>
+            <tag name="messenger.message_handler"
+                 handles="App\Message\Event\Feedback\FeedbackSearchSearchTermUserTelegramNotificationCreatedEvent"
+                 bus="app.event_bus"/>
         </service>
     </services>
 </container>
