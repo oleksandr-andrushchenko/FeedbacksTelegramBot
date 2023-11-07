@@ -64,7 +64,8 @@
         </service>
         <service id="app.address_geocoder" alias="app.google_address_geocoder"/>
         <service id="app.timezone_geocoder" alias="app.google_timezone_geocoder"/>
-        <service id="app.log_activity_command_handler" class="App\Message\CommandHandler\LogActivityCommandHandler"
+        <service id="app.notify_activity_receivers_command_handler"
+                 class="App\Message\CommandHandler\NotifyActivityReceiversCommandHandler"
                  lazy="true">
             <argument type="service" id="app.feedback_repository"/>
             <argument type="service" id="app.feedback_search_repository"/>
@@ -76,7 +77,7 @@
             <argument type="service" id="app.user_contact_message_repository"/>
             <argument type="service" id="app.activity_logger"/>
             <argument type="service" id="logger"/>
-            <tag name="messenger.message_handler" handles="App\Message\Command\LogActivityCommand"
+            <tag name="messenger.message_handler" handles="App\Message\Command\NotifyActivityReceiversCommand"
                  bus="app.command_bus"/>
         </service>
     </services>

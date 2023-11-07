@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Message\EventHandler\Feedback;
 
-use App\Message\Command\LogActivityCommand;
+use App\Message\Command\NotifyActivityReceiversCommand;
 use App\Message\Event\Feedback\FeedbackLookupCreatedEvent;
 use App\Repository\Feedback\FeedbackLookupRepository;
 use Psr\Log\LoggerInterface;
@@ -29,6 +29,6 @@ class FeedbackLookupCreatedEventHandler
             return;
         }
 
-        $this->commandBus->dispatch(new LogActivityCommand(entity: $lookup));
+        $this->commandBus->dispatch(new NotifyActivityReceiversCommand(entity: $lookup));
     }
 }

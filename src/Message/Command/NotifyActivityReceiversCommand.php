@@ -6,7 +6,7 @@ namespace App\Message\Command;
 
 use LogicException;
 
-readonly class LogActivityCommand
+readonly class NotifyActivityReceiversCommand
 {
     private ?string $entityClass;
     private ?string $entityId;

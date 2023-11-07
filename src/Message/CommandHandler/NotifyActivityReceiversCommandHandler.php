@@ -12,7 +12,7 @@ use App\Entity\Feedback\FeedbackSearchTermUserTelegramNotification;
 use App\Entity\Feedback\FeedbackSearchUserTelegramNotification;
 use App\Entity\Telegram\TelegramBotPayment;
 use App\Entity\User\UserContactMessage;
-use App\Message\Command\LogActivityCommand;
+use App\Message\Command\NotifyActivityReceiversCommand;
 use App\Repository\Feedback\FeedbackLookupRepository;
 use App\Repository\Feedback\FeedbackLookupUserTelegramNotificationRepository;
 use App\Repository\Feedback\FeedbackRepository;
@@ -24,7 +24,7 @@ use App\Repository\User\UserContactMessageRepository;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-class LogActivityCommandHandler
+class NotifyActivityReceiversCommandHandler
 {
     public function __construct(
         private readonly FeedbackRepository $feedbackRepository,
@@ -41,7 +41,7 @@ class LogActivityCommandHandler
     {
     }
 
-    public function __invoke(LogActivityCommand $command): void
+    public function __invoke(NotifyActivityReceiversCommand $command): void
     {
         if ($command->getEntity() === null) {
             $repository = match ($command->getEntityClass()) {

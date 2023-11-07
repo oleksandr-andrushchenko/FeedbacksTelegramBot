@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Message\EventHandler\Feedback;
 
-use App\Message\Command\LogActivityCommand;
+use App\Message\Command\NotifyActivityReceiversCommand;
 use App\Message\Event\Feedback\FeedbackUserSubscriptionCreatedEvent;
 use App\Repository\Feedback\FeedbackUserSubscriptionRepository;
 use Psr\Log\LoggerInterface;
@@ -29,6 +29,6 @@ class FeedbackUserSubscriptionCreatedEventHandler
             return;
         }
 
-        $this->commandBus->dispatch(new LogActivityCommand(entity: $subscription));
+        $this->commandBus->dispatch(new NotifyActivityReceiversCommand(entity: $subscription));
     }
 }

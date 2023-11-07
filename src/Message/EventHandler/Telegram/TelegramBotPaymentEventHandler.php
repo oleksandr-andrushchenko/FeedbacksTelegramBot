@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Message\EventHandler\Telegram;
 
-use App\Message\Command\LogActivityCommand;
+use App\Message\Command\NotifyActivityReceiversCommand;
 use App\Message\Event\Telegram\TelegramBotPaymentEvent;
 use App\Repository\Telegram\Bot\TelegramBotPaymentRepository;
 use Psr\Log\LoggerInterface;
@@ -29,6 +29,6 @@ class TelegramBotPaymentEventHandler
             return;
         }
 
-        $this->commandBus->dispatch(new LogActivityCommand(entity: $payment));
+        $this->commandBus->dispatch(new NotifyActivityReceiversCommand(entity: $payment));
     }
 }

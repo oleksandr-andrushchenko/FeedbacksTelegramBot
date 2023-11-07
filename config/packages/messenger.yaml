@@ -41,7 +41,7 @@ framework:
 
     routing:
       # Route your messages to the transports
-      App\Message\Command\LogActivityCommand: sync
+      App\Message\Command\NotifyActivityReceiversCommand: sync
       App\Message\Command\Feedback\NotifyFeedbackSearchTermUsersCommand: sync
       App\Message\Command\Feedback\NotifyFeedbackSearchUsersCommand: sync
       App\Message\Command\Feedback\NotifyFeedbackLookupUsersCommand: sync

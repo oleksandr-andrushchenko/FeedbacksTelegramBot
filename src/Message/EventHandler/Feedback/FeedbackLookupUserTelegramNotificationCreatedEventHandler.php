@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Message\EventHandler\Feedback;
 
-use App\Message\Command\LogActivityCommand;
+use App\Message\Command\NotifyActivityReceiversCommand;
 use App\Message\Event\Feedback\FeedbackLookupUserTelegramNotificationCreatedEvent;
 use App\Repository\Feedback\FeedbackLookupUserTelegramNotificationRepository;
 use Psr\Log\LoggerInterface;
@@ -29,6 +29,6 @@ class FeedbackLookupUserTelegramNotificationCreatedEventHandler
             return;
         }
 
-        $this->commandBus->dispatch(new LogActivityCommand(entity: $notification));
+        $this->commandBus->dispatch(new NotifyActivityReceiversCommand(entity: $notification));
     }
 }

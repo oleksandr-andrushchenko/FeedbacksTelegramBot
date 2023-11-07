@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Message\EventHandler\User;
 
-use App\Message\Command\LogActivityCommand;
+use App\Message\Command\NotifyActivityReceiversCommand;
 use App\Message\Event\User\UserContactMessageCreatedEvent;
 use App\Repository\User\UserContactMessageRepository;
 use Psr\Log\LoggerInterface;
@@ -29,6 +29,6 @@ class UserContactMessageCreatedEventHandler
             return;
         }
 
-        $this->commandBus->dispatch(new LogActivityCommand(entity: $message));
+        $this->commandBus->dispatch(new NotifyActivityReceiversCommand(entity: $message));
     }
 }

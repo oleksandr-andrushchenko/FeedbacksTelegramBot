@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Message\EventHandler\Feedback;
 
 use App\Message\Command\Feedback\NotifyFeedbackLookupUsersCommand;
-use App\Message\Command\LogActivityCommand;
+use App\Message\Command\NotifyActivityReceiversCommand;
 use App\Message\Event\Feedback\FeedbackSearchCreatedEvent;
 use App\Repository\Feedback\FeedbackSearchRepository;
 use Psr\Log\LoggerInterface;
@@ -30,7 +30,7 @@ class FeedbackSearchCreatedEventHandler
             return;
         }
 
-        $this->commandBus->dispatch(new LogActivityCommand(entity: $search));
+        $this->commandBus->dispatch(new NotifyActivityReceiversCommand(entity: $search));
         $this->commandBus->dispatch(new NotifyFeedbackLookupUsersCommand(search: $search));
     }
 }

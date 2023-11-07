@@ -6,7 +6,7 @@ namespace App\Message\EventHandler\Feedback;
 
 use App\Message\Command\Feedback\NotifyFeedbackSearchUsersCommand;
 use App\Message\Command\Feedback\NotifyFeedbackSearchTermUsersCommand;
-use App\Message\Command\LogActivityCommand;
+use App\Message\Command\NotifyActivityReceiversCommand;
 use App\Message\Event\Feedback\FeedbackCreatedEvent;
 use App\Repository\Feedback\FeedbackRepository;
 use Psr\Log\LoggerInterface;
@@ -31,7 +31,7 @@ class FeedbackCreatedEventHandler
             return;
         }
 
-        $this->commandBus->dispatch(new LogActivityCommand(entity: $feedback));
+        $this->commandBus->dispatch(new NotifyActivityReceiversCommand(entity: $feedback));
         $this->commandBus->dispatch(new NotifyFeedbackSearchTermUsersCommand(feedback: $feedback));
         $this->commandBus->dispatch(new NotifyFeedbackSearchUsersCommand(feedback: $feedback));
     }
