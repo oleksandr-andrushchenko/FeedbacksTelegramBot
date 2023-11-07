@@ -71,9 +71,10 @@ class TelegramBotUpdateHandler
 
         TelegramLog::initialize($this->logger, $this->logger);
 
-        try {
-            $group = $this->telegramBotGroupRegistry->getTelegramGroup($bot->getEntity()->getGroup());
+        $group = $this->telegramBotGroupRegistry->getTelegramGroup($bot->getEntity()->getGroup());
+        $handlers = $group->getTelegramHandlers($bot);
 
+        try {
             if ($update->getPreCheckoutQuery() !== null) {
                 if (!$bot->deleted() && $bot->getEntity()->acceptPayments()) {
                     $this->telegramBotPaymentManager->acceptPreCheckoutQuery($bot, $update->getPreCheckoutQuery());
@@ -109,8 +110,6 @@ class TelegramBotUpdateHandler
 
                 return;
             }
-
-            $handlers = $group->getTelegramHandlers($bot);
 
             if ($handler = $this->telegramBotHandlerFinder->findOneHandler($bot->getUpdate(), $handlers, force: true)) {
                 call_user_func($handler->getCallback());
