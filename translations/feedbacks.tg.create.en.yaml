@@ -14,6 +14,6 @@ keyboard:
 reply:
   canceled: Feedback adding dialog has been canceled.
   created: Feedback has been successfully added.
-  sent_to_channel: Feedback has been successfully published.
+  will_sent_to_channel: Your feedback will be published soon.
   on_self_forbidden: Feedbacks on yourself is not allowed.
   limit_exceeded: 'You have reached feedback creation limit: %tries_for%. Try again later or buy premium subscription please.'

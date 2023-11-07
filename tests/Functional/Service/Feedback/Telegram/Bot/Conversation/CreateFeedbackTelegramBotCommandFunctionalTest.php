@@ -2125,7 +2125,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'description' => 'any_description',
             'input' => $this->yesButton(),
             'shouldSeeReplies' => [
-                'reply.sent_to_channel',
+                'reply.will_sent_to_channel',
             ],
             'shouldSeeButtons' => [
                 ...$this->chooseActionButtons(),

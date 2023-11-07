@@ -11,14 +11,28 @@ readonly class FeedbackSendToTelegramChannelConfirmReceivedEvent extends Feedbac
     public function __construct(
         ?string $feedbackId = null,
         ?Feedback $feedback = null,
-        private bool $showTime = false,
+        private bool $addTime = false,
+        private bool $notifyUser = false
     )
     {
         parent::__construct($feedbackId, $feedback);
     }
 
-    public function showTime(): bool
+    public function addTime(): bool
     {
-        return $this->showTime;
+        return $this->addTime;
+    }
+
+    public function notifyUser(): bool
+    {
+        return $this->notifyUser;
+    }
+
+    public function __sleep(): array
+    {
+        return array_merge(parent::__sleep(), [
+            'addTime',
+            'notifyUser',
+        ]);
     }
 }

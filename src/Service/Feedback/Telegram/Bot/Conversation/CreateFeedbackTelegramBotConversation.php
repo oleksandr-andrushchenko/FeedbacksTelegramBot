@@ -640,7 +640,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
     public function getCreateConfirmButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($tg->trans('keyboard.create_confirm', domain: 'create'));
+        return $tg->button('✅ ' . $tg->trans('keyboard.create_confirm', domain: 'create'));
     }
 
     public function queryDescription(TelegramBotAwareHelper $tg, bool $help = false): null
@@ -655,7 +655,14 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $buttons[] = $tg->removeButton($this->state->getDescription());
         }
 
-        $buttons[] = [$tg->prevButton(), $this->confirmStep ? $tg->nextButton() : $this->getCreateConfirmButton($tg)];
+        if ($this->confirmStep) {
+            $buttons[] = [$tg->prevButton(), $tg->nextButton()];
+        } else {
+            $buttons[] = $this->getCreateConfirmButton($tg);
+            $buttons[] = $tg->prevButton();
+        }
+
+
         $buttons[] = $tg->helpButton();
         $buttons[] = $tg->cancelButton();
 
@@ -872,6 +879,8 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
             $tg->stopConversation($entity);
 
+            $this->eventBus->dispatch(new FeedbackSendToTelegramChannelConfirmReceivedEvent($this->state->getCreatedId()));
+
             return $this->chooseActionTelegramChatSender->sendActions($tg);
         } catch (ValidatorException $exception) {
             if ($exception->isFirstProperty('rating')) {
@@ -962,11 +971,13 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
         $tg->stopConversation($entity);
 
-        $this->eventBus->dispatch(new FeedbackSendToTelegramChannelConfirmReceivedEvent($this->state->getCreatedId()));
-
-        $message = $tg->trans('reply.sent_to_channel', domain: 'create');
+        $message = $tg->trans('reply.will_sent_to_channel', domain: 'create');
         $message = $tg->okText($message);
 
-        return $this->chooseActionTelegramChatSender->sendActions($tg, $message);
+        $this->chooseActionTelegramChatSender->sendActions($tg, $message, appendDefault: true);
+
+        $this->eventBus->dispatch(new FeedbackSendToTelegramChannelConfirmReceivedEvent($this->state->getCreatedId(), notifyUser: true));
+
+        return null;
     }
 }

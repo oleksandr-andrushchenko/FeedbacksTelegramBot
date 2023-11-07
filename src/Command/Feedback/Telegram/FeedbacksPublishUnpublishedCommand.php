@@ -78,7 +78,7 @@ class FeedbacksPublishUnpublishedCommand extends Command
         }
 
         foreach ($feedbacks as $feedback) {
-            $this->eventBus->dispatch(new FeedbackSendToTelegramChannelConfirmReceivedEvent(feedback: $feedback, showTime: true));
+            $this->eventBus->dispatch(new FeedbackSendToTelegramChannelConfirmReceivedEvent(feedback: $feedback, addTime: true));
             sleep(1);
         }
 

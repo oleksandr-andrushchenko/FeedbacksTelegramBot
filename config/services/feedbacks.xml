@@ -583,6 +583,8 @@
             <argument type="service" id="app.telegram_channel_matches_provider"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>
             <argument type="service" id="app.feedback_telegram_view_provider"/>
+            <argument type="service" id="app.telegram_channel_link_view_provider"/>
+            <argument type="service" id="app.translator"/>
             <argument type="service" id="logger"/>
             <tag name="messenger.message_handler"
                  handles="App\Message\Event\Feedback\FeedbackSendToTelegramChannelConfirmReceivedEvent"
