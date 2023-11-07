@@ -47,13 +47,26 @@ class FeedbackSearchRepository extends ServiceEntityRepository
 
     /**
      * @param string $normalizeText
+     * @param bool $withUsers
      * @param int $maxResults
      * @return FeedbackSearch[]
      */
-    public function findByNormalizedText(string $normalizeText, int $maxResults = 100): array
+    public function findByNormalizedText(string $normalizeText, bool $withUsers = false, int $maxResults = 100): array
     {
-        return $this->createQueryBuilder('fs')
+        $queryBuilder = $this->createQueryBuilder('fs')
+            ->addSelect('mu')
             ->innerJoin('fs.searchTerm', 't')
+            ->innerJoin('fs.messengerUser', 'mu')
+        ;
+
+        if ($withUsers) {
+            $queryBuilder
+                ->addSelect('u')
+                ->innerJoin('fs.user', 'u')
+            ;
+        }
+
+        return $queryBuilder
             ->andWhere('t.normalizedText = :normalizedText')
             ->setParameter('normalizedText', $normalizeText)
             ->setMaxResults($maxResults)

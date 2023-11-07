@@ -38,7 +38,9 @@ class FeedbackLookupRepository extends ServiceEntityRepository
     public function findByNormalizedText(string $normalizeText, int $maxResults = 100): array
     {
         return $this->createQueryBuilder('fl')
+            ->addSelect('mu')
             ->innerJoin('fl.searchTerm', 't')
+            ->innerJoin('fl.messengerUser', 'mu')
             ->andWhere('t.normalizedText = :normalizedText')
             ->setParameter('normalizedText', $normalizeText)
             ->setMaxResults($maxResults)
