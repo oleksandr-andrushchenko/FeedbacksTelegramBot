@@ -34,5 +34,6 @@ class FeedbackCreatedEventHandler
         $this->commandBus->dispatch(new NotifyActivityReceiversCommand(entity: $feedback));
         $this->commandBus->dispatch(new NotifyFeedbackSearchTermUsersCommand(feedback: $feedback));
         $this->commandBus->dispatch(new NotifyFeedbackSearchUsersCommand(feedback: $feedback));
+        // todo: notify other feedback users about same creation (feedback on the same target user)
     }
 }

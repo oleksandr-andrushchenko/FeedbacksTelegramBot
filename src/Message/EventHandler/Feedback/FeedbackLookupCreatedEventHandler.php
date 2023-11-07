@@ -31,5 +31,6 @@ class FeedbackLookupCreatedEventHandler
 
         $this->commandBus->dispatch(new NotifyActivityReceiversCommand(entity: $lookup));
         // todo: notify search term user about search on him
+        // todo: notify other feedback lookup users about same search
     }
 }

@@ -34,5 +34,6 @@ class FeedbackSearchCreatedEventHandler
         $this->commandBus->dispatch(new NotifyActivityReceiversCommand(entity: $search));
         $this->commandBus->dispatch(new NotifyFeedbackSearchSearchTermUsersCommand(search: $search));
         $this->commandBus->dispatch(new NotifyFeedbackLookupUsersCommand(search: $search));
+        // todo: notify other feedback search users about same search
     }
 }
