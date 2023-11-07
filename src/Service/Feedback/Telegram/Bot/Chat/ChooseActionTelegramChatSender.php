@@ -57,16 +57,16 @@ class ChooseActionTelegramChatSender
             $buttons[] = $this->getDonateButton($tg);
 
             if (!$this->feedbackSubscriptionManager->hasActiveSubscription($messengerUser)) {
-                $buttons[] = $this->getSubscribeButton($tg);
+//                $buttons[] = $this->getSubscribeButton($tg);
             } elseif ($this->feedbackSubscriptionManager->hasSubscription($messengerUser)) {
                 $buttons[] = $this->getSubscriptionsButton($tg);
             }
 
             $buttons[] = $this->getCountryButton($tg);
             $buttons[] = $this->getLocaleButton($tg);
-            $buttons[] = $this->getCommandsButton($tg);
+//            $buttons[] = $this->getCommandsButton($tg);
             $buttons[] = $this->getLimitsButton($tg);
-            $buttons[] = $this->getRestartButton($tg);
+//            $buttons[] = $this->getRestartButton($tg);
             $buttons[] = $this->getContactButton($tg);
 //            $buttons[] = $this->getPurgeButton($tg);
             $buttons[] = $this->getShowLessButton($tg);
