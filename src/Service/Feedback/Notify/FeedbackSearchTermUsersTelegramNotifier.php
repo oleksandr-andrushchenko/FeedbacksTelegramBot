@@ -42,7 +42,11 @@ class FeedbackSearchTermUsersTelegramNotifier implements FeedbackSearchTermUsers
     {
         $messengerUser = $searchTerm->getMessengerUser();
 
-        if ($messengerUser !== null && $messengerUser->getMessenger() === Messenger::telegram) {
+        if (
+            $messengerUser !== null
+            && $messengerUser->getMessenger() === Messenger::telegram
+            && $messengerUser->getId() !== $feedback->getMessengerUser()->getId()
+        ) {
             $this->notify($messengerUser, $searchTerm, $feedback);
             return;
         }
@@ -57,7 +61,10 @@ class FeedbackSearchTermUsersTelegramNotifier implements FeedbackSearchTermUsers
 
             $messengerUser = $this->messengerUserRepository->findOneByMessengerAndUsername($messenger, $username);
 
-            if ($messengerUser !== null) {
+            if (
+                $messengerUser !== null
+                && $messengerUser->getId() !== $feedback->getMessengerUser()->getId()
+            ) {
                 $this->notify($messengerUser, $searchTerm, $feedback);
             }
         }
