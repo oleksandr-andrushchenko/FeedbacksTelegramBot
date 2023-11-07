@@ -17,11 +17,6 @@ class MultipleSearchTermTelegramViewProvider
     {
     }
 
-    public function getSearchTermTelegramMainView(SearchTermTransfer $searchTerm): string
-    {
-        return $this->searchTermTelegramViewProvider->getSearchTermTelegramMainView($searchTerm);
-    }
-
     public function getSearchTermTelegramReverseView(SearchTermTransfer $searchTerm): string
     {
         return $this->searchTermTelegramViewProvider->getSearchTermTelegramReverseView($searchTerm);
@@ -78,6 +73,13 @@ class MultipleSearchTermTelegramViewProvider
         return $message;
     }
 
+    /**
+     * @param SearchTermTransfer[] $searchTerms
+     * @param bool $addSecrets
+     * @param bool $forceType
+     * @param string|null $localeCode
+     * @return string
+     */
     public function getPrimarySearchTermTelegramView(
         array $searchTerms,
         bool $addSecrets = false,
@@ -105,6 +107,10 @@ class MultipleSearchTermTelegramViewProvider
         );
     }
 
+    /**
+     * @param SearchTermTransfer[] $searchTerms
+     * @return SearchTermTransfer[]
+     */
     private function getSortedSearchTerms(array $searchTerms): array
     {
         $sortSearchTerms = [];
