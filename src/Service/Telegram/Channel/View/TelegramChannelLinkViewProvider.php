@@ -26,7 +26,7 @@ class TelegramChannelLinkViewProvider
         if ($html) {
             $link = $this->linkProvider->getTelegramLink($channel->getUsername());
 
-            return sprintf('<u><b><a href="%s">%s</a></b></u>', $link, $anchor);
+            return sprintf('<b><a href="%s">%s</a></b>', $link, $anchor);
         }
 
         return $anchor;
