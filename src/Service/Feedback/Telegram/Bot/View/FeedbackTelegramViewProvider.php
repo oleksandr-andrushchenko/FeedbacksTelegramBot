@@ -32,8 +32,14 @@ class FeedbackTelegramViewProvider
     {
     }
 
+    /**
+     * @param FeedbackSearchTerm[] $feedbackSearchTerms
+     * @param bool $addSecrets
+     * @param string|null $localeCode
+     * @return string
+     */
     public function getFeedbackSearchTermsTelegramView(
-        Feedback $feedback,
+        array $feedbackSearchTerms,
         bool $addSecrets = false,
         string $localeCode = null,
     ): string
@@ -41,7 +47,7 @@ class FeedbackTelegramViewProvider
         return $this->multipleSearchTermTelegramViewProvider->getMultipleSearchTermTelegramView(
             array_map(
                 fn (FeedbackSearchTerm $searchTerm): SearchTermTransfer => $this->searchTermProvider->getFeedbackSearchTermTransfer($searchTerm),
-                $feedback->getSearchTerms()->toArray()
+                $feedbackSearchTerms
             ),
             addSecrets: $addSecrets,
             localeCode: $localeCode
@@ -53,21 +59,13 @@ class FeedbackTelegramViewProvider
         Feedback $feedback,
         int $numberToAdd = null,
         bool $addSecrets = false,
-        bool $addSign = true,
-        bool $addTime = true,
+        bool $addSign = false,
+        bool $addTime = false,
         bool $addQuotes = false,
         TelegramChannel $channel = null,
         string $localeCode = null,
     ): string
     {
-        $country = null;
-
-        if ($feedback->getCountryCode() !== null) {
-            $country = $this->countryProvider->getCountry($feedback->getCountryCode());
-        }
-
-        $user = $feedback->getUser();
-
         $message = '';
 
         if ($addQuotes) {
@@ -81,22 +79,19 @@ class FeedbackTelegramViewProvider
         }
 
         if ($addTime) {
-            $createdAt = $this->timeProvider->getDate($feedback->getCreatedAt(), timezone: $user->getTimezone(), localeCode: $localeCode);
-            $message .= $createdAt;
+            $message .= $this->timeProvider->getDate($feedback->getCreatedAt(), timezone: $feedback->getUser()->getTimezone(), localeCode: $localeCode);
             $message .= ', ';
         }
 
         $somebodyFrom = $this->translator->trans('somebody_from', domain: 'feedbacks.tg.feedback', locale: $localeCode);
         $message .= $addTime ? $this->mbLcFirster->mbLcFirst($somebodyFrom) : $somebodyFrom;
         $message .= ' ';
-        $country = $this->countryProvider->getCountryComposeName($country, localeCode: $localeCode);
-        $message .= sprintf('<u>%s</u>', $country);
+        $message .= $this->countryProvider->getCountryComposeName($feedback->getCountryCode(), localeCode: $localeCode);
         $message .= ' ';
         $message .= $this->translator->trans('wrote_about', domain: 'feedbacks.tg.feedback', locale: $localeCode);
         $message .= ' ';
-        $message .= $this->getFeedbackSearchTermsTelegramView($feedback, addSecrets: $addSecrets, localeCode: $localeCode);
+        $message .= $this->getFeedbackSearchTermsTelegramView($feedback->getSearchTerms()->toArray(), addSecrets: $addSecrets, localeCode: $localeCode);
         $message .= ':';
-
         $message .= "\n\n";
 
         if ($feedback->getDescription() !== null) {
@@ -117,7 +112,6 @@ class FeedbackTelegramViewProvider
 
         if ($addSign) {
             $message .= "\n\n";
-
             $message .= $this->feedbackTelegramReplySignViewProvider->getFeedbackTelegramReplySignView($bot, channel: $channel, localeCode: $localeCode);
         }
 

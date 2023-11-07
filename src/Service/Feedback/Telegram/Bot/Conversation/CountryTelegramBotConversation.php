@@ -441,7 +441,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
 
         $countryCode = $tg->getCountryCode();
         $country = $countryCode === null ? null : $this->countryProvider->getCountry($countryCode);
-        $countryName = sprintf('<u>%s</u>', $this->countryProvider->getCountryComposeName($country));
+        $countryName = $this->countryProvider->getCountryComposeName($country->getCode());
         $parameters = [
             'country' => $countryName,
         ];
@@ -573,7 +573,7 @@ class CountryTelegramBotConversation extends TelegramBotConversation implements 
 
     public function getCountryButton(Country $country, TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button($this->countryProvider->getCountryComposeName($country));
+        return $tg->button($this->countryProvider->getCountryComposeName($country->getCode()));
     }
 
     public function getCountryByButton(?string $button, array $countries, TelegramBotAwareHelper $tg): ?Country

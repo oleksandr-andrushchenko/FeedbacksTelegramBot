@@ -19,13 +19,15 @@ class FeedbackSearchSearcher
 
     /**
      * @param FeedbackSearchTerm $feedbackSearchTerm
+     * @param bool $withUsers
      * @param int $maxResults
      * @return FeedbackSearch[]
      */
-    public function searchFeedbackSearches(FeedbackSearchTerm $feedbackSearchTerm, int $maxResults = 20): array
+    public function searchFeedbackSearches(FeedbackSearchTerm $feedbackSearchTerm, bool $withUsers = false, int $maxResults = 20): array
     {
         $feedbackSearches = $this->feedbackSearchRepository->findByNormalizedText(
             $feedbackSearchTerm->getNormalizedText(),
+            withUsers: $withUsers,
             maxResults: $maxResults
         );
 

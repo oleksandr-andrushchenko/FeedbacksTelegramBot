@@ -451,7 +451,9 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 )
             );
 
-            $feedbackSearches = $this->feedbackSearchSearcher->searchFeedbackSearches($feedbackLookup->getSearchTerm());
+            // timezone lives in user
+            $addTime = true;
+            $feedbackSearches = $this->feedbackSearchSearcher->searchFeedbackSearches($feedbackLookup->getSearchTerm(), withUsers: $addTime);
             $count = count($feedbackSearches);
 
             if ($count === 0) {
@@ -471,7 +473,9 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
                     $tg->getBot()->getEntity(),
                     $feedbackSearch,
                     numberToAdd: $index + 1,
-                    addSecrets: true
+                    addSecrets: true,
+                    addSign: true,
+                    addTime: $addTime
                 );
 
                 $tg->reply($message);

@@ -58,9 +58,9 @@ class CountryProvider
         return '🌎';
     }
 
-    public function getCountryName(Country $country, string $localeCode = null): string
+    public function getCountryName(string $countryCode, string $localeCode = null): string
     {
-        return $this->translator->trans($country->getCode(), domain: 'country', locale: $localeCode);
+        return $this->translator->trans($countryCode, domain: 'country', locale: $localeCode);
     }
 
     public function getUnknownCountryName(string $localeCode = null): string
@@ -68,9 +68,9 @@ class CountryProvider
         return $this->translator->trans('zz', domain: 'country', locale: $localeCode);
     }
 
-    public function getCountryComposeName(Country $country = null, string $localeCode = null): string
+    public function getCountryComposeName(string $countryCode = null, string $localeCode = null): string
     {
-        if ($country === null) {
+        if ($countryCode === null) {
             return join(' ', [
                 $this->getUnknownCountryIcon(),
                 $this->getUnknownCountryName($localeCode),
@@ -78,8 +78,8 @@ class CountryProvider
         }
 
         return join(' ', [
-            $this->getCountryIcon($country),
-            $this->getCountryName($country, $localeCode),
+            $this->getCountryIconByCode($countryCode),
+            $this->getCountryName($countryCode, $localeCode),
         ]);
     }
 

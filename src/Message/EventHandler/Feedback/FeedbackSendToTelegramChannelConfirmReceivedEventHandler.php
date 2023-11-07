@@ -53,6 +53,7 @@ class FeedbackSendToTelegramChannelConfirmReceivedEventHandler
                 $bot,
                 $feedback,
                 addSecrets: true,
+                addSign: true,
                 addTime: $addTime,
                 channel: $channel,
                 localeCode: $channel->getLocaleCode(),
@@ -78,7 +79,7 @@ class FeedbackSendToTelegramChannelConfirmReceivedEventHandler
             $messengerUser = $feedback->getMessengerUser();
             $userLocaleCode = $messengerUser->getUser()->getLocaleCode();
             $userChatId = $messengerUser->getIdentifier();
-            $searchTermView = $this->feedbackTelegramViewProvider->getFeedbackSearchTermsTelegramView($feedback, localeCode: $userLocaleCode);
+            $searchTermView = $this->feedbackTelegramViewProvider->getFeedbackSearchTermsTelegramView($feedback->getSearchTerms()->toArray(), localeCode: $userLocaleCode);
             $channelViews = implode(
                 ', ',
                 array_map(
