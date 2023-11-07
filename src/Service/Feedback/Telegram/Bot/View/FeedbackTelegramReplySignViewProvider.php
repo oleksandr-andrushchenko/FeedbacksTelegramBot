@@ -30,13 +30,9 @@ class FeedbackTelegramReplySignViewProvider
         $localeCode = $localeCode ?? $bot->getLocaleCode();
         $text = fn ($key): string => $this->translator->trans('sign.' . $key, domain: 'feedbacks.tg', locale: $localeCode);
 
-        $botLink = $this->messengerUserProfileUrlProvider->getMessengerUserProfileUrl(
-            Messenger::telegram,
-            $bot->getUsername()
-        );
-        $message = '➕ ';
-        $message .= sprintf('<a href="%s">%s</a>', $botLink, $text('create'));
-        $message .= ' • 🔍 ';
+        $botLink = $this->messengerUserProfileUrlProvider->getMessengerUserProfileUrl(Messenger::telegram, $bot->getUsername());
+        $message = sprintf('<a href="%s">%s</a>', $botLink, $text('create'));
+        $message .= ' • ';
         $message .= sprintf('<a href="%s">%s</a>', $botLink, $text('search'));
 
         if ($channel === null) {
@@ -44,7 +40,7 @@ class FeedbackTelegramReplySignViewProvider
         }
 
         if ($channel !== null) {
-            $message .= ' • ✅ ';
+            $message .= ' • ';
             $channelLink = $this->messengerUserProfileUrlProvider->getMessengerUserProfileUrl(
                 Messenger::telegram,
                 $channel->getUsername()
