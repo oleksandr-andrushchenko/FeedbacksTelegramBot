@@ -10,15 +10,15 @@ use App\Transfer\Messenger\MessengerUserTransfer;
 
 class SearchTermProvider
 {
-    public function getFeedbackSearchTermTransfer(FeedbackSearchTerm $searchTerm): SearchTermTransfer
+    public function getFeedbackSearchTermTransfer(FeedbackSearchTerm $feedbackSearchTerm): SearchTermTransfer
     {
         $transfer = new SearchTermTransfer(
-            $searchTerm->getText(),
-            type: $searchTerm->getType(),
-            normalizedText: $searchTerm->getNormalizedText()
+            $feedbackSearchTerm->getText(),
+            type: $feedbackSearchTerm->getType(),
+            normalizedText: $feedbackSearchTerm->getNormalizedText()
         );
 
-        $messengerUser = $searchTerm->getMessengerUser();
+        $messengerUser = $feedbackSearchTerm->getMessengerUser();
 
         if ($messengerUser !== null) {
             $transfer->setMessengerUser(new MessengerUserTransfer(
