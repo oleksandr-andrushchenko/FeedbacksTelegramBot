@@ -294,8 +294,13 @@
                  class="App\Service\Feedback\SearchTerm\NameSearchTermParser" lazy="true">
             <tag name="app.feedback_search_term_parser"/>
         </service>
+        <service id="app.feedback_phone_number_search_term_text_normalizer"
+                 class="App\Service\Feedback\SearchTerm\PhoneNumberSearchTermTextNormalizer" lazy="true">
+            <argument type="service" id="app.intl_country_provider"/>
+        </service>
         <service id="app.feedback_search_parser_phone_number"
                  class="App\Service\Feedback\SearchTerm\PhoneNumberSearchTermParser" lazy="true">
+            <argument type="service" id="app.feedback_phone_number_search_term_text_normalizer"/>
             <tag name="app.feedback_search_term_parser"/>
         </service>
         <service id="app.feedback_search_term_parser_unknown_messenger"
@@ -624,12 +629,20 @@
         </service>
         <service id="app.feedback_search_term_messenger_provider"
                  class="App\Service\Feedback\SearchTerm\SearchTermMessengerProvider" lazy="true"/>
-        <service id="app.feedbacks_publish_unpublished_command"
-                 class="App\Command\Feedback\Telegram\FeedbacksPublishUnpublishedCommand" lazy="true">
+        <service id="app.feedbacks_publish_unpublished_console_command"
+                 class="App\Command\Feedback\Telegram\FeedbacksTelegramPublishUnpublishedCommand" lazy="true">
             <argument type="service" id="app.feedback_repository"/>
             <argument type="service" id="app.event_bus"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <tag name="console.command" command="feedbacks:telegram:publish-unpublished"/>
+        </service>
+        <service id="app.feedbacks_normalize_search_terms_console_command"
+                 class="App\Command\Feedback\FeedbacksNormalizeSearchTermsCommand" lazy="true">
+            <argument type="service" id="app.feedback_search_term_repository"/>
+            <argument type="service" id="app.feedback_phone_number_search_term_text_normalizer"/>
+            <argument type="service" id="app.doctrine_dry_runner"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <tag name="console.command" command="feedbacks:normalize-search-terms"/>
         </service>
         <service id="app.notify_feedback_search_term_users_command_handler"
                  class="App\Message\CommandHandler\Feedback\NotifyFeedbackSearchTermUsersCommandHandler" lazy="true">

@@ -9,6 +9,12 @@ use App\Enum\Feedback\SearchTermType;
 
 class PhoneNumberSearchTermParser implements SearchTermParserInterface
 {
+    public function __construct(
+        private readonly PhoneNumberSearchTermTextNormalizer $phoneNumberSearchTermTextNormalizer,
+    )
+    {
+    }
+
     public function supportsSearchTerm(SearchTermTransfer $searchTerm, array $context = []): bool
     {
         if ($searchTerm->getType() === null) {
@@ -25,21 +31,19 @@ class PhoneNumberSearchTermParser implements SearchTermParserInterface
     public function parseWithGuessType(SearchTermTransfer $searchTerm, array $context = []): void
     {
         if ($this->supports($searchTerm->getText())) {
-            $searchTerm
-                ->addType(SearchTermType::phone_number)
-            ;
+            $searchTerm->addType(SearchTermType::phone_number);
         }
     }
 
     public function parseWithKnownType(SearchTermTransfer $searchTerm, array $context = []): void
     {
         if ($searchTerm->getType() === SearchTermType::phone_number) {
-            $normalized = $this->normalize($searchTerm->getText());
+            $text = $searchTerm->getText();
+            $countryCodes = $context['country_codes'] ?? [];
+            $normalizedText = $this->phoneNumberSearchTermTextNormalizer->normalizePhoneNumberSearchTermText($text, $countryCodes);
 
-            if ($normalized !== $searchTerm->getText()) {
-                $searchTerm
-                    ->setNormalizedText($normalized)
-                ;
+            if ($normalizedText !== $text) {
+                $searchTerm->setNormalizedText($normalizedText);
             }
         }
     }
@@ -47,10 +51,5 @@ class PhoneNumberSearchTermParser implements SearchTermParserInterface
     private function supports(string $number): bool
     {
         return preg_match("/^\+?[0-9.\-() ]+$/", $number) === 1;
-    }
-
-    private function normalize(string $number): ?string
-    {
-        return preg_replace('/[^0-9]/', '', $number);
     }
 }

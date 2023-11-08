@@ -44,7 +44,7 @@ class SearchTermParserTest extends KernelTestCase
         foreach ($expectedTypes as $expectedType) {
             $this->assertTrue(
                 in_array($expectedType, $types, true),
-                sprintf('%s not in %s', $expectedType->name, implode(', ', array_map(fn (SearchTermType $type) => $type->name, $types)))
+                sprintf('%s not in %s', $expectedType->name, implode(', ', array_map(static fn (SearchTermType $type): string => $type->name, $types)))
             );
         }
     }
@@ -334,6 +334,8 @@ class SearchTermParserTest extends KernelTestCase
                      '+1 (561) 314-5672',
                      '1.561.314.5672',
                      '380969603102',
+                     '+380969603102',
+                     '0969603102',
                      '(380)96-960-3102',
                      '3(80)96-960-3102',
                      '456-7890',
@@ -443,13 +445,14 @@ class SearchTermParserTest extends KernelTestCase
 
     /**
      * @param SearchTermTransfer $searchTerm
+     * @param array $context
      * @param SearchTermTransfer $expectedSearchTerm
      * @return void
      * @dataProvider parseWithKnownTypeDataProvider
      */
-    public function testParseWithKnownType(SearchTermTransfer $searchTerm, SearchTermTransfer $expectedSearchTerm): void
+    public function testParseWithKnownType(SearchTermTransfer $searchTerm, array $context, SearchTermTransfer $expectedSearchTerm): void
     {
-        $this->getSearchTermParser()->parseWithKnownType($searchTerm);
+        $this->getSearchTermParser()->parseWithKnownType($searchTerm, context: $context);
 
         $this->assertEquals($expectedSearchTerm->getText(), $searchTerm->getText());
         $this->assertEquals($expectedSearchTerm->getType(), $searchTerm->getType());
@@ -462,7 +465,7 @@ class SearchTermParserTest extends KernelTestCase
         foreach ($expectedTypes as $expectedType) {
             $this->assertTrue(
                 in_array($expectedType, $types, true),
-                sprintf('%s not in %s', $expectedType->name, implode(', ', array_map(fn (SearchTermType $type) => $type->name, $types)))
+                sprintf('%s not in %s', $expectedType->name, implode(', ', array_map(static fn (SearchTermType $type): string => $type->name, $types)))
             );
         }
     }
@@ -471,11 +474,13 @@ class SearchTermParserTest extends KernelTestCase
     {
         yield 'instagram username: ' . ($text = Fixtures::INSTAGRAM_USERNAME_1) => [
             'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::instagram_username),
+            'context' => [],
             'expectedSearchTerm' => clone $searchTerm,
         ];
 
         yield 'instagram username: ' . ($text = '@' . ($username = Fixtures::INSTAGRAM_USERNAME_2)) => [
             'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::instagram_username),
+            'context' => [],
             'expectedSearchTerm' => (clone $searchTerm)->setNormalizedText($username),
         ];
 
@@ -486,17 +491,20 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $username) {
             yield 'instagram username: ' . ($text = $this->profileUrl(Messenger::instagram, $username)) => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::instagram_username, normalizedText: $username),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
 
         yield 'telegram username: ' . ($text = Fixtures::TELEGRAM_USERNAME_1) => [
             'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::telegram_username),
+            'context' => [],
             'expectedSearchTerm' => clone $searchTerm,
         ];
 
         yield 'telegram username: ' . ($text = '@' . ($username = Fixtures::TELEGRAM_USERNAME_2)) => [
             'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::telegram_username),
+            'context' => [],
             'expectedSearchTerm' => (clone $searchTerm)->setNormalizedText($username),
         ];
 
@@ -507,17 +515,20 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $username) {
             yield 'telegram username: ' . ($text = $this->profileUrl(Messenger::telegram, $username)) => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::telegram_username),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
 
         yield 'facebook username: ' . ($text = 'wild.snowgirl') => [
             'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::facebook_username),
+            'context' => [],
             'expectedSearchTerm' => clone $searchTerm,
         ];
 
         yield 'facebook username: ' . ($text = '@' . ($username = 'wild.snowgirl')) => [
             'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::facebook_username),
+            'context' => [],
             'expectedSearchTerm' => (clone $searchTerm)->setNormalizedText($username),
         ];
 
@@ -527,6 +538,7 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $username) {
             yield 'facebook username: ' . ($text = $this->profileUrl(Messenger::facebook, $username)) => [
                 'serchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::facebook_username, normalizedText: $username),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
@@ -537,6 +549,7 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $username) {
             yield 'facebook username: ' . ($text = 'https://www.facebook.com/' . $username . '?comment_id=Y29tbWVudDoxNDg4NTEzMTE1MzEwMzMxXzEzNDEwNTI5MzY4MzE5MDM%3D') => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::facebook_username, normalizedText: $username),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
@@ -552,6 +565,7 @@ class SearchTermParserTest extends KernelTestCase
                     normalizedText: $username,
                     messengerUser: new MessengerUserTransfer(Messenger::facebook, $username)
                 ),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
@@ -567,12 +581,14 @@ class SearchTermParserTest extends KernelTestCase
                     normalizedText: $username,
                     messengerUser: new MessengerUserTransfer(Messenger::facebook, $username)
                 ),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
 
         yield 'reddit username: ' . ($text = '@' . ($username = 'rexultibrexpiprazole')) => [
             'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::reddit_username),
+            'context' => [],
             'expectedSearchTerm' => (clone $searchTerm)->setNormalizedText($username),
         ];
 
@@ -583,12 +599,14 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $username) {
             yield 'reddit username: ' . ($text = $this->profileUrl(Messenger::reddit, $username)) => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::reddit_username, normalizedText: $username),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
 
         yield 'onlyfans username: ' . ($text = '@' . ($username = 'ollienibsfreepage')) => [
             'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::onlyfans_username),
+            'context' => [],
             'expectedSearchTerm' => (clone $searchTerm)->setNormalizedText($username),
         ];
 
@@ -599,17 +617,20 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $username) {
             yield 'onlyfans username: ' . ($text = $this->profileUrl(Messenger::onlyfans, $username)) => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::onlyfans_username, normalizedText: $username),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
 
         yield 'tiktok username: ' . ($text = Fixtures::TIKTOK_USERNAME_1) => [
             'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::tiktok_username),
+            'context' => [],
             'expectedSearchTerm' => clone $searchTerm,
         ];
 
         yield 'tiktok username: ' . ($text = '@' . ($username = 'ol_li.enibsfreepage')) => [
             'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::tiktok_username),
+            'context' => [],
             'expectedSearchTerm' => (clone $searchTerm)->setNormalizedText($username),
         ];
 
@@ -619,17 +640,20 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $username) {
             yield 'tiktok username: ' . ($text = $this->profileUrl(Messenger::tiktok, $username)) => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::tiktok_username, normalizedText: $username),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
 
         yield 'twitter username: ' . ($text = Fixtures::TWITTER_USERNAME_1) => [
             'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::twitter_username),
+            'context' => [],
             'expectedSearchTerm' => clone $searchTerm,
         ];
 
         yield 'twitter username: ' . ($text = '@' . ($username = 'KeatonJ_3')) => [
             'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::twitter_username),
+            'context' => [],
             'expectedSearchTerm' => (clone $searchTerm)->setNormalizedText($username),
         ];
 
@@ -639,12 +663,14 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $username) {
             yield 'twitter username: ' . ($text = $this->profileUrl(Messenger::twitter, $username)) => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::twitter_username, normalizedText: $username),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
 
         yield 'youtube username: ' . ($text = '@' . ($username = 'KeatonJ_3')) => [
             'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::youtube_username),
+            'context' => [],
             'expectedSearchTerm' => (clone $searchTerm)->setNormalizedText($username),
         ];
 
@@ -654,6 +680,7 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $text) {
             yield 'youtube username: ' . $text => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::youtube_username),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
@@ -664,12 +691,14 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $username) {
             yield 'youtube username: ' . ($text = $this->profileUrl(Messenger::youtube, $username)) => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::youtube_username, normalizedText: $username),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
 
         yield 'vkontakte username: ' . ($text = '@' . ($username = Fixtures::VKONTAKTE_USERNAME_1)) => [
             'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::vkontakte_username),
+            'context' => [],
             'expectedSearchTerm' => (clone $searchTerm)->setNormalizedText($username),
         ];
 
@@ -678,6 +707,7 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $text) {
             yield 'vkontakte username: ' . $text => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::vkontakte_username),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
@@ -693,6 +723,7 @@ class SearchTermParserTest extends KernelTestCase
                     normalizedText: $username,
                     messengerUser: new MessengerUserTransfer(Messenger::vkontakte, substr($username, 2), username: $username)
                 ),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
@@ -703,6 +734,7 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $username) {
             yield 'vkontakte username: ' . ($text = $this->profileUrl(Messenger::vkontakte, $username)) => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::vkontakte_username, normalizedText: $username),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
@@ -713,6 +745,7 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $text) {
             yield 'messenger profile url: ' . $text => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::messenger_profile_url),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
@@ -723,6 +756,7 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $text) {
             yield 'messenger username: ' . $text => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::messenger_username),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
@@ -733,6 +767,7 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $text) {
             yield 'url: ' . $text => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::url),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
@@ -743,26 +778,32 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $text) {
             yield 'email: ' . $text => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::email),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
 
         foreach ([
-                     '+1 (561) 314-5672' => '15613145672',
-                     '1.561.314.5672' => '15613145672',
-                     '380969603102' => null,
-                     '(380)96-960-3102' => '380969603102',
-                     '3(80)96-960-3102' => '380969603102',
-                     '456-7890' => '4567890',
-                     '212-456-7890' => '2124567890',
-                     '+1-212-456-7890' => '12124567890',
-                     '1-212-456-7890' => '12124567890',
-                     '001-212-456-7890' => '0012124567890',
-                     '191-212-456-7890' => '1912124567890',
-                     '(212)456-7890' => '2124567890',
-                 ] as $text => $normalizedText) {
+                     '+1 (561) 314-5672' => [[], '15613145672'],
+                     '1.561.314.5672' => [[], '15613145672'],
+                     '380969603102' => [[], null],
+                     '+380969603102' => [[], '380969603102'],
+                     '380969603103' => [['country_codes' => ['ua']], null],
+                     '+380969603103' => [['country_codes' => ['ua']], '380969603103'],
+                     '0969603102' => [['country_codes' => ['ua']], '380969603102'],
+                     '(380)96-960-3102' => [[], '380969603102'],
+                     '3(80)96-960-3102' => [[], '380969603102'],
+                     '456-7890' => [[], '4567890'],
+                     '212-456-7890' => [[], '2124567890'],
+                     '+1-212-456-7890' => [[], '12124567890'],
+                     '1-212-456-7890' => [[], '12124567890'],
+                     '001-212-456-7890' => [[], '0012124567890'],
+                     '191-212-456-7890' => [[], '1912124567890'],
+                     '(212)456-7890' => [[], '2124567890'],
+                 ] as $text => [$context, $normalizedText]) {
             yield 'phone number: ' . $text => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer((string) $text, type: SearchTermType::phone_number),
+                'context' => $context,
                 'expectedSearchTerm' => (clone $searchTerm)->setNormalizedText($normalizedText),
             ];
         }
@@ -774,6 +815,7 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $text) {
             yield 'person name: ' . $text => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::person_name),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
@@ -792,6 +834,7 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $text) {
             yield 'organization name: ' . $text => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::organization_name),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
@@ -803,6 +846,7 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $text) {
             yield 'place name: ' . $text => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer($text, type: SearchTermType::place_name),
+                'context' => [],
                 'expectedSearchTerm' => clone $searchTerm,
             ];
         }
@@ -840,6 +884,7 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $text => $normalizedText) {
             yield 'car number: ' . $text => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer((string) $text, type: SearchTermType::car_number),
+                'context' => [],
                 'expectedSearchTerm' => (clone $searchTerm)->setNormalizedText($normalizedText),
             ];
         }
@@ -852,6 +897,7 @@ class SearchTermParserTest extends KernelTestCase
                  ] as $text => $normalizedText) {
             yield 'tax number: ' . $text => [
                 'searchTerm' => $searchTerm = new SearchTermTransfer((string) $text, type: SearchTermType::tax_number),
+                'context' => [],
                 'expectedSearchTerm' => (clone $searchTerm)->setNormalizedText($normalizedText),
             ];
         }
