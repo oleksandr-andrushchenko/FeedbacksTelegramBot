@@ -193,6 +193,10 @@
                  class="App\Serializer\Feedback\FeedbackSearchUserTelegramNotificationNormalizer" lazy="true">
             <tag name="serializer.normalizer" priority="-964"/>
         </service>
+        <service id="app.feedback_search_search_term_user_telegram_notification_normalizer"
+                 class="App\Serializer\Feedback\FeedbackSearchSearchTermUserTelegramNotificationNormalizer" lazy="true">
+            <tag name="serializer.normalizer" priority="-963"/>
+        </service>
         <service id="app.feedback_command_options_factory"
                  class="App\Service\Feedback\Command\FeedbackCommandOptionsFactory" lazy="true"/>
         <service id="app.feedback_user_statistic_provider_registry"
