@@ -13,7 +13,7 @@ use App\Service\Feedback\Telegram\View\MultipleSearchTermTelegramViewProvider;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\TimeProvider;
 use App\Entity\Telegram\TelegramBot;
-use App\Service\Util\String\MbLcFirster;
+use App\Service\Util\String\MbUcFirster;
 use App\Transfer\Feedback\SearchTermTransfer;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -27,7 +27,7 @@ class FeedbackTelegramViewProvider
         private readonly FeedbackRatingProvider $feedbackRatingProvider,
         private readonly TranslatorInterface $translator,
         private readonly FeedbackTelegramReplySignViewProvider $feedbackTelegramReplySignViewProvider,
-        private readonly MbLcFirster $mbLcFirster,
+        private readonly MbUcFirster $mbUcFirster,
     )
     {
     }
@@ -61,6 +61,7 @@ class FeedbackTelegramViewProvider
         bool $addSecrets = false,
         bool $addSign = false,
         bool $addTime = false,
+        bool $addCountry = false,
         bool $addQuotes = false,
         TelegramChannel $channel = null,
         string $localeCode = null,
@@ -72,22 +73,31 @@ class FeedbackTelegramViewProvider
             $message .= '<i>';
         }
 
+        $message2 = '';
+
         if ($numberToAdd !== null) {
-            $message .= $this->translator->trans('icon.number', domain: 'feedbacks.tg', locale: $localeCode);
-            $message .= $numberToAdd;
-            $message .= "\n";
+            $message2 .= $this->translator->trans('icon.number', domain: 'feedbacks.tg', locale: $localeCode);
+            $message2 .= $numberToAdd;
+            $message2 .= "\n";
         }
 
         if ($addTime) {
-            $message .= $this->timeProvider->getDate($feedback->getCreatedAt(), timezone: $feedback->getUser()->getTimezone(), localeCode: $localeCode);
-            $message .= ', ';
+            $message2 .= $this->timeProvider->getDate($feedback->getCreatedAt(), timezone: $feedback->getUser()->getTimezone(), localeCode: $localeCode);
+            $message2 .= ', ';
         }
 
-        $somebodyFrom = $this->translator->trans('somebody_from', domain: 'feedbacks.tg.feedback', locale: $localeCode);
-        $message .= $addTime ? $this->mbLcFirster->mbLcFirst($somebodyFrom) : $somebodyFrom;
-        $message .= ' ';
-        $message .= $this->countryProvider->getCountryComposeName($feedback->getCountryCode(), localeCode: $localeCode);
-        $message .= ' ';
+        $message2 .= $this->translator->trans('somebody', domain: 'feedbacks.tg.feedback', locale: $localeCode);
+        $message2 .= ' ';
+
+        $message .= $this->mbUcFirster->mbUcFirst($message2);
+
+        if ($addCountry) {
+            $message .= $this->translator->trans('from', domain: 'feedbacks.tg.feedback', locale: $localeCode);
+            $message .= ' ';
+            $message .= $this->countryProvider->getCountryComposeName($feedback->getCountryCode(), localeCode: $localeCode);
+            $message .= ' ';
+        }
+
         $message .= $this->translator->trans('wrote_about', domain: 'feedbacks.tg.feedback', locale: $localeCode);
         $message .= ' ';
         $message .= $this->getFeedbackSearchTermsTelegramView($feedback->getSearchTerms()->toArray(), addSecrets: $addSecrets, localeCode: $localeCode);

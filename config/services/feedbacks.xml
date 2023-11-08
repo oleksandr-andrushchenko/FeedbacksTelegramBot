@@ -373,6 +373,7 @@
             <argument type="service" id="app.intl_time_provider"/>
             <argument type="service" id="translator"/>
             <argument type="service" id="app.feedback_telegram_reply_sign_view_provider"/>
+            <argument type="service" id="app.string_mb_uc_firster"/>
         </service>
         <service id="app.feedback_telegram_view_provider"
                  class="App\Service\Feedback\Telegram\Bot\View\FeedbackTelegramViewProvider" lazy="true">
@@ -383,7 +384,7 @@
             <argument type="service" id="app.feedback_rating_provider"/>
             <argument type="service" id="translator"/>
             <argument type="service" id="app.feedback_telegram_reply_sign_view_provider"/>
-            <argument type="service" id="app.string_mb_lc_firster"/>
+            <argument type="service" id="app.string_mb_uc_firster"/>
         </service>
         <service id="app.feedback_search_term_telegram_view_provider"
                  class="App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider" lazy="true">

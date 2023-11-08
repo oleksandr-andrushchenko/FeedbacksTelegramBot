@@ -477,7 +477,8 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
                     numberToAdd: $index + 1,
                     addSecrets: true,
                     addSign: true,
-                    addTime: $addTime
+                    addTime: $addTime,
+                    addCountry: true
                 );
 
                 $tg->reply($message);
