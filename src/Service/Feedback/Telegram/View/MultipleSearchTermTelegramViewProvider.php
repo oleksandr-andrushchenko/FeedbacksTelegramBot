@@ -53,10 +53,7 @@ class MultipleSearchTermTelegramViewProvider
         /** @var SearchTermTransfer $searchTerm */
         $searchTerm = array_shift($sortedSearchTerms);
 
-        $message = $this->searchTermTelegramViewProvider->getSearchTermTelegramMainView(
-            $searchTerm,
-            addSecrets: $addSecrets,
-        );
+        $message = $this->searchTermTelegramViewProvider->getSearchTermTelegramMainView($searchTerm, addSecrets: $addSecrets);
         $message .= ' [ ';
 
         $message .= $this->searchTermTypeProvider->getSearchTermTypeName($searchTerm->getType(), localeCode: $localeCode);
