@@ -66,7 +66,7 @@ class FeedbacksNormalizeSearchTermsCommand extends Command
         $count = count($searchTerms);
 
         if ($count === 0) {
-            $io->note('Nothing to process');
+            $io->note('Nothing to normalize');
 
             return Command::SUCCESS;
         }
