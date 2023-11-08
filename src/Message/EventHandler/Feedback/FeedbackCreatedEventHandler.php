@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Message\EventHandler\Feedback;
 
-use App\Message\Command\Feedback\NotifyFeedbackSearchUsersCommand;
-use App\Message\Command\Feedback\NotifyFeedbackSearchTermUsersCommand;
-use App\Message\Command\NotifyActivityReceiversCommand;
+use App\Message\Command\Feedback\NotifyFeedbackSearchesCommand;
+use App\Message\Command\Feedback\NotifyFeedbackSearchTermsCommand;
+use App\Message\Command\NotifyActivityAdminsCommand;
 use App\Message\Event\Feedback\FeedbackCreatedEvent;
 use App\Repository\Feedback\FeedbackRepository;
 use Psr\Log\LoggerInterface;
@@ -31,9 +31,9 @@ class FeedbackCreatedEventHandler
             return;
         }
 
-        $this->commandBus->dispatch(new NotifyActivityReceiversCommand(entity: $feedback));
-        $this->commandBus->dispatch(new NotifyFeedbackSearchTermUsersCommand(feedback: $feedback));
-        $this->commandBus->dispatch(new NotifyFeedbackSearchUsersCommand(feedback: $feedback));
+        $this->commandBus->dispatch(new NotifyActivityAdminsCommand(entity: $feedback));
+        $this->commandBus->dispatch(new NotifyFeedbackSearchTermsCommand(feedback: $feedback));
+        $this->commandBus->dispatch(new NotifyFeedbackSearchesCommand(feedback: $feedback));
         // todo: notify other feedback users about same creation (feedback on the same target user)
     }
 }

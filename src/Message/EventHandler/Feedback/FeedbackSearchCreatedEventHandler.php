@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Message\EventHandler\Feedback;
 
-use App\Message\Command\Feedback\NotifyFeedbackLookupUsersCommand;
-use App\Message\Command\Feedback\NotifyFeedbackSearchSearchTermUsersCommand;
-use App\Message\Command\NotifyActivityReceiversCommand;
+use App\Message\Command\Feedback\NotifyFeedbackLookupsCommand;
+use App\Message\Command\Feedback\NotifyFeedbackSearchSearchTermsCommand;
+use App\Message\Command\NotifyActivityAdminsCommand;
 use App\Message\Event\Feedback\FeedbackSearchCreatedEvent;
 use App\Repository\Feedback\FeedbackSearchRepository;
 use Psr\Log\LoggerInterface;
@@ -31,9 +31,9 @@ class FeedbackSearchCreatedEventHandler
             return;
         }
 
-        $this->commandBus->dispatch(new NotifyActivityReceiversCommand(entity: $search));
-        $this->commandBus->dispatch(new NotifyFeedbackSearchSearchTermUsersCommand(search: $search));
-        $this->commandBus->dispatch(new NotifyFeedbackLookupUsersCommand(search: $search));
+        $this->commandBus->dispatch(new NotifyActivityAdminsCommand(entity: $search));
+        $this->commandBus->dispatch(new NotifyFeedbackSearchSearchTermsCommand(search: $search));
+        $this->commandBus->dispatch(new NotifyFeedbackLookupsCommand(search: $search));
         // todo: notify other feedback search users about same search
     }
 }

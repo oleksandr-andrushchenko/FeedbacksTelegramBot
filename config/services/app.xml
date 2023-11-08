@@ -65,20 +65,20 @@
         <service id="app.address_geocoder" alias="app.google_address_geocoder"/>
         <service id="app.timezone_geocoder" alias="app.google_timezone_geocoder"/>
         <service id="app.notify_activity_receivers_command_handler"
-                 class="App\Message\CommandHandler\NotifyActivityReceiversCommandHandler"
+                 class="App\Message\CommandHandler\NotifyActivityAdminsCommandHandler"
                  lazy="true">
             <argument type="service" id="app.feedback_repository"/>
             <argument type="service" id="app.feedback_search_repository"/>
-            <argument type="service" id="app.feedback_search_term_user_telegram_notification_repository"/>
-            <argument type="service" id="app.feedback_search_search_term_user_telegram_notification_repository"/>
-            <argument type="service" id="app.feedback_search_user_telegram_notification_repository"/>
-            <argument type="service" id="app.feedback_lookup_user_telegram_notification_repository"/>
+            <argument type="service" id="app.feedback_search_term_telegram_notification_repository"/>
+            <argument type="service" id="app.feedback_search_search_term_telegram_notification_repository"/>
+            <argument type="service" id="app.feedback_search_telegram_notification_repository"/>
+            <argument type="service" id="app.feedback_lookup_telegram_notification_repository"/>
             <argument type="service" id="app.feedback_lookup_repository"/>
             <argument type="service" id="app.telegram_bot_payment_repository"/>
             <argument type="service" id="app.user_contact_message_repository"/>
             <argument type="service" id="app.activity_logger"/>
             <argument type="service" id="logger"/>
-            <tag name="messenger.message_handler" handles="App\Message\Command\NotifyActivityReceiversCommand"
+            <tag name="messenger.message_handler" handles="App\Message\Command\NotifyActivityAdminsCommand"
                  bus="app.command_bus"/>
         </service>
     </services>

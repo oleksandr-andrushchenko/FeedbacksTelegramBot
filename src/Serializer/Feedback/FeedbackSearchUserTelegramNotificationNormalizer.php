@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Serializer\Feedback;
 
-use App\Entity\Feedback\FeedbackSearchUserTelegramNotification;
+use App\Entity\Feedback\FeedbackSearchTelegramNotification;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class FeedbackSearchUserTelegramNotificationNormalizer implements NormalizerInterface
 {
     /**
-     * @param FeedbackSearchUserTelegramNotification $object
+     * @param FeedbackSearchTelegramNotification $object
      * @param string|null $format
      * @param array $context
      * @return array
@@ -40,6 +40,6 @@ class FeedbackSearchUserTelegramNotificationNormalizer implements NormalizerInte
 
     public function supportsNormalization(mixed $data, string $format = null): bool
     {
-        return $data instanceof FeedbackSearchUserTelegramNotification && in_array($format, ['activity'], true);
+        return $data instanceof FeedbackSearchTelegramNotification && in_array($format, ['activity'], true);
     }
 }
