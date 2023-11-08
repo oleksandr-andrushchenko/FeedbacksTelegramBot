@@ -28,6 +28,7 @@ class SearchTermTelegramViewProvider
         $message = '<u><b>';
 
         $messenger = $this->searchTermMessengerProvider->getSearchTermMessenger($searchTerm->getType());
+        // todo: add search term formatter & implement it here and everywhere
         $text = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
 
         if (!in_array($messenger, [null, Messenger::unknown])) {
