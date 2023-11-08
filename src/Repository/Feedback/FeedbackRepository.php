@@ -87,7 +87,7 @@ class FeedbackRepository extends ServiceEntityRepository
         $queryBuilder = $this->createQueryBuilder('f');
 
         $query = $queryBuilder
-            ->select('f', 'u', 'mu', 'tb', 'st')
+            ->addSelect('u', 'mu', 'tb', 'st')
             ->innerJoin('f.user', 'u')
             ->innerJoin('f.messengerUser', 'mu')
             ->innerJoin('f.telegramBot', 'tb')
