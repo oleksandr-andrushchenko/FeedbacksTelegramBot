@@ -81,3 +81,4 @@
 * todo notifications
 * normalize UA phones
 * integrate more databases
+* process and log new member update callback
