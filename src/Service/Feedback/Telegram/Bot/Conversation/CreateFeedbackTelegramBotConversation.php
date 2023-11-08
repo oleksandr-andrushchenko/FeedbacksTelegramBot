@@ -258,6 +258,22 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         return $tg->reply($message, $tg->keyboard(...$buttons))->null();
     }
 
+    public function parseSearchTerm(SearchTermTransfer $searchTerm, TelegramBotAwareHelper $tg): void
+    {
+        $context = [
+            'country_codes' => array_unique([
+                $tg->getBot()->getEntity()->getCountryCode(),
+                $tg->getCountryCode(),
+            ]),
+        ];
+
+        if ($searchTerm->getType() === null) {
+            $this->searchTermParser->parseWithGuessType($searchTerm, context: $context);
+        } else {
+            $this->searchTermParser->parseWithKnownType($searchTerm, context: $context);
+        }
+    }
+
     public function gotSearchTerm(TelegramBotAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchInput(null)) {
@@ -291,7 +307,8 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         }
 
         $searchTerm = new SearchTermTransfer($tg->getInput());
-        $this->searchTermParser->parseWithGuessType($searchTerm);
+
+        $this->parseSearchTerm($searchTerm, $tg);
 
         try {
             $this->validator->validate($searchTerm);
@@ -311,7 +328,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
             if (count($types) === 1) {
                 $searchTerm->setType($types[0])->setTypes(null);
-                $this->searchTermParser->parseWithKnownType($searchTerm);
+                $this->parseSearchTerm($searchTerm, $tg);
             } elseif ($this->searchTermTypeStep) {
                 return $this->querySearchTermType($tg);
             } else {
@@ -408,7 +425,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
         $original = $searchTerm->getTypes();
         $searchTerm->setType($type)->setTypes(null);
 
-        $this->searchTermParser->parseWithKnownType($searchTerm);
+        $this->parseSearchTerm($searchTerm, $tg);
 
         try {
             $this->validator->validate($searchTerm);
