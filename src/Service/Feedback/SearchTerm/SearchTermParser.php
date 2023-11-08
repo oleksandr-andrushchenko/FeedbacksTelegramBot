@@ -14,10 +14,10 @@ class SearchTermParser implements SearchTermParserInterface
     {
     }
 
-    public function supportsSearchTerm(SearchTermTransfer $searchTerm): bool
+    public function supportsSearchTerm(SearchTermTransfer $searchTerm, array $context = []): bool
     {
         foreach ($this->searchTermParserRegistry->getSearchTermParsers() as $searchTermParser) {
-            if ($searchTermParser->supportsSearchTerm($searchTerm)) {
+            if ($searchTermParser->supportsSearchTerm($searchTerm, $context)) {
                 return true;
             }
         }
@@ -25,28 +25,28 @@ class SearchTermParser implements SearchTermParserInterface
         return false;
     }
 
-    public function parseWithGuessType(SearchTermTransfer $searchTerm): void
+    public function parseWithGuessType(SearchTermTransfer $searchTerm, array $context = []): void
     {
         if ($searchTerm->getType() !== null) {
             return;
         }
 
         foreach ($this->searchTermParserRegistry->getSearchTermParsers() as $searchTermParser) {
-            if ($searchTermParser->supportsSearchTerm($searchTerm)) {
-                $searchTermParser->parseWithGuessType($searchTerm);
+            if ($searchTermParser->supportsSearchTerm($searchTerm, $context)) {
+                $searchTermParser->parseWithGuessType($searchTerm, $context);
             }
         }
     }
 
-    public function parseWithKnownType(SearchTermTransfer $searchTerm): void
+    public function parseWithKnownType(SearchTermTransfer $searchTerm, array $context = []): void
     {
         if ($searchTerm->getType() === null) {
             return;
         }
 
         foreach ($this->searchTermParserRegistry->getSearchTermParsers() as $searchTermParser) {
-            if ($searchTermParser->supportsSearchTerm($searchTerm)) {
-                $searchTermParser->parseWithKnownType($searchTerm);
+            if ($searchTermParser->supportsSearchTerm($searchTerm, $context)) {
+                $searchTermParser->parseWithKnownType($searchTerm, $context);
             }
         }
     }

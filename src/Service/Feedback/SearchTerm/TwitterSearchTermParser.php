@@ -9,7 +9,7 @@ use App\Enum\Feedback\SearchTermType;
 
 class TwitterSearchTermParser implements SearchTermParserInterface
 {
-    public function supportsSearchTerm(SearchTermTransfer $searchTerm): bool
+    public function supportsSearchTerm(SearchTermTransfer $searchTerm, array $context = []): bool
     {
         if ($searchTerm->getType() === null) {
             return $this->supportsUsername($searchTerm->getText()) || $this->supportsUrl($searchTerm->getText());
@@ -22,7 +22,7 @@ class TwitterSearchTermParser implements SearchTermParserInterface
         return false;
     }
 
-    public function parseWithGuessType(SearchTermTransfer $searchTerm): void
+    public function parseWithGuessType(SearchTermTransfer $searchTerm, array $context = []): void
     {
         if ($this->supportsUrl($searchTerm->getText(), $username)) {
             $searchTerm
@@ -36,7 +36,7 @@ class TwitterSearchTermParser implements SearchTermParserInterface
         }
     }
 
-    public function parseWithKnownType(SearchTermTransfer $searchTerm): void
+    public function parseWithKnownType(SearchTermTransfer $searchTerm, array $context = []): void
     {
         if ($searchTerm->getType() === SearchTermType::twitter_username) {
             $normalizedUsername = $this->normalizeUsername($searchTerm->getText());

@@ -9,7 +9,7 @@ use App\Enum\Feedback\SearchTermType;
 
 class UrlSearchTermParser implements SearchTermParserInterface
 {
-    public function supportsSearchTerm(SearchTermTransfer $searchTerm): bool
+    public function supportsSearchTerm(SearchTermTransfer $searchTerm, array $context = []): bool
     {
         if ($searchTerm->getType() === null) {
             return !empty(parse_url($searchTerm->getText(), PHP_URL_HOST));
@@ -22,7 +22,7 @@ class UrlSearchTermParser implements SearchTermParserInterface
         return false;
     }
 
-    public function parseWithGuessType(SearchTermTransfer $searchTerm): void
+    public function parseWithGuessType(SearchTermTransfer $searchTerm, array $context = []): void
     {
         $searchTerm
             ->addType(SearchTermType::messenger_profile_url)
@@ -30,7 +30,7 @@ class UrlSearchTermParser implements SearchTermParserInterface
         ;
     }
 
-    public function parseWithKnownType(SearchTermTransfer $searchTerm): void
+    public function parseWithKnownType(SearchTermTransfer $searchTerm, array $context = []): void
     {
     }
 }

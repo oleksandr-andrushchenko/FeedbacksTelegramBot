@@ -9,7 +9,7 @@ use App\Enum\Feedback\SearchTermType;
 
 class PhoneNumberSearchTermParser implements SearchTermParserInterface
 {
-    public function supportsSearchTerm(SearchTermTransfer $searchTerm): bool
+    public function supportsSearchTerm(SearchTermTransfer $searchTerm, array $context = []): bool
     {
         if ($searchTerm->getType() === null) {
             return $this->supports($searchTerm->getText());
@@ -22,7 +22,7 @@ class PhoneNumberSearchTermParser implements SearchTermParserInterface
         return false;
     }
 
-    public function parseWithGuessType(SearchTermTransfer $searchTerm): void
+    public function parseWithGuessType(SearchTermTransfer $searchTerm, array $context = []): void
     {
         if ($this->supports($searchTerm->getText())) {
             $searchTerm
@@ -31,7 +31,7 @@ class PhoneNumberSearchTermParser implements SearchTermParserInterface
         }
     }
 
-    public function parseWithKnownType(SearchTermTransfer $searchTerm): void
+    public function parseWithKnownType(SearchTermTransfer $searchTerm, array $context = []): void
     {
         if ($searchTerm->getType() === SearchTermType::phone_number) {
             $normalized = $this->normalize($searchTerm->getText());

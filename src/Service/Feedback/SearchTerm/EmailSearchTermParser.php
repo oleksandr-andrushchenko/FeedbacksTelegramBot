@@ -9,7 +9,7 @@ use App\Enum\Feedback\SearchTermType;
 
 class EmailSearchTermParser implements SearchTermParserInterface
 {
-    public function supportsSearchTerm(SearchTermTransfer $searchTerm): bool
+    public function supportsSearchTerm(SearchTermTransfer $searchTerm, array $context = []): bool
     {
         if ($searchTerm->getType() === null) {
             return filter_var($this->normalizeEmail($searchTerm->getText()), FILTER_VALIDATE_EMAIL) !== false;
@@ -22,7 +22,7 @@ class EmailSearchTermParser implements SearchTermParserInterface
         return false;
     }
 
-    public function parseWithGuessType(SearchTermTransfer $searchTerm): void
+    public function parseWithGuessType(SearchTermTransfer $searchTerm, array $context = []): void
     {
         $normalized = $this->normalizeEmail($searchTerm->getText());
 
@@ -37,7 +37,7 @@ class EmailSearchTermParser implements SearchTermParserInterface
         }
     }
 
-    public function parseWithKnownType(SearchTermTransfer $searchTerm): void
+    public function parseWithKnownType(SearchTermTransfer $searchTerm, array $context = []): void
     {
         if ($searchTerm->getType() === SearchTermType::email) {
             $normalized = $this->normalizeEmail($searchTerm->getText());

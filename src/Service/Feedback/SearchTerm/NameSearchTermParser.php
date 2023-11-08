@@ -9,7 +9,7 @@ use App\Enum\Feedback\SearchTermType;
 
 class NameSearchTermParser implements SearchTermParserInterface
 {
-    public function supportsSearchTerm(SearchTermTransfer $searchTerm): bool
+    public function supportsSearchTerm(SearchTermTransfer $searchTerm, array $context = []): bool
     {
         if ($searchTerm->getType() === null) {
             return $this->supportsPersonName($searchTerm->getText())
@@ -24,7 +24,7 @@ class NameSearchTermParser implements SearchTermParserInterface
         return false;
     }
 
-    public function parseWithGuessType(SearchTermTransfer $searchTerm): void
+    public function parseWithGuessType(SearchTermTransfer $searchTerm, array $context = []): void
     {
         if ($this->supportsPersonName($searchTerm->getText())) {
             $searchTerm
@@ -45,7 +45,7 @@ class NameSearchTermParser implements SearchTermParserInterface
         }
     }
 
-    public function parseWithKnownType(SearchTermTransfer $searchTerm): void
+    public function parseWithKnownType(SearchTermTransfer $searchTerm, array $context = []): void
     {
         // TODO: Implement parseWithKnownType() method.
     }

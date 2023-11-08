@@ -8,19 +8,23 @@ use App\Transfer\Feedback\SearchTermTransfer;
 
 interface SearchTermParserInterface
 {
-    public function supportsSearchTerm(SearchTermTransfer $searchTerm): bool;
+    public function supportsSearchTerm(SearchTermTransfer $searchTerm, array $context = []): bool;
 
     /**
      * Set search term type if 100% match, otherwise - set possible types
      *
      * @param SearchTermTransfer $searchTerm
+     * @param array $context
+     * @return void
      */
-    public function parseWithGuessType(SearchTermTransfer $searchTerm): void;
+    public function parseWithGuessType(SearchTermTransfer $searchTerm, array $context = []): void;
 
     /**
      * Set search term info according to known type, from search term itself
      *
      * @param SearchTermTransfer $searchTerm
+     * @param array $context
+     * @return void
      */
-    public function parseWithKnownType(SearchTermTransfer $searchTerm): void;
+    public function parseWithKnownType(SearchTermTransfer $searchTerm, array $context = []): void;
 }

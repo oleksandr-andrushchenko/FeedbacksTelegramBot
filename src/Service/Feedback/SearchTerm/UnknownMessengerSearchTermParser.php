@@ -9,7 +9,7 @@ use App\Enum\Feedback\SearchTermType;
 
 class UnknownMessengerSearchTermParser implements SearchTermParserInterface
 {
-    public function supportsSearchTerm(SearchTermTransfer $searchTerm): bool
+    public function supportsSearchTerm(SearchTermTransfer $searchTerm, array $context = []): bool
     {
         if ($searchTerm->getType() === null) {
             return $this->supportsUsername($searchTerm);
@@ -22,14 +22,14 @@ class UnknownMessengerSearchTermParser implements SearchTermParserInterface
         return false;
     }
 
-    public function parseWithGuessType(SearchTermTransfer $searchTerm): void
+    public function parseWithGuessType(SearchTermTransfer $searchTerm, array $context = []): void
     {
         $searchTerm
             ->addType(SearchTermType::messenger_username)
         ;
     }
 
-    public function parseWithKnownType(SearchTermTransfer $searchTerm): void
+    public function parseWithKnownType(SearchTermTransfer $searchTerm, array $context = []): void
     {
         if ($searchTerm->getType() === SearchTermType::messenger_username) {
             $normalizedUsername = $this->normalizeUsername($searchTerm->getText());

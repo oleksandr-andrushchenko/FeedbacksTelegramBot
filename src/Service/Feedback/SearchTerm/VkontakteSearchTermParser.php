@@ -11,7 +11,7 @@ use App\Transfer\Messenger\MessengerUserTransfer;
 
 class VkontakteSearchTermParser implements SearchTermParserInterface
 {
-    public function supportsSearchTerm(SearchTermTransfer $searchTerm): bool
+    public function supportsSearchTerm(SearchTermTransfer $searchTerm, array $context = []): bool
     {
         if ($searchTerm->getType() === null) {
             return $this->supportsUsername($searchTerm->getText()) || $this->supportsUrl($searchTerm->getText());
@@ -49,7 +49,7 @@ class VkontakteSearchTermParser implements SearchTermParserInterface
         }
     }
 
-    public function parseWithGuessType(SearchTermTransfer $searchTerm): void
+    public function parseWithGuessType(SearchTermTransfer $searchTerm, array $context = []): void
     {
         if ($this->supportsUrl($searchTerm->getText(), $username)) {
             $this->setupSearchTerm($searchTerm, $username);
@@ -60,7 +60,7 @@ class VkontakteSearchTermParser implements SearchTermParserInterface
         }
     }
 
-    public function parseWithKnownType(SearchTermTransfer $searchTerm): void
+    public function parseWithKnownType(SearchTermTransfer $searchTerm, array $context = []): void
     {
         if ($searchTerm->getType() === SearchTermType::vkontakte_username) {
             $this->setupSearchTerm($searchTerm, $searchTerm->getText());
