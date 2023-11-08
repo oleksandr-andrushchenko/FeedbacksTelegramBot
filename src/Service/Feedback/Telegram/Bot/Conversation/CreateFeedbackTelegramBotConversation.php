@@ -703,7 +703,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 return $this->queryConfirm($tg);
             }
         } else {
-            if ($this->getCreateConfirmButton($tg)->getText()) {
+            if ($tg->matchInput($this->getCreateConfirmButton($tg)->getText())) {
                 return $this->createAndReply($tg, $entity);
             }
         }
