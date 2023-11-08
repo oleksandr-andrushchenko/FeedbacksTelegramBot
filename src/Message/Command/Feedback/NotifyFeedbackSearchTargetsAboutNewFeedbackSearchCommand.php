@@ -6,6 +6,6 @@ namespace App\Message\Command\Feedback;
 
 use App\Message\Event\Feedback\FeedbackSearchEvent;
 
-readonly class NotifyFeedbackSearchSearchTermsCommand extends FeedbackSearchEvent
+readonly class NotifyFeedbackSearchTargetsAboutNewFeedbackSearchCommand extends FeedbackSearchEvent
 {
 }

@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Message\CommandHandler\Feedback;
 
-use App\Entity\Feedback\FeedbackLookup;
-use App\Entity\Feedback\FeedbackLookupTelegramNotification;
 use App\Entity\Feedback\FeedbackSearch;
+use App\Entity\Feedback\FeedbackSearchSearchTermTelegramNotification;
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBot;
 use App\Enum\Messenger\Messenger;
 use App\Enum\Telegram\TelegramBotGroupName;
-use App\Message\Command\Feedback\NotifyFeedbackLookupsCommand;
-use App\Message\Event\Feedback\FeedbackLookupTelegramNotificationCreatedEvent;
+use App\Message\Command\Feedback\NotifyFeedbackSearchTargetsAboutNewFeedbackSearchCommand;
+use App\Message\Event\Feedback\FeedbackSearchSearchTermTelegramNotificationCreatedEvent;
 use App\Repository\Feedback\FeedbackSearchRepository;
+use App\Repository\Messenger\MessengerUserRepository;
 use App\Repository\Telegram\Bot\TelegramBotRepository;
-use App\Service\Feedback\FeedbackLookupSearcher;
+use App\Service\Feedback\SearchTerm\SearchTermMessengerProvider;
 use App\Service\Feedback\Telegram\Bot\View\FeedbackSearchTelegramViewProvider;
 use App\Service\IdGenerator;
 use App\Service\Telegram\Bot\Api\TelegramBotMessageSenderInterface;
@@ -25,12 +25,13 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class NotifyFeedbackLookupsCommandHandler
+class NotifyFeedbackSearchTargetsAboutNewFeedbackSearchCommandHandler
 {
     public function __construct(
         private readonly FeedbackSearchRepository $feedbackSearchRepository,
         private readonly LoggerInterface $logger,
-        private readonly FeedbackLookupSearcher $feedbackLookupSearcher,
+        private readonly SearchTermMessengerProvider $searchTermMessengerProvider,
+        private readonly MessengerUserRepository $messengerUserRepository,
         private readonly TelegramBotRepository $telegramBotRepository,
         private readonly TranslatorInterface $translator,
         private readonly FeedbackSearchTelegramViewProvider $feedbackSearchTelegramViewProvider,
@@ -42,7 +43,7 @@ class NotifyFeedbackLookupsCommandHandler
     {
     }
 
-    public function __invoke(NotifyFeedbackLookupsCommand $command): void
+    public function __invoke(NotifyFeedbackSearchTargetsAboutNewFeedbackSearchCommand $command): void
     {
         $feedbackSearch = $command->getFeedbackSearch() ?? $this->feedbackSearchRepository->find($command->getFeedbackSearchId());
 
@@ -52,28 +53,37 @@ class NotifyFeedbackLookupsCommandHandler
         }
 
         $searchTerm = $feedbackSearch->getSearchTerm();
-        $feedbackLookups = $this->feedbackLookupSearcher->searchFeedbackLookups($searchTerm);
+        $messengerUser = $searchTerm->getMessengerUser();
 
-        foreach ($feedbackLookups as $feedbackLookup) {
-            $messengerUser = $feedbackLookup->getMessengerUser();
+        if (
+            $messengerUser !== null
+            && $messengerUser->getMessenger() === Messenger::telegram
+            && $messengerUser->getId() !== $feedbackSearch->getMessengerUser()->getId()
+        ) {
+            $this->notify($messengerUser, $searchTerm, $feedbackSearch);
+            return;
+        }
+
+        // todo: process usernames from MessengerUser::$usernameHistory
+        // todo: add search across unknown types (check if telegram type in types -> normalize text -> search)
+
+        $messenger = $this->searchTermMessengerProvider->getSearchTermMessenger($searchTerm->getType());
+
+        if ($messenger === Messenger::telegram) {
+            $username = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
+
+            $messengerUser = $this->messengerUserRepository->findOneByMessengerAndUsername($messenger, $username);
 
             if (
                 $messengerUser !== null
-                && $messengerUser->getMessenger() === Messenger::telegram
                 && $messengerUser->getId() !== $feedbackSearch->getMessengerUser()->getId()
             ) {
-                $this->notify($messengerUser, $searchTerm, $feedbackSearch, $feedbackLookup);
+                $this->notify($messengerUser, $searchTerm, $feedbackSearch);
             }
         }
     }
 
-
-    private function notify(
-        MessengerUser $messengerUser,
-        FeedbackSearchTerm $searchTerm,
-        FeedbackSearch $feedbackSearch,
-        FeedbackLookup $feedbackLookup
-    ): void
+    private function notify(MessengerUser $messengerUser, FeedbackSearchTerm $searchTerm, FeedbackSearch $feedbackSearch): void
     {
         $botIds = $messengerUser->getBotIds();
 
@@ -91,17 +101,16 @@ class NotifyFeedbackLookupsCommandHandler
                 keepKeyboard: true
             );
 
-            $notification = new FeedbackLookupTelegramNotification(
+            $notification = new FeedbackSearchSearchTermTelegramNotification(
                 $this->idGenerator->generateId(),
                 $messengerUser,
                 $searchTerm,
                 $feedbackSearch,
-                $feedbackLookup,
                 $bot
             );
             $this->entityManager->persist($notification);
 
-            $this->eventBus->dispatch(new FeedbackLookupTelegramNotificationCreatedEvent(notification: $notification));
+            $this->eventBus->dispatch(new FeedbackSearchSearchTermTelegramNotificationCreatedEvent(notification: $notification));
         }
     }
 
