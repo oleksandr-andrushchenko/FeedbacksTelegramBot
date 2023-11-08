@@ -6,6 +6,6 @@ namespace App\Message\Command\Feedback;
 
 use App\Message\Event\Feedback\FeedbackEvent;
 
-readonly class NotifyFeedbacksCommand extends FeedbackEvent
+readonly class NotifyFeedbackSourcesAboutNewFeedbackCommand extends FeedbackEvent
 {
 }

@@ -6,7 +6,7 @@ namespace App\Message\EventHandler\Feedback;
 
 use App\Message\Command\Feedback\NotifyFeedbackLookupsCommand;
 use App\Message\Command\Feedback\NotifyFeedbackSearchSearchTermsCommand;
-use App\Message\Command\NotifyActivityAdminsCommand;
+use App\Message\Command\NotifyAdminAboutNewActivityCommand;
 use App\Message\Event\Feedback\FeedbackSearchCreatedEvent;
 use App\Repository\Feedback\FeedbackSearchRepository;
 use Psr\Log\LoggerInterface;
@@ -32,11 +32,12 @@ class FeedbackSearchCreatedEventHandler
         }
 
         // notify: somebody made a feedback search, for admin
-        $this->commandBus->dispatch(new NotifyActivityAdminsCommand(entity: $search));
+        $this->commandBus->dispatch(new NotifyAdminAboutNewActivityCommand(entity: $search));
         // notify: somebody has been searching for feedbacks on you
         $this->commandBus->dispatch(new NotifyFeedbackSearchSearchTermsCommand(search: $search));
         // notify: you've been looking for such search requests
         $this->commandBus->dispatch(new NotifyFeedbackLookupsCommand(search: $search));
+        // notify: somebody made a search on the same thing you already did
         // todo: notify other feedback search users about same search
     }
 }

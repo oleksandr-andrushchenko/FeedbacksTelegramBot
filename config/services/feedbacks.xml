@@ -649,8 +649,9 @@
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <tag name="console.command" command="feedbacks:normalize-search-terms"/>
         </service>
-        <service id="app.notify_feedback_search_terms_command_handler"
-                 class="App\Message\CommandHandler\Feedback\NotifyFeedbackSearchTermsCommandHandler" lazy="true">
+        <service id="app.notify_feedback_target_about_new_feedback_command_handler"
+                 class="App\Message\CommandHandler\Feedback\NotifyFeedbackTargetAboutNewFeedbackCommandHandler"
+                 lazy="true">
             <argument type="service" id="app.feedback_repository"/>
             <argument type="service" id="logger"/>
             <argument type="service" id="app.feedback_search_term_messenger_provider"/>
@@ -663,7 +664,8 @@
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.event_bus"/>
             <tag name="messenger.message_handler"
-                 handles="App\Message\Command\Feedback\NotifyFeedbackSearchTermsCommand" bus="app.command_bus"/>
+                 handles="App\Message\Command\Feedback\NotifyFeedbackTargetAboutNewFeedbackCommand"
+                 bus="app.command_bus"/>
         </service>
         <service id="app.feedback_search_term_telegram_notification_created_event_handler"
                  class="App\Message\EventHandler\Feedback\FeedbackSearchTermTelegramNotificationCreatedEventHandler"
@@ -675,8 +677,9 @@
                  handles="App\Message\Event\Feedback\FeedbackSearchTermTelegramNotificationCreatedEvent"
                  bus="app.event_bus"/>
         </service>
-        <service id="app.notify_feedback_searches_command_handler"
-                 class="App\Message\CommandHandler\Feedback\NotifyFeedbackSearchesCommandHandler" lazy="true">
+        <service id="app.notify_feedback_search_sources_about_new_feedback_command_handler"
+                 class="App\Message\CommandHandler\Feedback\NotifyFeedbackSearchSourcesAboutNewFeedbackCommandHandler"
+                 lazy="true">
             <argument type="service" id="app.feedback_repository"/>
             <argument type="service" id="logger"/>
             <argument type="service" id="app.feedback_search_searcher"/>
@@ -688,7 +691,8 @@
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.event_bus"/>
             <tag name="messenger.message_handler"
-                 handles="App\Message\Command\Feedback\NotifyFeedbackSearchesCommand" bus="app.command_bus"/>
+                 handles="App\Message\Command\Feedback\NotifyFeedbackSearchSourcesAboutNewFeedbackCommand"
+                 bus="app.command_bus"/>
         </service>
         <service id="app.feedback_search_telegram_notification_created_event_handler"
                  class="App\Message\EventHandler\Feedback\FeedbackSearchTelegramNotificationCreatedEventHandler"
@@ -756,8 +760,9 @@
                  handles="App\Message\Event\Feedback\FeedbackSearchSearchTermTelegramNotificationCreatedEvent"
                  bus="app.event_bus"/>
         </service>
-        <service id="app.notify_feedbacks_command_handler"
-                 class="App\Message\CommandHandler\Feedback\NotifyFeedbacksCommandHandler" lazy="true">
+        <service id="app.notify_feedback_sources_about_new_feedback_command_handler"
+                 class="App\Message\CommandHandler\Feedback\NotifyFeedbackSourcesAboutNewFeedbackCommandHandler"
+                 lazy="true">
             <argument type="service" id="app.feedback_repository"/>
             <argument type="service" id="logger"/>
             <argument type="service" id="app.feedback_searcher"/>
@@ -769,7 +774,8 @@
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.event_bus"/>
             <tag name="messenger.message_handler"
-                 handles="App\Message\Command\Feedback\NotifyFeedbacksCommand" bus="app.command_bus"/>
+                 handles="App\Message\Command\Feedback\NotifyFeedbackSourcesAboutNewFeedbackCommand"
+                 bus="app.command_bus"/>
         </service>
     </services>
 </container>

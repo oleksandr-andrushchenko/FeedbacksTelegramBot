@@ -6,17 +6,16 @@ namespace App\Message\CommandHandler\Feedback;
 
 use App\Entity\Feedback\Feedback;
 use App\Entity\Feedback\FeedbackSearchTerm;
-use App\Entity\Feedback\FeedbackSearchTermTelegramNotification;
+use App\Entity\Feedback\FeedbackTelegramNotification;
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBot;
 use App\Enum\Messenger\Messenger;
 use App\Enum\Telegram\TelegramBotGroupName;
-use App\Message\Command\Feedback\NotifyFeedbackSearchTermsCommand;
-use App\Message\Event\Feedback\FeedbackSearchTermTelegramNotificationCreatedEvent;
+use App\Message\Command\Feedback\NotifyFeedbackSourcesAboutNewFeedbackCommand;
+use App\Message\Event\Feedback\FeedbackTelegramNotificationCreatedEvent;
 use App\Repository\Feedback\FeedbackRepository;
-use App\Repository\Messenger\MessengerUserRepository;
 use App\Repository\Telegram\Bot\TelegramBotRepository;
-use App\Service\Feedback\SearchTerm\SearchTermMessengerProvider;
+use App\Service\Feedback\FeedbackSearcher;
 use App\Service\Feedback\Telegram\Bot\View\FeedbackTelegramViewProvider;
 use App\Service\IdGenerator;
 use App\Service\Telegram\Bot\Api\TelegramBotMessageSenderInterface;
@@ -25,13 +24,12 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class NotifyFeedbackSearchTermsCommandHandler
+class NotifyFeedbackSourcesAboutNewFeedbackCommandHandler
 {
     public function __construct(
         private readonly FeedbackRepository $feedbackRepository,
         private readonly LoggerInterface $logger,
-        private readonly SearchTermMessengerProvider $searchTermMessengerProvider,
-        private readonly MessengerUserRepository $messengerUserRepository,
+        private readonly FeedbackSearcher $feedbackSearcher,
         private readonly TelegramBotRepository $telegramBotRepository,
         private readonly TranslatorInterface $translator,
         private readonly FeedbackTelegramViewProvider $feedbackTelegramViewProvider,
@@ -43,7 +41,7 @@ class NotifyFeedbackSearchTermsCommandHandler
     {
     }
 
-    public function __invoke(NotifyFeedbackSearchTermsCommand $command): void
+    public function __invoke(NotifyFeedbackSourcesAboutNewFeedbackCommand $command): void
     {
         $feedback = $command->getFeedback() ?? $this->feedbackRepository->find($command->getFeedbackId());
 
@@ -53,38 +51,29 @@ class NotifyFeedbackSearchTermsCommandHandler
         }
 
         foreach ($feedback->getSearchTerms() as $searchTerm) {
-            $messengerUser = $searchTerm->getMessengerUser();
+            $feedbacks = $this->feedbackSearcher->searchFeedbacks($searchTerm);
 
-            if (
-                $messengerUser !== null
-                && $messengerUser->getMessenger() === Messenger::telegram
-                && $messengerUser->getId() !== $feedback->getMessengerUser()->getId()
-            ) {
-                $this->notify($messengerUser, $searchTerm, $feedback);
-                return;
-            }
-
-            // todo: process usernames from MessengerUser::$usernameHistory
-            // todo: add search across unknown types (check if telegram type in types -> normalize text -> search)
-
-            $messenger = $this->searchTermMessengerProvider->getSearchTermMessenger($searchTerm->getType());
-
-            if ($messenger === Messenger::telegram) {
-                $username = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
-
-                $messengerUser = $this->messengerUserRepository->findOneByMessengerAndUsername($messenger, $username);
+            foreach ($feedbacks as $targetFeedback) {
+                // todo: iterate throw all $targetFeedback->getMessengerUser()->getUser()->getMessengerUsers()
+                $messengerUser = $targetFeedback->getMessengerUser();
 
                 if (
                     $messengerUser !== null
+                    && $messengerUser->getMessenger() === Messenger::telegram
                     && $messengerUser->getId() !== $feedback->getMessengerUser()->getId()
                 ) {
-                    $this->notify($messengerUser, $searchTerm, $feedback);
+                    $this->notify($messengerUser, $searchTerm, $feedback, $targetFeedback);
                 }
             }
         }
     }
 
-    private function notify(MessengerUser $messengerUser, FeedbackSearchTerm $searchTerm, Feedback $feedback): void
+    private function notify(
+        MessengerUser $messengerUser,
+        FeedbackSearchTerm $searchTerm,
+        Feedback $feedback,
+        Feedback $targetFeedback
+    ): void
     {
         $botIds = $messengerUser->getBotIds();
 
@@ -102,16 +91,17 @@ class NotifyFeedbackSearchTermsCommandHandler
                 keepKeyboard: true
             );
 
-            $notification = new FeedbackSearchTermTelegramNotification(
+            $notification = new FeedbackTelegramNotification(
                 $this->idGenerator->generateId(),
                 $messengerUser,
                 $searchTerm,
                 $feedback,
+                $targetFeedback,
                 $bot
             );
             $this->entityManager->persist($notification);
 
-            $this->eventBus->dispatch(new FeedbackSearchTermTelegramNotificationCreatedEvent(notification: $notification));
+            $this->eventBus->dispatch(new FeedbackTelegramNotificationCreatedEvent(notification: $notification));
         }
     }
 

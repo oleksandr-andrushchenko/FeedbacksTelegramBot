@@ -41,10 +41,10 @@ framework:
 
     routing:
       # Route your messages to the transports
-      App\Message\Command\NotifyActivityAdminsCommand: sync
-      App\Message\Command\Feedback\NotifyFeedbacksCommand: sync
-      App\Message\Command\Feedback\NotifyFeedbackSearchTermsCommand: sync
-      App\Message\Command\Feedback\NotifyFeedbackSearchesCommand: sync
+      App\Message\Command\NotifyAdminAboutNewActivityCommand: sync
+      App\Message\Command\Feedback\NotifyFeedbackSourcesAboutNewFeedbackCommand: sync
+      App\Message\Command\Feedback\NotifyFeedbackTargetAboutNewFeedbackCommand: sync
+      App\Message\Command\Feedback\NotifyFeedbackSearchSourcesAboutNewFeedbackCommand: sync
       App\Message\Command\Feedback\NotifyFeedbackLookupsCommand: sync
       App\Message\Command\Feedback\NotifyFeedbackSearchSearchTermsCommand: sync
       App\Message\Event\Feedback\FeedbackCreatedEvent: sync

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Message\EventHandler\Feedback;
 
-use App\Message\Command\NotifyActivityAdminsCommand;
+use App\Message\Command\NotifyAdminAboutNewActivityCommand;
 use App\Message\Event\Feedback\FeedbackLookupTelegramNotificationCreatedEvent;
 use App\Repository\Feedback\FeedbackLookupTelegramNotificationRepository;
 use Psr\Log\LoggerInterface;
@@ -29,6 +29,6 @@ class FeedbackLookupTelegramNotificationCreatedEventHandler
             return;
         }
 
-        $this->commandBus->dispatch(new NotifyActivityAdminsCommand(entity: $notification));
+        $this->commandBus->dispatch(new NotifyAdminAboutNewActivityCommand(entity: $notification));
     }
 }
