@@ -26,15 +26,21 @@ class PhoneNumberSearchTermTextNormalizer
         );
 
         if (str_starts_with($text, '+')) {
-            foreach ($phoneCodes as $phoneCode) {
-                if (str_starts_with($normalizedText, $phoneCode)) {
-                    return $normalizedText;
-                }
-            }
+            return $normalizedText;
         }
 
         if (isset($phoneCodes['ua']) && str_starts_with($normalizedText, '0') && strlen($normalizedText) === 10) {
             return substr($phoneCodes['ua'], 0, 2) . $normalizedText;
+        }
+
+        if (isset($phoneCodes['ru']) && str_starts_with($normalizedText, '7') && strlen($normalizedText) === 11) {
+            return $normalizedText;
+        }
+
+        foreach ($phoneCodes as $phoneCode) {
+            if (str_starts_with($normalizedText, $phoneCode)) {
+                return $normalizedText;
+            }
         }
 
         return $normalizedText;
