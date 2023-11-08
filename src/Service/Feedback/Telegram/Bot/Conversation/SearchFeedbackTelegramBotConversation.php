@@ -161,6 +161,22 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
         return $this->chooseActionTelegramChatSender->sendActions($tg, text: $message, appendDefault: true);
     }
 
+    public function parseSearchTerm(SearchTermTransfer $searchTerm, TelegramBotAwareHelper $tg): void
+    {
+        $context = [
+            'country_codes' => array_unique([
+                $tg->getBot()->getEntity()->getCountryCode(),
+                $tg->getCountryCode(),
+            ]),
+        ];
+
+        if ($searchTerm->getType() === null) {
+            $this->searchTermParser->parseWithGuessType($searchTerm, context: $context);
+        } else {
+            $this->searchTermParser->parseWithKnownType($searchTerm, context: $context);
+        }
+    }
+
     public function gotSearchTerm(TelegramBotAwareHelper $tg, Entity $entity): null
     {
         if ($tg->matchInput(null)) {
@@ -195,7 +211,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
         $searchTerm = new SearchTermTransfer($tg->getInput());
 
-        $this->searchTermParser->parseWithGuessType($searchTerm);
+        $this->parseSearchTerm($searchTerm, $tg);
 
         try {
             $this->validator->validate($searchTerm);
@@ -214,18 +230,12 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $types = $searchTerm->getTypes() ?? [];
 
             if (count($types) === 1) {
-                $searchTerm
-                    ->setType($types[0])
-                    ->setTypes(null)
-                ;
-                $this->searchTermParser->parseWithKnownType($searchTerm);
+                $searchTerm->setType($types[0])->setTypes(null);
+                $this->parseSearchTerm($searchTerm, $tg);
             } elseif ($this->searchTermTypeStep) {
                 return $this->querySearchTermType($tg);
             } else {
-                $searchTerm
-                    ->setType(SearchTermType::unknown)
-                    ->setTypes(null)
-                ;
+                $searchTerm->setType(SearchTermType::unknown)->setTypes(null);
             }
         }
 
@@ -305,16 +315,15 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
             return $this->querySearchTermType($tg);
         }
 
-        $searchTerm
-            ->setType($type)
-            ->setTypes(null)
-        ;
+        $original = $searchTerm->getTypes();
+        $searchTerm->setType($type)->setTypes(null);
 
-        $this->searchTermParser->parseWithKnownType($searchTerm);
+        $this->parseSearchTerm($searchTerm, $tg);
 
         try {
             $this->validator->validate($searchTerm);
         } catch (ValidatorException $exception) {
+            $searchTerm->setType(null)->setTypes($original);
             $tg->replyWarning($tg->queryText($exception->getFirstMessage()));
 
             return $this->querySearchTerm($tg);
