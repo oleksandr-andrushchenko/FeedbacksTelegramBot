@@ -32,7 +32,7 @@ class FeedbackCreatedEventHandler
             return;
         }
 
-        // notify: somebody left a feedback for admin
+        // notify: somebody left a feedback, for admin
         $this->commandBus->dispatch(new NotifyActivityAdminsCommand(entity: $feedback));
         // notify: somebody left a feedback on you
         $this->commandBus->dispatch(new NotifyFeedbackSearchTermsCommand(feedback: $feedback));

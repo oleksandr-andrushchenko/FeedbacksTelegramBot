@@ -31,8 +31,11 @@ class FeedbackSearchCreatedEventHandler
             return;
         }
 
+        // notify: somebody made a feedback search, for admin
         $this->commandBus->dispatch(new NotifyActivityAdminsCommand(entity: $search));
+        // notify: somebody has been searching for feedbacks on you
         $this->commandBus->dispatch(new NotifyFeedbackSearchSearchTermsCommand(search: $search));
+        // notify: you've been looking for such search requests
         $this->commandBus->dispatch(new NotifyFeedbackLookupsCommand(search: $search));
         // todo: notify other feedback search users about same search
     }
