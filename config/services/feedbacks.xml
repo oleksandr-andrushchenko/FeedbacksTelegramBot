@@ -777,5 +777,21 @@
                  handles="App\Message\Command\Feedback\NotifyFeedbackSourcesAboutNewFeedbackCommand"
                  bus="app.command_bus"/>
         </service>
+        <service id="app.notify_feedback_search_sources_about_new_feedback_search_command_handler"
+                 class="App\Message\CommandHandler\Feedback\NotifyFeedbackSearchSourcesAboutNewFeedbackSearchCommandHandler"
+                 lazy="true">
+            <argument type="service" id="app.feedback_search_repository"/>
+            <argument type="service" id="logger"/>
+            <argument type="service" id="app.feedback_search_searcher"/>
+            <argument type="service" id="app.telegram_bot_repository"/>
+            <argument type="service" id="translator"/>
+            <argument type="service" id="app.feedback_search_telegram_view_provider"/>
+            <argument type="service" id="app.telegram_bot_message_sender"/>
+            <argument type="service" id="app.id_generator"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <tag name="messenger.message_handler"
+                 handles="App\Message\Command\Feedback\NotifyFeedbackSearchSourcesAboutNewFeedbackSearchCommand"
+                 bus="app.command_bus"/>
+        </service>
     </services>
 </container>

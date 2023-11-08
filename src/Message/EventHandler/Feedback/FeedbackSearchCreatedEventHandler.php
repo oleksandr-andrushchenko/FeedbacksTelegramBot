@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Message\EventHandler\Feedback;
 
 use App\Message\Command\Feedback\NotifyFeedbackLookupSourcesAboutNewFeedbackSearchCommand;
+use App\Message\Command\Feedback\NotifyFeedbackSearchSourcesAboutNewFeedbackSearchCommand;
 use App\Message\Command\Feedback\NotifyFeedbackSearchTargetsAboutNewFeedbackSearchCommand;
 use App\Message\Command\NotifyAdminAboutNewActivityCommand;
 use App\Message\Event\Feedback\FeedbackSearchCreatedEvent;
@@ -34,7 +35,6 @@ class FeedbackSearchCreatedEventHandler
         $this->commandBus->dispatch(new NotifyAdminAboutNewActivityCommand(entity: $search));
         $this->commandBus->dispatch(new NotifyFeedbackSearchTargetsAboutNewFeedbackSearchCommand(search: $search));
         $this->commandBus->dispatch(new NotifyFeedbackLookupSourcesAboutNewFeedbackSearchCommand(search: $search));
-        // notify: somebody made a search on the same thing you already did
-        // todo: notify other feedback search users about same search
+        $this->commandBus->dispatch(new NotifyFeedbackSearchSourcesAboutNewFeedbackSearchCommand(search: $search));
     }
 }
