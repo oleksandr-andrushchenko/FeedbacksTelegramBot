@@ -42,6 +42,7 @@ framework:
     routing:
       # Route your messages to the transports
       App\Message\Command\NotifyActivityAdminsCommand: sync
+      App\Message\Command\Feedback\NotifyFeedbacksCommand: sync
       App\Message\Command\Feedback\NotifyFeedbackSearchTermsCommand: sync
       App\Message\Command\Feedback\NotifyFeedbackSearchesCommand: sync
       App\Message\Command\Feedback\NotifyFeedbackLookupsCommand: sync
@@ -50,6 +51,7 @@ framework:
       App\Message\Event\Feedback\FeedbackLookupCreatedEvent: sync
       App\Message\Event\Feedback\FeedbackSearchCreatedEvent: sync
       App\Message\Event\Feedback\FeedbackSearchTermTelegramNotificationCreatedEvent: sync
+      App\Message\Event\Feedback\FeedbackTelegramNotificationCreatedEvent: sync
       App\Message\Event\Feedback\FeedbackSearchTelegramNotificationCreatedEvent: sync
       App\Message\Event\Feedback\FeedbackLookupTelegramNotificationCreatedEvent: sync
       App\Message\Event\Feedback\FeedbackSearchSearchTermTelegramNotificationCreatedEvent: sync

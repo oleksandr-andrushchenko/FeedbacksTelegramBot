@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Message\EventHandler\Feedback;
 
+use App\Message\Command\Feedback\NotifyFeedbacksCommand;
 use App\Message\Command\Feedback\NotifyFeedbackSearchesCommand;
 use App\Message\Command\Feedback\NotifyFeedbackSearchTermsCommand;
 use App\Message\Command\NotifyActivityAdminsCommand;
@@ -31,9 +32,13 @@ class FeedbackCreatedEventHandler
             return;
         }
 
+        // notify: somebody left a feedback for admin
         $this->commandBus->dispatch(new NotifyActivityAdminsCommand(entity: $feedback));
+        // notify: somebody left a feedback on you
         $this->commandBus->dispatch(new NotifyFeedbackSearchTermsCommand(feedback: $feedback));
+        // notify: somebody left a feedback on what you've been looking for
         $this->commandBus->dispatch(new NotifyFeedbackSearchesCommand(feedback: $feedback));
-        // todo: notify other feedback users about same creation (feedback on the same target user)
+        // notify: somebody left a feedback on the same thing you already did
+        $this->commandBus->dispatch(new NotifyFeedbacksCommand(feedback: $feedback));
     }
 }

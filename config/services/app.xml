@@ -74,6 +74,7 @@
             <argument type="service" id="app.feedback_search_telegram_notification_repository"/>
             <argument type="service" id="app.feedback_lookup_telegram_notification_repository"/>
             <argument type="service" id="app.feedback_lookup_repository"/>
+            <argument type="service" id="app.feedback_telegram_notification_repository"/>
             <argument type="service" id="app.telegram_bot_payment_repository"/>
             <argument type="service" id="app.user_contact_message_repository"/>
             <argument type="service" id="app.activity_logger"/>

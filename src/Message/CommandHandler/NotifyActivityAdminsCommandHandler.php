@@ -11,6 +11,7 @@ use App\Entity\Feedback\FeedbackSearch;
 use App\Entity\Feedback\FeedbackSearchSearchTermTelegramNotification;
 use App\Entity\Feedback\FeedbackSearchTermTelegramNotification;
 use App\Entity\Feedback\FeedbackSearchTelegramNotification;
+use App\Entity\Feedback\FeedbackTelegramNotification;
 use App\Entity\Telegram\TelegramBotPayment;
 use App\Entity\User\UserContactMessage;
 use App\Message\Command\NotifyActivityAdminsCommand;
@@ -21,6 +22,7 @@ use App\Repository\Feedback\FeedbackSearchRepository;
 use App\Repository\Feedback\FeedbackSearchSearchTermTelegramNotificationRepository;
 use App\Repository\Feedback\FeedbackSearchTermTelegramNotificationRepository;
 use App\Repository\Feedback\FeedbackSearchTelegramNotificationRepository;
+use App\Repository\Feedback\FeedbackTelegramNotificationRepository;
 use App\Repository\Telegram\Bot\TelegramBotPaymentRepository;
 use App\Repository\User\UserContactMessageRepository;
 use Psr\Log\LoggerInterface;
@@ -36,6 +38,7 @@ class NotifyActivityAdminsCommandHandler
         private readonly FeedbackSearchTelegramNotificationRepository $feedbackSearchUserTelegramNotificationRepository,
         private readonly FeedbackLookupTelegramNotificationRepository $feedbackLookupUserTelegramNotificationRepository,
         private readonly FeedbackLookupRepository $feedbackLookupRepository,
+        private readonly FeedbackTelegramNotificationRepository $feedbackTelegramNotificationRepository,
         private readonly TelegramBotPaymentRepository $telegramBotPaymentRepository,
         private readonly UserContactMessageRepository $userContactMessageRepository,
         private readonly LoggerInterface $activityLogger,
@@ -54,6 +57,7 @@ class NotifyActivityAdminsCommandHandler
                 FeedbackSearchSearchTermTelegramNotification::class => $this->feedbackSearchSearchTermUserTelegramNotificationRepository,
                 FeedbackSearchTelegramNotification::class => $this->feedbackSearchUserTelegramNotificationRepository,
                 FeedbackLookupTelegramNotification::class => $this->feedbackLookupUserTelegramNotificationRepository,
+                FeedbackTelegramNotification::class => $this->feedbackTelegramNotificationRepository,
                 FeedbackLookup::class => $this->feedbackLookupRepository,
                 TelegramBotPayment::class => $this->telegramBotPaymentRepository,
                 UserContactMessage::class => $this->userContactMessageRepository,
