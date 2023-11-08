@@ -12,7 +12,7 @@ class FeedbackSearchTerm
 {
     public function __construct(
         private readonly string $text,
-        private readonly string $normalizedText,
+        private string $normalizedText,
         private readonly SearchTermType $type,
         private readonly ?MessengerUser $messengerUser,
         private ?DateTimeInterface $createdAt = null,
@@ -34,6 +34,13 @@ class FeedbackSearchTerm
     public function getNormalizedText(): string
     {
         return $this->normalizedText;
+    }
+
+    public function setNormalizedText(string $normalizedText): self
+    {
+        $this->normalizedText = $normalizedText;
+
+        return $this;
     }
 
     public function getType(): SearchTermType
