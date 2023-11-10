@@ -23,6 +23,7 @@ class MessengerUserNormalizer implements NormalizerInterface
                 'username' => $object->getUsername() === null ? null : sprintf('@%s', $object->getUsername()),
                 'name' => $object->getName() ?? null,
                 'bot_ids' => $object->getBotIds() === null ? null : implode(', ', $object->getBotIds()),
+                'created_at' => $object->getCreatedAt()?->format('m/d/Y H:i'),
             ]);
         }
 
