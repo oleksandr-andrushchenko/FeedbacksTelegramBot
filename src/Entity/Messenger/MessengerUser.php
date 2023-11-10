@@ -94,7 +94,7 @@ class MessengerUser
      */
     public function getBotIds(): ?array
     {
-        return $this->botIds;
+        return $this->botIds === null ? null : array_map('intval', $this->botIds);
     }
 
     public function addBotId(int $botId): self
