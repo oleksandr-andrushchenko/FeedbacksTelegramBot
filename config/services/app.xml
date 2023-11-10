@@ -67,8 +67,8 @@
         <service id="app.activity_event_handler" class="App\Message\EventHandler\ActivityEventHandler" lazy="true">
             <argument type="service" id="app.feedback_repository"/>
             <argument type="service" id="app.feedback_search_repository"/>
-            <argument type="service" id="app.feedback_notification_repository"/>
             <argument type="service" id="app.feedback_lookup_repository"/>
+            <argument type="service" id="app.feedback_notification_repository"/>
             <argument type="service" id="app.telegram_bot_payment_repository"/>
             <argument type="service" id="app.user_contact_message_repository"/>
             <argument type="service" id="app.messenger_user_repository"/>

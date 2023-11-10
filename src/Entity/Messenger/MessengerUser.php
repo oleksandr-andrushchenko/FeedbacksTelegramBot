@@ -7,8 +7,9 @@ namespace App\Entity\Messenger;
 use App\Entity\User\User;
 use App\Enum\Messenger\Messenger;
 use DateTimeInterface;
+use Stringable;
 
-class MessengerUser
+class MessengerUser implements Stringable
 {
     public function __construct(
         private string $id,
@@ -159,5 +160,10 @@ class MessengerUser
         $this->updatedAt = $updatedAt;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getId();
     }
 }
