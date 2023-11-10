@@ -624,7 +624,7 @@
             <argument type="service" id="logger"/>
             <argument type="service" id="app.feedback_search_term_messenger_provider"/>
             <argument type="service" id="app.messenger_user_repository"/>
-            <argument type="service" id="app.telegram_bot_repository"/>
+            <argument type="service" id="app.telegram_bot_provider"/>
             <argument type="service" id="translator"/>
             <argument type="service" id="app.feedback_telegram_view_provider"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>
@@ -641,7 +641,7 @@
             <argument type="service" id="app.feedback_repository"/>
             <argument type="service" id="logger"/>
             <argument type="service" id="app.feedback_search_searcher"/>
-            <argument type="service" id="app.telegram_bot_repository"/>
+            <argument type="service" id="app.telegram_bot_provider"/>
             <argument type="service" id="translator"/>
             <argument type="service" id="app.feedback_telegram_view_provider"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>
@@ -658,7 +658,7 @@
             <argument type="service" id="app.feedback_search_repository"/>
             <argument type="service" id="logger"/>
             <argument type="service" id="app.feedback_lookup_searcher"/>
-            <argument type="service" id="app.telegram_bot_repository"/>
+            <argument type="service" id="app.telegram_bot_provider"/>
             <argument type="service" id="translator"/>
             <argument type="service" id="app.feedback_search_telegram_view_provider"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>
@@ -679,7 +679,7 @@
             <argument type="service" id="logger"/>
             <argument type="service" id="app.feedback_search_term_messenger_provider"/>
             <argument type="service" id="app.messenger_user_repository"/>
-            <argument type="service" id="app.telegram_bot_repository"/>
+            <argument type="service" id="app.telegram_bot_provider"/>
             <argument type="service" id="translator"/>
             <argument type="service" id="app.feedback_search_telegram_view_provider"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>
@@ -696,7 +696,7 @@
             <argument type="service" id="app.feedback_repository"/>
             <argument type="service" id="logger"/>
             <argument type="service" id="app.feedback_searcher"/>
-            <argument type="service" id="app.telegram_bot_repository"/>
+            <argument type="service" id="app.telegram_bot_provider"/>
             <argument type="service" id="translator"/>
             <argument type="service" id="app.feedback_telegram_view_provider"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>
@@ -713,7 +713,7 @@
             <argument type="service" id="app.feedback_search_repository"/>
             <argument type="service" id="logger"/>
             <argument type="service" id="app.feedback_search_searcher"/>
-            <argument type="service" id="app.telegram_bot_repository"/>
+            <argument type="service" id="app.telegram_bot_provider"/>
             <argument type="service" id="translator"/>
             <argument type="service" id="app.feedback_search_telegram_view_provider"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>
@@ -741,7 +741,7 @@
             <argument type="service" id="logger"/>
             <argument type="service" id="app.feedback_search_term_messenger_provider"/>
             <argument type="service" id="app.messenger_user_repository"/>
-            <argument type="service" id="app.telegram_bot_repository"/>
+            <argument type="service" id="app.telegram_bot_provider"/>
             <argument type="service" id="translator"/>
             <argument type="service" id="app.feedback_lookup_telegram_view_provider"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>
@@ -758,7 +758,7 @@
             <argument type="service" id="app.feedback_lookup_repository"/>
             <argument type="service" id="logger"/>
             <argument type="service" id="app.feedback_lookup_searcher"/>
-            <argument type="service" id="app.telegram_bot_repository"/>
+            <argument type="service" id="app.telegram_bot_provider"/>
             <argument type="service" id="translator"/>
             <argument type="service" id="app.feedback_lookup_telegram_view_provider"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>

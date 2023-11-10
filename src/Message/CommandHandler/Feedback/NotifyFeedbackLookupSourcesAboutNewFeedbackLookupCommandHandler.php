@@ -15,11 +15,11 @@ use App\Enum\Telegram\TelegramBotGroupName;
 use App\Message\Command\Feedback\NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommand;
 use App\Message\Event\ActivityEvent;
 use App\Repository\Feedback\FeedbackLookupRepository;
-use App\Repository\Telegram\Bot\TelegramBotRepository;
 use App\Service\Feedback\FeedbackLookupSearcher;
 use App\Service\Feedback\Telegram\Bot\View\FeedbackLookupTelegramViewProvider;
 use App\Service\IdGenerator;
 use App\Service\Telegram\Bot\Api\TelegramBotMessageSenderInterface;
+use App\Service\Telegram\Bot\TelegramBotProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -31,7 +31,7 @@ class NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommandHandler
         private readonly FeedbackLookupRepository $feedbackLookupRepository,
         private readonly LoggerInterface $logger,
         private readonly FeedbackLookupSearcher $feedbackLookupSearcher,
-        private readonly TelegramBotRepository $telegramBotRepository,
+        private readonly TelegramBotProvider $telegramBotProvider,
         private readonly TranslatorInterface $translator,
         private readonly FeedbackLookupTelegramViewProvider $feedbackLookupTelegramViewProvider,
         private readonly TelegramBotMessageSenderInterface $telegramBotMessageSender,
@@ -81,7 +81,7 @@ class NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommandHandler
             return;
         }
 
-        $bots = $this->telegramBotRepository->findPrimaryByGroupAndIds(TelegramBotGroupName::feedbacks, $botIds);
+        $bots = $this->telegramBotProvider->getCachedTelegramBotsByGroupAndIds(TelegramBotGroupName::feedbacks, $botIds);
 
         foreach ($bots as $bot) {
             $this->telegramBotMessageSender->sendTelegramMessage(
