@@ -74,7 +74,7 @@
             <argument type="service" id="app.messenger_user_repository"/>
             <argument type="service" id="app.activity_logger"/>
             <argument type="service" id="logger"/>
-            <tag name="messenger.message_handler" handles="App\Message\Event\ActivityEvent" bus="app.command_bus"/>
+            <tag name="messenger.message_handler" handles="App\Message\Event\ActivityEvent" bus="app.event_bus"/>
         </service>
     </services>
 </container>
