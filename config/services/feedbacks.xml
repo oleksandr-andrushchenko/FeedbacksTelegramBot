@@ -443,6 +443,7 @@
             <argument type="service" id="app.feedback_create_command_options"/>
             <argument type="service" id="app.feedback_search_command_options"/>
             <argument type="service" id="app.feedback_lookup_command_options"/>
+            <argument type="service" id="app.event_bus"/>
             <tag name="app.telegram_group" group="feedbacks"/>
         </service>
         <service id="app.telegram_conversation_country"

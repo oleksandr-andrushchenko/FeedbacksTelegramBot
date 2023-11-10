@@ -10,6 +10,7 @@ use App\Entity\Telegram\TelegramBotFallbackHandler;
 use App\Entity\Telegram\TelegramBotCommandHandler;
 use App\Entity\Telegram\TelegramBotMyChatMemberHandler;
 use App\Entity\Telegram\TelegramBotPayment;
+use App\Message\Event\ActivityEvent;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionPlanProvider;
 use App\Service\Feedback\Telegram\Bot\Chat\ChooseActionTelegramChatSender;
@@ -30,6 +31,7 @@ use App\Service\Telegram\Bot\Conversation\TelegramBotConversationFactory;
 use App\Service\Telegram\Bot\Group\TelegramBotGroup;
 use App\Service\Telegram\Bot\Group\TelegramBotGroupInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 
 class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGroupInterface
@@ -78,6 +80,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
         private readonly FeedbackCommandOptions $feedbackCreateCommandOptions,
         private readonly FeedbackCommandOptions $feedbackSearchCommandOptions,
         private readonly FeedbackCommandOptions $feedbackLookupCommandOptions,
+        private readonly MessageBusInterface $eventBus,
     )
     {
         parent::__construct($telegramBotAwareHelper, $telegramBotConversationFactory);
@@ -141,12 +144,15 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
 
     public function myChatMemberHandler(TelegramBotAwareHelper $tg): null
     {
-        $myChatMember = $tg->getBot()->getUpdate()->getMyChatMember();
+        $messengerUser = $tg->getBot()->getMessengerUser();
+        $newChatMemberStatus = $tg->getBot()->getUpdate()->getMyChatMember()?->getNewChatMember()?->getStatus();
 
-        if ($myChatMember->getNewChatMember()?->getStatus() === 'kicked') {
-            $tg->getBot()->getMessengerUser()->removeBotId($tg->getBot()->getEntity()->getId());
+        if ($newChatMemberStatus === 'kicked') {
+            $messengerUser->removeBotId($tg->getBot()->getEntity()->getId());
             $tg->stopCurrentConversation();
         }
+
+        $this->eventBus->dispatch(new ActivityEvent(entity: $messengerUser));
 
         return null;
     }
