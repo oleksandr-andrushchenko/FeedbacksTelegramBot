@@ -11,6 +11,9 @@
         <service id="app.messenger_user_transfer_normalizer" class="App\Serializer\Messenger\MessengerUserTransferNormalizer">
             <tag name="serializer.normalizer" priority="-979"/>
         </service>
+        <service id="app.messenger_user_normalizer" class="App\Serializer\Messenger\MessengerUserNormalizer">
+            <tag name="serializer.normalizer" priority="-978"/>
+        </service>
         <service id="app.messenger_user_upserter" class="App\Service\Messenger\MessengerUserUpserter" lazy="true">
             <argument type="service" id="app.messenger_user_repository"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
