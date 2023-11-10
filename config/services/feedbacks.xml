@@ -820,5 +820,21 @@
                  handles="App\Message\Command\Feedback\NotifyFeedbackLookupTargetAboutNewFeedbackLookupCommand"
                  bus="app.command_bus"/>
         </service>
+        <service id="app.notify_feedback_lookup_source_about_new_feedback_lookup_command_handler"
+                 class="App\Message\CommandHandler\Feedback\NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommandHandler"
+                 lazy="true">
+            <argument type="service" id="app.feedback_lookup_repository"/>
+            <argument type="service" id="logger"/>
+            <argument type="service" id="app.feedback_lookup_searcher"/>
+            <argument type="service" id="app.telegram_bot_repository"/>
+            <argument type="service" id="translator"/>
+            <argument type="service" id="app.feedback_lookup_telegram_view_provider"/>
+            <argument type="service" id="app.telegram_bot_message_sender"/>
+            <argument type="service" id="app.id_generator"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <tag name="messenger.message_handler"
+                 handles="App\Message\Command\Feedback\NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommand"
+                 bus="app.command_bus"/>
+        </service>
     </services>
 </container>

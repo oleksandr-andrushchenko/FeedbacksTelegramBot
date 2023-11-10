@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Message\EventHandler\Feedback;
 
+use App\Message\Command\Feedback\NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommand;
 use App\Message\Command\Feedback\NotifyFeedbackLookupTargetAboutNewFeedbackLookupCommand;
 use App\Message\Command\NotifyAdminAboutNewActivityCommand;
 use App\Message\Event\Feedback\FeedbackLookupCreatedEvent;
@@ -32,6 +33,6 @@ class FeedbackLookupCreatedEventHandler
 
         $this->commandBus->dispatch(new NotifyAdminAboutNewActivityCommand(entity: $lookup));
         $this->commandBus->dispatch(new NotifyFeedbackLookupTargetAboutNewFeedbackLookupCommand(lookup: $lookup));
-        // todo: notify other feedback lookup users about same search
+        $this->commandBus->dispatch(new NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommand(lookup: $lookup));
     }
 }

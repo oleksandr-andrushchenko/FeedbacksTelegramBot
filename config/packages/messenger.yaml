@@ -49,6 +49,7 @@ framework:
       App\Message\Command\Feedback\NotifyFeedbackSearchTargetsAboutNewFeedbackSearchCommand: sync
       App\Message\Command\Feedback\NotifyFeedbackSearchSourcesAboutNewFeedbackSearchCommand: sync
       App\Message\Command\Feedback\NotifyFeedbackLookupTargetAboutNewFeedbackLookupCommand: sync
+      App\Message\Command\Feedback\NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommand: sync
       App\Message\Event\Feedback\FeedbackCreatedEvent: sync
       App\Message\Event\Feedback\FeedbackLookupCreatedEvent: sync
       App\Message\Event\Feedback\FeedbackSearchCreatedEvent: sync
