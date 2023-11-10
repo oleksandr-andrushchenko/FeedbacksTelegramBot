@@ -9,9 +9,23 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class MessengerUserNormalizer implements NormalizerInterface
 {
+    /**
+     * @param MessengerUser $object
+     * @param string|null $format
+     * @param array $context
+     * @return array
+     */
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
-        /** @var MessengerUser $object */
+        if ($format === 'activity') {
+            return array_filter([
+                'messenger' => $object->getMessenger()->name,
+                'username' => $object->getUsername() === null ? null : sprintf('@%s', $object->getUsername()),
+                'name' => $object->getName() ?? null,
+                'bot_ids' => $object->getBotIds() === null ? null : implode(', ', $object->getBotIds()),
+            ]);
+        }
+
         return array_filter([
             'messenger' => $object->getMessenger()->value,
             'identifier' => $object->getIdentifier(),
