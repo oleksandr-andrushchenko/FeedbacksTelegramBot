@@ -21,15 +21,11 @@
 
 # TODO
 * queues
-* subscribe on specific feedbacks
 * generate badge (picture) with username/rating to post in messengers
 * "list my feedbacks" command
 * "list feedbacks on me" command
-* implement notifications on subscription matches
 * manual payments
 * ban users
-* if users country/locale is out of bots country/locale - propose to go to native bot
-* log new user activity
 * allow to buy subscription even if already have one
 
 * Simplify country selection
@@ -37,7 +33,6 @@
 * -> Check other channels and put emojis & description as much as possible + html
 
 * Everything should be extremely easy, simple and clear to understand!!!
-* Add leave as on back button click
 * Fix limits reply (counts miss-matches)
 * Keep feedbacks, feedback searches and feedback lookups even if Limtis exceeded (notify user when found something - maybe as kfor payment before)
 * Protect against multi-account (if search term is popular - ask for money even if limits not exceeded)
@@ -58,7 +53,6 @@
 * Share link on channel's message with feedbacks (give a chance to discuss the feedback)
 * Cache db requests
 * Media uploads (S3)
-* Improve search term text normalization: single-spaces,multi-spaces, case/incese-sensitives
 * Validation for search terms: min/max length, emojis, tags etc.
 * Re-factor: remove dots from questions, searchTerms: duplicates validation
 * Make validators configurable via settings (options)
@@ -69,17 +63,10 @@
 * if phone number added (create command) and rating is good - ask phone number in order to no allow creation on self
 * facebook bot
 * process old non-stopped conversations
-* process new feedbacks (on me, on interested people) notification
-* process new feedbacks search (on me, on interested people) notification
-* add notification about new feedbacks in the channel
 * cache bots as files
-* update bot_ids for messenger users
-* check and handle bot exit event (update messengerUser, for what: to know if send notifications for example, to understand how many people left the bot)
 
 
 * create all possible search terms (for each type) in case of unknown selected????
-* todo notifications
-* normalize UA phones
 * integrate more databases
-* process and log new member update callback
 * add overal term rating to feedback
+* improve all types of searching
