@@ -8,6 +8,7 @@ use App\Entity\Feedback\Feedback;
 use App\Entity\Feedback\FeedbackLookup;
 use App\Entity\Feedback\FeedbackNotification;
 use App\Entity\Feedback\FeedbackSearch;
+use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBotPayment;
 use App\Entity\User\UserContactMessage;
 use App\Message\Event\ActivityEvent;
@@ -15,6 +16,7 @@ use App\Repository\Feedback\FeedbackLookupRepository;
 use App\Repository\Feedback\FeedbackNotificationRepository;
 use App\Repository\Feedback\FeedbackRepository;
 use App\Repository\Feedback\FeedbackSearchRepository;
+use App\Repository\Messenger\MessengerUserRepository;
 use App\Repository\Telegram\Bot\TelegramBotPaymentRepository;
 use App\Repository\User\UserContactMessageRepository;
 use Psr\Log\LoggerInterface;
@@ -29,6 +31,7 @@ class ActivityEventHandler
         private readonly FeedbackNotificationRepository $feedbackNotificationRepository,
         private readonly TelegramBotPaymentRepository $telegramBotPaymentRepository,
         private readonly UserContactMessageRepository $userContactMessageRepository,
+        private readonly MessengerUserRepository $messengerUserRepository,
         private readonly LoggerInterface $activityLogger,
         private readonly LoggerInterface $logger,
     )
@@ -45,6 +48,7 @@ class ActivityEventHandler
                 FeedbackNotification::class => $this->feedbackNotificationRepository,
                 TelegramBotPayment::class => $this->telegramBotPaymentRepository,
                 UserContactMessage::class => $this->userContactMessageRepository,
+                MessengerUser::class => $this->messengerUserRepository,
                 default => null,
             };
 

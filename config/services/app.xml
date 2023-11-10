@@ -71,6 +71,7 @@
             <argument type="service" id="app.feedback_lookup_repository"/>
             <argument type="service" id="app.telegram_bot_payment_repository"/>
             <argument type="service" id="app.user_contact_message_repository"/>
+            <argument type="service" id="app.messenger_user_repository"/>
             <argument type="service" id="app.activity_logger"/>
             <argument type="service" id="logger"/>
             <tag name="messenger.message_handler" handles="App\Message\Event\ActivityEvent" bus="app.command_bus"/>
