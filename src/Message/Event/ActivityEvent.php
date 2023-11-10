@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Message\Command;
+namespace App\Message\Event;
 
 use LogicException;
 
-readonly class NotifyAdminAboutNewActivityCommand
+readonly class ActivityEvent
 {
     private ?string $entityClass;
     private ?string $entityId;

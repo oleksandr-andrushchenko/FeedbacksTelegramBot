@@ -84,24 +84,8 @@
         <service id="app.feedback_search_term_repository" class="App\Repository\Feedback\FeedbackSearchTermRepository">
             <argument type="service" id="doctrine"/>
         </service>
-        <service id="app.feedback_search_term_telegram_notification_repository"
-                 class="App\Repository\Feedback\FeedbackSearchTermTelegramNotificationRepository">
-            <argument type="service" id="doctrine"/>
-        </service>
-        <service id="app.feedback_search_search_term_telegram_notification_repository"
-                 class="App\Repository\Feedback\FeedbackSearchSearchTermTelegramNotificationRepository">
-            <argument type="service" id="doctrine"/>
-        </service>
-        <service id="app.feedback_search_telegram_notification_repository"
-                 class="App\Repository\Feedback\FeedbackSearchTelegramNotificationRepository">
-            <argument type="service" id="doctrine"/>
-        </service>
-        <service id="app.feedback_telegram_notification_repository"
-                 class="App\Repository\Feedback\FeedbackTelegramNotificationRepository">
-            <argument type="service" id="doctrine"/>
-        </service>
-        <service id="app.feedback_lookup_telegram_notification_repository"
-                 class="App\Repository\Feedback\FeedbackLookupTelegramNotificationRepository">
+        <service id="app.feedback_notification_repository"
+                 class="App\Repository\Feedback\FeedbackNotificationRepository">
             <argument type="service" id="doctrine"/>
         </service>
         <service id="app.feedback_search_term_validator" class="App\Validator\Feedback\SearchTermTransferValidator"
@@ -189,17 +173,9 @@
             <argument type="service" id="app.intl_currency_provider"/>
             <tag name="serializer.normalizer" priority="-966"/>
         </service>
-        <service id="app.feedback_search_term_user_telegram_notification_normalizer"
-                 class="App\Serializer\Feedback\FeedbackSearchTermUserTelegramNotificationNormalizer" lazy="true">
+        <service id="app.feedback_notification_normalizer"
+                 class="App\Serializer\Feedback\FeedbackNotificationNormalizer" lazy="true">
             <tag name="serializer.normalizer" priority="-965"/>
-        </service>
-        <service id="app.feedback_search_user_telegram_notification_normalizer"
-                 class="App\Serializer\Feedback\FeedbackSearchUserTelegramNotificationNormalizer" lazy="true">
-            <tag name="serializer.normalizer" priority="-964"/>
-        </service>
-        <service id="app.feedback_search_search_term_user_telegram_notification_normalizer"
-                 class="App\Serializer\Feedback\FeedbackSearchSearchTermUserTelegramNotificationNormalizer" lazy="true">
-            <tag name="serializer.normalizer" priority="-963"/>
         </service>
         <service id="app.feedback_command_options_factory"
                  class="App\Service\Feedback\Command\FeedbackCommandOptionsFactory" lazy="true"/>
@@ -624,14 +600,6 @@
             <tag name="messenger.message_handler" handles="App\Message\Event\Feedback\FeedbackSearchCreatedEvent"
                  bus="app.event_bus"/>
         </service>
-        <service id="app.feedback_user_subscription_created_event_handler"
-                 class="App\Message\EventHandler\Feedback\FeedbackUserSubscriptionCreatedEventHandler" lazy="true">
-            <argument type="service" id="app.feedback_user_subscription_repository"/>
-            <argument type="service" id="logger"/>
-            <argument type="service" id="app.command_bus"/>
-            <tag name="messenger.message_handler"
-                 handles="App\Message\Event\Feedback\FeedbackUserSubscriptionCreatedEvent" bus="app.event_bus"/>
-        </service>
         <service id="app.feedback_search_term_messenger_provider"
                  class="App\Service\Feedback\SearchTerm\SearchTermMessengerProvider" lazy="true"/>
         <service id="app.feedbacks_publish_unpublished_console_command"
@@ -667,16 +635,6 @@
                  handles="App\Message\Command\Feedback\NotifyFeedbackTargetAboutNewFeedbackCommand"
                  bus="app.command_bus"/>
         </service>
-        <service id="app.feedback_search_term_telegram_notification_created_event_handler"
-                 class="App\Message\EventHandler\Feedback\FeedbackSearchTermTelegramNotificationCreatedEventHandler"
-                 lazy="true">
-            <argument type="service" id="app.feedback_search_term_telegram_notification_repository"/>
-            <argument type="service" id="logger"/>
-            <argument type="service" id="app.command_bus"/>
-            <tag name="messenger.message_handler"
-                 handles="App\Message\Event\Feedback\FeedbackSearchTermTelegramNotificationCreatedEvent"
-                 bus="app.event_bus"/>
-        </service>
         <service id="app.notify_feedback_search_sources_about_new_feedback_command_handler"
                  class="App\Message\CommandHandler\Feedback\NotifyFeedbackSearchSourcesAboutNewFeedbackCommandHandler"
                  lazy="true">
@@ -694,18 +652,9 @@
                  handles="App\Message\Command\Feedback\NotifyFeedbackSearchSourcesAboutNewFeedbackCommand"
                  bus="app.command_bus"/>
         </service>
-        <service id="app.feedback_search_telegram_notification_created_event_handler"
-                 class="App\Message\EventHandler\Feedback\FeedbackSearchTelegramNotificationCreatedEventHandler"
+        <service id="app.notify_feedback_lookup_sources_about_new_feedback_search_command_handler"
+                 class="App\Message\CommandHandler\Feedback\NotifyFeedbackLookupSourcesAboutNewFeedbackSearchCommandHandler"
                  lazy="true">
-            <argument type="service" id="app.feedback_search_telegram_notification_repository"/>
-            <argument type="service" id="logger"/>
-            <argument type="service" id="app.command_bus"/>
-            <tag name="messenger.message_handler"
-                 handles="App\Message\Event\Feedback\FeedbackSearchTelegramNotificationCreatedEvent"
-                 bus="app.event_bus"/>
-        </service>
-        <service id="app.notify_feedback_lookups_command_handler"
-                 class="App\Message\CommandHandler\Feedback\NotifyFeedbackLookupSourcesAboutNewFeedbackSearchCommandHandler" lazy="true">
             <argument type="service" id="app.feedback_search_repository"/>
             <argument type="service" id="logger"/>
             <argument type="service" id="app.feedback_lookup_searcher"/>
@@ -717,22 +666,13 @@
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.event_bus"/>
             <tag name="messenger.message_handler"
-                 handles="App\Message\Command\Feedback\NotifyFeedbackLookupSourcesAboutNewFeedbackSearchCommand" bus="app.command_bus"/>
-        </service>
-        <service id="app.feedback_lookup_telegram_notification_created_event_handler"
-                 class="App\Message\EventHandler\Feedback\FeedbackLookupTelegramNotificationCreatedEventHandler"
-                 lazy="true">
-            <argument type="service" id="app.feedback_lookup_telegram_notification_repository"/>
-            <argument type="service" id="logger"/>
-            <argument type="service" id="app.command_bus"/>
-            <tag name="messenger.message_handler"
-                 handles="App\Message\Event\Feedback\FeedbackLookupTelegramNotificationCreatedEvent"
-                 bus="app.event_bus"/>
+                 handles="App\Message\Command\Feedback\NotifyFeedbackLookupSourcesAboutNewFeedbackSearchCommand"
+                 bus="app.command_bus"/>
         </service>
         <service id="app.feedback_lookup_searcher" class="App\Service\Feedback\FeedbackLookupSearcher" lazy="true">
             <argument type="service" id="app.feedback_lookup_repository"/>
         </service>
-        <service id="app.notify_feedback_search_search_terms_command_handler"
+        <service id="app.notify_feedback_search_targets_about_new_feedback_search_command_handler"
                  class="App\Message\CommandHandler\Feedback\NotifyFeedbackSearchTargetsAboutNewFeedbackSearchCommandHandler"
                  lazy="true">
             <argument type="service" id="app.feedback_search_repository"/>
@@ -749,16 +689,6 @@
             <tag name="messenger.message_handler"
                  handles="App\Message\Command\Feedback\NotifyFeedbackSearchTargetsAboutNewFeedbackSearchCommand"
                  bus="app.command_bus"/>
-        </service>
-        <service id="app.feedback_search_search_term_telegram_notification_created_event_handler"
-                 class="App\Message\EventHandler\Feedback\FeedbackSearchSearchTermTelegramNotificationCreatedEventHandler"
-                 lazy="true">
-            <argument type="service" id="app.feedback_search_search_term_telegram_notification_repository"/>
-            <argument type="service" id="logger"/>
-            <argument type="service" id="app.command_bus"/>
-            <tag name="messenger.message_handler"
-                 handles="App\Message\Event\Feedback\FeedbackSearchSearchTermTelegramNotificationCreatedEvent"
-                 bus="app.event_bus"/>
         </service>
         <service id="app.notify_feedback_sources_about_new_feedback_command_handler"
                  class="App\Message\CommandHandler\Feedback\NotifyFeedbackSourcesAboutNewFeedbackCommandHandler"
@@ -789,6 +719,7 @@
             <argument type="service" id="app.telegram_bot_message_sender"/>
             <argument type="service" id="app.id_generator"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.event_bus"/>
             <tag name="messenger.message_handler"
                  handles="App\Message\Command\Feedback\NotifyFeedbackSearchSourcesAboutNewFeedbackSearchCommand"
                  bus="app.command_bus"/>
@@ -816,6 +747,7 @@
             <argument type="service" id="app.telegram_bot_message_sender"/>
             <argument type="service" id="app.id_generator"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.event_bus"/>
             <tag name="messenger.message_handler"
                  handles="App\Message\Command\Feedback\NotifyFeedbackLookupTargetAboutNewFeedbackLookupCommand"
                  bus="app.command_bus"/>
@@ -832,6 +764,7 @@
             <argument type="service" id="app.telegram_bot_message_sender"/>
             <argument type="service" id="app.id_generator"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.event_bus"/>
             <tag name="messenger.message_handler"
                  handles="App\Message\Command\Feedback\NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommand"
                  bus="app.command_bus"/>

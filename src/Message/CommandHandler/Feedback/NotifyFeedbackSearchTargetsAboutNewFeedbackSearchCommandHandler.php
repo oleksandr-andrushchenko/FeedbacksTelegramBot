@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\Message\CommandHandler\Feedback;
 
+use App\Entity\Feedback\FeedbackNotification;
 use App\Entity\Feedback\FeedbackSearch;
-use App\Entity\Feedback\FeedbackSearchSearchTermTelegramNotification;
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBot;
+use App\Enum\Feedback\FeedbackNotificationType;
 use App\Enum\Messenger\Messenger;
 use App\Enum\Telegram\TelegramBotGroupName;
 use App\Message\Command\Feedback\NotifyFeedbackSearchTargetsAboutNewFeedbackSearchCommand;
-use App\Message\Event\Feedback\FeedbackSearchSearchTermTelegramNotificationCreatedEvent;
+use App\Message\Event\ActivityEvent;
 use App\Repository\Feedback\FeedbackSearchRepository;
 use App\Repository\Messenger\MessengerUserRepository;
 use App\Repository\Telegram\Bot\TelegramBotRepository;
@@ -101,16 +102,17 @@ class NotifyFeedbackSearchTargetsAboutNewFeedbackSearchCommandHandler
                 keepKeyboard: true
             );
 
-            $notification = new FeedbackSearchSearchTermTelegramNotification(
+            $notification = new FeedbackNotification(
                 $this->idGenerator->generateId(),
+                FeedbackNotificationType::feedback_search_target_about_new_feedback_search,
                 $messengerUser,
                 $searchTerm,
-                $feedbackSearch,
-                $bot
+                feedbackSearch: $feedbackSearch,
+                telegramBot: $bot
             );
             $this->entityManager->persist($notification);
 
-            $this->eventBus->dispatch(new FeedbackSearchSearchTermTelegramNotificationCreatedEvent(notification: $notification));
+            $this->eventBus->dispatch(new ActivityEvent(entity: $notification));
         }
     }
 

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Serializer\Feedback;
 
-use App\Entity\Feedback\FeedbackSearchTermTelegramNotification;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use App\Entity\Feedback\FeedbackNotification;
 
-class FeedbackSearchTermUserTelegramNotificationNormalizer implements NormalizerInterface
+class FeedbackNotificationNormalizer implements NormalizerInterface
 {
     /**
-     * @param FeedbackSearchTermTelegramNotification $object
+     * @param FeedbackNotification $object
      * @param string|null $format
      * @param array $context
      * @return array
@@ -19,6 +19,8 @@ class FeedbackSearchTermUserTelegramNotificationNormalizer implements Normalizer
     {
         if ($format === 'activity') {
             $data = [];
+
+            $data['type'] = $object->getType()->name;
 
             $user = $object->getMessengerUser();
 
@@ -40,6 +42,6 @@ class FeedbackSearchTermUserTelegramNotificationNormalizer implements Normalizer
 
     public function supportsNormalization(mixed $data, string $format = null): bool
     {
-        return $data instanceof FeedbackSearchTermTelegramNotification && in_array($format, ['activity'], true);
+        return $data instanceof FeedbackNotification && in_array($format, ['activity'], true);
     }
 }

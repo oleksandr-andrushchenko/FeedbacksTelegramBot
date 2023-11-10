@@ -6,7 +6,6 @@ namespace App\Message\EventHandler\Feedback;
 
 use App\Message\Command\Feedback\NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommand;
 use App\Message\Command\Feedback\NotifyFeedbackLookupTargetAboutNewFeedbackLookupCommand;
-use App\Message\Command\NotifyAdminAboutNewActivityCommand;
 use App\Message\Event\Feedback\FeedbackLookupCreatedEvent;
 use App\Repository\Feedback\FeedbackLookupRepository;
 use Psr\Log\LoggerInterface;
@@ -31,7 +30,6 @@ class FeedbackLookupCreatedEventHandler
             return;
         }
 
-        $this->commandBus->dispatch(new NotifyAdminAboutNewActivityCommand(entity: $lookup));
         $this->commandBus->dispatch(new NotifyFeedbackLookupTargetAboutNewFeedbackLookupCommand(lookup: $lookup));
         $this->commandBus->dispatch(new NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommand(lookup: $lookup));
     }

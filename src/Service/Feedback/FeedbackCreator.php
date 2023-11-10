@@ -9,6 +9,7 @@ use App\Entity\Feedback\Feedback;
 use App\Exception\Feedback\FeedbackCommandLimitExceededException;
 use App\Exception\Feedback\FeedbackOnOneselfException;
 use App\Exception\ValidatorException;
+use App\Message\Event\ActivityEvent;
 use App\Message\Event\Feedback\FeedbackCreatedEvent;
 use App\Service\Feedback\Command\FeedbackCommandLimitsChecker;
 use App\Service\Feedback\SearchTerm\FeedbackSearchTermUpserter;
@@ -69,6 +70,7 @@ class FeedbackCreator
         $feedback = $this->constructFeedback($transfer);
         $this->entityManager->persist($feedback);
 
+        $this->eventBus->dispatch(new ActivityEvent(entity: $feedback));
         $this->eventBus->dispatch(new FeedbackCreatedEvent(feedback: $feedback));
 
         return $feedback;

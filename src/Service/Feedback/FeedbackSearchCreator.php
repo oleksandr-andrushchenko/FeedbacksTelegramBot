@@ -8,6 +8,7 @@ use App\Entity\Feedback\Command\FeedbackCommandOptions;
 use App\Entity\Feedback\FeedbackSearch;
 use App\Exception\Feedback\FeedbackCommandLimitExceededException;
 use App\Exception\ValidatorException;
+use App\Message\Event\ActivityEvent;
 use App\Message\Event\Feedback\FeedbackSearchCreatedEvent;
 use App\Service\Feedback\Command\FeedbackCommandLimitsChecker;
 use App\Service\Feedback\SearchTerm\FeedbackSearchTermUpserter;
@@ -71,6 +72,7 @@ class FeedbackSearchCreator
         );
         $this->entityManager->persist($search);
 
+        $this->eventBus->dispatch(new ActivityEvent(entity: $search));
         $this->eventBus->dispatch(new FeedbackSearchCreatedEvent(search: $search));
 
         return $search;

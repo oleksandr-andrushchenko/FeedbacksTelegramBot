@@ -29,14 +29,6 @@
             <argument type="service" id="app.id_generator"/>
             <argument type="service" id="app.event_bus"/>
         </service>
-        <service id="app.user_contact_message_created_event_handler"
-                 class="App\Message\EventHandler\User\UserContactMessageCreatedEventHandler" lazy="true">
-            <argument type="service" id="app.user_contact_message_repository"/>
-            <argument type="service" id="logger"/>
-            <argument type="service" id="app.command_bus"/>
-            <tag name="messenger.message_handler"
-                 handles="App\Message\Event\User\UserContactMessageCreatedEvent" bus="app.event_bus"/>
-        </service>
         <service id="app.user_contact_message_normalizer" class="App\Serializer\User\UserContactMessageNormalizer"
                  lazy="true">
             <tag name="serializer.normalizer" priority="-940"/>

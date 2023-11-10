@@ -7,7 +7,6 @@ namespace App\Message\EventHandler\Feedback;
 use App\Message\Command\Feedback\NotifyFeedbackLookupSourcesAboutNewFeedbackSearchCommand;
 use App\Message\Command\Feedback\NotifyFeedbackSearchSourcesAboutNewFeedbackSearchCommand;
 use App\Message\Command\Feedback\NotifyFeedbackSearchTargetsAboutNewFeedbackSearchCommand;
-use App\Message\Command\NotifyAdminAboutNewActivityCommand;
 use App\Message\Event\Feedback\FeedbackSearchCreatedEvent;
 use App\Repository\Feedback\FeedbackSearchRepository;
 use Psr\Log\LoggerInterface;
@@ -32,7 +31,6 @@ class FeedbackSearchCreatedEventHandler
             return;
         }
 
-        $this->commandBus->dispatch(new NotifyAdminAboutNewActivityCommand(entity: $search));
         $this->commandBus->dispatch(new NotifyFeedbackSearchTargetsAboutNewFeedbackSearchCommand(search: $search));
         $this->commandBus->dispatch(new NotifyFeedbackLookupSourcesAboutNewFeedbackSearchCommand(search: $search));
         $this->commandBus->dispatch(new NotifyFeedbackSearchSourcesAboutNewFeedbackSearchCommand(search: $search));

@@ -41,7 +41,12 @@ framework:
 
     routing:
       # Route your messages to the transports
-      App\Message\Command\NotifyAdminAboutNewActivityCommand: sync
+      App\Message\Event\ActivityEvent: sync
+      App\Message\Event\Feedback\FeedbackCreatedEvent: sync
+      App\Message\Event\Feedback\FeedbackLookupCreatedEvent: sync
+      App\Message\Event\Feedback\FeedbackSearchCreatedEvent: sync
+      App\Message\Event\Feedback\FeedbackSendToTelegramChannelConfirmReceivedEvent: sync
+
       App\Message\Command\Feedback\NotifyFeedbackSourcesAboutNewFeedbackCommand: sync
       App\Message\Command\Feedback\NotifyFeedbackTargetAboutNewFeedbackCommand: sync
       App\Message\Command\Feedback\NotifyFeedbackSearchSourcesAboutNewFeedbackCommand: sync
@@ -50,20 +55,6 @@ framework:
       App\Message\Command\Feedback\NotifyFeedbackSearchSourcesAboutNewFeedbackSearchCommand: sync
       App\Message\Command\Feedback\NotifyFeedbackLookupTargetAboutNewFeedbackLookupCommand: sync
       App\Message\Command\Feedback\NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommand: sync
-      App\Message\Event\Feedback\FeedbackCreatedEvent: sync
-      App\Message\Event\Feedback\FeedbackLookupCreatedEvent: sync
-      App\Message\Event\Feedback\FeedbackSearchCreatedEvent: sync
-      App\Message\Event\Feedback\FeedbackSearchTermTelegramNotificationCreatedEvent: sync
-      App\Message\Event\Feedback\FeedbackTelegramNotificationCreatedEvent: sync
-      App\Message\Event\Feedback\FeedbackSearchTelegramNotificationCreatedEvent: sync
-      App\Message\Event\Feedback\FeedbackLookupTelegramNotificationCreatedEvent: sync
-      App\Message\Event\Feedback\FeedbackSearchSearchTermTelegramNotificationCreatedEvent: sync
-      App\Message\Event\Feedback\FeedbackSendToTelegramChannelConfirmReceivedEvent: sync
-      App\Message\Event\Feedback\FeedbackUserSubscriptionCreatedEvent: sync
-      App\Message\Event\Telegram\TelegramBotPaymentCreatedEvent: sync
-      App\Message\Event\Telegram\TelegramBotPaymentPreCheckoutEvent: sync
-      App\Message\Event\Telegram\TelegramBotPaymentSuccessfulEvent: sync
-      App\Message\Event\User\UserContactMessageCreatedEvent: sync
 
 # when@test:
 #    framework:

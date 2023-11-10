@@ -6,7 +6,7 @@ namespace App\Service\User;
 
 use App\Entity\User\UserContactMessage;
 use App\Exception\ValidatorException;
-use App\Message\Event\User\UserContactMessageCreatedEvent;
+use App\Message\Event\ActivityEvent;
 use App\Service\IdGenerator;
 use App\Transfer\User\UserContactMessageTransfer;
 use App\Service\Validator;
@@ -42,7 +42,7 @@ class UserContactMessageCreator
         );
         $this->entityManager->persist($message);
 
-        $this->eventBus->dispatch(new UserContactMessageCreatedEvent(message: $message));
+        $this->eventBus->dispatch(new ActivityEvent(entity: $message));
 
         return $message;
     }

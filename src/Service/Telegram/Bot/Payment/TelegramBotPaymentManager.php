@@ -13,9 +13,7 @@ use App\Enum\Telegram\TelegramBotPaymentStatus;
 use App\Exception\Telegram\Bot\Payment\TelegramBotInvalidCurrencyBotException;
 use App\Exception\Telegram\Bot\Payment\TelegramBotPaymentNotFoundException;
 use App\Exception\Telegram\Bot\Payment\TelegramBotUnknownPaymentException;
-use App\Message\Event\Telegram\TelegramBotPaymentCreatedEvent;
-use App\Message\Event\Telegram\TelegramBotPaymentPreCheckoutEvent;
-use App\Message\Event\Telegram\TelegramBotPaymentSuccessfulEvent;
+use App\Message\Event\ActivityEvent;
 use App\Repository\Telegram\Bot\TelegramBotPaymentRepository;
 use App\Service\Intl\CurrencyProvider;
 use App\Service\Telegram\Bot\Api\TelegramBotInvoiceSenderInterface;
@@ -84,7 +82,7 @@ class TelegramBotPaymentManager
         );
         $this->entityManager->persist($payment);
 
-        $this->eventBus->dispatch(new TelegramBotPaymentCreatedEvent(payment: $payment));
+        $this->eventBus->dispatch(new ActivityEvent(entity: $payment));
 
         $this->telegramBotInvoiceSender->sendInvoice(
             $bot,
@@ -126,7 +124,7 @@ class TelegramBotPaymentManager
 
         $payment->setStatus(TelegramBotPaymentStatus::PRE_CHECKOUT_RECEIVED);
 
-        $this->eventBus->dispatch(new TelegramBotPaymentPreCheckoutEvent(payment: $payment));
+        $this->eventBus->dispatch(new ActivityEvent(entity: $payment));
 
         return $payment;
     }
@@ -147,7 +145,7 @@ class TelegramBotPaymentManager
 
         $payment->setStatus(TelegramBotPaymentStatus::SUCCESSFUL_PAYMENT_RECEIVED);
 
-        $this->eventBus->dispatch(new TelegramBotPaymentSuccessfulEvent(payment: $payment));
+        $this->eventBus->dispatch(new ActivityEvent(entity: $payment));
 
         return $payment;
     }

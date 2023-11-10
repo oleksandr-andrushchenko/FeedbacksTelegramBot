@@ -486,17 +486,5 @@
                  class="App\Service\Telegram\Channel\View\TelegramChannelLinkViewProvider" lazy="true">
             <argument type="service" id="app.telegram_link_provider"/>
         </service>
-        <service id="app.telegram_bot_payment_event_handler"
-                 class="App\Message\EventHandler\Telegram\TelegramBotPaymentEventHandler" lazy="true">
-            <argument type="service" id="app.telegram_bot_payment_repository"/>
-            <argument type="service" id="logger"/>
-            <argument type="service" id="app.command_bus"/>
-            <tag name="messenger.message_handler"
-                 handles="App\Message\Event\Telegram\TelegramBotPaymentCreatedEvent" bus="app.event_bus"/>
-            <tag name="messenger.message_handler"
-                 handles="App\Message\Event\Telegram\TelegramBotPaymentPreCheckoutEvent" bus="app.event_bus"/>
-            <tag name="messenger.message_handler"
-                 handles="App\Message\Event\Telegram\TelegramBotPaymentSuccessfulEvent" bus="app.event_bus"/>
-        </service>
     </services>
 </container>

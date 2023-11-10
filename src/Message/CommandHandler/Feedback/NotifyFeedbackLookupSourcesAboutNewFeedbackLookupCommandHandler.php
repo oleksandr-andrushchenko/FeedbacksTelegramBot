@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace App\Message\CommandHandler\Feedback;
 
 use App\Entity\Feedback\FeedbackLookup;
-use App\Entity\Feedback\FeedbackLookupSourceAboutNewFeedbackLookupTelegramNotification;
+use App\Entity\Feedback\FeedbackNotification;
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBot;
+use App\Enum\Feedback\FeedbackNotificationType;
 use App\Enum\Messenger\Messenger;
 use App\Enum\Telegram\TelegramBotGroupName;
 use App\Message\Command\Feedback\NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommand;
+use App\Message\Event\ActivityEvent;
 use App\Repository\Feedback\FeedbackLookupRepository;
 use App\Repository\Telegram\Bot\TelegramBotRepository;
 use App\Service\Feedback\FeedbackLookupSearcher;
@@ -20,6 +22,7 @@ use App\Service\IdGenerator;
 use App\Service\Telegram\Bot\Api\TelegramBotMessageSenderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommandHandler
@@ -34,6 +37,7 @@ class NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommandHandler
         private readonly TelegramBotMessageSenderInterface $telegramBotMessageSender,
         private readonly IdGenerator $idGenerator,
         private readonly EntityManagerInterface $entityManager,
+        private readonly MessageBusInterface $eventBus,
     )
     {
     }
@@ -87,15 +91,18 @@ class NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommandHandler
                 keepKeyboard: true
             );
 
-            $notification = new FeedbackLookupSourceAboutNewFeedbackLookupTelegramNotification(
+            $notification = new FeedbackNotification(
                 $this->idGenerator->generateId(),
+                FeedbackNotificationType::feedback_lookup_source_about_new_feedback_lookup,
                 $messengerUser,
                 $searchTerm,
-                $feedbackLookup,
-                $targetFeedbackLookup,
-                $bot
+                feedbackLookup: $feedbackLookup,
+                targetFeedbackLookup: $targetFeedbackLookup,
+                telegramBot: $bot
             );
             $this->entityManager->persist($notification);
+
+            $this->eventBus->dispatch(new ActivityEvent(entity: $notification));
         }
     }
 

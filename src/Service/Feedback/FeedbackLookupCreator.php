@@ -8,6 +8,7 @@ use App\Entity\Feedback\Command\FeedbackCommandOptions;
 use App\Entity\Feedback\FeedbackLookup;
 use App\Exception\Feedback\FeedbackCommandLimitExceededException;
 use App\Exception\ValidatorException;
+use App\Message\Event\ActivityEvent;
 use App\Message\Event\Feedback\FeedbackLookupCreatedEvent;
 use App\Service\Feedback\Command\FeedbackCommandLimitsChecker;
 use App\Service\Feedback\SearchTerm\FeedbackSearchTermUpserter;
@@ -71,6 +72,7 @@ class FeedbackLookupCreator
         );
         $this->entityManager->persist($lookup);
 
+        $this->eventBus->dispatch(new ActivityEvent(entity: $lookup));
         $this->eventBus->dispatch(new FeedbackLookupCreatedEvent(lookup: $lookup));
 
         return $lookup;
