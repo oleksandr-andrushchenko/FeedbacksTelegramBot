@@ -70,3 +70,4 @@
 * integrate more databases
 * add overal term rating to feedback
 * improve all types of searching
+* fix bug with empty keyboard when error occurs in message handlers
