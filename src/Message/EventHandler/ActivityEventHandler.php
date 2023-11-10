@@ -20,7 +20,7 @@ use App\Repository\Messenger\MessengerUserRepository;
 use App\Repository\Telegram\Bot\TelegramBotPaymentRepository;
 use App\Repository\User\UserContactMessageRepository;
 use Psr\Log\LoggerInterface;
-use Throwable;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class ActivityEventHandler
 {
@@ -33,6 +33,7 @@ class ActivityEventHandler
         private readonly UserContactMessageRepository $userContactMessageRepository,
         private readonly MessengerUserRepository $messengerUserRepository,
         private readonly LoggerInterface $activityLogger,
+        private readonly NormalizerInterface $normalizer,
         private readonly LoggerInterface $logger,
     )
     {
@@ -79,10 +80,17 @@ class ActivityEventHandler
             return;
         }
 
-        try {
-            $this->activityLogger->info($entity);
-        } catch (Throwable $exception) {
-            $this->logger->error($exception);
+        $updated = method_exists($entity, 'getUpdatedAt') && $entity->getUpdatedAt() !== null;
+        $class = get_class($entity);
+
+        $classPrefix = 'App\Entity';
+        if (str_starts_with($class, $classPrefix)) {
+            $class = substr($class, strlen($classPrefix) + 1);
         }
+
+        $envelop = sprintf('"%s" has been %s(?)', $class, $updated ? 'updated' : 'created');
+        $context = $this->normalizer->normalize($entity, 'activity');
+
+        $this->activityLogger->info($envelop, $context);
     }
 }
