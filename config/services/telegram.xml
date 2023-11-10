@@ -486,5 +486,8 @@
                  class="App\Service\Telegram\Channel\View\TelegramChannelLinkViewProvider" lazy="true">
             <argument type="service" id="app.telegram_link_provider"/>
         </service>
+        <service id="app.telegram_bot_provider" class="App\Service\Telegram\Bot\TelegramBotProvider" lazy="true">
+            <argument type="service" id="app.telegram_bot_repository"/>
+        </service>
     </services>
 </container>
