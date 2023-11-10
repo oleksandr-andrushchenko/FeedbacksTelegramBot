@@ -132,6 +132,11 @@ class MessengerUser
         return $this;
     }
 
+    public function getUsernameHistory(): ?array
+    {
+        return $this->usernameHistory;
+    }
+
     public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
