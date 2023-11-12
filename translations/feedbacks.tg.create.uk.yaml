@@ -10,7 +10,7 @@ query:
   confirm: Додати відгук?
   send_to_channel_confirm: Бажаєте анонімно опубліківати Ваш відгук на каналах %channels%?
 keyboard:
-  create_confirm: Додати відгук
+  create_confirm: Пропустити і Додати відгук
 reply:
   canceled: Діалог додавання відгуку скасовано.
   created: Відгук успішно додано.

@@ -10,7 +10,7 @@ query:
   confirm: Create feedback?
   send_to_channel_confirm: Would you like to post your feedback anonymously on %channels% channels?
 keyboard:
-  create_confirm: Add feedback
+  create_confirm: Skip and Add feedback
 reply:
   canceled: Feedback adding dialog has been canceled.
   created: Feedback has been successfully added.
