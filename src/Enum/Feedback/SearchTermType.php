@@ -59,4 +59,15 @@ enum SearchTermType: int
         self::messenger_username,
         self::messenger_profile_url,
     ];
+
+    public static function fromName(string $name): ?self
+    {
+        foreach (self::cases() as $enum) {
+            if ($enum->name === $name) {
+                return $enum;
+            }
+        }
+
+        return null;
+    }
 }
