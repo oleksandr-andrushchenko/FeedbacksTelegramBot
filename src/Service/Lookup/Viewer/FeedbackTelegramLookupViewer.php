@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Lookup\Viewer;
 
 use App\Entity\Feedback\Feedback;
-use App\Entity\Feedback\FeedbackSearch;
+use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Service\Feedback\SearchTerm\SearchTermProvider;
 use App\Service\Feedback\Telegram\Bot\View\FeedbackTelegramViewProvider;
 use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
@@ -22,16 +22,16 @@ class FeedbackTelegramLookupViewer implements LookupViewerInterface
     {
     }
 
-    public function getOnSearchTitle(FeedbackSearch $feedbackSearch, array $context = []): string
+    public function getOnSearchTitle(FeedbackSearchTerm $searchTerm, array $context = []): string
     {
-        $parameters = $this->getParameters($feedbackSearch);
+        $parameters = $this->getParameters($searchTerm);
 
         return $this->translator->trans('on_search', parameters: $parameters, domain: 'lookups.tg.feedback');
     }
 
-    public function getEmptyResultTitle(FeedbackSearch $feedbackSearch, array $context = []): string
+    public function getEmptyResultTitle(FeedbackSearchTerm $searchTerm, array $context = []): string
     {
-        $parameters = $this->getParameters($feedbackSearch);
+        $parameters = $this->getParameters($searchTerm);
 
         $message = '😐 ';
         $message .= $this->translator->trans('empty_result', parameters: $parameters, domain: 'lookups.tg.feedback');
@@ -39,9 +39,9 @@ class FeedbackTelegramLookupViewer implements LookupViewerInterface
         return $message;
     }
 
-    public function getResultTitle(FeedbackSearch $feedbackSearch, int $count, array $context = []): string
+    public function getResultTitle(FeedbackSearchTerm $searchTerm, int $count, array $context = []): string
     {
-        $parameters = $this->getParameters($feedbackSearch);
+        $parameters = $this->getParameters($searchTerm);
         $parameters['count'] = $count;
 
         return $this->translator->trans('result', parameters: $parameters, domain: 'lookups.tg.feedback');
@@ -65,9 +65,9 @@ class FeedbackTelegramLookupViewer implements LookupViewerInterface
         );
     }
 
-    private function getParameters(FeedbackSearch $feedbackSearch): array
+    private function getParameters(FeedbackSearchTerm $searchTerm): array
     {
-        $searchTermTransfer = $this->searchTermProvider->getFeedbackSearchTermTransfer($feedbackSearch->getSearchTerm());
+        $searchTermTransfer = $this->searchTermProvider->getFeedbackSearchTermTransfer($searchTerm);
 
         return [
             'search_term' => $this->searchTermTelegramViewProvider->getSearchTermTelegramView($searchTermTransfer),

@@ -442,12 +442,13 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 'addSecrets' => true,
                 'addSign' => true,
                 'addCountry' => true,
+                'countryCode' => $tg->getBot()->getEntity()->getCountryCode(),
             ];
             $processors = [
-                LookupProcessorName::feedbacks_registry,
+                LookupProcessorName::feedbacks,
             ];
 
-            $this->telegramLookupProcessor->processLookup($feedbackSearch, $render, $context, $processors);
+            $this->telegramLookupProcessor->processLookup($feedbackSearch->getSearchTerm(), $render, $context, $processors);
 
             return $this->queryCreateConfirm($tg);
         } catch (ValidatorException $exception) {

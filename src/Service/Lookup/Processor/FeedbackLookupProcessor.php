@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Lookup\Processor;
 
-use App\Entity\Feedback\FeedbackSearch;
+use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Enum\Lookup\LookupProcessorName;
 use App\Service\Feedback\FeedbackSearcher;
 
@@ -18,18 +18,18 @@ class FeedbackLookupProcessor implements LookupProcessorInterface
 
     public function getName(): LookupProcessorName
     {
-        return LookupProcessorName::feedbacks_registry;
+        return LookupProcessorName::feedbacks;
     }
 
-    public function supports(FeedbackSearch $feedbackSearch, array $context = []): bool
+    public function supports(FeedbackSearchTerm $searchTerm, array $context = []): bool
     {
         return true;
     }
 
-    public function search(FeedbackSearch $feedbackSearch, array $context = []): array
+    public function search(FeedbackSearchTerm $searchTerm, array $context = []): array
     {
         return $this->feedbackSearcher->searchFeedbacks(
-            $feedbackSearch->getSearchTerm(),
+            $searchTerm,
             withUsers: $context['addTime'] ?? false
         );
     }

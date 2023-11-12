@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Enum\Lookup;
 
-enum LookupProcessorName: int
+enum LookupProcessorName: string
 {
-    case feedbacks_registry = 0;
+    case feedbacks = 'feedbacks';
 
     public static function fromName(string $name): ?self
     {
