@@ -494,8 +494,7 @@
             <argument type="service" id="app.feedback_search_term_telegram_view_provider"/>
             <argument type="service" id="app.feedback_search_term_type_provider"/>
             <argument type="service" id="app.feedback_search_creator"/>
-            <argument type="service" id="app.feedback_searcher"/>
-            <argument type="service" id="app.feedback_telegram_view_provider"/>
+            <argument type="service" id="app.lookup_telegram_processor"/>
             <argument>%app.search.search_term_type_step%</argument>
             <argument>%app.search.confirm_step%</argument>
             <tag name="app.telegram_conversation_feedbacks"/>

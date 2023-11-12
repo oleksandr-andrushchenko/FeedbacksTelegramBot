@@ -3,7 +3,7 @@ query:
   search_term_put_one: Вкажіть щось одне
   search_term_type: Ким або чим є %search_term%?
   confirm: Почати пошук відгуків про %search_term%?
-  create_confirm: Бажаєте залишити відгук?
+  create_confirm: Бажаєте залишити свій власний відгук про %search_term%?
 keyboard:
   change_search_term: Змінити пошуковий термін
 reply:

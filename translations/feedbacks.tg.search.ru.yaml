@@ -3,7 +3,7 @@ query:
   search_term_put_one: Укажите что-то одно
   search_term_type: Кем или чем является %search_term%?
   confirm: Начать поиск отзывов о %search_term%?
-  create_confirm: Хотите оставить отзыв?
+  create_confirm: Хотите оставить свой собственный отзыв о %search_term%?
 keyboard:
   change_search_term: Изменить поисковый запрос
 reply:

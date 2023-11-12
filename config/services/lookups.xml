@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.lookup_telegram_processor"
+                 class="App\Service\Lookup\Telegram\Processor\LookupTelegramProcessor" lazy="true">
+            <argument type="tagged_locator" tag="app.lookup_telegram_processor"/>
+            <argument type="service" id="logger"/>
+        </service>
+        <service id="app.lookup_telegram_processor_feedbacks"
+                 class="App\Service\Lookup\Telegram\Processor\FeedbacksLookupTelegramProcessor" lazy="true">
+            <argument type="service" id="app.feedback_searcher"/>
+            <argument type="service" id="app.feedback_search_term_telegram_view_provider"/>
+            <argument type="service" id="app.feedback_telegram_view_provider"/>
+            <argument type="service" id="app.feedback_search_term_provider"/>
+            <tag name="app.lookup_telegram_processor"/>
+        </service>
+    </services>
+</container>

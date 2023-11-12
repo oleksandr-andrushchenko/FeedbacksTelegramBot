@@ -8,6 +8,7 @@ enum TelegramBotGroupName: int
 {
     case default = 0;
     case feedbacks = 1;
+    case lookups = 2;
 
     public static function fromName(string $name): ?self
     {

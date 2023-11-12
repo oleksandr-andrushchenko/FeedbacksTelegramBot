@@ -443,7 +443,6 @@ class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'searchTerm' => new SearchTermTransfer('any_search_term', type: SearchTermType::unknown),
             'input' => $this->yesButton(),
             'shouldSeeReplies' => [
-                'reply.empty_list',
                 'query.create_confirm',
             ],
             'shouldSeeButtons' => [
@@ -465,10 +464,13 @@ class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 'reply.title',
                 $searchTerm->getText(),
                 $this->searchTermTypeTrans($searchTerm->getType()),
-                ...$this->chooseActionReplies(),
+                'query.create_confirm',
             ],
             'shouldSeeButtons' => [
-                ...$this->chooseActionButtons(),
+                $this->yesButton(),
+                $this->noButton(),
+                $this->helpButton(),
+                $this->cancelButton(),
             ],
             'shouldSeeStep' => null,
         ];
@@ -590,7 +592,6 @@ class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'searchTerm' => new SearchTermTransfer('any_search_term', type: SearchTermType::unknown),
             'expectedSearchTermCountDelta' => 1,
             'shouldSeeReplies' => [
-                'reply.empty_list',
                 'query.create_confirm',
             ],
         ];
@@ -604,7 +605,7 @@ class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 $this->searchTermTypeTrans($searchTerm->getType()),
                 'sign.create',
                 'sign.search',
-                ...$this->chooseActionReplies(),
+                'query.create_confirm',
             ],
         ];
     }

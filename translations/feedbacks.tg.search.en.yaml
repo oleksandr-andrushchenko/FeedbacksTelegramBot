@@ -3,7 +3,7 @@ query:
   search_term_put_one: Specify one thing
   search_term_type: Who or what %search_term% is?
   confirm: Confirm feedbacks search by %search_term%?
-  create_confirm: Would you like to leave a feedback?
+  create_confirm: Would you like to leave your own feedback on %search_term%?
 keyboard:
   change_search_term: Change search term
 reply:
