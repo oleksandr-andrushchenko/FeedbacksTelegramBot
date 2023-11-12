@@ -80,15 +80,18 @@ class ActivityEventHandler
             return;
         }
 
-        $updated = method_exists($entity, 'getUpdatedAt') && $entity->getUpdatedAt() !== null;
-        $class = get_class($entity);
+        $action = $event->getAction();
 
-        $classPrefix = 'App\Entity';
-        if (str_starts_with($class, $classPrefix)) {
-            $class = substr($class, strlen($classPrefix) + 1);
+        if ($action === null) {
+            $action = method_exists($entity, 'getUpdatedAt') && $entity->getUpdatedAt() !== null ? 'updated' : 'created';
+            $action .= '(?)';
         }
 
-        $envelop = sprintf('"%s" has been %s(?)', $class, $updated ? 'updated' : 'created');
+        $class = get_class($entity);
+        $classPeaces = explode('\\', $class);
+        $class = $classPeaces[count($classPeaces) - 1];
+
+        $envelop = sprintf('"%s" has been %s', $class, $action);
         $context = $this->normalizer->normalize($entity, 'activity');
 
         $this->activityLogger->info($envelop, $context);
