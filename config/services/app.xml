@@ -47,7 +47,6 @@
         <service id="app.validator" class="App\Service\Validator" lazy="true">
             <argument type="service" id="validator"/>
         </service>
-        <service id="app.http_client_factory" class="App\Service\HttpClientFactory" lazy="true"/>
         <service id="app.id_generator" class="App\Service\IdGenerator" lazy="true"/>
         <service id="app.trim_quotes_env_var_processor" class="App\Service\TrimQuotesEnvVarProcessor" lazy="true">
             <tag name="container.env_var_processor"/>
