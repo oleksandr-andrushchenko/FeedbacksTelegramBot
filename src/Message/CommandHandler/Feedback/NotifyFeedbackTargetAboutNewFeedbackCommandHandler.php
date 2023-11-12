@@ -113,7 +113,7 @@ class NotifyFeedbackTargetAboutNewFeedbackCommandHandler
             );
             $this->entityManager->persist($notification);
 
-            $this->eventBus->dispatch(new ActivityEvent(entity: $notification));
+            $this->eventBus->dispatch(new ActivityEvent(entity: $notification, action: 'created'));
         }
     }
 

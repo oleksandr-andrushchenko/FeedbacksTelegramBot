@@ -72,7 +72,7 @@ class FeedbackLookupCreator
         );
         $this->entityManager->persist($lookup);
 
-        $this->eventBus->dispatch(new ActivityEvent(entity: $lookup));
+        $this->eventBus->dispatch(new ActivityEvent(entity: $lookup, action: 'created'));
         $this->eventBus->dispatch(new FeedbackLookupCreatedEvent(lookup: $lookup));
 
         return $lookup;

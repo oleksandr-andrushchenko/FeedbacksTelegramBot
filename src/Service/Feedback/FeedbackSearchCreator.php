@@ -72,7 +72,7 @@ class FeedbackSearchCreator
         );
         $this->entityManager->persist($search);
 
-        $this->eventBus->dispatch(new ActivityEvent(entity: $search));
+        $this->eventBus->dispatch(new ActivityEvent(entity: $search, action: 'created'));
         $this->eventBus->dispatch(new FeedbackSearchCreatedEvent(search: $search));
 
         return $search;

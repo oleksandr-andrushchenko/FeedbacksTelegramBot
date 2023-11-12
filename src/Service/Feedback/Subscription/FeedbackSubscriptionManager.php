@@ -41,7 +41,7 @@ class FeedbackSubscriptionManager
         );
         $this->entityManager->persist($subscription);
 
-        $this->eventBus->dispatch(new ActivityEvent(entity: $subscription));
+        $this->eventBus->dispatch(new ActivityEvent(entity: $subscription, action: 'created'));
 
         $payment->getMessengerUser()?->getUser()?->setSubscriptionExpireAt($subscription->getExpireAt());
 

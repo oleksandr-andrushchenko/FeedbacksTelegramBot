@@ -70,7 +70,7 @@ class FeedbackCreator
         $feedback = $this->constructFeedback($transfer);
         $this->entityManager->persist($feedback);
 
-        $this->eventBus->dispatch(new ActivityEvent(entity: $feedback));
+        $this->eventBus->dispatch(new ActivityEvent(entity: $feedback, action: 'created'));
         $this->eventBus->dispatch(new FeedbackCreatedEvent(feedback: $feedback));
 
         return $feedback;

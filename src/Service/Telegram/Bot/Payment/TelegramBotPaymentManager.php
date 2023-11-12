@@ -82,7 +82,7 @@ class TelegramBotPaymentManager
         );
         $this->entityManager->persist($payment);
 
-        $this->eventBus->dispatch(new ActivityEvent(entity: $payment));
+        $this->eventBus->dispatch(new ActivityEvent(entity: $payment, action: 'created'));
 
         $this->telegramBotInvoiceSender->sendInvoice(
             $bot,
@@ -124,7 +124,7 @@ class TelegramBotPaymentManager
 
         $payment->setStatus(TelegramBotPaymentStatus::PRE_CHECKOUT_RECEIVED);
 
-        $this->eventBus->dispatch(new ActivityEvent(entity: $payment));
+        $this->eventBus->dispatch(new ActivityEvent(entity: $payment, action: 'pre checkout received'));
 
         return $payment;
     }
@@ -145,7 +145,7 @@ class TelegramBotPaymentManager
 
         $payment->setStatus(TelegramBotPaymentStatus::SUCCESSFUL_PAYMENT_RECEIVED);
 
-        $this->eventBus->dispatch(new ActivityEvent(entity: $payment));
+        $this->eventBus->dispatch(new ActivityEvent(entity: $payment, action: 'successful payment received'));
 
         return $payment;
     }

@@ -42,7 +42,7 @@ class UserContactMessageCreator
         );
         $this->entityManager->persist($message);
 
-        $this->eventBus->dispatch(new ActivityEvent(entity: $message));
+        $this->eventBus->dispatch(new ActivityEvent(entity: $message, action: 'created'));
 
         return $message;
     }
