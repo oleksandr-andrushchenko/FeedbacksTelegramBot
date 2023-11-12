@@ -14,7 +14,7 @@ class FeedbackSearchTerm
         private readonly string $text,
         private string $normalizedText,
         private readonly SearchTermType $type,
-        private readonly ?MessengerUser $messengerUser,
+        private readonly ?MessengerUser $messengerUser = null,
         private ?DateTimeInterface $createdAt = null,
         private ?int $id = null,
     )

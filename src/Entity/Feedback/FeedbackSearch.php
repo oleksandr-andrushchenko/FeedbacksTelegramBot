@@ -17,7 +17,7 @@ class FeedbackSearch implements Stringable
         private readonly User $user,
         private readonly MessengerUser $messengerUser,
         private readonly FeedbackSearchTerm $searchTerm,
-        private readonly bool $hasActiveSubscription,
+        private readonly bool $hasActiveSubscription = false,
         private readonly ?string $countryCode = null,
         private readonly ?string $localeCode = null,
         private readonly ?TelegramBot $telegramBot = null,
