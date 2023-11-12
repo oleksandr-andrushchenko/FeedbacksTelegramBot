@@ -73,13 +73,13 @@ class FeedbackTelegramViewProvider
             $message .= '<i>';
         }
 
-        $message2 = '';
-
         if ($numberToAdd !== null) {
-            $message2 .= $this->translator->trans('icon.number', domain: 'feedbacks.tg', locale: $localeCode);
-            $message2 .= $numberToAdd;
-            $message2 .= "\n";
+            $message .= $this->translator->trans('icon.number', domain: 'feedbacks.tg', locale: $localeCode);
+            $message .= $numberToAdd;
+            $message .= "\n";
         }
+
+        $message2 = '';
 
         if ($addTime) {
             $message2 .= $this->timeProvider->getDate($feedback->getCreatedAt(), timezone: $feedback->getUser()->getTimezone(), localeCode: $localeCode);
