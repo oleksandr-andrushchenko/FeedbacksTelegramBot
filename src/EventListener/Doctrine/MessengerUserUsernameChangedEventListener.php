@@ -11,10 +11,16 @@ class MessengerUserUsernameChangedEventListener
 {
     public function preUpdate(MessengerUser $messengerUser, PreUpdateEventArgs $args): void
     {
-        if ($args->hasChangedField('username')) {
-            $username = $args->getOldValue('username');
-
-            $messengerUser->addUsernameHistory($username);
+        if (!$args->hasChangedField('username')) {
+            return;
         }
+
+        $username = $args->getOldValue('username');
+
+        if ($username === null) {
+            return;
+        }
+
+        $messengerUser->addUsernameHistory($username);
     }
 }
