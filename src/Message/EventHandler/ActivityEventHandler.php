@@ -91,7 +91,7 @@ class ActivityEventHandler
         $classPeaces = explode('\\', $class);
         $class = $classPeaces[count($classPeaces) - 1];
 
-        $envelop = sprintf('"%s" has been %s', $class, $action);
+        $envelop = sprintf('"%s" has been "%s"', $class, $action);
         $context = $this->normalizer->normalize($entity, 'activity');
 
         $this->activityLogger->info($envelop, $context);

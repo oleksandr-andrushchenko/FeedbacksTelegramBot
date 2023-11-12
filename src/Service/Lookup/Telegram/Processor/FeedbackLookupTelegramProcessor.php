@@ -15,7 +15,7 @@ use App\Service\Feedback\Telegram\Bot\View\FeedbackTelegramViewProvider;
 use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
 
-class FeedbacksLookupTelegramProcessor implements LookupTelegramProcessorInterface
+class FeedbackLookupTelegramProcessor implements LookupTelegramProcessorInterface
 {
     public function __construct(
         private readonly FeedbackSearcher $feedbackSearcher,
