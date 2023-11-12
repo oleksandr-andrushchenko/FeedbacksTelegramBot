@@ -351,7 +351,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
     {
         $types = $searchTerm->getTypes() ?? [];
         $types = $this->searchTermTypeProvider->sortSearchTermTypes($types);
-        array_unshift($types, SearchTermType::unknown);
+        $types[] = SearchTermType::unknown;
 
         return $types;
     }
