@@ -15,6 +15,7 @@ readonly class ActivityEvent
         ?string $entityClass = null,
         ?string $entityId = null,
         private ?object $entity = null,
+        private ?string $action = null,
     )
     {
         if ($entityClass === null && $entityId === null) {
@@ -45,11 +46,17 @@ readonly class ActivityEvent
         return $this->entity;
     }
 
+    public function getAction(): ?string
+    {
+        return $this->action;
+    }
+
     public function __sleep(): array
     {
         return [
             'entityClass',
             'entityId',
+            'action',
         ];
     }
 }
