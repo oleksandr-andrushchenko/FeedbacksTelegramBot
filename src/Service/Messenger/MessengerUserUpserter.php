@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Service\Messenger;
 
 use App\Entity\Messenger\MessengerUser;
+use App\Message\Event\ActivityEvent;
 use App\Repository\Messenger\MessengerUserRepository;
 use App\Service\IdGenerator;
 use App\Transfer\Messenger\MessengerUserTransfer;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class MessengerUserUpserter
 {
@@ -16,6 +18,7 @@ class MessengerUserUpserter
         private readonly MessengerUserRepository $messengerUserRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly IdGenerator $idGenerator,
+        private readonly MessageBusInterface $eventBus,
     )
     {
     }
@@ -28,7 +31,10 @@ class MessengerUserUpserter
             withUser: $withUser,
         );
 
+        $created = false;
+
         if ($messengerUser === null) {
+            $created = true;
             $messengerUser = new MessengerUser(
                 $this->idGenerator->generateId(),
                 $transfer->getMessenger(),
@@ -45,6 +51,10 @@ class MessengerUserUpserter
         }
         if (!empty($transfer->getBotId())) {
             $messengerUser->addBotId($transfer->getBotId());
+        }
+
+        if ($created) {
+            $this->eventBus->dispatch(new ActivityEvent(entity: $messengerUser, action: 'created'));
         }
 
         return $messengerUser;
