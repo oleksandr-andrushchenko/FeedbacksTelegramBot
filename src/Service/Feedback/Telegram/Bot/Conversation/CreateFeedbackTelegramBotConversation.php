@@ -886,13 +886,15 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
             $tg->reply($message);
 
-            if ($this->sendToChannelConfirmStep) {
+            if ($this->sendToChannelConfirmStep && !empty($this->state->getDescription())) {
                 return $this->querySendToChannelConfirm($tg);
             }
 
             $tg->stopConversation($entity);
 
-            $this->eventBus->dispatch(new FeedbackSendToTelegramChannelConfirmReceivedEvent($this->state->getCreatedId()));
+            if (!empty($this->state->getDescription())) {
+                $this->eventBus->dispatch(new FeedbackSendToTelegramChannelConfirmReceivedEvent($this->state->getCreatedId()));
+            }
 
             return $this->chooseActionTelegramChatSender->sendActions($tg);
         } catch (ValidatorException $exception) {
