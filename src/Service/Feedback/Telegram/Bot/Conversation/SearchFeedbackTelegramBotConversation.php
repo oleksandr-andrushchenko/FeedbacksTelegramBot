@@ -9,6 +9,7 @@ use App\Entity\Feedback\Telegram\Bot\CreateFeedbackTelegramBotConversationState;
 use App\Entity\Feedback\Telegram\Bot\SearchFeedbackTelegramBotConversationState;
 use App\Entity\Telegram\TelegramBotConversation as Entity;
 use App\Enum\Feedback\SearchTermType;
+use App\Enum\Lookup\LookupProcessorName;
 use App\Exception\Feedback\FeedbackCommandLimitExceededException;
 use App\Exception\ValidatorException;
 use App\Service\Feedback\FeedbackSearchCreator;
@@ -16,7 +17,7 @@ use App\Service\Feedback\SearchTerm\SearchTermParserInterface;
 use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Service\Feedback\Telegram\Bot\Chat\ChooseActionTelegramChatSender;
 use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
-use App\Service\Lookup\Telegram\Processor\LookupTelegramProcessor;
+use App\Service\Lookup\Processor\LookupProcessor;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversation;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
@@ -44,7 +45,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
         private readonly SearchTermTelegramViewProvider $searchTermTelegramViewProvider,
         private readonly SearchTermTypeProvider $searchTermTypeProvider,
         private readonly FeedbackSearchCreator $feedbackSearchCreator,
-        private readonly LookupTelegramProcessor $lookupProcessor,
+        private readonly LookupProcessor $telegramLookupProcessor,
         private readonly bool $searchTermTypeStep,
         private readonly bool $confirmStep,
     )
@@ -435,15 +436,18 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 )
             );
 
-            $results = $this->lookupProcessor->lookupByFeedbackSearch($feedbackSearch, $tg);
+            $render = static fn (string $message) => $tg->reply($message);
+            $context = [
+                'bot' => $tg->getBot()->getEntity(),
+                'addSecrets' => true,
+                'addSign' => true,
+                'addCountry' => true,
+            ];
+            $processors = [
+                LookupProcessorName::feedbacks_registry,
+            ];
 
-            foreach ($results as $result) {
-                $tg->reply($result->getTitle());
-
-                foreach ($result->getRecords() as $record) {
-                    $tg->reply($record);
-                }
-            }
+            $this->telegramLookupProcessor->processLookup($feedbackSearch, $render, $context, $processors);
 
             return $this->queryCreateConfirm($tg);
         } catch (ValidatorException $exception) {

@@ -1,0 +1,3 @@
+on_search: Ищу среди отзывов о %search_term%.
+empty_result: На данный момент, о %search_term%, отзывов не найдено.
+result: '%count% отзыв(-ов) были успешно найдены о %search_term%.'

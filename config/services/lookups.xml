@@ -5,18 +5,23 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.lookup_telegram_processor"
-                 class="App\Service\Lookup\Telegram\Processor\LookupTelegramProcessor" lazy="true">
-            <argument type="tagged_locator" tag="app.lookup_telegram_processor"/>
-            <argument type="service" id="logger"/>
-        </service>
-        <service id="app.lookup_telegram_processor_feedbacks"
-                 class="App\Service\Lookup\Telegram\Processor\FeedbackLookupTelegramProcessor" lazy="true">
+        <service id="app.lookup_processor_feedbacks" class="App\Service\Lookup\Processor\FeedbackLookupProcessor"
+                 lazy="true">
             <argument type="service" id="app.feedback_searcher"/>
+            <tag name="app.lookup_processor" processor="feedbacks_registry"/>
+        </service>
+        <service id="app.lookup_viewer_telegram_feedbacks" class="App\Service\Lookup\Viewer\FeedbackTelegramLookupViewer"
+                 lazy="true">
             <argument type="service" id="app.feedback_search_term_telegram_view_provider"/>
             <argument type="service" id="app.feedback_telegram_view_provider"/>
             <argument type="service" id="app.feedback_search_term_provider"/>
-            <tag name="app.lookup_telegram_processor"/>
+            <argument type="service" id="app.translator"/>
+            <tag name="app.lookup_viewer_telegram" processor="feedbacks_registry"/>
+        </service>
+        <service id="app.lookup_processor_telegram" class="App\Service\Lookup\Processor\LookupProcessor" lazy="true">
+            <argument type="tagged_locator" tag="app.lookup_processor" index-by="processor"/>
+            <argument type="tagged_locator" tag="app.lookup_viewer_telegram" index-by="processor"/>
+            <argument type="service" id="logger"/>
         </service>
     </services>
 </container>

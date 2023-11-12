@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Entity\Lookup;
 
+use App\Entity\Feedback\FeedbackSearch;
 use App\Enum\Lookup\LookupProcessorName;
+use Closure;
 
-class LookupProcessorResult
+class LookupByFeedbackSearchProcessor
 {
     public function __construct(
         private readonly LookupProcessorName $name,
+        private readonly Closure $supportsClosure,
+        private readonly Closure $onSearchTitleClosure,
         private readonly string $title,
         private array $records = [],
         private ?string $tip = null
@@ -20,6 +24,15 @@ class LookupProcessorResult
     public function getName(): LookupProcessorName
     {
         return $this->name;
+    }
+
+    public function supports(FeedbackSearch $feedbackSearch): bool
+    {
+        return call_user_func($this->supportsClosure, $feedbackSearch);
+    }
+
+    public function getOnSearchTitle():string {
+        return call_user_func($this->)
     }
 
     public function getTitle(): string

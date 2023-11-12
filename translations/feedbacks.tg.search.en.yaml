@@ -8,7 +8,5 @@ keyboard:
   change_search_term: Change search term
 reply:
   canceled: Feedback search dialog has been canceled.
-  empty_list: At the moment, no reviews have been found for %search_term%.
   will_notify: We'll let you know when something pops up about %search_term%.
-  title: 'There are %count% feedback(-s) have been successfully found by %search_term%:'
   limit_exceeded: 'You have reached feedback searching limit: %tries_for%. Try again later or buy premium subscription please.'
