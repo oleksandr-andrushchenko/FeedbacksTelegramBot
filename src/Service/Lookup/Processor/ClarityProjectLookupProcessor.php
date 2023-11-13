@@ -39,7 +39,7 @@ class ClarityProjectLookupProcessor implements LookupProcessorInterface
 
     public function supports(FeedbackSearchTerm $searchTerm, array $context = []): bool
     {
-        if ($this->environment !== 'prod') {
+        if ($this->environment === 'test') {
             return false;
         }
 
@@ -90,8 +90,6 @@ class ClarityProjectLookupProcessor implements LookupProcessorInterface
 
     private function getEdrsRecord(string $name): ?ClarityProjectEdrsRecord
     {
-        // todo: add header matches checks
-        // todo: parse whole table as strings (do not rely on existing state)
         $record = new ClarityProjectEdrsRecord();
 
         $crawler = $this->getCrawler('/person/' . $name);
@@ -100,30 +98,36 @@ class ClarityProjectLookupProcessor implements LookupProcessorInterface
         // todo: replace with https://clarity-project.info/edrs/?search=%name% (this variant holds addresses for fops)
         // todo: process @mainEntity json
 
-        $table = $crawler->filter('[data-id="edrs"]');
+        $table = $crawler->filter('[data-id="edrs"] table')->eq(0);
         $header = [];
-        $table->filter('tr')->eq(0)->filter('th')->each(function (Crawler $th) use (&$header) {
+        $tr = $table->children('tr')->eq(0);
+        $tr->filter('th')->each(function (Crawler $th) use (&$header) {
             $header[] = trim($th->text());
         });
 
-        $table->filter('tr.item')->each(static function (Crawler $tr) use ($baseUri, $header, $record): void {
-            $tds = $tr->filter('td');
+        if (!isset($header[0]) || !str_contains($header[0], 'Назва')) {
+            return null;
+        }
 
-            if (!isset($header[0]) || !str_contains($header[0], 'Назва')) {
+        $ids = [];
+
+        $table->children('tr.item')->each(static function (Crawler $tr) use ($baseUri, $header, $record, &$ids): void {
+            $id = $tr->attr('data-id');
+
+            if (in_array($id, $ids, true)) {
                 return;
             }
 
+            $ids[] = $id;
+
+            $tds = $tr->filter('td');
+
+            $name = trim($tds->eq(0)->text() ?? '');
+            $active = str_contains($name, 'Зареєстровано');
+            $name = trim(str_replace(['Стан: Зареєстровано', 'Стан: Припинено', 'Зареєстровано', 'Припинено'], '', $name));
+
             $href = trim($tr->filter('a')?->eq(0)?->attr('href') ?? '');
             $href = empty($href) ? null : ($baseUri . $href);
-
-            $activeDiv = $tds->eq(0)?->filter('div.small');
-
-            if ($activeDiv->count() > 0) {
-                $active = trim($activeDiv?->text() ?? '');
-                $active = empty($active) ? null : str_contains($active, 'Зареєстровано');
-            }
-
-            $name = trim($tds->eq(0)->children()?->slice(0, 1)?->text() ?? '');
 
             if (isset($header[1]) && str_contains($header[1], 'ЄДРПОУ')) {
                 $number = preg_replace('/[^0-9]/', '', trim($tds->eq(1)?->text() ?? ''));
@@ -154,7 +158,6 @@ class ClarityProjectLookupProcessor implements LookupProcessorInterface
 
     private function getCourtsRecord(string $name): ?ClarityProjectCourtsRecord
     {
-        // todo: add header matches checks
         $record = new ClarityProjectCourtsRecord();
 
         $crawler = $this->getCrawler('/person/' . $name);
@@ -206,8 +209,6 @@ class ClarityProjectLookupProcessor implements LookupProcessorInterface
 
     private function getSecurityRecord(string $name): ?ClarityProjectSecurityRecord
     {
-        // todo: add header matches checks
-        // todo: parse whole table as strings (do not rely on existing state)
         $record = new ClarityProjectSecurityRecord();
 
         $crawler = $this->getCrawler('/person/' . $name);
