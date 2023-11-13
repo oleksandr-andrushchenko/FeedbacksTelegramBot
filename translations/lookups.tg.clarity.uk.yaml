@@ -1,0 +1,29 @@
+on_search_title: Пошук по базі №1...
+empty_result_title: На даний момент, нічого не знайдено.
+result_title: 'Знайдено наступну інформацію:'
+edrs_title: "Пов'язані компанії:"
+edr_type: степінь відношення
+edr_number: ЄДРПОУ
+address: адреса
+active: активний
+inactive: не активний
+security_title: 'Безпека [ розшук ]:'
+born_at: дата народження
+region: регіон
+absent_at: дата зникнення, розшук
+archive: не актуально
+actual: актуально
+accusation: звинувачення
+precaution: запобіжний захід
+courts_title: 'Сторона по судовій справі:'
+case_number: № справи
+case_state: стан розгляду
+case_side: сторона
+desc: опис
+court: суд
+enforcements_title: 'Виконавчі провадження [стягнення]:'
+enf_number: № провадження
+opened_at: дата відкриття
+collector: стягувач
+debtor: боржник
+enf_state: стан

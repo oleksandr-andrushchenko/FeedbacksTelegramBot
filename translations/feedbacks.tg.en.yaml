@@ -18,13 +18,13 @@ keyboard:
   cancel: Cancel
   other: Other
   absent: Not in the list
-  more: Show more
-  less: Show less
+  more: More
+  less: Less
   help: Need help
 
 sign:
   create: Add Feedback
-  search: Find Feedbacks
+  search: Search
   channel: Subscribe
 
 reply:

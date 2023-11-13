@@ -18,13 +18,13 @@ keyboard:
   cancel: Отменить
   other: Весь список
   absent: Нет в списке
-  more: Показать больше
-  less: Показать меньше
+  more: Больше
+  less: Меньше
   help: Нужна помощь
 
 sign:
   create: Добавить Отзыв
-  search: Найти Отзывы
+  search: Поиск
   channel: Подписаться
 
 reply:

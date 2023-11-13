@@ -1,3 +1,3 @@
-on_search: Looking for reviews about %search_term%.
-empty_result: At the moment, no reviews have been found for %search_term%.
+on_search: Search the review database.
+empty_result: At the moment, no reviews have been found.
 result: 'There are %count% feedback(-s) have been successfully found by %search_term%.'

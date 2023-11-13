@@ -1,0 +1,29 @@
+on_search_title: Поиск по базе №1...
+empty_result_title: На данный момент ничего не найдено.
+result_title: 'Найдено следующую информацию:'
+edrs_title: 'Связанные компании:'
+edr_type: степень отношения
+edr_number: ЕГРПОУ
+address: адрес
+active: активный
+inactive: не активен
+security_title: 'Безопасность [ розыск ]:'
+born_at: дата рождения
+region: регион
+absent_at: дата исчезновения, розыск
+archive: не актуально
+actual: актуально
+accusation: обвинение
+precaution: мера пресечения
+courts_title: 'Сторона по судебному делу:'
+case_number: № дела
+case_state: состояние рассмотрения
+case_side: сторона
+desc: описание
+court: суд
+enforcements_title: 'Исполнительное производство [взыскание]:'
+enf_number: № производства
+opened_at: дата открытия
+collector: взиматель
+debtor: должник
+enf_state: состояние

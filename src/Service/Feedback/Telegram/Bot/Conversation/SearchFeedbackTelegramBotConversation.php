@@ -92,12 +92,8 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
         $query = $tg->queryText($query);
 
         if (!$help) {
-            $types = array_filter(
-                SearchTermType::base,
-                static fn (SearchTermType $type): bool => $type !== SearchTermType::person_name
-            );
             $query .= $tg->queryTipText(
-                rtrim($tg->view('search_term_types', context: ['types' => $types]))
+                rtrim($tg->view('search_term_types', context: ['types' => SearchTermType::base]))
                 . "\n▫️ " . sprintf('<b>[ %s ]</b>', $tg->trans('query.search_term_put_one', domain: 'search'))
             );
         }
@@ -446,6 +442,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
             ];
             $processors = [
                 LookupProcessorName::feedbacks,
+                LookupProcessorName::clarity,
             ];
 
             $this->telegramLookupProcessor->processLookup($feedbackSearch->getSearchTerm(), $render, $context, $processors);
@@ -502,7 +499,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
             'search_term' => $searchTerm,
         ];
         $query = $tg->trans('query.create_confirm', parameters: $parameters, domain: 'search');
-        $query = $tg->queryText($query);
+//        $query = $tg->queryText($query);
 
         if ($help) {
             $query = $tg->view('search_create_confirm_help', [

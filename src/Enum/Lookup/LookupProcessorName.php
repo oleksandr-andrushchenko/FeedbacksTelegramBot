@@ -7,6 +7,7 @@ namespace App\Enum\Lookup;
 enum LookupProcessorName: string
 {
     case feedbacks = 'feedbacks';
+    case clarity = 'clarity';
 
     public static function fromName(string $name): ?self
     {
