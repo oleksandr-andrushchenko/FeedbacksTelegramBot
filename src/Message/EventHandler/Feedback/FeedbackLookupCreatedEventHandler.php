@@ -32,5 +32,6 @@ class FeedbackLookupCreatedEventHandler
 
         $this->commandBus->dispatch(new NotifyFeedbackLookupTargetAboutNewFeedbackLookupCommand(lookup: $lookup));
         $this->commandBus->dispatch(new NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommand(lookup: $lookup));
+        // todo: notify FeedbackLookup Source about same searches in the past
     }
 }

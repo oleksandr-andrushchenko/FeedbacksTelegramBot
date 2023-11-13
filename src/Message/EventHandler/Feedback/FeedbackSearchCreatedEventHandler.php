@@ -34,5 +34,6 @@ class FeedbackSearchCreatedEventHandler
         $this->commandBus->dispatch(new NotifyFeedbackSearchTargetsAboutNewFeedbackSearchCommand(search: $search));
         $this->commandBus->dispatch(new NotifyFeedbackLookupSourcesAboutNewFeedbackSearchCommand(search: $search));
         $this->commandBus->dispatch(new NotifyFeedbackSearchSourcesAboutNewFeedbackSearchCommand(search: $search));
+        // todo: notify FeedbackSearch Source about same searches in the past (ask to use feedback lookup search command)
     }
 }
