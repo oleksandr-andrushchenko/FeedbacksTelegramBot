@@ -47,8 +47,8 @@ class ChooseActionTelegramChatSender
     public function getKeyboard(TelegramBotAwareHelper $tg): Keyboard
     {
         $buttons = [];
-        $buttons[] = $this->getCreateButton($tg);
         $buttons[] = $this->getSearchButton($tg);
+        $buttons[] = $this->getCreateButton($tg);
         $buttons[] = $this->getLookupButton($tg);
 
         $messengerUser = $tg->getBot()->getMessengerUser();
@@ -177,11 +177,11 @@ class ChooseActionTelegramChatSender
 
     public function getShowMoreButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('⬇️ ' . $tg->trans('keyboard.more'));
+        return $tg->button($tg->trans('keyboard.more'));
     }
 
     public function getShowLessButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
-        return $tg->button('⬆️ ' . $tg->trans('keyboard.less'));
+        return $tg->button($tg->trans('keyboard.less'));
     }
 }
