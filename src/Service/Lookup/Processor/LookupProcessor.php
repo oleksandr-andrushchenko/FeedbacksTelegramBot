@@ -43,7 +43,7 @@ class LookupProcessor
 
                 $viewer = $this->getViewer($processor);
 
-                $render($viewer->getOnSearchTitle($searchTerm));
+                $render('🔍 ' . $viewer->getOnSearchTitle($searchTerm));
 
                 $records = $processor->search($searchTerm);
                 $count = count($records);
@@ -53,7 +53,7 @@ class LookupProcessor
                     continue;
                 }
 
-                $render($viewer->getResultTitle($searchTerm, $count, $context));
+//                $render($viewer->getResultTitle($searchTerm, $count, $context));
 
                 foreach ($records as $record) {
                     $render($viewer->getResultRecord($record, $context));
@@ -81,6 +81,6 @@ class LookupProcessor
 
     private function getViewer(LookupProcessorInterface $processor): LookupViewerInterface
     {
-        return $this->viewerServiceLocator->get($processor->getName()->name);
+        return $this->viewerServiceLocator->get($processor->getName()->value);
     }
 }
