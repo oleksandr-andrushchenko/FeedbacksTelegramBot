@@ -7,7 +7,7 @@ edr_number: ЄДРПОУ
 address: адреса
 active: активний
 inactive: не активний
-security_title: 'Безпека [ розшук ]:'
+security_title: 'Розшук:'
 born_at: дата народження
 region: регіон
 absent_at: дата зникнення, розшук
@@ -15,15 +15,16 @@ archive: не актуально
 actual: актуально
 accusation: звинувачення
 precaution: запобіжний захід
-courts_title: 'Сторона по судовій справі:'
+courts_title: 'Судові справи:'
 case_number: № справи
 case_state: стан розгляду
 case_side: сторона
 desc: опис
 court: суд
-enforcements_title: 'Виконавчі провадження [стягнення]:'
+enforcements_title: 'Виконавчі провадження:'
 enf_number: № провадження
 opened_at: дата відкриття
 collector: стягувач
 debtor: боржник
 enf_state: стан
+debtors_title: 'Банкрутство:'

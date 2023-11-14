@@ -9,12 +9,15 @@ use App\Entity\Lookup\ClarityEdr;
 use App\Entity\Lookup\ClarityEdrsRecord;
 use App\Entity\Lookup\ClarityPersonCourt;
 use App\Entity\Lookup\ClarityPersonCourtsRecord;
+use App\Entity\Lookup\ClarityPersonDebtor;
+use App\Entity\Lookup\ClarityPersonDebtorsRecord;
 use App\Entity\Lookup\ClarityPersonEdr;
 use App\Entity\Lookup\ClarityPersonEdrsRecord;
 use App\Entity\Lookup\ClarityPersonEnforcement;
 use App\Entity\Lookup\ClarityPersonEnforcementsRecord;
 use App\Entity\Lookup\ClarityPersonSecurity;
 use App\Entity\Lookup\ClarityPersonSecurityRecord;
+use DateTimeImmutable;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ClarityTelegramLookupViewer implements LookupViewerInterface
@@ -54,6 +57,7 @@ class ClarityTelegramLookupViewer implements LookupViewerInterface
             ClarityPersonSecurityRecord::class => $this->getPersonSecurityResultRecord($record, $full),
             ClarityPersonCourtsRecord::class => $this->getPersonCourtsResultRecord($record, $full),
             ClarityPersonEnforcementsRecord::class => $this->getPersonEnforcementsResultRecord($record, $full),
+            ClarityPersonDebtorsRecord::class => $this->getPersonDebtorsResultRecord($record, $full),
             ClarityEdrsRecord::class => $this->getEdrsResultRecord($record, $full),
         };
     }
@@ -116,8 +120,22 @@ class ClarityTelegramLookupViewer implements LookupViewerInterface
                 empty($enf->getOpenedAt()) ? null : $enf->getOpenedAt()->format('d.m.Y'),
                 empty($enf->getDebtor()) ? null : sprintf('%s [ %s ]', $enf->getDebtor(), $this->trans('debtor')),
                 empty($enf->getBornAt()) ? null : sprintf('%s [ %s ]', $enf->getBornAt()->format('d.m.Y'), $this->trans('born_at')),
-                empty($enf->getCollector()) ? null : sprintf('%s [ %s ]', $enf->getCollector(), $this->trans('collector')),
                 empty($enf->getState()) ? null : sprintf('%s %s', str_contains($enf->getState(), 'Відкрито') ? '🔴' : '⚪️', $enf->getState()),
+                empty($enf->getCollector()) ? null : sprintf('%s [ %s ]', $enf->getCollector(), $this->trans('collector')),
+            ]
+        );
+    }
+
+    private function getPersonDebtorsResultRecord(ClarityPersonDebtorsRecord $record, bool $full): string
+    {
+        return $this->lookupViewerHelper->wrapResultRecord(
+            $this->trans('debtors_title'),
+            $record->getDebtors(),
+            fn (ClarityPersonDebtor $debtor): array => [
+                sprintf('<b>%s</b>', $debtor->getName()),
+                empty($debtor->getBornAt()) ? null : sprintf('%s [ %s ]', $debtor->getBornAt()->format('d.m.Y'), $this->trans('born_at')),
+                empty($debtor->getCategory()) ? null : sprintf('<u>%s</u>', $debtor->getCategory()),
+                empty($debtor->getActualAt()) ? null : sprintf('%s %s [ %s ]', ($archive = $debtor->getActualAt() < new DateTimeImmutable()) ? '⚪️' : '🔴', $debtor->getActualAt()->format('d.m.Y'), $this->trans($archive ? 'archive' : 'actual')),
             ]
         );
     }

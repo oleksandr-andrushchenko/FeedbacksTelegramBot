@@ -9,6 +9,8 @@ use App\Entity\Lookup\ClarityEdr;
 use App\Entity\Lookup\ClarityEdrsRecord;
 use App\Entity\Lookup\ClarityPersonCourt;
 use App\Entity\Lookup\ClarityPersonCourtsRecord;
+use App\Entity\Lookup\ClarityPersonDebtor;
+use App\Entity\Lookup\ClarityPersonDebtorsRecord;
 use App\Entity\Lookup\ClarityPersonEdr;
 use App\Entity\Lookup\ClarityPersonEdrsRecord;
 use App\Entity\Lookup\ClarityPersonEnforcement;
@@ -61,9 +63,10 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         if ($this->supportsPersonName($searchTerm, $context)) {
             $jobs = [
                 fn (string $name) => $this->getPersonSecurityRecord($name),
-                fn (string $name) => $this->getPersonEdrsRecord($name),
                 fn (string $name) => $this->getPersonCourtsRecord($name),
+                fn (string $name) => $this->getPersonDebtorsRecord($name),
                 fn (string $name) => $this->getPersonEnforcementsRecord($name),
+                fn (string $name) => $this->getPersonEdrsRecord($name),
             ];
         } elseif ($this->supportsOrganizationName($searchTerm, $context)) {
             $jobs = [
@@ -274,6 +277,64 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         });
 
         return count($record->getCourts()) === 0 ? null : $record;
+    }
+
+    private function getPersonDebtorsRecord(string $name): ?ClarityPersonDebtorsRecord
+    {
+        $record = new ClarityPersonDebtorsRecord();
+
+        $crawler = $this->getCrawler('/person/' . $name);
+
+        $table = $crawler->filter('[data-id="debtors"]');
+        $header = [];
+        $table->filter('tr')->eq(0)->filter('th')->each(function (Crawler $th) use (&$header) {
+            $header[] = trim($th->text());
+        });
+
+        if (!isset($header[0]) || !str_contains($header[0], 'ПІБ')) {
+            return null;
+        }
+
+        $table->filter('tr.item')->each(static function (Crawler $tr) use ($header, $record): void {
+            $tds = $tr->filter('td');
+
+            if ($tds->eq(0)->count() < 1) {
+                return;
+            }
+
+            $name = trim($tds->eq(0)->text() ?? '');
+
+            if (empty($name)) {
+                return;
+            }
+
+            if (isset($header[1]) && str_contains($header[1], 'народження') && $tds->eq(1)->count() > 0) {
+                $bornAt = trim($tds->eq(1)->text() ?? '');
+                $bornAt = empty($bornAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $bornAt);
+                $bornAt = $bornAt === false ? null : $bornAt;
+            }
+
+            if (isset($header[2]) && str_contains($header[2], 'Запис') && $tds->eq(2)->count() > 0) {
+                $category = trim($tds->eq(2)->text() ?? '');
+            }
+
+            if (isset($header[3]) && str_contains($header[3], 'Актуально') && $tds->eq(3)->count() > 0) {
+                $actualAt = trim($tds->eq(3)->text() ?? '');
+                $actualAt = empty($actualAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $actualAt);
+                $actualAt = $actualAt === false ? null : $actualAt;
+            }
+
+            $debtor = new ClarityPersonDebtor(
+                $name,
+                bornAt: $bornAt ?? null,
+                category: $category ?? null,
+                actualAt: $actualAt ?? null,
+            );
+
+            $record->addDebtor($debtor);
+        });
+
+        return count($record->getDebtors()) === 0 ? null : $record;
     }
 
     private function getPersonSecurityRecord(string $name): ?ClarityPersonSecurityRecord

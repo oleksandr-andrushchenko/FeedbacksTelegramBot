@@ -7,7 +7,7 @@ edr_number: EDRPOU
 address: address
 active: active
 inactive: not active
-security_title: 'Security [ search ]:'
+security_title: 'Wanted:'
 born_at: date of birth
 region: region
 absent_at: date of disappearance, wanted
@@ -15,15 +15,16 @@ archive: not relevant
 actual: actual
 accusation: accusation
 precaution: precautionary measure
-courts_title: 'Party to court case:'
+courts_title: 'Court cases:'
 case_number: case number
 case_state: case state
 case_side: side
 desc: description
 court: court
-enforcements_title: 'Enforcement proceedings [enforcement]:'
+enforcements_title: 'Enforcement proceedings:'
 enf_number: number of proceedings
 opened_at: opened date
 collector: collector
 debtor: debtor
 enf_state: state
+debtors_title: 'Bankruptcy:'
