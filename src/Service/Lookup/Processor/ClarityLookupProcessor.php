@@ -172,23 +172,34 @@ class ClarityLookupProcessor implements LookupProcessorInterface
 
             $tds = $tr->filter('td');
 
+            if ($tds->eq(0)->count() < 1) {
+                return;
+            }
+
             $name = trim($tds->eq(0)->text() ?? '');
+
+            if (empty($name)) {
+                return;
+            }
+
             $active = str_contains($name, 'Зареєстровано');
             $name = trim(str_replace(['Стан: Зареєстровано', 'Стан: Припинено', 'Зареєстровано', 'Припинено'], '', $name));
 
-            $href = trim($tr->filter('a')?->eq(0)?->attr('href') ?? '');
-            $href = empty($href) ? null : ($baseUri . $href);
-
-            if (isset($header[1]) && str_contains($header[1], 'ЄДРПОУ')) {
-                $number = preg_replace('/[^0-9]/', '', trim($tds->eq(1)?->text() ?? ''));
+            if ($tr->filter('a')->eq(0)->count() > 0) {
+                $href = trim($tr->filter('a')->eq(0)->attr('href') ?? '');
+                $href = empty($href) ? null : ($baseUri . $href);
             }
 
-            if (isset($header[2])) {
-                $address = trim($tds->eq(2)?->text() ?? '');
+            if (isset($header[1]) && str_contains($header[1], 'ЄДРПОУ') && $tds->eq(1)->count() > 0) {
+                $number = preg_replace('/[^0-9]/', '', trim($tds->eq(1)->text() ?? ''));
             }
 
-            if (isset($header[3])) {
-                $type = trim($tds->eq(3)?->text() ?? '');
+            if (isset($header[2]) && $tds->eq(2)->count() > 0) {
+                $address = trim($tds->eq(2)->text() ?? '');
+            }
+
+            if (isset($header[3]) && $tds->eq(3)->count() > 0) {
+                $type = trim($tds->eq(3)->text() ?? '');
             }
 
             $edr = new ClarityPersonEdr(
@@ -196,7 +207,7 @@ class ClarityLookupProcessor implements LookupProcessorInterface
                 type: $type ?? null,
                 href: $href ?? null,
                 number: $number ?? null,
-                active: $active ?? null,
+                active: $active,
                 address: $address ?? null
             );
 
@@ -218,29 +229,37 @@ class ClarityLookupProcessor implements LookupProcessorInterface
             $header[] = trim($th->text());
         });
 
+        if (!isset($header[0]) || !str_contains($header[0], 'справи')) {
+            return null;
+        }
+
         $table->filter('tr.item')->each(static function (Crawler $tr) use ($header, $record): void {
             $tds = $tr->filter('td');
 
-            if (!isset($header[0]) || !str_contains($header[0], 'справи')) {
+            if ($tds->eq(0)->count() < 1) {
                 return;
             }
 
-            $number = trim($tds->eq(0)->text());
+            $number = trim($tds->eq(0)->text() ?? '');
 
-            if (isset($header[1]) && str_contains($header[1], 'Стан')) {
-                $state = trim($tds->eq(1)?->text() ?? '');
+            if (empty($number)) {
+                return;
             }
 
-            if (isset($header[2]) && str_contains($header[2], 'Сторона')) {
-                $side = trim($tds->eq(2)?->text() ?? '');
+            if (isset($header[1]) && str_contains($header[1], 'Стан') && $tds->eq(1)->count() > 0) {
+                $state = trim($tds->eq(1)->text() ?? '');
             }
 
-            if (isset($header[3]) && str_contains($header[3], 'Опис')) {
-                $desc = trim($tds->eq(3)?->text() ?? '');
+            if (isset($header[2]) && str_contains($header[2], 'Сторона') && $tds->eq(2)->count() > 0) {
+                $side = trim($tds->eq(2)->text() ?? '');
             }
 
-            if (isset($header[4]) && str_contains($header[4], 'Суд')) {
-                $place = trim($tds->eq(4)?->text() ?? '');
+            if (isset($header[3]) && str_contains($header[3], 'Опис') && $tds->eq(3)->count() > 0) {
+                $desc = trim($tds->eq(3)->text() ?? '');
+            }
+
+            if (isset($header[4]) && str_contains($header[4], 'Суд') && $tds->eq(4)->count() > 0) {
+                $place = trim($tds->eq(4)->text() ?? '');
             }
 
             $court = new ClarityPersonCourt(
@@ -269,36 +288,48 @@ class ClarityLookupProcessor implements LookupProcessorInterface
             $header[] = trim($th->text());
         });
 
+        if (!isset($header[0]) || !str_contains($header[0], 'ПІБ')) {
+            return null;
+        }
+
         $table->filter('tr.item')->each(static function (Crawler $tr) use ($header, $record): void {
             $tds = $tr->filter('td');
 
-            if (!isset($header[0]) || !str_contains($header[0], 'ПІБ')) {
+            if ($tds->eq(0)->count() < 1) {
                 return;
             }
 
-            $name = trim($tds->eq(0)->text());
+            $name = trim($tds->eq(0)->text() ?? '');
 
-            if (isset($header[1]) && str_contains($header[1], 'народження')) {
-                $bornAt = trim($tds->eq(1)?->text() ?? null);
+            if (empty($name)) {
+                return;
+            }
+
+            if (isset($header[1]) && str_contains($header[1], 'народження') && $tds->eq(1)->count() > 0) {
+                $bornAt = trim($tds->eq(1)->text() ?? '');
                 $bornAt = empty($bornAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $bornAt);
                 $bornAt = $bornAt === false ? null : $bornAt;
             }
 
-            if (isset($header[2]) && str_contains($header[2], 'Категорія')) {
-                $category = trim($tds->eq(2)?->text() ?? '');
+            if (isset($header[2]) && str_contains($header[2], 'Категорія') && $tds->eq(2)->count() > 0) {
+                $category = trim($tds->eq(2)->text() ?? '');
             }
 
-            if (isset($header[3]) && str_contains($header[3], 'Регіон')) {
-                $region = trim($tds->eq(3)?->text() ?? '');
+            if (isset($header[3]) && str_contains($header[3], 'Регіон') && $tds->eq(3)->count() > 0) {
+                $region = trim($tds->eq(3)->text() ?? '');
             }
 
-            if (isset($header[4]) && str_contains($header[4], 'зникнення')) {
-                $archive = trim($tds->eq(4)?->filter('.small')?->text() ?? '');
-                $archive = empty($archive) ? null : str_contains($archive, 'архівна');
+            if (isset($header[4]) && str_contains($header[4], 'зникнення') && $tds->eq(4)->count() > 0) {
+                if ($tds->eq(4)->filter('.small')->count() > 0) {
+                    $archive = trim($tds->eq(4)->filter('.small')->text() ?? '');
+                    $archive = empty($archive) ? null : str_contains($archive, 'архівна');
+                }
 
-                $absentAt = trim($tds->eq(4)?->getNode(0)?->firstChild?->textContent ?? '');
-                $absentAt = empty($absentAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $absentAt);
-                $absentAt = $absentAt === false ? null : $absentAt;
+                if (!empty($tds->eq(4)->getNode(0)?->firstChild?->textContent)) {
+                    $absentAt = trim($tds->eq(4)->getNode(0)->firstChild->textContent ?? '');
+                    $absentAt = empty($absentAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $absentAt);
+                    $absentAt = $absentAt === false ? null : $absentAt;
+                }
             }
 
             $accusation = null;
@@ -308,11 +339,11 @@ class ClarityLookupProcessor implements LookupProcessorInterface
 
             if ($nextTr->matches('.table-collapse-details')) {
                 $trs = $nextTr->filter('tr');
-                if (str_contains($trs->eq(5)?->filter('td')?->eq(0)?->text(), 'Звинувачення')) {
-                    $accusation = trim($trs->eq(5)->filter('td')->eq(1)?->text() ?? '');
+                if ($trs->eq(5)->filter('td')->eq(0)->count() > 0 && str_contains($trs->eq(5)->filter('td')->eq(0)->text(), 'Звинувачення')) {
+                    $accusation = trim($trs->eq(5)->filter('td')->eq(1)->text() ?? '');
                 }
-                if (str_contains($trs->eq(6)?->filter('td')?->eq(0)?->text(), 'Запобіжний')) {
-                    $precaution = trim($trs->eq(6)->filter('td')->eq(1)?->text() ?? '');
+                if ($trs->eq(6)->filter('td')->eq(0)->count() > 0 && str_contains($trs->eq(6)->filter('td')->eq(0)->text(), 'Запобіжний')) {
+                    $precaution = trim($trs->eq(6)->filter('td')->eq(1)->text() ?? '');
                 }
             }
 
@@ -345,38 +376,48 @@ class ClarityLookupProcessor implements LookupProcessorInterface
             $header[] = trim($th->text());
         });
 
+        if (!isset($header[0]) || !str_contains($header[0], 'в/п')) {
+            return null;
+        }
+
         $table->filter('tr.item')->each(static function (Crawler $tr) use ($header, $record): void {
             $tds = $tr->filter('td');
 
-            if (!isset($header[0]) || !str_contains($header[0], 'в/п')) {
+            if ($tds->eq(0)->count() < 1) {
                 return;
             }
 
             $number = trim($tds->eq(0)->text());
 
-            if (isset($header[1]) && str_contains($header[1], 'відкриття')) {
-                $openedAt = trim($tds->eq(1)?->text() ?? null);
+            if (empty($number)) {
+                return;
+            }
+
+            if (isset($header[1]) && str_contains($header[1], 'відкриття') && $tds->eq(1)->count() > 0) {
+                $openedAt = trim($tds->eq(1)->text() ?? '');
                 $openedAt = empty($openedAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $openedAt);
                 $openedAt = $openedAt === false ? null : $openedAt;
             }
 
-            if (isset($header[2]) && str_contains($header[2], 'Стягувач')) {
-                $collector = trim($tds->eq(2)?->text() ?? '');
+            if (isset($header[2]) && str_contains($header[2], 'Стягувач') && $tds->eq(2)->count() > 0) {
+                $collector = trim($tds->eq(2)->text() ?? '');
             }
 
-            if (isset($header[3]) && str_contains($header[3], 'Боржник')) {
-                $debtor = trim($tds->eq(3)?->text() ?? '');
+            if (isset($header[3]) && str_contains($header[3], 'Боржник') && $tds->eq(3)->count() > 0) {
+                $debtor = trim($tds->eq(3)->text() ?? '');
 
                 if ($tds->count() === count($header) + 1) {
-                    $bornAt = trim($tds->eq(4)?->text() ?? '');
-                    $peaces = explode(' ', $bornAt);
-                    $bornAt = $peaces[count($peaces) - 1];
-                    $bornAt = empty($bornAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $bornAt);
-                    $bornAt = $bornAt === false ? null : $bornAt;
+                    if ($tds->eq(4)->count() > 0) {
+                        $bornAt = trim($tds->eq(4)->text() ?? '');
+                        $peaces = explode(' ', $bornAt);
+                        $bornAt = $peaces[count($peaces) - 1];
+                        $bornAt = empty($bornAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $bornAt);
+                        $bornAt = $bornAt === false ? null : $bornAt;
+                    }
                 }
             }
 
-            if (isset($header[4]) && str_contains($header[4], 'Стан')) {
+            if (isset($header[4]) && str_contains($header[4], 'Стан') && $tds->eq($tds->count() - 1)->count() > 0) {
                 $state = trim($tds->eq($tds->count() - 1)?->text() ?? '');
             }
 
@@ -408,6 +449,10 @@ class ClarityLookupProcessor implements LookupProcessorInterface
             }
 
             $name = addslashes(trim($item->filter('.name')->text() ?? ''));
+
+            if (empty($name)) {
+                return;
+            }
 
             if ($item->filter('a')->eq(0)->count() > 0) {
                 $href = trim($item->filter('a')->eq(0)->attr('href') ?? '');
