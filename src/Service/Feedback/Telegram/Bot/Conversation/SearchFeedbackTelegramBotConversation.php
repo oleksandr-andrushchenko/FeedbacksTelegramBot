@@ -24,6 +24,7 @@ use App\Service\Telegram\Bot\TelegramBotAwareHelper;
 use App\Service\Validator;
 use App\Transfer\Feedback\FeedbackSearchTransfer;
 use App\Transfer\Feedback\SearchTermTransfer;
+use DateTimeImmutable;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
 /**
@@ -439,6 +440,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 'addSign' => true,
                 'addCountry' => true,
                 'countryCode' => $tg->getBot()->getEntity()->getCountryCode(),
+                'full' => $tg->getBot()->getMessengerUser()?->getUser()?->getSubscriptionExpireAt() > new DateTimeImmutable(),
             ];
             $processors = [
                 LookupProcessorName::feedbacks,
