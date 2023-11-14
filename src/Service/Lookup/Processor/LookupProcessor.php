@@ -45,7 +45,7 @@ class LookupProcessor
 
                 $render('🔍 ' . $viewer->getOnSearchTitle($searchTerm));
 
-                $records = $processor->search($searchTerm);
+                $records = $processor->search($searchTerm, $context);
                 $count = count($records);
 
                 if ($count === 0) {
