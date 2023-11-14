@@ -9,4 +9,5 @@ keyboard:
 reply:
   canceled: Feedback search dialog has been canceled.
   will_notify: We'll let you know when something pops up about %search_term%.
+  create: 'To leave your own feedback about %search_term% use the command: %create_command%'
   limit_exceeded: 'You have reached feedback searching limit: %tries_for%. Try again later or buy premium subscription please.'

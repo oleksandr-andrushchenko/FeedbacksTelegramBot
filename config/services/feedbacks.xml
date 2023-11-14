@@ -62,6 +62,7 @@
 
         <parameter key="app.search.search_term_type_step">true</parameter>
         <parameter key="app.search.confirm_step">false</parameter>
+        <parameter key="app.search.create_confirm_step">false</parameter>
 
         <parameter key="app.lookup.search_term_type_step">true</parameter>
         <parameter key="app.lookup.confirm_step">false</parameter>
@@ -497,6 +498,7 @@
             <argument type="service" id="app.lookup_processor_telegram"/>
             <argument>%app.search.search_term_type_step%</argument>
             <argument>%app.search.confirm_step%</argument>
+            <argument>%app.search.create_confirm_step%</argument>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.telegram_conversation_lookup"

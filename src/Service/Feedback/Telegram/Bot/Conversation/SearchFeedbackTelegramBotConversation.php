@@ -49,6 +49,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
         private readonly LookupProcessor $telegramLookupProcessor,
         private readonly bool $searchTermTypeStep,
         private readonly bool $confirmStep,
+        private readonly bool $createConfirmStep,
     )
     {
         parent::__construct(new SearchFeedbackTelegramBotConversationState());
@@ -418,6 +419,20 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
         ]);
     }
 
+    public function getCreateReply(TelegramBotAwareHelper $tg): string
+    {
+        $parameters = [
+            'search_term' => $this->searchTermTelegramViewProvider->getSearchTermTelegramMainView($this->state->getSearchTerm()),
+            'create_command' => $tg->command('create', html: true, link: true),
+        ];
+        $message = $tg->trans('reply.create', $parameters, domain: 'search');
+
+        $message = $tg->okText($message);
+        $message .= "\n";
+
+        return $message;
+    }
+
     public function searchAndReply(TelegramBotAwareHelper $tg, Entity $entity): null
     {
         try {
@@ -449,7 +464,17 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
             $this->telegramLookupProcessor->processLookup($feedbackSearch->getSearchTerm(), $render, $context, $processors);
 
-            return $this->queryCreateConfirm($tg);
+            if ($this->createConfirmStep) {
+                return $this->queryCreateConfirm($tg);
+            }
+
+            $tg->stopConversation($entity);
+
+            $message = $this->getWillNotifyReply($tg);
+            $message .= "\n";
+            $message .= $this->getCreateReply($tg);
+
+            return $this->chooseActionTelegramChatSender->sendActions($tg, $message, appendDefault: true);
         } catch (ValidatorException $exception) {
             $tg->replyWarning($tg->queryText($exception->getFirstMessage()));
 
@@ -531,7 +556,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
     public function getWillNotifyReply(TelegramBotAwareHelper $tg): string
     {
         $parameters = [
-            'search_term' => $this->searchTermTelegramViewProvider->getSearchTermTelegramView($this->state->getSearchTerm()),
+            'search_term' => $this->searchTermTelegramViewProvider->getSearchTermTelegramMainView($this->state->getSearchTerm()),
         ];
         $message = $tg->trans('reply.will_notify', $parameters, domain: 'search');
 
