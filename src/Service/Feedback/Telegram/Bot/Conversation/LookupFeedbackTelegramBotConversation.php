@@ -410,7 +410,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
     public function getEmptyListReply(TelegramBotAwareHelper $tg): string
     {
-        $searchTerm = $this->searchTermTelegramViewProvider->getSearchTermTelegramView($this->state->getSearchTerm());
+        $searchTerm = $this->searchTermTelegramViewProvider->getSearchTermTelegramMainView($this->state->getSearchTerm());
         $parameters = [
             'search_term' => $searchTerm,
         ];
