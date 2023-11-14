@@ -407,10 +407,10 @@ class ClarityLookupProcessor implements LookupProcessorInterface
                 return;
             }
 
-            $name = trim($item->filter('.name')->text() ?? '');
+            $name = addslashes(trim($item->filter('.name')->text() ?? ''));
 
             if ($item->filter('a')->eq(0)->count() > 0) {
-                $href = trim($item->filter('a')?->eq(0)?->attr('href') ?? '');
+                $href = trim($item->filter('a')->eq(0)->attr('href') ?? '');
                 $href = empty($href) ? null : ($baseUri . $href);
             }
 
