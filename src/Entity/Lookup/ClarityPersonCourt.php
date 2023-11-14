@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\Lookup;
 
-readonly class ClarityProjectCourt
+readonly class ClarityPersonCourt
 {
     public function __construct(
         private string $number,

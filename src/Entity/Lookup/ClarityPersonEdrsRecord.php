@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Entity\Lookup;
 
-class ClarityProjectGeneralRecord
+class ClarityPersonEdrsRecord
 {
     public function __construct(
         /**
-         * @var ClarityProjectEdr[]
+         * @var ClarityPersonEdr[]
          */
-        private array $edrs = [],
+        private array $edrs = []
     )
     {
     }
@@ -20,7 +20,7 @@ class ClarityProjectGeneralRecord
         return $this->edrs;
     }
 
-    public function addEdr(ClarityProjectEdr $edr): self
+    public function addEdr(ClarityPersonEdr $edr): self
     {
         $this->edrs[] = $edr;
 

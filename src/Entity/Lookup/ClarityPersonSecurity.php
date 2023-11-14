@@ -6,7 +6,7 @@ namespace App\Entity\Lookup;
 
 use DateTimeInterface;
 
-readonly class ClarityProjectSecurity
+readonly class ClarityPersonSecurity
 {
     public function __construct(
         private string $name,

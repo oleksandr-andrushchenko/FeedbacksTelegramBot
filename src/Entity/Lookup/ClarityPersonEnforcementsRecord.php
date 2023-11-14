@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Entity\Lookup;
 
-class ClarityProjectEnforcementsRecord
+class ClarityPersonEnforcementsRecord
 {
     public function __construct(
         /**
-         * @var ClarityProjectEnforcement[]
+         * @var ClarityPersonEnforcement[]
          */
         private array $enforcements = []
     )
@@ -20,7 +20,7 @@ class ClarityProjectEnforcementsRecord
         return $this->enforcements;
     }
 
-    public function addEnforcement(ClarityProjectEnforcement $enforcement): self
+    public function addEnforcement(ClarityPersonEnforcement $enforcement): self
     {
         $this->enforcements[] = $enforcement;
 

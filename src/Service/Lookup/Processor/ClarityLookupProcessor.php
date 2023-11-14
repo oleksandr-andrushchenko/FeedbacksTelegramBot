@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Service\Lookup\Processor;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
-use App\Entity\Lookup\ClarityProjectCourt;
-use App\Entity\Lookup\ClarityProjectCourtsRecord;
-use App\Entity\Lookup\ClarityProjectEdr;
-use App\Entity\Lookup\ClarityProjectEdrsRecord;
-use App\Entity\Lookup\ClarityProjectEnforcement;
-use App\Entity\Lookup\ClarityProjectEnforcementsRecord;
-use App\Entity\Lookup\ClarityProjectSecurity;
-use App\Entity\Lookup\ClarityProjectSecurityRecord;
+use App\Entity\Lookup\ClarityPersonCourt;
+use App\Entity\Lookup\ClarityPersonCourtsRecord;
+use App\Entity\Lookup\ClarityPersonEdr;
+use App\Entity\Lookup\ClarityPersonEdrsRecord;
+use App\Entity\Lookup\ClarityPersonEnforcement;
+use App\Entity\Lookup\ClarityPersonEnforcementsRecord;
+use App\Entity\Lookup\ClarityPersonSecurity;
+use App\Entity\Lookup\ClarityPersonSecurityRecord;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Lookup\LookupProcessorName;
 use DateTimeImmutable;
@@ -22,7 +22,7 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 
-class ClarityProjectLookupProcessor implements LookupProcessorInterface
+class ClarityLookupProcessor implements LookupProcessorInterface
 {
     public function __construct(
         private readonly string $environment,
@@ -38,6 +38,43 @@ class ClarityProjectLookupProcessor implements LookupProcessorInterface
     }
 
     public function supports(FeedbackSearchTerm $searchTerm, array $context = []): bool
+    {
+        if ($this->supportsPersonName($searchTerm, $context)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function search(FeedbackSearchTerm $searchTerm, array $context = []): array
+    {
+        $records = [];
+
+        $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
+
+        if ($this->supportsPersonName($searchTerm, $context)) {
+            $jobs = [
+                fn (string $name) => $this->getPersonSecurityRecord($name),
+                fn (string $name) => $this->getPersonEdrsRecord($name),
+                fn (string $name) => $this->getPersonCourtsRecord($name),
+                fn (string $name) => $this->getPersonEnforcementsRecord($name),
+            ];
+        } else {
+            $jobs = [];
+        }
+
+        foreach ($jobs as $job) {
+            try {
+                $records[] = $job($name);
+            } catch (Throwable $exception) {
+                $this->logger->error($exception);
+            }
+        }
+
+        return array_filter($records);
+    }
+
+    private function supportsPersonName(FeedbackSearchTerm $searchTerm, array $context = []): bool
     {
         if ($this->environment === 'test') {
             return false;
@@ -66,31 +103,9 @@ class ClarityProjectLookupProcessor implements LookupProcessorInterface
         return true;
     }
 
-    public function search(FeedbackSearchTerm $searchTerm, array $context = []): array
+    private function getPersonEdrsRecord(string $name): ?ClarityPersonEdrsRecord
     {
-        $records = [];
-
-        $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
-
-        foreach ([
-                     fn (string $name) => $this->getSecurityRecord($name),
-                     fn (string $name) => $this->getEdrsRecord($name),
-                     fn (string $name) => $this->getCourtsRecord($name),
-                     fn (string $name) => $this->getEnforcementsRecord($name),
-                 ] as $job) {
-            try {
-                $records[] = $job($name);
-            } catch (Throwable $exception) {
-                $this->logger->error($exception);
-            }
-        }
-
-        return array_filter($records);
-    }
-
-    private function getEdrsRecord(string $name): ?ClarityProjectEdrsRecord
-    {
-        $record = new ClarityProjectEdrsRecord();
+        $record = new ClarityPersonEdrsRecord();
 
         $crawler = $this->getCrawler('/person/' . $name);
         $baseUri = $this->getBaseUri();
@@ -141,7 +156,7 @@ class ClarityProjectLookupProcessor implements LookupProcessorInterface
                 $type = trim($tds->eq(3)?->text() ?? '');
             }
 
-            $edr = new ClarityProjectEdr(
+            $edr = new ClarityPersonEdr(
                 $name,
                 type: $type ?? null,
                 href: $href ?? null,
@@ -156,9 +171,9 @@ class ClarityProjectLookupProcessor implements LookupProcessorInterface
         return count($record->getEdrs()) === 0 ? null : $record;
     }
 
-    private function getCourtsRecord(string $name): ?ClarityProjectCourtsRecord
+    private function getPersonCourtsRecord(string $name): ?ClarityPersonCourtsRecord
     {
-        $record = new ClarityProjectCourtsRecord();
+        $record = new ClarityPersonCourtsRecord();
 
         $crawler = $this->getCrawler('/person/' . $name);
 
@@ -193,7 +208,7 @@ class ClarityProjectLookupProcessor implements LookupProcessorInterface
                 $place = trim($tds->eq(4)?->text() ?? '');
             }
 
-            $court = new ClarityProjectCourt(
+            $court = new ClarityPersonCourt(
                 $number,
                 state: $state ?? null,
                 side: $side ?? null,
@@ -207,9 +222,9 @@ class ClarityProjectLookupProcessor implements LookupProcessorInterface
         return count($record->getCourts()) === 0 ? null : $record;
     }
 
-    private function getSecurityRecord(string $name): ?ClarityProjectSecurityRecord
+    private function getPersonSecurityRecord(string $name): ?ClarityPersonSecurityRecord
     {
-        $record = new ClarityProjectSecurityRecord();
+        $record = new ClarityPersonSecurityRecord();
 
         $crawler = $this->getCrawler('/person/' . $name);
 
@@ -266,7 +281,7 @@ class ClarityProjectLookupProcessor implements LookupProcessorInterface
                 }
             }
 
-            $security = new ClarityProjectSecurity(
+            $security = new ClarityPersonSecurity(
                 $name,
                 bornAt: $bornAt ?? null,
                 category: $category ?? null,
@@ -283,9 +298,9 @@ class ClarityProjectLookupProcessor implements LookupProcessorInterface
         return count($record->getSecurity()) === 0 ? null : $record;
     }
 
-    private function getEnforcementsRecord(string $name): ?ClarityProjectEnforcementsRecord
+    private function getPersonEnforcementsRecord(string $name): ?ClarityPersonEnforcementsRecord
     {
-        $record = new ClarityProjectEnforcementsRecord();
+        $record = new ClarityPersonEnforcementsRecord();
 
         $crawler = $this->getCrawler('/person/' . $name);
 
@@ -330,7 +345,7 @@ class ClarityProjectLookupProcessor implements LookupProcessorInterface
                 $state = trim($tds->eq($tds->count() - 1)?->text() ?? '');
             }
 
-            $enforcement = new ClarityProjectEnforcement(
+            $enforcement = new ClarityPersonEnforcement(
                 $number,
                 openedAt: $openedAt ?? null,
                 collector: $collector ?? null,

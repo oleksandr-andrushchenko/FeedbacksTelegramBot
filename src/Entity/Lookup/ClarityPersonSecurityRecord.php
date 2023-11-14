@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Entity\Lookup;
 
-class ClarityProjectSecurityRecord
+class ClarityPersonSecurityRecord
 {
     public function __construct(
         /**
-         * @var ClarityProjectSecurity[]
+         * @var ClarityPersonSecurity[]
          */
         private array $security = []
     )
@@ -20,7 +20,7 @@ class ClarityProjectSecurityRecord
         return $this->security;
     }
 
-    public function addSecurity(ClarityProjectSecurity $security): self
+    public function addSecurity(ClarityPersonSecurity $security): self
     {
         $this->security[] = $security;
 

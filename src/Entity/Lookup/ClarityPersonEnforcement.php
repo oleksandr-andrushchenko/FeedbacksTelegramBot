@@ -7,7 +7,7 @@ namespace App\Entity\Lookup;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-readonly class ClarityProjectEnforcement
+readonly class ClarityPersonEnforcement
 {
     public function __construct(
         private string $number,

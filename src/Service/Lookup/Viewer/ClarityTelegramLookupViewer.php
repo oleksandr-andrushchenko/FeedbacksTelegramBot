@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Service\Lookup\Viewer;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
-use App\Entity\Lookup\ClarityProjectCourt;
-use App\Entity\Lookup\ClarityProjectCourtsRecord;
-use App\Entity\Lookup\ClarityProjectEdr;
-use App\Entity\Lookup\ClarityProjectEdrsRecord;
-use App\Entity\Lookup\ClarityProjectEnforcement;
-use App\Entity\Lookup\ClarityProjectEnforcementsRecord;
-use App\Entity\Lookup\ClarityProjectSecurity;
-use App\Entity\Lookup\ClarityProjectSecurityRecord;
+use App\Entity\Lookup\ClarityPersonCourt;
+use App\Entity\Lookup\ClarityPersonCourtsRecord;
+use App\Entity\Lookup\ClarityPersonEdr;
+use App\Entity\Lookup\ClarityPersonEdrsRecord;
+use App\Entity\Lookup\ClarityPersonEnforcement;
+use App\Entity\Lookup\ClarityPersonEnforcementsRecord;
+use App\Entity\Lookup\ClarityPersonSecurity;
+use App\Entity\Lookup\ClarityPersonSecurityRecord;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ClarityTelegramLookupViewer implements LookupViewerInterface
@@ -46,19 +46,19 @@ class ClarityTelegramLookupViewer implements LookupViewerInterface
         }
 
         return match (get_class($record)) {
-            ClarityProjectEdrsRecord::class => $this->getEdrsResultRecord($record),
-            ClarityProjectSecurityRecord::class => $this->getSecurityResultRecord($record),
-            ClarityProjectCourtsRecord::class => $this->getCourtsResultRecord($record),
-            ClarityProjectEnforcementsRecord::class => $this->getEnforcementsResultRecord($record),
+            ClarityPersonEdrsRecord::class => $this->getPersonEdrsResultRecord($record),
+            ClarityPersonSecurityRecord::class => $this->getPersonSecurityResultRecord($record),
+            ClarityPersonCourtsRecord::class => $this->getPersonCourtsResultRecord($record),
+            ClarityPersonEnforcementsRecord::class => $this->getPersonEnforcementsResultRecord($record),
         };
     }
 
-    private function getEdrsResultRecord(ClarityProjectEdrsRecord $record): string
+    private function getPersonEdrsResultRecord(ClarityPersonEdrsRecord $record): string
     {
         return $this->lookupViewerHelper->wrapResultRecord(
             $this->trans('edrs_title'),
             $record->getEdrs(),
-            fn (ClarityProjectEdr $edr): array => [
+            fn (ClarityPersonEdr $edr): array => [
                 sprintf('<b>%s</b>', empty($edr->getHref()) ? $edr->getName() : sprintf('<a href="%s">%s</a>', $edr->getHref(), $edr->getName())),
                 empty($edr->getType()) ? null : $edr->getType(),
                 empty($edr->getNumber()) ? null : sprintf('%s [ %s ]', $edr->getNumber(), $this->trans('edr_number')),
@@ -68,12 +68,12 @@ class ClarityTelegramLookupViewer implements LookupViewerInterface
         );
     }
 
-    private function getSecurityResultRecord(ClarityProjectSecurityRecord $record): string
+    private function getPersonSecurityResultRecord(ClarityPersonSecurityRecord $record): string
     {
         return $this->lookupViewerHelper->wrapResultRecord(
             $this->trans('security_title'),
             $record->getSecurity(),
-            fn (ClarityProjectSecurity $sec): array => [
+            fn (ClarityPersonSecurity $sec): array => [
                 sprintf('<b>%s</b>', $sec->getName()),
                 empty($sec->getBornAt()) ? null : sprintf('%s [ %s ]', $sec->getBornAt()->format('d.m.Y'), $this->trans('born_at')),
                 empty($sec->getArchive()) ? null : sprintf('%s %s', $sec->getArchive() ? '⚪️' : '🔴', $this->trans($sec->getArchive() ? 'archive' : 'actual')),
@@ -86,12 +86,12 @@ class ClarityTelegramLookupViewer implements LookupViewerInterface
         );
     }
 
-    private function getCourtsResultRecord(ClarityProjectCourtsRecord $record): string
+    private function getPersonCourtsResultRecord(ClarityPersonCourtsRecord $record): string
     {
         return $this->lookupViewerHelper->wrapResultRecord(
             $this->trans('courts_title'),
             $record->getCourts(),
-            fn (ClarityProjectCourt $court): array => [
+            fn (ClarityPersonCourt $court): array => [
                 sprintf('<b>%s</b> [ %s ]', $court->getNumber(), $this->trans('case_number')),
                 empty($court->getState()) ? null : $court->getState(),
                 empty($court->getSide()) ? null : sprintf('%s %s', str_contains($court->getSide(), 'заявник') ? '⚪️' : '🔴', $court->getSide()),
@@ -101,12 +101,12 @@ class ClarityTelegramLookupViewer implements LookupViewerInterface
         );
     }
 
-    private function getEnforcementsResultRecord(ClarityProjectEnforcementsRecord $record): string
+    private function getPersonEnforcementsResultRecord(ClarityPersonEnforcementsRecord $record): string
     {
         return $this->lookupViewerHelper->wrapResultRecord(
             $this->trans('enforcements_title'),
             $record->getEnforcements(),
-            fn (ClarityProjectEnforcement $enf): array => [
+            fn (ClarityPersonEnforcement $enf): array => [
                 sprintf('<b>%s</b> [ %s ]', $enf->getNumber(), $this->trans('enf_number')),
                 empty($enf->getOpenedAt()) ? null : $enf->getOpenedAt()->format('d.m.Y'),
                 empty($enf->getDebtor()) ? null : sprintf('%s [ %s ]', $enf->getDebtor(), $this->trans('debtor')),
