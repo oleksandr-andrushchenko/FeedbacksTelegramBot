@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Service\Lookup\Viewer;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
+use App\Entity\Lookup\ClarityEdr;
+use App\Entity\Lookup\ClarityEdrsRecord;
 use App\Entity\Lookup\ClarityPersonCourt;
 use App\Entity\Lookup\ClarityPersonCourtsRecord;
 use App\Entity\Lookup\ClarityPersonEdr;
@@ -50,6 +52,7 @@ class ClarityTelegramLookupViewer implements LookupViewerInterface
             ClarityPersonSecurityRecord::class => $this->getPersonSecurityResultRecord($record),
             ClarityPersonCourtsRecord::class => $this->getPersonCourtsResultRecord($record),
             ClarityPersonEnforcementsRecord::class => $this->getPersonEnforcementsResultRecord($record),
+            ClarityEdrsRecord::class => $this->getEdrsResultRecord($record),
         };
     }
 
@@ -113,6 +116,21 @@ class ClarityTelegramLookupViewer implements LookupViewerInterface
                 empty($enf->getBornAt()) ? null : sprintf('%s [ %s ]', $enf->getBornAt()->format('d.m.Y'), $this->trans('born_at')),
                 empty($enf->getCollector()) ? null : sprintf('%s [ %s ]', $enf->getCollector(), $this->trans('collector')),
                 empty($enf->getState()) ? null : sprintf('%s %s', str_contains($enf->getState(), 'Відкрито') ? '🔴' : '⚪️', $enf->getState()),
+            ]
+        );
+    }
+
+    private function getEdrsResultRecord(ClarityEdrsRecord $record): string
+    {
+        return $this->lookupViewerHelper->wrapResultRecord(
+            null,
+            $record->getEdrs(),
+            fn (ClarityEdr $edr): array => [
+                sprintf('<b>%s</b>', empty($edr->getHref()) ? $edr->getName() : sprintf('<a href="%s">%s</a>', $edr->getHref(), $edr->getName())),
+                empty($edr->getType()) ? null : $edr->getType(),
+                empty($edr->getNumber()) ? null : sprintf('%s [ %s ]', $edr->getNumber(), $this->trans('edr_number')),
+                $edr->getActive() === null ? null : sprintf('%s %s', $edr->getActive() ? '🟢' : '⚪️', $this->trans($edr->getActive() ? 'active' : 'inactive')),
+                empty($edr->getAddress()) ? null : $edr->getAddress(),
             ]
         );
     }

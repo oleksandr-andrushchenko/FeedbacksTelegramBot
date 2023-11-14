@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Service\Lookup\Processor;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
+use App\Entity\Lookup\ClarityEdr;
+use App\Entity\Lookup\ClarityEdrsRecord;
 use App\Entity\Lookup\ClarityPersonCourt;
 use App\Entity\Lookup\ClarityPersonCourtsRecord;
 use App\Entity\Lookup\ClarityPersonEdr;
@@ -43,6 +45,10 @@ class ClarityLookupProcessor implements LookupProcessorInterface
             return true;
         }
 
+        if ($this->supportsOrganizationName($searchTerm, $context)) {
+            return true;
+        }
+
         return false;
     }
 
@@ -58,6 +64,10 @@ class ClarityLookupProcessor implements LookupProcessorInterface
                 fn (string $name) => $this->getPersonEdrsRecord($name),
                 fn (string $name) => $this->getPersonCourtsRecord($name),
                 fn (string $name) => $this->getPersonEnforcementsRecord($name),
+            ];
+        } elseif ($this->supportsOrganizationName($searchTerm, $context)) {
+            $jobs = [
+                fn (string $name) => $this->getEdrsRecord($name),
             ];
         } else {
             $jobs = [];
@@ -95,6 +105,31 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         if (count(explode(' ', $name)) < 2) {
             return false;
         }
+
+        if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $name) !== 1) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function supportsOrganizationName(FeedbackSearchTerm $searchTerm, array $context = []): bool
+    {
+        if ($this->environment === 'test') {
+            return false;
+        }
+
+        $countryCode = $context['countryCode'] ?? null;
+
+        if ($countryCode !== 'ua') {
+            return false;
+        }
+
+        if ($searchTerm->getType() !== SearchTermType::organization_name) {
+            return false;
+        }
+
+        $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
 
         if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $name) !== 1) {
             return false;
@@ -358,6 +393,55 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         });
 
         return count($record->getEnforcements()) === 0 ? null : $record;
+    }
+
+    private function getEdrsRecord(string $name): ?ClarityEdrsRecord
+    {
+        $record = new ClarityEdrsRecord();
+
+        $crawler = $this->getCrawler('/edrs/?search=' . $name);
+        $baseUri = $this->getBaseUri();
+
+        $crawler->filter('.list .item')->each(static function (Crawler $item) use ($baseUri, $record): void {
+            if ($item->filter('.name')->count() < 1) {
+                return;
+            }
+
+            $name = trim($item->filter('.name')->text() ?? '');
+
+            if ($item->filter('a')->eq(0)->count() > 0) {
+                $href = trim($item->filter('a')?->eq(0)?->attr('href') ?? '');
+                $href = empty($href) ? null : ($baseUri . $href);
+            }
+
+            if ($item->filter('.edr')->count() > 0) {
+                $number = preg_replace('/[^0-9]/', '', trim($item->filter('.edr')->text() ?? ''));
+            }
+
+            if ($item->filter('.address')->count() > 0) {
+                $address = trim($item->filter('.address')->text() ?? '');
+                $address = trim(str_replace(['Адреса:'], '', $address));
+            }
+
+            if ($item->filter('.source-info')->count() > 0) {
+                if (str_contains($item->filter('.source-info')->text(), 'ФОП')) {
+                    $type = 'ФОП';
+                }
+            }
+
+            $edr = new ClarityEdr(
+                $name,
+                type: $type ?? null,
+                href: $href ?? null,
+                number: $number ?? null,
+                active: $active ?? null,
+                address: $address ?? null
+            );
+
+            $record->addEdr($edr);
+        });
+
+        return count($record->getEdrs()) === 0 ? null : $record;
     }
 
     private function getBaseUri(): string
