@@ -26,10 +26,13 @@ class LookupViewerHelper
         return 'ℹ️ ' . implode("\n▫️ ", $this->arrayStringNormalizerAndFilterer->normalizeAndFilterEmptyStrings($list));
     }
 
-    public function wrapResultRecord(string $title, array $items, callable $record): string
+    public function wrapResultRecord(?string $title, array $items, callable $record): string
     {
         $message = [];
-        $message[] = $this->wrapTitle($title);
+
+        if ($title !== null) {
+            $message[] = $this->wrapTitle($title);
+        }
 
         foreach ($items as $item) {
             $message[] = $this->wrapList($record($item));
