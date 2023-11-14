@@ -47,22 +47,24 @@ class ClarityTelegramLookupViewer implements LookupViewerInterface
             return $record;
         }
 
+        $full = $context['full'] ?? false;
+
         return match (get_class($record)) {
-            ClarityPersonEdrsRecord::class => $this->getPersonEdrsResultRecord($record),
-            ClarityPersonSecurityRecord::class => $this->getPersonSecurityResultRecord($record),
-            ClarityPersonCourtsRecord::class => $this->getPersonCourtsResultRecord($record),
-            ClarityPersonEnforcementsRecord::class => $this->getPersonEnforcementsResultRecord($record),
-            ClarityEdrsRecord::class => $this->getEdrsResultRecord($record),
+            ClarityPersonEdrsRecord::class => $this->getPersonEdrsResultRecord($record, $full),
+            ClarityPersonSecurityRecord::class => $this->getPersonSecurityResultRecord($record, $full),
+            ClarityPersonCourtsRecord::class => $this->getPersonCourtsResultRecord($record, $full),
+            ClarityPersonEnforcementsRecord::class => $this->getPersonEnforcementsResultRecord($record, $full),
+            ClarityEdrsRecord::class => $this->getEdrsResultRecord($record, $full),
         };
     }
 
-    private function getPersonEdrsResultRecord(ClarityPersonEdrsRecord $record): string
+    private function getPersonEdrsResultRecord(ClarityPersonEdrsRecord $record, bool $full): string
     {
         return $this->lookupViewerHelper->wrapResultRecord(
             $this->trans('edrs_title'),
             $record->getEdrs(),
             fn (ClarityPersonEdr $edr): array => [
-                sprintf('<b>%s</b>', empty($edr->getHref()) ? $edr->getName() : sprintf('<a href="%s">%s</a>', $edr->getHref(), $edr->getName())),
+                sprintf('<b>%s</b>', empty($edr->getHref()) || !$full ? $edr->getName() : sprintf('<a href="%s">%s</a>', $edr->getHref(), $edr->getName())),
                 empty($edr->getType()) ? null : $edr->getType(),
                 empty($edr->getNumber()) ? null : sprintf('%s [ %s ]', $edr->getNumber(), $this->trans('edr_number')),
                 $edr->getActive() === null ? null : sprintf('%s %s', $edr->getActive() ? '🟢' : '⚪️', $this->trans($edr->getActive() ? 'active' : 'inactive')),
@@ -71,7 +73,7 @@ class ClarityTelegramLookupViewer implements LookupViewerInterface
         );
     }
 
-    private function getPersonSecurityResultRecord(ClarityPersonSecurityRecord $record): string
+    private function getPersonSecurityResultRecord(ClarityPersonSecurityRecord $record, bool $full): string
     {
         return $this->lookupViewerHelper->wrapResultRecord(
             $this->trans('security_title'),
@@ -89,7 +91,7 @@ class ClarityTelegramLookupViewer implements LookupViewerInterface
         );
     }
 
-    private function getPersonCourtsResultRecord(ClarityPersonCourtsRecord $record): string
+    private function getPersonCourtsResultRecord(ClarityPersonCourtsRecord $record, bool $full): string
     {
         return $this->lookupViewerHelper->wrapResultRecord(
             $this->trans('courts_title'),
@@ -104,7 +106,7 @@ class ClarityTelegramLookupViewer implements LookupViewerInterface
         );
     }
 
-    private function getPersonEnforcementsResultRecord(ClarityPersonEnforcementsRecord $record): string
+    private function getPersonEnforcementsResultRecord(ClarityPersonEnforcementsRecord $record, bool $full): string
     {
         return $this->lookupViewerHelper->wrapResultRecord(
             $this->trans('enforcements_title'),
@@ -120,13 +122,13 @@ class ClarityTelegramLookupViewer implements LookupViewerInterface
         );
     }
 
-    private function getEdrsResultRecord(ClarityEdrsRecord $record): string
+    private function getEdrsResultRecord(ClarityEdrsRecord $record, bool $full): string
     {
         return $this->lookupViewerHelper->wrapResultRecord(
             null,
             $record->getEdrs(),
             fn (ClarityEdr $edr): array => [
-                sprintf('<b>%s</b>', empty($edr->getHref()) ? $edr->getName() : sprintf('<a href="%s">%s</a>', $edr->getHref(), $edr->getName())),
+                sprintf('<b>%s</b>', empty($edr->getHref()) || !$full ? $edr->getName() : sprintf('<a href="%s">%s</a>', $edr->getHref(), $edr->getName())),
                 empty($edr->getType()) ? null : $edr->getType(),
                 empty($edr->getNumber()) ? null : sprintf('%s [ %s ]', $edr->getNumber(), $this->trans('edr_number')),
                 $edr->getActive() === null ? null : sprintf('%s %s', $edr->getActive() ? '🟢' : '⚪️', $this->trans($edr->getActive() ? 'active' : 'inactive')),
