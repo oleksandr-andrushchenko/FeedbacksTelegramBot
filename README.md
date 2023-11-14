@@ -73,3 +73,4 @@
 * fix bug with empty keyboard when error occurs in message handlers
 * re-factor search term parsers (remove supports method)
 * remove create feedback preposition on search convers
+* ask user to leave a phone number or email for future notifications (is anybody gonna search him)
