@@ -19,16 +19,15 @@ use App\Entity\Lookup\Clarity\ClarityPersonSecurity;
 use App\Entity\Lookup\Clarity\ClarityPersonSecurityRecord;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Lookup\LookupProcessorName;
+use App\Service\CrawlerProvider;
 use DateTimeImmutable;
-use RuntimeException;
 use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ClarityLookupProcessor implements LookupProcessorInterface
 {
     public function __construct(
         private readonly string $environment,
-        private readonly HttpClientInterface $httpClient,
+        private readonly CrawlerProvider $crawlerProvider,
     )
     {
     }
@@ -127,7 +126,7 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         $record = new ClarityPersonEdrsRecord();
 
         $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
-        $crawler = $this->getCrawler('/person/' . $name);
+        $crawler = $this->getPersonCrawler($name);
         $baseUri = $this->getBaseUri();
 
         // todo: replace with https://clarity-project.info/edrs/?search=%name% (this variant holds addresses for fops)
@@ -207,7 +206,7 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         $record = new ClarityPersonCourtsRecord();
 
         $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
-        $crawler = $this->getCrawler('/person/' . $name);
+        $crawler = $this->getPersonCrawler($name);
 
         $table = $crawler->filter('[data-id="court-involved"]');
         $header = [];
@@ -267,7 +266,7 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         $record = new ClarityPersonDebtorsRecord();
 
         $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
-        $crawler = $this->getCrawler('/person/' . $name);
+        $crawler = $this->getPersonCrawler($name);
 
         $table = $crawler->filter('[data-id="debtors"]');
         $header = [];
@@ -326,7 +325,7 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         $record = new ClarityPersonSecurityRecord();
 
         $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
-        $crawler = $this->getCrawler('/person/' . $name);
+        $crawler = $this->getPersonCrawler($name);
 
         $table = $crawler->filter('[data-id="security"]');
         $header = [];
@@ -415,7 +414,7 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         $record = new ClarityPersonEnforcementsRecord();
 
         $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
-        $crawler = $this->getCrawler('/person/' . $name);
+        $crawler = $this->getPersonCrawler($name);
 
         $table = $crawler->filter('[data-id="enforcements"]');
         $header = [];
@@ -488,7 +487,7 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         $record = new ClarityEdrsRecord();
 
         $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
-        $crawler = $this->getCrawler('/edrs/?search=' . $name);
+        $crawler = $this->getEdrsCrawler($name);
         $baseUri = $this->getBaseUri();
 
         $crawler->filter('.list .item')->each(static function (Crawler $item) use ($baseUri, $record): void {
@@ -542,31 +541,13 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         return 'https://clarity-project.info';
     }
 
-    private function getCrawler(string $uri): Crawler
+    private function getPersonCrawler(string $name): Crawler
     {
-        static $crawlers = [];
+        return $this->crawlerProvider->getCrawler('/person/' . $name, baseUri: $this->getBaseUri());
+    }
 
-        if (!isset($crawlers[$uri])) {
-            if (1 === 1) {
-                $url = $this->getBaseUri() . $uri;
-                $options = [];
-
-                $response = $this->httpClient->request('GET', $url, $options);
-
-                $status = $response->getStatusCode();
-
-                if ($status !== 200) {
-                    throw new RuntimeException(sprintf('Non 200 status code received for "%s" url', $url));
-                }
-
-                $content = $response->getContent();
-            } else {
-                $content = file_get_contents(__DIR__ . '/clarity' . str_replace('/', '.', $uri) . '.html');
-            }
-
-            $crawlers[$uri] = new Crawler($content, baseHref: $this->getBaseUri());
-        }
-
-        return $crawlers[$uri];
+    private function getEdrsCrawler(string $name): Crawler
+    {
+        return $this->crawlerProvider->getCrawler('/edrs/?search=' . $name, baseUri: $this->getBaseUri());
     }
 }

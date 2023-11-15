@@ -76,5 +76,8 @@
             <argument type="service" id="logger"/>
             <tag name="messenger.message_handler" handles="App\Message\Event\ActivityEvent" bus="app.event_bus"/>
         </service>
+        <service id="app.crawler_provider" class="App\Service\CrawlerProvider" lazy="true">
+            <argument type="service" id="http_client"/>
+        </service>
     </services>
 </container>

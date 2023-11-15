@@ -18,7 +18,7 @@
         <service id="app.lookup_processor_clarity" class="App\Service\Lookup\Processor\ClarityLookupProcessor"
                  lazy="true">
             <argument>%kernel.environment%</argument>
-            <argument type="service" id="http_client"/>
+            <argument type="service" id="app.crawler_provider"/>
             <tag name="app.lookup_processor" processor="clarity"/>
         </service>
         <service id="app.lookup_viewer_helper" class="App\Service\Lookup\Viewer\LookupViewerHelper" lazy="true">
