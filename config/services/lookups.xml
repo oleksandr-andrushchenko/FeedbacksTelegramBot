@@ -44,7 +44,7 @@
             <argument type="service" id="app.translator"/>
             <tag name="app.lookup_viewer_telegram" processor="clarity"/>
         </service>
-        <service id="app.lookup_processor_telegram" class="App\Service\Lookup\Processor\LookupProcessor" lazy="true">
+        <service id="app.lookup_processor_telegram" class="App\Service\Lookup\Lookuper" lazy="true">
             <argument type="tagged_locator" tag="app.lookup_processor" index-by="processor"/>
             <argument type="tagged_locator" tag="app.lookup_viewer_telegram" index-by="processor"/>
             <argument type="service" id="logger"/>

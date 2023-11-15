@@ -17,7 +17,7 @@ use App\Service\Feedback\SearchTerm\SearchTermParserInterface;
 use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Service\Feedback\Telegram\Bot\Chat\ChooseActionTelegramChatSender;
 use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
-use App\Service\Lookup\Processor\LookupProcessor;
+use App\Service\Lookup\Lookuper;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversation;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
@@ -46,7 +46,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
         private readonly SearchTermTelegramViewProvider $searchTermTelegramViewProvider,
         private readonly SearchTermTypeProvider $searchTermTypeProvider,
         private readonly FeedbackSearchCreator $feedbackSearchCreator,
-        private readonly LookupProcessor $telegramLookupProcessor,
+        private readonly Lookuper $lookuper,
         private readonly bool $searchTermTypeStep,
         private readonly bool $confirmStep,
         private readonly bool $createConfirmStep,
@@ -463,7 +463,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 LookupProcessorName::searches,
             ];
 
-            $this->telegramLookupProcessor->processLookup($feedbackSearch->getSearchTerm(), $render, $context, $processors);
+            $this->lookuper->lookup($feedbackSearch->getSearchTerm(), $render, $context, $processors);
 
             if ($this->createConfirmStep) {
                 return $this->queryCreateConfirm($tg);

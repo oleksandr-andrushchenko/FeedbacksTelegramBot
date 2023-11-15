@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Lookup\Processor;
+namespace App\Service\Lookup;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Enum\Lookup\LookupProcessorName;
+use App\Service\Lookup\Processor\LookupProcessorInterface;
 use App\Service\Lookup\Viewer\LookupViewerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Throwable;
 
-class LookupProcessor
+class Lookuper
 {
     public function __construct(
         private readonly ServiceLocator $processorServiceLocator,
@@ -28,12 +29,7 @@ class LookupProcessor
      * @param LookupProcessorName[]|null $processors
      * @return void
      */
-    public function processLookup(
-        FeedbackSearchTerm $searchTerm,
-        callable $render,
-        array $context = [],
-        array $processors = null
-    ): void
+    public function lookup(FeedbackSearchTerm $searchTerm, callable $render, array $context = [], array $processors = null): void
     {
         foreach ($this->getProcessors($processors) as $processor) {
             try {

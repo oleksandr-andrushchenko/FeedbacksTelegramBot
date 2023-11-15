@@ -16,7 +16,7 @@ use App\Service\Feedback\SearchTerm\SearchTermParserInterface;
 use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Service\Feedback\Telegram\Bot\Chat\ChooseActionTelegramChatSender;
 use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
-use App\Service\Lookup\Processor\LookupProcessor;
+use App\Service\Lookup\Lookuper;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversation;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
@@ -43,7 +43,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
         private readonly SearchTermTelegramViewProvider $searchTermTelegramViewProvider,
         private readonly SearchTermTypeProvider $searchTermTypeProvider,
         private readonly FeedbackLookupCreator $feedbackLookupCreator,
-        private readonly LookupProcessor $telegramLookupProcessor,
+        private readonly Lookuper $lookuper,
         private readonly bool $searchTermTypeStep,
         private readonly bool $confirmStep,
     )
@@ -474,7 +474,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 LookupProcessorName::searches,
             ];
 
-            $this->telegramLookupProcessor->processLookup($feedbackLookup->getSearchTerm(), $render, $context, $processors);
+            $this->lookuper->lookup($feedbackLookup->getSearchTerm(), $render, $context, $processors);
 
             $tg->stopConversation($entity);
 

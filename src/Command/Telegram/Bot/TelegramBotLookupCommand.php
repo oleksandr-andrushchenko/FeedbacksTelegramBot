@@ -7,7 +7,7 @@ namespace App\Command\Telegram\Bot;
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Lookup\LookupProcessorName;
-use App\Service\Lookup\Processor\LookupProcessor;
+use App\Service\Lookup\Lookuper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TelegramBotLookupCommand extends Command
 {
     public function __construct(
-        private readonly LookupProcessor $telegramLookupProcessor,
+        private readonly Lookuper $lookuper,
     )
     {
         parent::__construct();
@@ -52,7 +52,7 @@ class TelegramBotLookupCommand extends Command
             $input->getOption('processor')
         );
 
-        $this->telegramLookupProcessor->processLookup($searchTerm, $render, $context, $processors);
+        $this->lookuper->lookup($searchTerm, $render, $context, $processors);
 
         $io->success('Lookup has been completed');
 
