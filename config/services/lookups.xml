@@ -21,12 +21,6 @@
             <argument type="service" id="http_client"/>
             <tag name="app.lookup_processor" processor="clarity"/>
         </service>
-        <service id="app.lookup_processor_ukrainian_court"
-                 class="App\Service\Lookup\Processor\UkrainianCourtLookupProcessor"
-                 lazy="true">
-            <argument type="service" id="http_client"/>
-            <tag name="app.lookup_processor" processor="ukrainian_court"/>
-        </service>
         <service id="app.lookup_viewer_helper" class="App\Service\Lookup\Viewer\LookupViewerHelper" lazy="true">
             <argument type="service" id="app.array_string_normalizer_and_filterer"/>
         </service>
