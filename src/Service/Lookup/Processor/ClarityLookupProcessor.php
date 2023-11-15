@@ -86,7 +86,7 @@ class ClarityLookupProcessor implements LookupProcessorInterface
 
         $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
 
-        if (count(explode(' ', $name)) < 2) {
+        if (count(explode(' ', $name)) < 3) {
             return false;
         }
 
