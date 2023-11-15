@@ -8,21 +8,22 @@ use App\Entity\Feedback\Command\FeedbackCommandLimit;
 use App\Entity\Feedback\Telegram\Bot\LookupFeedbackTelegramBotConversationState;
 use App\Entity\Telegram\TelegramBotConversation as Entity;
 use App\Enum\Feedback\SearchTermType;
+use App\Enum\Lookup\LookupProcessorName;
 use App\Exception\Feedback\FeedbackCommandLimitExceededException;
 use App\Exception\ValidatorException;
 use App\Service\Feedback\FeedbackLookupCreator;
-use App\Service\Feedback\FeedbackSearchSearcher;
 use App\Service\Feedback\SearchTerm\SearchTermParserInterface;
 use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Service\Feedback\Telegram\Bot\Chat\ChooseActionTelegramChatSender;
-use App\Service\Feedback\Telegram\Bot\View\FeedbackSearchTelegramViewProvider;
 use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
+use App\Service\Lookup\Processor\LookupProcessor;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversation;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
 use App\Service\Validator;
 use App\Transfer\Feedback\FeedbackLookupTransfer;
 use App\Transfer\Feedback\SearchTermTransfer;
+use DateTimeImmutable;
 use Longman\TelegramBot\Entities\KeyboardButton;
 
 /**
@@ -42,8 +43,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
         private readonly SearchTermTelegramViewProvider $searchTermTelegramViewProvider,
         private readonly SearchTermTypeProvider $searchTermTypeProvider,
         private readonly FeedbackLookupCreator $feedbackLookupCreator,
-        private readonly FeedbackSearchSearcher $feedbackSearchSearcher,
-        private readonly FeedbackSearchTelegramViewProvider $feedbackSearchTelegramViewProvider,
+        private readonly LookupProcessor $telegramLookupProcessor,
         private readonly bool $searchTermTypeStep,
         private readonly bool $confirmStep,
     )
@@ -461,36 +461,20 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 )
             );
 
-            // timezone lives in user
-            $addTime = true;
-            $feedbackSearches = $this->feedbackSearchSearcher->searchFeedbackSearches($feedbackLookup->getSearchTerm(), withUsers: $addTime);
-            $count = count($feedbackSearches);
+            $render = static fn (string $message) => $tg->reply($message);
+            $context = [
+                'bot' => $tg->getBot()->getEntity(),
+                'addSecrets' => true,
+                'addSign' => true,
+                'addCountry' => true,
+                'countryCode' => $tg->getBot()->getEntity()->getCountryCode(),
+                'full' => $tg->getBot()->getMessengerUser()?->getUser()?->getSubscriptionExpireAt() > new DateTimeImmutable(),
+            ];
+            $processors = [
+                LookupProcessorName::searches,
+            ];
 
-            if ($count === 0) {
-                $tg->stopConversation($entity);
-
-                $message = $this->getEmptyListReply($tg);
-
-                return $this->chooseActionTelegramChatSender->sendActions($tg, text: $message, appendDefault: true);
-            }
-
-            $message = $this->getListReply($tg, $count);
-
-            $tg->reply($message);
-
-            foreach ($feedbackSearches as $index => $feedbackSearch) {
-                $message = $this->feedbackSearchTelegramViewProvider->getFeedbackSearchTelegramView(
-                    $tg->getBot()->getEntity(),
-                    $feedbackSearch,
-                    numberToAdd: $index + 1,
-                    addSecrets: true,
-                    addSign: true,
-                    addTime: $addTime,
-                    addCountry: true
-                );
-
-                $tg->reply($message);
-            }
+            $this->telegramLookupProcessor->processLookup($feedbackLookup->getSearchTerm(), $render, $context, $processors);
 
             $tg->stopConversation($entity);
 

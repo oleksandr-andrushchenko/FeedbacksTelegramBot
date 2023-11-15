@@ -460,6 +460,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $processors = [
                 LookupProcessorName::feedbacks,
                 LookupProcessorName::clarity,
+                LookupProcessorName::searches,
             ];
 
             $this->telegramLookupProcessor->processLookup($feedbackSearch->getSearchTerm(), $render, $context, $processors);
