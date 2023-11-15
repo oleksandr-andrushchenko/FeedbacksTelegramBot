@@ -73,7 +73,9 @@ class RestartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunction
             ->shouldSeeReply(
                 ...$this->okReplies(),
             )
-            ->shouldSeeChooseAction()
+            ->shouldSeeButtons(
+                ...$this->chooseActionButtons(),
+            )
             ->shouldNotSeeActiveConversation()
         ;
     }

@@ -332,17 +332,24 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
         return $this;
     }
 
-    protected function shouldSeeChooseAction(
-        string $text = null,
+    protected function chooseActionReplies(): array
+    {
+        return [
+            'query.action',
+        ];
+    }
+
+    protected function chooseActionButtons(
         bool $extended = false,
         bool $subscribe = true
-    ): static
+    ): array
     {
         $buttons = [
             $this->command('create'),
             $this->command('search'),
             $this->command('lookup'),
         ];
+
         if ($extended) {
             $buttons = array_merge($buttons, [
                 $this->command('donate'),
@@ -360,26 +367,7 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
             $buttons[] = 'keyboard.more';
         }
 
-        return $this
-            ->shouldSeeReply($text ?? 'query.action')
-            ->shouldSeeButtons(...$buttons)
-        ;
-    }
-
-    protected function chooseActionReplies(): array
-    {
-        return [
-            'query.action',
-        ];
-    }
-
-    protected function chooseActionButtons(): array
-    {
-        return [
-            $this->commandButton('create'),
-            $this->commandButton('search'),
-            $this->commandButton('lookup'),
-        ];
+        return $buttons;
     }
 
     protected function cancelReplies(): array

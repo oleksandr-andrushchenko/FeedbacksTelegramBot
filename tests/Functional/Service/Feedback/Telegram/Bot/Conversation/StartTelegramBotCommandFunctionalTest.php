@@ -39,7 +39,9 @@ class StartTelegramBotCommandFunctionalTest extends TelegramBotCommandFunctional
                 'title',
 //                'agreements',
             )
-            ->shouldSeeChooseAction()
+            ->shouldSeeButtons(
+                ...$this->chooseActionButtons()
+            )
         ;
     }
 }
