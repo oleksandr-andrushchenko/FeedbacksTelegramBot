@@ -543,7 +543,7 @@ class ClarityLookupProcessor implements LookupProcessorInterface
 
     private function getPersonCrawler(string $name): Crawler
     {
-        return $this->crawlerProvider->getCrawler('/person/' . $name, baseUri: $this->getBaseUri());
+        return $this->crawlerProvider->getCrawler('/person/' . mb_strtoupper($name), baseUri: $this->getBaseUri());
     }
 
     private function getEdrsCrawler(string $name): Crawler
