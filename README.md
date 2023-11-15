@@ -74,3 +74,5 @@
 * re-factor search term parsers (remove supports method)
 * remove create feedback preposition on search convers
 * ask user to leave a phone number or email for future notifications (is anybody gonna search him)
+* hide lookup search and transfer all types of searches to general search command +update translations for search command
+* improve calrity search: if 2 words - propose variants (in keyboard), then search; if 3 words - direct search -> if non 200 -> 
