@@ -40,7 +40,6 @@ class SearchTelegramLookupViewer extends LookupViewer implements LookupViewerInt
                 $this->feedbackSearchTelegramViewProvider->getFeedbackSearchTelegramView(
                     $context['bot'] ?? $search->getTelegramBot(),
                     $search,
-                    numberToAdd: ($context['index'] ?? 0) + 1,
                     addSecrets: true,
                     addTime: true,
                     addCountry: true,

@@ -40,7 +40,6 @@ class FeedbackTelegramLookupViewer extends LookupViewer implements LookupViewerI
                 $this->feedbackTelegramViewProvider->getFeedbackTelegramView(
                     $context['bot'] ?? $feedback->getTelegramBot(),
                     $feedback,
-                    numberToAdd: ($context['index'] ?? 0) + 1,
                     addSecrets: true,
                     addTime: true,
                     addCountry: true,
