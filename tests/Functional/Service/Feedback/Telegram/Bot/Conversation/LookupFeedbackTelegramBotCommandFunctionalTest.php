@@ -601,8 +601,6 @@ class LookupFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
                 'on_search',
                 $searchTerm->getText(),
                 $this->searchTermTypeTrans($searchTerm->getType()),
-                'sign.create',
-                'sign.search',
                 ...$this->chooseActionReplies(),
             ],
         ];

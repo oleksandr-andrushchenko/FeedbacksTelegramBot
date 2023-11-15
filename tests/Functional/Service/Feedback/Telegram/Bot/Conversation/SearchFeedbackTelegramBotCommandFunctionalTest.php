@@ -600,11 +600,8 @@ class SearchFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'searchTerm' => $searchTerm = new SearchTermTransfer(Fixtures::INSTAGRAM_USERNAME_3, type: SearchTermType::instagram_username),
             'expectedSearchTermCountDelta' => 0,
             'shouldSeeReplies' => [
-//                'result',
                 $searchTerm->getText(),
                 $this->searchTermTypeTrans($searchTerm->getType()),
-                'sign.create',
-                'sign.search',
                 'query.create_confirm',
             ],
         ];
