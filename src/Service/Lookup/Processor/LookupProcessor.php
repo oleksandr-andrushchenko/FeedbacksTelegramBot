@@ -45,7 +45,17 @@ class LookupProcessor
 
                 $render('🔍 ' . $viewer->getOnSearchTitle($searchTerm));
 
-                $records = $processor->search($searchTerm, $context);
+                $records = [];
+
+                foreach ($processor->getSearchers($searchTerm, $context) as $searcher) {
+                    try {
+                        $records = array_merge($records, $searcher($searchTerm, $context));
+                    } catch (Throwable $exception) {
+                        $this->logger->error($exception);
+                    }
+                }
+
+                $records = array_filter($records);
                 $count = count($records);
 
                 if ($count === 0) {

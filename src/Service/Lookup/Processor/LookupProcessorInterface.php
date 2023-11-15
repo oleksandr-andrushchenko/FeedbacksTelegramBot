@@ -13,5 +13,5 @@ interface LookupProcessorInterface
 
     public function supports(FeedbackSearchTerm $searchTerm, array $context = []): bool;
 
-    public function search(FeedbackSearchTerm $searchTerm, array $context = []): array;
+    public function getSearchers(FeedbackSearchTerm $searchTerm, array $context = []): iterable;
 }

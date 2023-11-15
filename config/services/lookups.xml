@@ -14,7 +14,6 @@
                  lazy="true">
             <argument>%kernel.environment%</argument>
             <argument type="service" id="http_client"/>
-            <argument type="service" id="logger"/>
             <tag name="app.lookup_processor" processor="clarity"/>
         </service>
         <service id="app.lookup_processor_ukrainian_court"
