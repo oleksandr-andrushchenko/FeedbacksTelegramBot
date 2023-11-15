@@ -54,15 +54,15 @@ class ClarityLookupProcessor implements LookupProcessorInterface
     public function getSearchers(FeedbackSearchTerm $searchTerm, array $context = []): iterable
     {
         if ($this->supportsPersonName($searchTerm, $context)) {
-            yield fn (FeedbackSearchTerm $searchTerm, array $context = []) => $this->getPersonSecurityRecord($searchTerm, $context);
-            yield fn (FeedbackSearchTerm $searchTerm, array $context = []) => $this->getPersonCourtsRecord($searchTerm, $context);
-            yield fn (FeedbackSearchTerm $searchTerm, array $context = []) => $this->getPersonDebtorsRecord($searchTerm, $context);
-            yield fn (FeedbackSearchTerm $searchTerm, array $context = []) => $this->getPersonEnforcementsRecord($searchTerm, $context);
-            yield fn (FeedbackSearchTerm $searchTerm, array $context = []) => $this->getPersonEdrsRecord($searchTerm, $context);
+            yield fn (FeedbackSearchTerm $searchTerm, array $context = []) => [$this->getPersonSecurityRecord($searchTerm, $context)];
+            yield fn (FeedbackSearchTerm $searchTerm, array $context = []) => [$this->getPersonCourtsRecord($searchTerm, $context)];
+            yield fn (FeedbackSearchTerm $searchTerm, array $context = []) => [$this->getPersonDebtorsRecord($searchTerm, $context)];
+            yield fn (FeedbackSearchTerm $searchTerm, array $context = []) => [$this->getPersonEnforcementsRecord($searchTerm, $context)];
+            yield fn (FeedbackSearchTerm $searchTerm, array $context = []) => [$this->getPersonEdrsRecord($searchTerm, $context)];
         }
 
         if ($this->supportsOrganizationName($searchTerm, $context)) {
-            yield fn (FeedbackSearchTerm $searchTerm, array $context = []) => $this->getEdrsRecord($searchTerm, $context);
+            yield fn (FeedbackSearchTerm $searchTerm, array $context = []) => [$this->getEdrsRecord($searchTerm, $context)];
         }
 
         yield from [];
