@@ -443,8 +443,8 @@ class LookupFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'searchTerm' => new SearchTermTransfer('any_search_term', type: SearchTermType::unknown),
             'input' => $this->yesButton(),
             'shouldSeeReplies' => [
-                'reply.empty_list',
-                'reply.will_notify',
+                'on_search',
+                'empty_result',
                 ...$this->chooseActionReplies(),
             ],
             'shouldSeeButtons' => [
@@ -460,7 +460,7 @@ class LookupFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             ),
             'input' => $this->yesButton(),
             'shouldSeeReplies' => [
-                'reply.title',
+                'on_search',
                 $searchTerm->getText(),
                 $this->searchTermTypeTrans($searchTerm->getType()),
                 ...$this->chooseActionReplies(),
@@ -588,8 +588,8 @@ class LookupFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'searchTerm' => new SearchTermTransfer('any_search_term', type: SearchTermType::unknown),
             'expectedSearchTermCountDelta' => 1,
             'shouldSeeReplies' => [
-                'reply.empty_list',
-                'reply.will_notify',
+                'on_search',
+                'empty_result',
                 ...$this->chooseActionReplies(),
             ],
         ];
@@ -598,7 +598,7 @@ class LookupFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
             'searchTerm' => $searchTerm = new SearchTermTransfer(Fixtures::INSTAGRAM_USERNAME_3, type: SearchTermType::instagram_username),
             'expectedSearchTermCountDelta' => 0,
             'shouldSeeReplies' => [
-                'reply.title',
+                'on_search',
                 $searchTerm->getText(),
                 $this->searchTermTypeTrans($searchTerm->getType()),
                 'sign.create',
