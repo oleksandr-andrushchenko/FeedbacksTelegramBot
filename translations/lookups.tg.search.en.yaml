@@ -1,3 +1,3 @@
 on_search: Search across request database...
-empty_result: Currently, no requests were found.
-result: '%count% query(-ies) successfully found about %search_term%.'
+empty_result: At the moment, no requests have been found.
+result: 'There are %count% request(-s) have been successfully found by %search_term%.'
