@@ -37,7 +37,7 @@ class FeedbackSearcher
 
         $feedbacks = array_filter($feedbacks, static function (Feedback $feedback) use ($feedbackSearchTerm): bool {
             foreach ($feedback->getSearchTerms() as $searchTerm) {
-                if ($searchTerm->getNormalizedText() === $feedbackSearchTerm->getNormalizedText()) {
+                if (strcasecmp($searchTerm->getNormalizedText(), $feedbackSearchTerm->getNormalizedText()) === 0) {
                     if (
                         $feedbackSearchTerm->getType() !== SearchTermType::unknown
                         && $searchTerm->getType() !== SearchTermType::unknown
