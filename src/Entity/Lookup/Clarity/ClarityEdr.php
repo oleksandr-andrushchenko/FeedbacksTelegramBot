@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Entity\Lookup;
+namespace App\Entity\Lookup\Clarity;
 
-readonly class ClarityPersonEdr
+readonly class ClarityEdr
 {
     public function __construct(
         private string $name,

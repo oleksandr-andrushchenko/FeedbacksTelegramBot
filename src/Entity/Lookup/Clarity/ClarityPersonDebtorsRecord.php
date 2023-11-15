@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Entity\Lookup;
+namespace App\Entity\Lookup\Clarity;
 
 class ClarityPersonDebtorsRecord
 {
