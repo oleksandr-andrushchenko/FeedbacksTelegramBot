@@ -65,8 +65,8 @@ class LookupProcessor
 
 //                $render($viewer->getResultTitle($searchTerm, $count, $context));
 
-                foreach ($records as $record) {
-                    $render($viewer->getResultRecord($record, $context));
+                foreach ($records as $index => $record) {
+                    $render($viewer->getResultRecord($record, $context + ['index' => $index]));
                 }
             } catch (Throwable $exception) {
                 $this->logger->error($exception);
