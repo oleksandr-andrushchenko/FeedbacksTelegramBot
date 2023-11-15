@@ -35,11 +35,11 @@ class FeedbackTelegramLookupViewer extends LookupViewer implements LookupViewerI
 
         return $this->wrapResultRecord(
             null,
-            [$record],
-            fn (Feedback $record): array => [
+            $record,
+            fn (Feedback $feedback): array => [
                 $this->feedbackTelegramViewProvider->getFeedbackTelegramView(
-                    $context['bot'] ?? $record->getTelegramBot(),
-                    $record,
+                    $context['bot'] ?? $feedback->getTelegramBot(),
+                    $feedback,
                     numberToAdd: ($context['index'] ?? 0) + 1,
                     addSecrets: true,
                     addTime: true,
