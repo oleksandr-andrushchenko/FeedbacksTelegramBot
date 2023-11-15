@@ -21,30 +21,25 @@
             <argument type="service" id="app.crawler_provider"/>
             <tag name="app.lookup_processor" processor="clarity"/>
         </service>
-        <service id="app.lookup_viewer_helper" class="App\Service\Lookup\Viewer\LookupViewerHelper" lazy="true">
-            <argument type="service" id="app.array_string_normalizer_and_filterer"/>
+        <service id="app.lookup_viewer" class="App\Service\Lookup\Viewer\LookupViewer" abstract="true" lazy="true">
+            <argument type="service" id="app.translator"/>
         </service>
         <service id="app.lookup_viewer_telegram_feedbacks"
                  class="App\Service\Lookup\Viewer\FeedbackTelegramLookupViewer"
-                 lazy="true">
+                 parent="app.lookup_viewer" lazy="true">
             <argument type="service" id="app.feedback_telegram_view_provider"/>
-            <argument type="service" id="app.translator"/>
             <tag name="app.lookup_viewer_telegram" processor="feedbacks"/>
         </service>
-        <service id="app.lookup_viewer_telegram_searches"
-                 class="App\Service\Lookup\Viewer\SearchTelegramLookupViewer"
-                 lazy="true">
+        <service id="app.lookup_viewer_telegram_searches" class="App\Service\Lookup\Viewer\SearchTelegramLookupViewer"
+                 parent="app.lookup_viewer" lazy="true">
             <argument type="service" id="app.feedback_search_telegram_view_provider"/>
-            <argument type="service" id="app.translator"/>
             <tag name="app.lookup_viewer_telegram" processor="searches"/>
         </service>
-        <service id="app.lookup_viewer_telegram_clarity"
-                 class="App\Service\Lookup\Viewer\ClarityTelegramLookupViewer" lazy="true">
-            <argument type="service" id="app.lookup_viewer_helper"/>
-            <argument type="service" id="app.translator"/>
+        <service id="app.lookup_viewer_telegram_clarity" class="App\Service\Lookup\Viewer\ClarityTelegramLookupViewer"
+                 parent="app.lookup_viewer" lazy="true">
             <tag name="app.lookup_viewer_telegram" processor="clarity"/>
         </service>
-        <service id="app.lookup_processor_telegram" class="App\Service\Lookup\Lookuper" lazy="true">
+        <service id="app.lookup_lookuper_telegram" class="App\Service\Lookup\Lookuper" lazy="true">
             <argument type="tagged_locator" tag="app.lookup_processor" index-by="processor"/>
             <argument type="tagged_locator" tag="app.lookup_viewer_telegram" index-by="processor"/>
             <argument type="service" id="logger"/>

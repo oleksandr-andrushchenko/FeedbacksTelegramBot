@@ -451,9 +451,6 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $render = static fn (string $message) => $tg->reply($message);
             $context = [
                 'bot' => $tg->getBot()->getEntity(),
-                'addSecrets' => true,
-                'addSign' => true,
-                'addCountry' => true,
                 'countryCode' => $tg->getBot()->getEntity()->getCountryCode(),
                 'full' => $tg->getBot()->getMessengerUser()?->getUser()?->getSubscriptionExpireAt() > new DateTimeImmutable(),
             ];

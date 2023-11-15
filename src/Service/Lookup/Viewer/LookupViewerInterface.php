@@ -12,7 +12,5 @@ interface LookupViewerInterface
 
     public function getEmptyResultTitle(FeedbackSearchTerm $searchTerm, array $context = []): string;
 
-    public function getResultTitle(FeedbackSearchTerm $searchTerm, int $count, array $context = []): string;
-
     public function getResultRecord($record, array $context = []): string;
 }

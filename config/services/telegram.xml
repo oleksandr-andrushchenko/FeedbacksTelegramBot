@@ -191,7 +191,7 @@
         </service>
         <service id="app.telegram_bot_lookup_console_command" class="App\Command\Telegram\Bot\TelegramBotLookupCommand"
                  lazy="true">
-            <argument type="service" id="app.lookup_processor_telegram"/>
+            <argument type="service" id="app.lookup_lookuper_telegram"/>
             <tag name="console.command" command="telegram:bot:lookup"/>
         </service>
         <service id="app.telegram_bot_conversation_state_normalizer"

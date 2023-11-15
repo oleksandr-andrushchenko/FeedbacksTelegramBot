@@ -59,8 +59,6 @@ class Lookuper
                     continue;
                 }
 
-//                $render($viewer->getResultTitle($searchTerm, $count, $context));
-
                 foreach ($records as $index => $record) {
                     $render($viewer->getResultRecord($record, $context + ['index' => $index]));
                 }

@@ -28,3 +28,5 @@ collector: collector
 debtor: debtor
 enf_state: state
 debtors_title: 'Bankruptcy:'
+persons_title: More than one result was found for your query. Who exactly interests you? (Repeat the search using the name of the person from the list)
+person_count: 'Persons with this name: %count%'
