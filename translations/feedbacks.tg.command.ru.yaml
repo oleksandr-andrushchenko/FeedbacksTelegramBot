@@ -1,11 +1,18 @@
-create: Добавить Отзыв
+create: Добавить отзыв
+create_old_1: Добавить Отзыв
 search: Поиск
+search_old_1: Найти Отзывы
 lookup: Кто искал
+lookup_old_1: Найти Запросы
 subscribe: Купить Премиум
 subscriptions: Мой Премиум
 country: Изменить Страну или Регион
+country_old_1: Изменить Страну
+country_old_2: Моя Страна
 locale: Изменить Язык
+locale_old_1: Мой Язык
 limits: Ограничения
+limits_old_1: О Лимитах
 purge: Удалить Данные
 donate: Донат
 contact: Контакты

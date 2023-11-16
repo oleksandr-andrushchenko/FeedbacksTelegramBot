@@ -92,6 +92,49 @@ class ChooseActionTelegramChatSender
         return $tg->button($tg->command('search'));
     }
 
+    public function getOldCreateButtonTexts(TelegramBotAwareHelper $tg): array
+    {
+        return [
+            $tg->command('create_old_1'),
+        ];
+    }
+
+    public function getOldSearchButtonTexts(TelegramBotAwareHelper $tg): array
+    {
+        return [
+            $tg->command('search_old_1'),
+        ];
+    }
+
+    public function getOldLookupButtonTexts(TelegramBotAwareHelper $tg): array
+    {
+        return [
+            $tg->command('lookup_old_1'),
+        ];
+    }
+
+    public function getOldCountryButtonTexts(TelegramBotAwareHelper $tg): array
+    {
+        return [
+            $tg->command('country_old_1'),
+            $tg->command('country_old_2'),
+        ];
+    }
+
+    public function getOldLocaleButtonTexts(TelegramBotAwareHelper $tg): array
+    {
+        return [
+            $tg->command('locale_old_1'),
+        ];
+    }
+
+    public function getOldLimitsButtonTexts(TelegramBotAwareHelper $tg): array
+    {
+        return [
+            $tg->command('limits_old_1'),
+        ];
+    }
+
     public function getLookupButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
         return $tg->button($tg->command('lookup'));

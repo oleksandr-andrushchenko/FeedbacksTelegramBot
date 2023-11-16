@@ -1,11 +1,18 @@
 create: Додати відгук
+create_old_1: Додати Відгук
 search: Пошук
+search_old_1: Знайти Відгуки
 lookup: Хто шукав
+lookup_old_1: Знайти Запити
 subscribe: Купити Преміум
 subscriptions: Мій Преміум
 country: Змінити Країну або Регіон
+country_old_1: Змінити Країну
+country_old_2: Моя Країна
 locale: Змінити Мову
+locale_old_1: Моя Мова
 limits: Обмеження
+limits_old_1: Про Ліміти
 purge: Видалити Дані
 donate: Донат
 contact: Контакти

@@ -1,11 +1,18 @@
-create: Add Feedback
+create: Add feedback
+create_old_1: Add Feedback
 search: Search
+search_old_1: Find Feedbacks
 lookup: Who searched
+lookup_old_1: Find Lookups
 subscribe: Get Premium
 subscriptions: My Premium
 country: Change Country or Region
+country_old_1: Change Country
+country_old_2: My Country
 locale: Change Locale
+locale_old_1: My Locale
 limits: Limitations
+limits_old_1: About Limits
 purge: Purge Data
 donate: Donate
 contact: Contacts

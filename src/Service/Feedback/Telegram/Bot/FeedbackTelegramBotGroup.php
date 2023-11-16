@@ -111,6 +111,30 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
 
     public function fallback(TelegramBotAwareHelper $tg): null
     {
+        if (in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getOldCreateButtonTexts($tg), true)) {
+            return $this->create($tg);
+        }
+
+        if (in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getOldSearchButtonTexts($tg), true)) {
+            return $this->search($tg);
+        }
+
+        if (in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getOldLookupButtonTexts($tg), true)) {
+            return $this->lookup($tg);
+        }
+
+        if (in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getOldCountryButtonTexts($tg), true)) {
+            return $this->country($tg);
+        }
+
+        if (in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getOldLocaleButtonTexts($tg), true)) {
+            return $this->locale($tg);
+        }
+
+        if (in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getOldLimitsButtonTexts($tg), true)) {
+            return $this->limits($tg);
+        }
+
         return match ($tg->getInput()) {
             $this->chooseActionTelegramChatSender->getCreateButton($tg)->getText() => $this->create($tg),
             $this->chooseActionTelegramChatSender->getSearchButton($tg)->getText() => $this->search($tg),
