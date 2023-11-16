@@ -19,7 +19,9 @@ keyboard:
   other: Увесь список
   absent: Немає в списку
   more: Більше
+  more_old_1: Показати більше
   less: Менше
+  less_old_1: Показати менше
   help: Потрібна домомога
 
 sign:

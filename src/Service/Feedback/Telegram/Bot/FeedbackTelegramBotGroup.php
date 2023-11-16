@@ -111,46 +111,22 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
 
     public function fallback(TelegramBotAwareHelper $tg): null
     {
-        if (in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getOldCreateButtonTexts($tg), true)) {
-            return $this->create($tg);
-        }
-
-        if (in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getOldSearchButtonTexts($tg), true)) {
-            return $this->search($tg);
-        }
-
-        if (in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getOldLookupButtonTexts($tg), true)) {
-            return $this->lookup($tg);
-        }
-
-        if (in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getOldCountryButtonTexts($tg), true)) {
-            return $this->country($tg);
-        }
-
-        if (in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getOldLocaleButtonTexts($tg), true)) {
-            return $this->locale($tg);
-        }
-
-        if (in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getOldLimitsButtonTexts($tg), true)) {
-            return $this->limits($tg);
-        }
-
-        return match ($tg->getInput()) {
-            $this->chooseActionTelegramChatSender->getCreateButton($tg)->getText() => $this->create($tg),
-            $this->chooseActionTelegramChatSender->getSearchButton($tg)->getText() => $this->search($tg),
-            $this->chooseActionTelegramChatSender->getLookupButton($tg)->getText() => $this->lookup($tg),
-            $this->chooseActionTelegramChatSender->getSubscribeButton($tg)->getText() => $this->subscribe($tg),
-            $this->chooseActionTelegramChatSender->getSubscriptionsButton($tg)->getText() => $this->subscriptions($tg),
-            $this->chooseActionTelegramChatSender->getCountryButton($tg)->getText() => $this->country($tg),
-            $this->chooseActionTelegramChatSender->getLocaleButton($tg)->getText() => $this->locale($tg),
-            $this->chooseActionTelegramChatSender->getLimitsButton($tg)->getText() => $this->limits($tg),
-            $this->chooseActionTelegramChatSender->getPurgeButton($tg)->getText() => $this->purge($tg),
-            $this->chooseActionTelegramChatSender->getDonateButton($tg)->getText() => $this->donate($tg),
-            $this->chooseActionTelegramChatSender->getContactButton($tg)->getText() => $this->contact($tg),
-            $this->chooseActionTelegramChatSender->getCommandsButton($tg)->getText() => $this->commands($tg),
-            $this->chooseActionTelegramChatSender->getRestartButton($tg)->getText() => $this->restart($tg),
-            $this->chooseActionTelegramChatSender->getShowLessButton($tg)->getText() => $this->less($tg),
-            $this->chooseActionTelegramChatSender->getShowMoreButton($tg)->getText() => $this->more($tg),
+        return match (true) {
+            in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getCreateButtonTexts($tg), true) => $this->create($tg),
+            in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getSearchButtonTexts($tg), true) => $this->search($tg),
+            in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getLookupButtonTexts($tg), true) => $this->lookup($tg),
+            in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getSubscribeButtonTexts($tg), true) => $this->subscribe($tg),
+            in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getSubscriptionsButtonTexts($tg), true) => $this->subscriptions($tg),
+            in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getCountryButtonTexts($tg), true) => $this->country($tg),
+            in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getLocaleButtonTexts($tg), true) => $this->locale($tg),
+            in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getLimitsButtonTexts($tg), true) => $this->limits($tg),
+            in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getPurgeButtonTexts($tg), true) => $this->purge($tg),
+            in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getDonateButtonTexts($tg), true) => $this->donate($tg),
+            in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getContactButtonTexts($tg), true) => $this->contact($tg),
+            in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getCommandsButtonTexts($tg), true) => $this->commands($tg),
+            in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getRestartButtonTexts($tg), true) => $this->restart($tg),
+            in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getShowLessButtonTexts($tg), true) => $this->less($tg),
+            in_array($tg->getInput(), $this->chooseActionTelegramChatSender->getShowMoreButtonTexts($tg), true) => $this->more($tg),
             default => $this->wrong($tg)
         };
     }

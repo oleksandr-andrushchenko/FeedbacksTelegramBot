@@ -92,45 +92,51 @@ class ChooseActionTelegramChatSender
         return $tg->button($tg->command('search'));
     }
 
-    public function getOldCreateButtonTexts(TelegramBotAwareHelper $tg): array
+    public function getCreateButtonTexts(TelegramBotAwareHelper $tg): array
     {
         return [
+            $this->getCreateButton($tg)->getText(),
             $tg->command('create_old_1'),
         ];
     }
 
-    public function getOldSearchButtonTexts(TelegramBotAwareHelper $tg): array
+    public function getSearchButtonTexts(TelegramBotAwareHelper $tg): array
     {
         return [
+            $this->getSearchButton($tg)->getText(),
             $tg->command('search_old_1'),
         ];
     }
 
-    public function getOldLookupButtonTexts(TelegramBotAwareHelper $tg): array
+    public function getLookupButtonTexts(TelegramBotAwareHelper $tg): array
     {
         return [
+            $this->getLookupButton($tg)->getText(),
             $tg->command('lookup_old_1'),
         ];
     }
 
-    public function getOldCountryButtonTexts(TelegramBotAwareHelper $tg): array
+    public function getCountryButtonTexts(TelegramBotAwareHelper $tg): array
     {
         return [
+            $this->getCountryButton($tg)->getText(),
             $tg->command('country_old_1'),
             $tg->command('country_old_2'),
         ];
     }
 
-    public function getOldLocaleButtonTexts(TelegramBotAwareHelper $tg): array
+    public function getLocaleButtonTexts(TelegramBotAwareHelper $tg): array
     {
         return [
+            $this->getLocaleButton($tg)->getText(),
             $tg->command('locale_old_1'),
         ];
     }
 
-    public function getOldLimitsButtonTexts(TelegramBotAwareHelper $tg): array
+    public function getLimitsButtonTexts(TelegramBotAwareHelper $tg): array
     {
         return [
+            $this->getLimitsButton($tg)->getText(),
             $tg->command('limits_old_1'),
         ];
     }
@@ -145,6 +151,13 @@ class ChooseActionTelegramChatSender
         return $tg->button($tg->command('subscribe'));
     }
 
+    public function getSubscribeButtonTexts(TelegramBotAwareHelper $tg): array
+    {
+        return [
+            $this->getSubscribeButton($tg)->getText(),
+        ];
+    }
+
     public function getSubscriptionsButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
         $hasActiveSubscription = $this->feedbackSubscriptionManager->hasActiveSubscription($tg->getBot()->getMessengerUser());
@@ -155,6 +168,13 @@ class ChooseActionTelegramChatSender
         $text .= $tg->trans($key, domain: 'command');
 
         return $tg->button($text);
+    }
+
+    public function getSubscriptionsButtonTexts(TelegramBotAwareHelper $tg): array
+    {
+        return [
+            $this->getSubscriptionsButton($tg)->getText(),
+        ];
     }
 
     public function getCountryButton(TelegramBotAwareHelper $tg): KeyboardButton
@@ -198,9 +218,23 @@ class ChooseActionTelegramChatSender
         return $tg->button($tg->command('purge'));
     }
 
+    public function getPurgeButtonTexts(TelegramBotAwareHelper $tg): array
+    {
+        return [
+            $this->getPurgeButton($tg)->getText(),
+        ];
+    }
+
     public function getDonateButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
         return $tg->button($tg->command('donate'));
+    }
+
+    public function getDonateButtonTexts(TelegramBotAwareHelper $tg): array
+    {
+        return [
+            $this->getDonateButton($tg)->getText(),
+        ];
     }
 
     public function getContactButton(TelegramBotAwareHelper $tg): KeyboardButton
@@ -208,9 +242,23 @@ class ChooseActionTelegramChatSender
         return $tg->button($tg->command('contact'));
     }
 
+    public function getContactButtonTexts(TelegramBotAwareHelper $tg): array
+    {
+        return [
+            $this->getContactButton($tg)->getText(),
+        ];
+    }
+
     public function getCommandsButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
         return $tg->button($tg->command('commands'));
+    }
+
+    public function getCommandsButtonTexts(TelegramBotAwareHelper $tg): array
+    {
+        return [
+            $this->getCommandsButton($tg)->getText(),
+        ];
     }
 
     public function getRestartButton(TelegramBotAwareHelper $tg): KeyboardButton
@@ -218,13 +266,36 @@ class ChooseActionTelegramChatSender
         return $tg->button($tg->command('restart'));
     }
 
+    public function getRestartButtonTexts(TelegramBotAwareHelper $tg): array
+    {
+        return [
+            $this->getRestartButton($tg)->getText(),
+        ];
+    }
+
     public function getShowMoreButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
         return $tg->button($tg->trans('keyboard.more'));
     }
 
+    public function getShowMoreButtonTexts(TelegramBotAwareHelper $tg): array
+    {
+        return [
+            $this->getShowMoreButton($tg)->getText(),
+            '⬇️ ' . $tg->trans('keyboard.more_old_1'),
+        ];
+    }
+
     public function getShowLessButton(TelegramBotAwareHelper $tg): KeyboardButton
     {
         return $tg->button($tg->trans('keyboard.less'));
+    }
+
+    public function getShowLessButtonTexts(TelegramBotAwareHelper $tg): array
+    {
+        return [
+            $this->getShowLessButton($tg)->getText(),
+            '⬆️ ' . $tg->trans('keyboard.less_old_1'),
+        ];
     }
 }

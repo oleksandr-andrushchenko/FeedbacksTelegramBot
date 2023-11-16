@@ -19,7 +19,9 @@ keyboard:
   other: Весь список
   absent: Нет в списке
   more: Больше
+  more_old_1: Показать больше
   less: Меньше
+  less_old_1: Показать меньше
   help: Нужна помощь
 
 sign:
