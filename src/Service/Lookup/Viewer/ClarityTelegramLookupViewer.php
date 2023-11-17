@@ -31,12 +31,12 @@ class ClarityTelegramLookupViewer extends LookupViewer implements LookupViewerIn
 
     public function getOnSearchTitle(FeedbackSearchTerm $searchTerm, array $context = []): string
     {
-        return $this->trans('on_search_title');
+        return $this->trans('on_search');
     }
 
     public function getEmptyResultTitle(FeedbackSearchTerm $searchTerm, array $context = []): string
     {
-        return $this->trans('empty_result_title');
+        return $this->trans('empty_result');
     }
 
     public function getResultRecord($record, array $context = []): string

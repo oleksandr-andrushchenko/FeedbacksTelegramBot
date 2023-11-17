@@ -1,5 +1,5 @@
-on_search_title: Search by database #1...
-empty_result_title: Currently, nothing found.
+on_search: Search by database #1...
+empty_result: Currently, nothing found.
 result_title: 'The following information was found:'
 edrs_title: 'Related Companies:'
 edr_type: degree of relation
