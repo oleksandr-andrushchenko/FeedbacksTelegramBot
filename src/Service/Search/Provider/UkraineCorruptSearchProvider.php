@@ -32,11 +32,11 @@ class UkraineCorruptSearchProvider implements SearchProviderInterface
 
     public function supports(FeedbackSearchTerm $searchTerm, array $context = []): bool
     {
-        if ($this->supportsPersonName($searchTerm, $context)) {
+        if ($this->supportsPersonName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
             return true;
         }
 
-        if ($this->supportsOrganizationName($searchTerm, $context)) {
+        if ($this->supportsOrganizationName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
             return true;
         }
 
@@ -44,7 +44,7 @@ class UkraineCorruptSearchProvider implements SearchProviderInterface
     }
 
 
-    private function supportsPersonName(FeedbackSearchTerm $searchTerm, array $context = []): bool
+    private function supportsPersonName(SearchTermType $type, string $name, array $context = []): bool
     {
         if ($this->environment === 'test') {
             return false;
@@ -56,22 +56,22 @@ class UkraineCorruptSearchProvider implements SearchProviderInterface
             return false;
         }
 
-        if ($searchTerm->getType() !== SearchTermType::person_name) {
+        if ($type !== SearchTermType::person_name) {
             return false;
         }
 
-        if (count(explode(' ', $searchTerm->getNormalizedText())) === 1) {
+        if (count(explode(' ', $name)) === 1) {
             return false;
         }
 
-        if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $searchTerm->getNormalizedText()) !== 1) {
+        if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $name) !== 1) {
             return false;
         }
 
         return true;
     }
 
-    private function supportsOrganizationName(FeedbackSearchTerm $searchTerm, array $context = []): bool
+    private function supportsOrganizationName(SearchTermType $type, string $name, array $context = []): bool
     {
         return false;
 
@@ -85,16 +85,20 @@ class UkraineCorruptSearchProvider implements SearchProviderInterface
             return false;
         }
 
-        if ($searchTerm->getType() === SearchTermType::organization_name) {
-            if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $searchTerm->getNormalizedText()) !== 1) {
+        if ($type === SearchTermType::organization_name) {
+            if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $name) !== 1) {
                 return false;
             }
 
             return true;
         }
 
-        if ($searchTerm->getType() === SearchTermType::tax_number) {
-            if (strlen($searchTerm->getNormalizedText()) !== 8) {
+        if ($type === SearchTermType::tax_number) {
+            if (!is_numeric($name)) {
+                return false;
+            }
+
+            if (strlen($name) !== 8) {
                 return false;
             }
 
@@ -106,11 +110,11 @@ class UkraineCorruptSearchProvider implements SearchProviderInterface
 
     public function getSearchers(FeedbackSearchTerm $searchTerm, array $context = []): iterable
     {
-        if ($this->supportsPersonName($searchTerm, $context)) {
+        if ($this->supportsPersonName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
             yield fn () => [$this->searchPersons($searchTerm->getNormalizedText())];
         }
 
-        if ($this->supportsOrganizationName($searchTerm, $context)) {
+        if ($this->supportsOrganizationName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
             if ($searchTerm->getType() === SearchTermType::organization_name) {
                 yield fn () => [$this->searchOrganizationsByName($searchTerm->getNormalizedText())];
             } else {
@@ -197,13 +201,13 @@ class UkraineCorruptSearchProvider implements SearchProviderInterface
         return count($records) === 0 ? null : new UkraineCorruptPersonsRecord($records);
     }
 
-    public function searchOrganizationsByName(string $name): iterable
+    public function searchOrganizationsByName(string $name): ?array
     {
-
+        return null;
     }
 
-    public function searchOrganizationsByCode(string $code): iterable
+    public function searchOrganizationsByCode(string $code): ?array
     {
-
+        return null;
     }
 }
