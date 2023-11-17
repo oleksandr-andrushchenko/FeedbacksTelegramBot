@@ -65,7 +65,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             $this->trans('persons_title', ['count' => count($record->getPersons())]),
             $record->getPersons(),
             fn (ClarityPerson $person): array => [
-                sprintf('<b>%s</b>', empty($person->getHref()) || !$full ? $person->getName() : sprintf('<a href="%s">%s</a>', $person->getHref(), $person->getName())),
+                sprintf('<b>%s</b>', empty($person->getHref()) || !$full ? addslashes($person->getName()) : sprintf('<a href="%s">%s</a>', $person->getHref(), $person->getName())),
                 empty($person->getCount()) ? null : sprintf('<i>%s</i>', $this->trans('person_count', ['count' => $person->getCount()])),
             ],
             $full
@@ -81,7 +81,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             $this->trans('person_edrs_title', ['count' => count($record->getEdrs())]),
             $record->getEdrs(),
             fn (ClarityPersonEdr $edr): array => [
-                sprintf('<b>%s</b>', empty($edr->getHref()) || !$full ? $edr->getName() : sprintf('<a href="%s">%s</a>', $edr->getHref(), $edr->getName())),
+                sprintf('<b>%s</b>', empty($edr->getHref()) || !$full ? addslashes($edr->getName()) : sprintf('<a href="%s">%s</a>', $edr->getHref(), $edr->getName())),
                 empty($edr->getType()) ? null : $edr->getType(),
                 empty($edr->getNumber()) ? null : sprintf('%s [ %s ]', $edr->getNumber(), $this->trans('edr_number')),
                 $edr->getActive() === null ? null : sprintf('%s %s', $edr->getActive() ? '🟢' : '⚪️', $this->trans($edr->getActive() ? 'active' : 'inactive')),
@@ -178,9 +178,8 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             $this->trans('edrs_title', ['count' => count($record->getEdrs())]),
             $record->getEdrs(),
             fn (ClarityEdr $edr): array => [
-                sprintf('<b>%s</b>', empty($edr->getHref()) || !$full ? $edr->getName() : sprintf('<a href="%s">%s</a>', $edr->getHref(), $edr->getName())),
+                sprintf('<b>%s</b>', empty($edr->getHref()) || !$full ? addslashes($edr->getName()) : sprintf('<a href="%s">%s</a>', $edr->getHref(), $edr->getName())),
                 empty($edr->getType()) ? null : $edr->getType(),
-                empty($edr->getNumber()) ? null : sprintf('%s [ %s ]', $edr->getNumber(), $this->trans('edr_number')),
                 $edr->getActive() === null ? null : sprintf('%s %s', $edr->getActive() ? '🟢' : '⚪️', $this->trans($edr->getActive() ? 'active' : 'inactive')),
                 empty($edr->getAddress()) ? null : $edr->getAddress(),
             ],

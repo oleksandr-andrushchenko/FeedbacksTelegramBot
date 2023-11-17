@@ -121,15 +121,27 @@ class ClaritySearchProvider implements SearchProviderInterface
             return false;
         }
 
-        if ($type !== SearchTermType::organization_name) {
-            return false;
+        if ($type === SearchTermType::organization_name) {
+            if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $name) !== 1) {
+                return false;
+            }
+
+            return true;
         }
 
-        if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $name) !== 1) {
-            return false;
+        if ($type === SearchTermType::tax_number) {
+            if (!is_numeric($name)) {
+                return false;
+            }
+
+            if (strlen($name) !== 8) {
+                return false;
+            }
+
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     private function searchPersonsRecord(string $name): ?ClarityPersonsRecord
@@ -144,7 +156,7 @@ class ClaritySearchProvider implements SearchProviderInterface
                 return;
             }
 
-            $name = addslashes(trim($item->filter('.name')->text() ?? ''));
+            $name = trim($item->filter('.name')->text() ?? '');
 
             if (empty($name)) {
                 return;
@@ -540,10 +552,27 @@ class ClaritySearchProvider implements SearchProviderInterface
                 return;
             }
 
-            $name = addslashes(trim($item->filter('.name')->text() ?? ''));
+            $name = trim($item->filter('.name')->text() ?? '');
 
             if (empty($name)) {
                 return;
+            }
+
+            if ($item->filter('.source-info')->count() < 1) {
+                return;
+            }
+
+            $source = $item->filter('.source-info')->text();
+
+            if (str_contains($source, 'Prozorro')) {
+                return;
+            }
+
+            foreach (['ФОП', 'Бенефіціар', 'Засновник'] as $type_) {
+                if (str_contains($source, $type_)) {
+                    $type = $type_;
+                    break;
+                }
             }
 
             if ($item->filter('a')->eq(0)->count() > 0) {
@@ -551,8 +580,10 @@ class ClaritySearchProvider implements SearchProviderInterface
                 $href = empty($href) ? null : ($baseUri . $href);
             }
 
-            if ($item->filter('.edr')->count() > 0) {
-                $number = preg_replace('/[^0-9]/', '', trim($item->filter('.edr')->text() ?? ''));
+            if ($item->filter('.status')->count() > 0) {
+                if (str_contains($item->filter('.status')->text(), 'Припинено')) {
+                    $active = false;
+                }
             }
 
             if ($item->filter('.address')->count() > 0) {
@@ -560,17 +591,10 @@ class ClaritySearchProvider implements SearchProviderInterface
                 $address = trim(str_replace(['Адреса:'], '', $address));
             }
 
-            if ($item->filter('.source-info')->count() > 0) {
-                if (str_contains($item->filter('.source-info')->text(), 'ФОП')) {
-                    $type = 'ФОП';
-                }
-            }
-
             $edr = new ClarityEdr(
                 $name,
                 type: $type ?? null,
                 href: $href ?? null,
-                number: $number ?? null,
                 active: $active ?? null,
                 address: $address ?? null
             );
