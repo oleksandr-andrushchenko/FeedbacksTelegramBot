@@ -1,1 +1,5 @@
-hidden_list: '%shown_count% of %total_count% entries are shown. Premium users have access to all available information without restrictions %subscribe_command%.'
+subscription_skipped_records: '%shown_count% of %total_count% records shown.'
+subscription_skipped_data: Part of the data is encrypted with an asterisk (*).
+subscription_benefits: Premium users see %all_records% and %all_data% - %subscribe_command%.
+subscription_all_records: all records
+subscription_all_data: without asterisks

@@ -1,1 +1,5 @@
-hidden_list: Показано %shown_count% із %total_count% записів. Для преміум-користувачів доступна вся наявна інформація без обмежень %subscribe_command%.
+subscription_skipped_records: Показано %shown_count% із %total_count% записів.
+subscription_skipped_data: Частина даних засекречена знаком зірочки (*).
+subscription_benefits: Премім-користувачі бачать %all_records% та %all_data% - %subscribe_command%.
+subscription_all_records: всі записи
+subscription_all_data: без зірочок

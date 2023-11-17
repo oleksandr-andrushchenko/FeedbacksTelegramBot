@@ -49,8 +49,18 @@ abstract class SearchViewer
             }
         }
 
-        if ($maxResults !== $count) {
-            $messages[] = $this->transHiddenList($maxResults, $count);
+        if (!$full) {
+            $message = '';
+
+            if ($maxResults !== $count) {
+                $message .= sprintf('<i>%s</i>', $this->transSubscriptionSkippedRecords($maxResults, $count));
+            }
+
+            $message .= sprintf('<i>%s</i>', $this->transSubscriptionSkippedData());
+            $message .= "\n";
+            $message .= sprintf('<i>%s</i>', $this->transSubscriptionBenefits());
+
+            $messages[] = $message;
         }
 
         return implode("\n\n", $messages);
@@ -129,11 +139,6 @@ abstract class SearchViewer
         return static fn (?string $text): ?string => empty($text) ? null : addslashes($text);
     }
 
-    protected function nullIfEmptyModifier(): callable
-    {
-        return static fn (?string $text): ?string => empty($text) ? null : $text;
-    }
-
     protected function conditionalModifier($condition): callable
     {
         return static fn (?string $text): ?string => $condition ? $text : null;
@@ -154,15 +159,32 @@ abstract class SearchViewer
         return static fn (?DateTimeInterface $dateTime): ?string => $dateTime?->format($format);
     }
 
-    protected function transHiddenList(int $maxResults, int $count): string
+    protected function transSubscriptionSkippedRecords(int $maxResults, int $count): string
     {
         $parameters = [
             'shown_count' => $maxResults,
             'total_count' => $count,
-            'subscribe_command' => '/subscribe',
         ];
 
-        return sprintf('<i>[ %s ]</i>', $this->translator->trans('hidden_list', $parameters, 'search.tg'));
+        return $this->translator->trans('subscription_skipped_records', $parameters, 'search.tg');
+    }
+
+    protected function transSubscriptionSkippedData(): string
+    {
+        $parameters = [];
+
+        return $this->translator->trans('subscription_skipped_data', $parameters, 'search.tg');
+    }
+
+    protected function transSubscriptionBenefits(): string
+    {
+        $parameters = [
+            'all_records' => sprintf('<b>%s</b>', $this->translator->trans('subscription_all_records', domain: 'search.tg')),
+            'all_data' => sprintf('<b>%s</b>', $this->translator->trans('subscription_all_data', domain: 'search.tg')),
+            'subscribe_command' => sprintf('<b>%s</b>', '/subscribe'),
+        ];
+
+        return $this->translator->trans('subscription_benefits', $parameters, 'search.tg');
     }
 
     protected function transHidden(string $id): string
