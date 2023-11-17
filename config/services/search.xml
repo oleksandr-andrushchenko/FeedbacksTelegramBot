@@ -26,9 +26,12 @@
             <argument type="service" id="app.http_requester"/>
             <tag name="app.search_provider" provider="ukraine_corrupts"/>
         </service>
-        <service id="app.search_viewer" class="App\Service\Search\Viewer\SearchViewer" abstract="true" lazy="true">
+        <service id="app.search_viewer_helper" class="App\Service\Search\Viewer\SearchViewerHelper" lazy="true">
             <argument type="service" id="app.translator"/>
             <argument type="service" id="app.string_secrets_adder"/>
+        </service>
+        <service id="app.search_viewer" class="App\Service\Search\Viewer\SearchViewer" abstract="true" lazy="true">
+            <argument type="service" id="app.search_viewer_helper"/>
         </service>
         <service id="app.search_viewer_telegram_feedbacks"
                  class="App\Service\Search\Viewer\FeedbackTelegramSearchViewer"

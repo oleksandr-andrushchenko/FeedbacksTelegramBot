@@ -7,37 +7,35 @@ namespace App\Service\Search\Viewer;
 use App\Entity\Feedback\Feedback;
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Service\Feedback\Telegram\Bot\View\FeedbackTelegramViewProvider;
-use App\Service\Util\String\SecretsAdder;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
 {
     public function __construct(
-        TranslatorInterface $translator,
-        SecretsAdder $secretsAdder,
+        SearchViewerHelper $searchViewerHelper,
         private readonly FeedbackTelegramViewProvider $feedbackTelegramViewProvider,
     )
     {
-        parent::__construct($translator, $secretsAdder, 'feedback');
+        parent::__construct($searchViewerHelper->withTransDomain('feedback'));
     }
 
     public function getOnSearchTitle(FeedbackSearchTerm $searchTerm, array $context = []): string
     {
-        return $this->trans('on_search');
+        return $this->searchViewerHelper->trans('on_search');
     }
 
     public function getEmptyResultTitle(FeedbackSearchTerm $searchTerm, array $context = []): string
     {
-        return $this->trans('empty_result');
+        return $this->searchViewerHelper->trans('empty_result');
     }
 
     public function getResultRecord($record, FeedbackSearchTerm $searchTerm, array $context = []): string
     {
         $full = $context['full'] ?? false;
 
+        $h = $this->searchViewerHelper;
         $message = '💫 ';
-        $message .= $this->wrapResultRecord(
-            $this->trans('feedbacks_title', ['count' => count($record)]),
+        $message .= $h->wrapResultRecord(
+            $h->trans('feedbacks_title', ['count' => count($record)]),
             $record,
             fn (Feedback $feedback): array => [
                 $this->feedbackTelegramViewProvider->getFeedbackTelegramView(
