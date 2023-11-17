@@ -495,7 +495,7 @@
             <argument type="service" id="app.feedback_search_term_telegram_view_provider"/>
             <argument type="service" id="app.feedback_search_term_type_provider"/>
             <argument type="service" id="app.feedback_search_creator"/>
-            <argument type="service" id="app.lookup_lookuper_telegram"/>
+            <argument type="service" id="app.search_searcher_telegram"/>
             <argument>%app.search.search_term_type_step%</argument>
             <argument>%app.search.confirm_step%</argument>
             <argument>%app.search.create_confirm_step%</argument>
@@ -510,7 +510,7 @@
             <argument type="service" id="app.feedback_search_term_telegram_view_provider"/>
             <argument type="service" id="app.feedback_search_term_type_provider"/>
             <argument type="service" id="app.feedback_lookup_creator"/>
-            <argument type="service" id="app.lookup_lookuper_telegram"/>
+            <argument type="service" id="app.search_searcher_telegram"/>
             <argument>%app.lookup.search_term_type_step%</argument>
             <argument>%app.lookup.confirm_step%</argument>
             <tag name="app.telegram_conversation_feedbacks"/>

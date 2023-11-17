@@ -189,10 +189,10 @@
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <tag name="console.command" command="telegram:channel:import"/>
         </service>
-        <service id="app.telegram_bot_lookup_console_command" class="App\Command\Telegram\Bot\TelegramBotLookupCommand"
+        <service id="app.telegram_bot_search_console_command" class="App\Command\Telegram\Bot\TelegramBotSearchCommand"
                  lazy="true">
-            <argument type="service" id="app.lookup_lookuper_telegram"/>
-            <tag name="console.command" command="telegram:bot:lookup"/>
+            <argument type="service" id="app.search_searcher_telegram"/>
+            <tag name="console.command" command="telegram:bot:search"/>
         </service>
         <service id="app.telegram_bot_conversation_state_normalizer"
                  class="App\Serializer\Telegram\Bot\TelegramBotConversationStateNormalizer" lazy="true">

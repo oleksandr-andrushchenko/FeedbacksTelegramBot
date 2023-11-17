@@ -77,7 +77,6 @@
 * hide lookup search and transfer all types of searches to general search command +update translations for search command
 * improve calrity search: if 2 words - propose variants (in keyboard), then search; if 3 words - direct search -> if non 200 -> 
 * add context to search parsers and improve parsing
-* replace lookup namespace with search
 * add results couns field to feeedbacK-search
 * add icons for search result lists
 * implement the same logic for clarity orgs (as for persons was mada)

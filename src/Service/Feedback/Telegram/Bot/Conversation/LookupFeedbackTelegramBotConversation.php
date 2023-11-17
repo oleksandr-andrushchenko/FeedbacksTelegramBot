@@ -8,7 +8,7 @@ use App\Entity\Feedback\Command\FeedbackCommandLimit;
 use App\Entity\Feedback\Telegram\Bot\LookupFeedbackTelegramBotConversationState;
 use App\Entity\Telegram\TelegramBotConversation as Entity;
 use App\Enum\Feedback\SearchTermType;
-use App\Enum\Lookup\LookupProcessorName;
+use App\Enum\Search\SearchProviderName;
 use App\Exception\Feedback\FeedbackCommandLimitExceededException;
 use App\Exception\ValidatorException;
 use App\Service\Feedback\FeedbackLookupCreator;
@@ -16,7 +16,7 @@ use App\Service\Feedback\SearchTerm\SearchTermParserInterface;
 use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Service\Feedback\Telegram\Bot\Chat\ChooseActionTelegramChatSender;
 use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
-use App\Service\Lookup\Lookuper;
+use App\Service\Search\Searcher;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversation;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
@@ -43,7 +43,7 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
         private readonly SearchTermTelegramViewProvider $searchTermTelegramViewProvider,
         private readonly SearchTermTypeProvider $searchTermTypeProvider,
         private readonly FeedbackLookupCreator $feedbackLookupCreator,
-        private readonly Lookuper $lookuper,
+        private readonly Searcher $searcher,
         private readonly bool $searchTermTypeStep,
         private readonly bool $confirmStep,
     )
@@ -467,11 +467,11 @@ class LookupFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 'countryCode' => $tg->getBot()->getEntity()->getCountryCode(),
                 'full' => $tg->getBot()->getMessengerUser()?->getUser()?->getSubscriptionExpireAt() > new DateTimeImmutable(),
             ];
-            $processors = [
-                LookupProcessorName::searches,
+            $providers = [
+                SearchProviderName::searches,
             ];
 
-            $this->lookuper->lookup($feedbackLookup->getSearchTerm(), $render, $context, $processors);
+            $this->searcher->search($feedbackLookup->getSearchTerm(), $render, $context, $providers);
 
             $tg->stopConversation($entity);
 

@@ -9,7 +9,7 @@ use App\Entity\Feedback\Telegram\Bot\CreateFeedbackTelegramBotConversationState;
 use App\Entity\Feedback\Telegram\Bot\SearchFeedbackTelegramBotConversationState;
 use App\Entity\Telegram\TelegramBotConversation as Entity;
 use App\Enum\Feedback\SearchTermType;
-use App\Enum\Lookup\LookupProcessorName;
+use App\Enum\Search\SearchProviderName;
 use App\Exception\Feedback\FeedbackCommandLimitExceededException;
 use App\Exception\ValidatorException;
 use App\Service\Feedback\FeedbackSearchCreator;
@@ -17,7 +17,7 @@ use App\Service\Feedback\SearchTerm\SearchTermParserInterface;
 use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Service\Feedback\Telegram\Bot\Chat\ChooseActionTelegramChatSender;
 use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
-use App\Service\Lookup\Lookuper;
+use App\Service\Search\Searcher;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversation;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
@@ -46,7 +46,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
         private readonly SearchTermTelegramViewProvider $searchTermTelegramViewProvider,
         private readonly SearchTermTypeProvider $searchTermTypeProvider,
         private readonly FeedbackSearchCreator $feedbackSearchCreator,
-        private readonly Lookuper $lookuper,
+        private readonly Searcher $searcher,
         private readonly bool $searchTermTypeStep,
         private readonly bool $confirmStep,
         private readonly bool $createConfirmStep,
@@ -454,14 +454,14 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 'countryCode' => $tg->getBot()->getEntity()->getCountryCode(),
                 'full' => $tg->getBot()->getMessengerUser()?->getUser()?->getSubscriptionExpireAt() > new DateTimeImmutable(),
             ];
-            $processors = [
-                LookupProcessorName::feedbacks,
-                LookupProcessorName::clarity,
-                LookupProcessorName::searches,
-                LookupProcessorName::ukraine_corrupts,
+            $providers = [
+                SearchProviderName::feedbacks,
+                SearchProviderName::clarity,
+                SearchProviderName::searches,
+                SearchProviderName::ukraine_corrupts,
             ];
 
-            $this->lookuper->lookup($feedbackSearch->getSearchTerm(), $render, $context, $processors);
+            $this->searcher->search($feedbackSearch->getSearchTerm(), $render, $context, $providers);
 
             if ($this->createConfirmStep) {
                 return $this->queryCreateConfirm($tg);

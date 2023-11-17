@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.search_provider_feedbacks" class="App\Service\Search\Provider\FeedbackSearchProvider"
+                 lazy="true">
+            <argument type="service" id="app.feedback_searcher"/>
+            <tag name="app.search_provider" provider="feedbacks"/>
+        </service>
+        <service id="app.search_provider_searches" class="App\Service\Search\Provider\SearchRegistrySearchProvider"
+                 lazy="true">
+            <argument type="service" id="app.feedback_search_searcher"/>
+            <tag name="app.search_provider" provider="searches"/>
+        </service>
+        <service id="app.search_provider_clarity" class="App\Service\Search\Provider\ClaritySearchProvider" lazy="true">
+            <argument>%kernel.environment%</argument>
+            <argument type="service" id="app.crawler_provider"/>
+            <tag name="app.search_provider" provider="clarity"/>
+        </service>
+        <service id="app.search_provider_ukraine_corrupts"
+                 class="App\Service\Search\Provider\UkraineCorruptSearchProvider" lazy="true">
+            <argument>%kernel.environment%</argument>
+            <argument type="service" id="app.http_requester"/>
+            <tag name="app.search_provider" provider="ukraine_corrupts"/>
+        </service>
+        <service id="app.search_viewer" class="App\Service\Search\Viewer\SearchViewer" abstract="true" lazy="true">
+            <argument type="service" id="app.translator"/>
+        </service>
+        <service id="app.search_viewer_telegram_feedbacks"
+                 class="App\Service\Search\Viewer\FeedbackTelegramSearchViewer"
+                 parent="app.search_viewer" lazy="true">
+            <argument type="service" id="app.feedback_telegram_view_provider"/>
+            <tag name="app.search_viewer_telegram" provider="feedbacks"/>
+        </service>
+        <service id="app.search_viewer_telegram_searches"
+                 class="App\Service\Search\Viewer\SearchRegistryTelegramSearchViewer" parent="app.search_viewer"
+                 lazy="true">
+            <argument type="service" id="app.feedback_search_telegram_view_provider"/>
+            <tag name="app.search_viewer_telegram" provider="searches"/>
+        </service>
+        <service id="app.search_viewer_telegram_clarity" class="App\Service\Search\Viewer\ClarityTelegramSearchViewer"
+                 parent="app.search_viewer" lazy="true">
+            <tag name="app.search_viewer_telegram" provider="clarity"/>
+        </service>
+        <service id="app.search_viewer_telegram_ukraine_corrupts"
+                 class="App\Service\Search\Viewer\UkraineCorruptTelegramSearchViewer" parent="app.search_viewer"
+                 lazy="true">
+            <tag name="app.search_viewer_telegram" provider="ukraine_corrupts"/>
+        </service>
+        <service id="app.search_searcher_telegram" class="App\Service\Search\Searcher" lazy="true">
+            <argument type="tagged_locator" tag="app.search_provider" index-by="provider"/>
+            <argument type="tagged_locator" tag="app.search_viewer_telegram" index-by="provider"/>
+            <argument type="service" id="logger"/>
+        </service>
+    </services>
+</container>
