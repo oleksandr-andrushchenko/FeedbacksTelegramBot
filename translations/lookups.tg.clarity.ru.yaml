@@ -7,7 +7,7 @@ edr_number: ЕГРПОУ
 address: адрес
 active: активный
 inactive: не активен
-security_title: 'Розыск:'
+security_title: 'Безопасность:'
 born_at: дата рождения
 region: регион
 absent_at: дата исчезновения, розыск

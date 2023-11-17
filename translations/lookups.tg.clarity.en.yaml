@@ -1,4 +1,4 @@
-on_search: Search by database #1...
+on_search: 'Search by database #1...'
 empty_result: Currently, nothing found.
 result_title: 'The following information was found:'
 edrs_title: 'Related Companies:'
@@ -7,7 +7,7 @@ edr_number: EDRPOU
 address: address
 active: active
 inactive: not active
-security_title: 'Wanted:'
+security_title: 'Security:'
 born_at: date of birth
 region: region
 absent_at: date of disappearance, wanted

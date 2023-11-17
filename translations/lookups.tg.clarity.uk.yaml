@@ -7,7 +7,7 @@ edr_number: ЄДРПОУ
 address: адреса
 active: активний
 inactive: не активний
-security_title: 'Розшук:'
+security_title: 'Безпека:'
 born_at: дата народження
 region: регіон
 absent_at: дата зникнення, розшук
