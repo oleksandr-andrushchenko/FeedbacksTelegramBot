@@ -13,6 +13,7 @@ use App\Service\HttpRequester;
 use DateTimeImmutable;
 
 /**
+ * @see https://corruptinfo.nazk.gov.ua/
  * @see https://corruptinfo.nazk.gov.ua/ep/swagger/ui/index
  */
 class UkraineCorruptSearchProvider implements SearchProviderInterface
