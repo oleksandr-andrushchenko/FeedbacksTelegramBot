@@ -106,7 +106,7 @@ class UkraineCorruptSearchProvider implements SearchProviderInterface
     public function getSearchers(FeedbackSearchTerm $searchTerm, array $context = []): iterable
     {
         if ($this->supportsPersonName($searchTerm, $context)) {
-            yield fn () => [new UkraineCorruptPersonsRecord($this->searchPersons($searchTerm->getNormalizedText()))];
+            yield fn () => [$this->searchPersons($searchTerm->getNormalizedText())];
         }
 
         if ($this->supportsOrganizationName($searchTerm, $context)) {
@@ -120,7 +120,7 @@ class UkraineCorruptSearchProvider implements SearchProviderInterface
         yield from [];
     }
 
-    public function searchPersons(string $name): array
+    public function searchPersons(string $name): ?UkraineCorruptPersonsRecord
     {
         $words = array_map('trim', explode(' ', $name));
         $count = count($words);
@@ -168,7 +168,7 @@ class UkraineCorruptSearchProvider implements SearchProviderInterface
             }
         }
 
-        return array_filter($records, static function (UkraineCorruptPerson $record) use ($words): bool {
+        $records = array_filter($records, static function (UkraineCorruptPerson $record) use ($words): bool {
             foreach ($words as $word) {
                 if (str_contains($record->getLastName(), $word)) {
                     continue;
@@ -187,6 +187,8 @@ class UkraineCorruptSearchProvider implements SearchProviderInterface
 
             return true;
         });
+
+        return count($records) === 0 ? null : new UkraineCorruptPersonsRecord($records);
     }
 
     public function searchOrganizationsByName(string $name): iterable
