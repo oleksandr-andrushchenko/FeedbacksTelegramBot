@@ -581,8 +581,12 @@ class ClaritySearchProvider implements SearchProviderInterface
             }
 
             if ($item->filter('.status')->count() > 0) {
-                if (str_contains($item->filter('.status')->text(), 'Припинено')) {
+                $status = $item->filter('.status')->text();
+
+                if (str_contains($status, 'Припинено')) {
                     $active = false;
+                } elseif (str_contains($status, 'Зареєстровано')) {
+                    $active = true;
                 }
             }
 
