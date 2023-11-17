@@ -133,6 +133,11 @@ class UkraineCorruptSearchProvider implements SearchProviderInterface
                 'indFirstNameOnOffenseMoment' => $words[1],
                 'indPatronymicOnOffenseMoment' => $words[2],
             ];
+            $bodyVariants[] = [
+                'indLastNameOnOffenseMoment' => $words[1],
+                'indFirstNameOnOffenseMoment' => $words[0],
+                'indPatronymicOnOffenseMoment' => $words[2],
+            ];
         } elseif ($count == 2) {
             $bodyVariants[] = [
                 'indLastNameOnOffenseMoment' => $words[0],
