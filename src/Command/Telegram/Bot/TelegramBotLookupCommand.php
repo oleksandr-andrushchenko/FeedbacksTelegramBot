@@ -31,6 +31,7 @@ class TelegramBotLookupCommand extends Command
             ->addArgument('type', InputArgument::REQUIRED, 'Search term type')
             ->addOption('processor', mode: InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, description: 'Processor (-s)')
             ->addOption('country', mode: InputOption::VALUE_REQUIRED, description: 'Context country')
+            ->addOption('full', mode: InputOption::VALUE_NONE, description: 'Context country')
             ->setDescription('Lookup across processors for Telegram')
         ;
     }
@@ -46,6 +47,7 @@ class TelegramBotLookupCommand extends Command
         $render = static fn (string $message) => $io->text($message);
         $context = [
             'countryCode' => $input->getOption('country'),
+            'full' => $input->getOption('full'),
         ];
         $processors = array_map(
             static fn (string $processor): LookupProcessorName => LookupProcessorName::from($processor),
