@@ -46,7 +46,7 @@ class TaxNumberSearchTermParser implements SearchTermParserInterface
 
     private function supports(string $number): bool
     {
-        return preg_match("/^[0-9][0-9\-]{8,}$/", $number) === 1;
+        return preg_match("/^[0-9][0-9\-]{7,}$/", $number) === 1;
     }
 
     private function normalize(string $number): ?string
