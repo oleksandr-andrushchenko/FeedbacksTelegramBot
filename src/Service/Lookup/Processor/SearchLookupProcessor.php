@@ -28,7 +28,7 @@ class SearchLookupProcessor implements LookupProcessorInterface
 
     public function getSearchers(FeedbackSearchTerm $searchTerm, array $context = []): iterable
     {
-        yield fn (FeedbackSearchTerm $searchTerm, array $context = []) => [
+        yield fn () => [
             $this->feedbackSearchSearcher->searchFeedbackSearches($searchTerm, withUsers: $context['addTime'] ?? false),
         ];
     }

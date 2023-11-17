@@ -25,6 +25,9 @@ use App\Service\CrawlerProvider;
 use DateTimeImmutable;
 use Symfony\Component\DomCrawler\Crawler;
 
+/**
+ * @see https://clarity-project.info/persons
+ */
 class ClarityLookupProcessor implements LookupProcessorInterface
 {
     public function __construct(
@@ -55,16 +58,16 @@ class ClarityLookupProcessor implements LookupProcessorInterface
     public function getSearchers(FeedbackSearchTerm $searchTerm, array $context = []): iterable
     {
         if ($this->supportsPersonName($searchTerm, $context)) {
-            $record = $this->getPersonsRecord($searchTerm, $context);
+            $record = $this->searchPersonsRecord($searchTerm->getNormalizedText());
 
             if (count($record->getPersons()) === 1) {
-                $searchTerm = (clone $searchTerm)->setNormalizedText($record->getPersons()[0]->getName());
+                $name = $record->getPersons()[0]->getName();
 
-                yield fn () => [$this->getPersonSecurityRecord($searchTerm, $context)];
-                yield fn () => [$this->getPersonCourtsRecord($searchTerm, $context)];
-                yield fn () => [$this->getPersonDebtorsRecord($searchTerm, $context)];
-                yield fn () => [$this->getPersonEnforcementsRecord($searchTerm, $context)];
-                yield fn () => [$this->getPersonEdrsRecord($searchTerm, $context)];
+                yield fn () => [$this->searchPersonSecurityRecord($name)];
+                yield fn () => [$this->searchPersonCourtsRecord($name)];
+                yield fn () => [$this->searchPersonDebtorsRecord($name)];
+                yield fn () => [$this->searchPersonEnforcementsRecord($name)];
+                yield fn () => [$this->searchPersonEdrsRecord($name)];
 
                 return;
             }
@@ -73,7 +76,7 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         }
 
         if ($this->supportsOrganizationName($searchTerm, $context)) {
-            yield fn (FeedbackSearchTerm $searchTerm, array $context = []) => [$this->getEdrsRecord($searchTerm, $context)];
+            yield fn () => [$this->searchEdrsRecord($searchTerm->getNormalizedText())];
         }
 
         yield from [];
@@ -95,13 +98,11 @@ class ClarityLookupProcessor implements LookupProcessorInterface
             return false;
         }
 
-        $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
-
-        if (count(explode(' ', $name)) === 1) {
+        if (count(explode(' ', $searchTerm->getNormalizedText())) === 1) {
             return false;
         }
 
-        if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $name) !== 1) {
+        if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $searchTerm->getNormalizedText()) !== 1) {
             return false;
         }
 
@@ -124,7 +125,7 @@ class ClarityLookupProcessor implements LookupProcessorInterface
             return false;
         }
 
-        $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
+        $name = $searchTerm->getNormalizedText();
 
         if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $name) !== 1) {
             return false;
@@ -133,11 +134,10 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         return true;
     }
 
-    private function getPersonsRecord(FeedbackSearchTerm $searchTerm, array $context = []): ?ClarityPersonsRecord
+    private function searchPersonsRecord(string $name): ?ClarityPersonsRecord
     {
         $record = new ClarityPersonsRecord();
 
-        $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
         $crawler = $this->getPersonsCrawler($name);
         $baseUri = $this->getBaseUri();
 
@@ -174,11 +174,10 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         return count($record->getPersons()) === 0 ? null : $record;
     }
 
-    private function getPersonEdrsRecord(FeedbackSearchTerm $searchTerm, array $context = []): ?ClarityPersonEdrsRecord
+    private function searchPersonEdrsRecord(string $name): ?ClarityPersonEdrsRecord
     {
         $record = new ClarityPersonEdrsRecord();
 
-        $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
         $crawler = $this->getPersonCrawler($name);
         $baseUri = $this->getBaseUri();
 
@@ -254,11 +253,10 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         return count($record->getEdrs()) === 0 ? null : $record;
     }
 
-    private function getPersonCourtsRecord(FeedbackSearchTerm $searchTerm, array $context = []): ?ClarityPersonCourtsRecord
+    private function searchPersonCourtsRecord(string $name): ?ClarityPersonCourtsRecord
     {
         $record = new ClarityPersonCourtsRecord();
 
-        $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
         $crawler = $this->getPersonCrawler($name);
 
         $table = $crawler->filter('[data-id="court-involved"]');
@@ -314,11 +312,10 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         return count($record->getCourts()) === 0 ? null : $record;
     }
 
-    private function getPersonDebtorsRecord(FeedbackSearchTerm $searchTerm, array $context = []): ?ClarityPersonDebtorsRecord
+    private function searchPersonDebtorsRecord(string $name): ?ClarityPersonDebtorsRecord
     {
         $record = new ClarityPersonDebtorsRecord();
 
-        $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
         $crawler = $this->getPersonCrawler($name);
 
         $table = $crawler->filter('[data-id="debtors"]');
@@ -373,11 +370,10 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         return count($record->getDebtors()) === 0 ? null : $record;
     }
 
-    private function getPersonSecurityRecord(FeedbackSearchTerm $searchTerm, array $context = []): ?ClarityPersonSecurityRecord
+    private function searchPersonSecurityRecord(string $name): ?ClarityPersonSecurityRecord
     {
         $record = new ClarityPersonSecurityRecord();
 
-        $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
         $crawler = $this->getPersonCrawler($name);
 
         $table = $crawler->filter('[data-id="security"]');
@@ -462,11 +458,10 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         return count($record->getSecurity()) === 0 ? null : $record;
     }
 
-    private function getPersonEnforcementsRecord(FeedbackSearchTerm $searchTerm, array $context = []): ?ClarityPersonEnforcementsRecord
+    private function searchPersonEnforcementsRecord(string $name): ?ClarityPersonEnforcementsRecord
     {
         $record = new ClarityPersonEnforcementsRecord();
 
-        $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
         $crawler = $this->getPersonCrawler($name);
 
         $table = $crawler->filter('[data-id="enforcements"]');
@@ -535,11 +530,10 @@ class ClarityLookupProcessor implements LookupProcessorInterface
         return count($record->getEnforcements()) === 0 ? null : $record;
     }
 
-    private function getEdrsRecord(FeedbackSearchTerm $searchTerm, array $context = []): ?ClarityEdrsRecord
+    private function searchEdrsRecord(string $name): ?ClarityEdrsRecord
     {
         $record = new ClarityEdrsRecord();
 
-        $name = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
         $crawler = $this->getEdrsCrawler($name);
         $baseUri = $this->getBaseUri();
 
