@@ -6,7 +6,7 @@ namespace App\Service\Util\String;
 
 class SecretsAdder
 {
-    function addSecrets(string $input, int $position = 2, string $char = '*', int $count = 3): string
+    public function addSecrets(string $input, int $position = 2, string $char = '*', int $count = 3): string
     {
         $length = mb_strlen($input);
 
