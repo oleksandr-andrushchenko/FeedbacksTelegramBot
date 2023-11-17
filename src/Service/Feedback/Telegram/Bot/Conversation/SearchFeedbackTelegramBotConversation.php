@@ -458,6 +458,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 LookupProcessorName::feedbacks,
                 LookupProcessorName::clarity,
                 LookupProcessorName::searches,
+                LookupProcessorName::ukraine_corrupts,
             ];
 
             $this->lookuper->lookup($feedbackSearch->getSearchTerm(), $render, $context, $processors);

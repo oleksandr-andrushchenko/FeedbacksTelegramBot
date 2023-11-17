@@ -1,0 +1,7 @@
+on_search: 'Search by database #2...'
+empty_result: Currently, nothing found.
+result_title: 'The following information was found:'
+court_case_number: Court case number
+codex_articles: Article
+sentence_date: The date of the judgment
+punishment_start: The date the court decision comes into force

@@ -21,6 +21,12 @@
             <argument type="service" id="app.crawler_provider"/>
             <tag name="app.lookup_processor" processor="clarity"/>
         </service>
+        <service id="app.lookup_processor_ukraine_corrupts"
+                 class="App\Service\Lookup\Processor\UkraineCorruptLookupProcessor" lazy="true">
+            <argument>%kernel.environment%</argument>
+            <argument type="service" id="app.http_requester"/>
+            <tag name="app.lookup_processor" processor="ukraine_corrupts"/>
+        </service>
         <service id="app.lookup_viewer" class="App\Service\Lookup\Viewer\LookupViewer" abstract="true" lazy="true">
             <argument type="service" id="app.translator"/>
         </service>
@@ -38,6 +44,11 @@
         <service id="app.lookup_viewer_telegram_clarity" class="App\Service\Lookup\Viewer\ClarityTelegramLookupViewer"
                  parent="app.lookup_viewer" lazy="true">
             <tag name="app.lookup_viewer_telegram" processor="clarity"/>
+        </service>
+        <service id="app.lookup_viewer_telegram_ukraine_corrupts"
+                 class="App\Service\Lookup\Viewer\UkraineCorruptTelegramLookupViewer" parent="app.lookup_viewer"
+                 lazy="true">
+            <tag name="app.lookup_viewer_telegram" processor="ukraine_corrupts"/>
         </service>
         <service id="app.lookup_lookuper_telegram" class="App\Service\Lookup\Lookuper" lazy="true">
             <argument type="tagged_locator" tag="app.lookup_processor" index-by="processor"/>
