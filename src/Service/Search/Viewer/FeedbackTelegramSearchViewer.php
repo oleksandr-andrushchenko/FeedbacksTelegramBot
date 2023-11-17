@@ -33,8 +33,9 @@ class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerI
     {
         $full = $context['full'] ?? false;
 
-        return $this->wrapResultRecord(
-            null,
+        $message = '💫 ';
+        $message .= $this->wrapResultRecord(
+            $this->trans('feedbacks_title', ['count' => count($record)]),
             $record,
             fn (Feedback $feedback): array => [
                 $this->feedbackTelegramViewProvider->getFeedbackTelegramView(
@@ -47,5 +48,7 @@ class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerI
             ],
             $full
         );
+
+        return $message;
     }
 }

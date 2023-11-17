@@ -24,10 +24,11 @@ abstract class SearchViewer
     {
         // 🔴🟡🟢⚪️🚨‼️
         // ⬜️⬛️◻️◼️◽️◾️▫️▪️
+        // 💥🔥✨⚡️💫🥳🤩
         return '◻️ ' . implode("\n▫️ ", $this->normalizeAndFilterEmptyStrings($list));
     }
 
-    protected function wrapResultRecord(?string $title, array $items, callable $record, bool $full): string
+    protected function wrapResultRecord(string $title, array $items, callable $record, bool $full): string
     {
         $messages = [];
 

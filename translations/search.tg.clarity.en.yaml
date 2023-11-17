@@ -1,7 +1,7 @@
 on_search: 'Search by database #1...'
 empty_result: Currently, nothing found.
 result_title: 'The following information was found:'
-edrs_title: 'Related Companies:'
+person_edrs_title: 'Related Companies:'
 edr_type: degree of relation
 edr_number: EDRPOU
 address: address
@@ -30,3 +30,4 @@ enf_state: state
 debtors_title: 'Bankruptcy:'
 persons_title: More than one result was found for your query. Who exactly interests you? [ Repeat the search using the name of the person from the list ]
 person_count: 'Persons with this name: %count%'
+edrs_title: More than one result was found for your query. What interests you? [ Repeat the search using the name from the list ]

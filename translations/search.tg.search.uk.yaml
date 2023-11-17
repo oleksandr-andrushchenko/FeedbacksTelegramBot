@@ -1,3 +1,3 @@
 on_search: Пошук по базі запитів...
 empty_result: На даний момент, запитів не знайдено.
-result: '%count% запит(-ів) успішно знайдено про %search_term%.'
+searches_title: '%count% запитів знайдено:'

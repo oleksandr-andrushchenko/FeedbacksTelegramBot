@@ -1,6 +1,6 @@
 on_search: 'Search by database #2...'
 empty_result: Currently, nothing found.
-result_title: 'The following information was found:'
+persons_title: '%count% persons were found for your query:'
 court_case_number: Court case number
 codex_articles: Article
 sentence_date: The date of the judgment

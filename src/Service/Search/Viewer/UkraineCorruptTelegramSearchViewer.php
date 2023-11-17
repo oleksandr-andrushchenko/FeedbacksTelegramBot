@@ -43,8 +43,9 @@ class UkraineCorruptTelegramSearchViewer extends SearchViewer implements SearchV
 
     public function getPersonsResultRecord(UkraineCorruptPersonsRecord $record, bool $full): string
     {
-        return $this->wrapResultRecord(
-            null,
+        $message = '‼️ ';
+        $message .= $this->wrapResultRecord(
+            $this->trans('persons_title', ['count' => count($record->getPersons())]),
             $record->getPersons(),
             fn (UkraineCorruptPerson $person): array => [
                 empty($person->getLastName() && $person->getFirstName() && $person->getPatronymic()) ? null : sprintf('<b>%s</b>', $person->getLastName() . ' ' . $person->getFirstName() . ' ' . $person->getPatronymic()),
@@ -59,5 +60,7 @@ class UkraineCorruptTelegramSearchViewer extends SearchViewer implements SearchV
             ],
             $full
         );
+
+        return $message;
     }
 }

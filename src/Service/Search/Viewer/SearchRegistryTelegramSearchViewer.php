@@ -33,8 +33,9 @@ class SearchRegistryTelegramSearchViewer extends SearchViewer implements SearchV
     {
         $full = $context['full'] ?? false;
 
-        return $this->wrapResultRecord(
-            null,
+        $message = '💫 ';
+        $message .= $this->wrapResultRecord(
+            $this->trans('searches_title', ['count' => count($record)]),
             $record,
             fn (FeedbackSearch $search): array => [
                 $this->feedbackSearchTelegramViewProvider->getFeedbackSearchTelegramView(
@@ -47,5 +48,7 @@ class SearchRegistryTelegramSearchViewer extends SearchViewer implements SearchV
             ],
             $full
         );
+
+        return $message;
     }
 }

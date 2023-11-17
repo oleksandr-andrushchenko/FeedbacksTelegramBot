@@ -60,8 +60,9 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
 
     private function getPersonsResultRecord(ClarityPersonsRecord $record, bool $full): string
     {
-        return $this->wrapResultRecord(
-            $this->trans('persons_title'),
+        $message = '🤔 ';
+        $message .= $this->wrapResultRecord(
+            $this->trans('persons_title', ['count' => count($record->getPersons())]),
             $record->getPersons(),
             fn (ClarityPerson $person): array => [
                 sprintf('<b>%s</b>', empty($person->getHref()) || !$full ? $person->getName() : sprintf('<a href="%s">%s</a>', $person->getHref(), $person->getName())),
@@ -69,12 +70,15 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             ],
             $full
         );
+
+        return $message;
     }
 
     private function getPersonEdrsResultRecord(ClarityPersonEdrsRecord $record, bool $full): string
     {
-        return $this->wrapResultRecord(
-            $this->trans('edrs_title'),
+        $message = '💫 ';
+        $message .= $this->wrapResultRecord(
+            $this->trans('person_edrs_title', ['count' => count($record->getEdrs())]),
             $record->getEdrs(),
             fn (ClarityPersonEdr $edr): array => [
                 sprintf('<b>%s</b>', empty($edr->getHref()) || !$full ? $edr->getName() : sprintf('<a href="%s">%s</a>', $edr->getHref(), $edr->getName())),
@@ -85,12 +89,15 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             ],
             $full
         );
+
+        return $message;
     }
 
     private function getPersonSecurityResultRecord(ClarityPersonSecurityRecord $record, bool $full): string
     {
-        return $this->wrapResultRecord(
-            $this->trans('security_title'),
+        $message = '🚨 ';
+        $message .= $this->wrapResultRecord(
+            $this->trans('security_title', ['count' => count($record->getSecurity())]),
             $record->getSecurity(),
             fn (ClarityPersonSecurity $sec): array => [
                 sprintf('<b>%s</b>', $sec->getName()),
@@ -103,12 +110,15 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             ],
             $full
         );
+
+        return $message;
     }
 
     private function getPersonCourtsResultRecord(ClarityPersonCourtsRecord $record, bool $full): string
     {
-        return $this->wrapResultRecord(
-            $this->trans('courts_title'),
+        $message = '‼️ ';
+        $message .= $this->wrapResultRecord(
+            $this->trans('courts_title', ['count' => count($record->getCourts())]),
             $record->getCourts(),
             fn (ClarityPersonCourt $court): array => [
                 sprintf('<b>%s</b> [ %s ]', $court->getNumber(), $this->trans('case_number')),
@@ -119,12 +129,15 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             ],
             $full
         );
+
+        return $message;
     }
 
     private function getPersonEnforcementsResultRecord(ClarityPersonEnforcementsRecord $record, bool $full): string
     {
-        return $this->wrapResultRecord(
-            $this->trans('enforcements_title'),
+        $message = '‼️ ';
+        $message .= $this->wrapResultRecord(
+            $this->trans('enforcements_title', ['count' => count($record->getEnforcements())]),
             $record->getEnforcements(),
             fn (ClarityPersonEnforcement $enf): array => [
                 sprintf('<b>%s</b> [ %s ]', $enf->getNumber(), $this->trans('enf_number')),
@@ -136,12 +149,15 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             ],
             $full
         );
+
+        return $message;
     }
 
     private function getPersonDebtorsResultRecord(ClarityPersonDebtorsRecord $record, bool $full): string
     {
-        return $this->wrapResultRecord(
-            $this->trans('debtors_title'),
+        $message = '‼️ ';
+        $message .= $this->wrapResultRecord(
+            $this->trans('debtors_title', ['count' => count($record->getDebtors())]),
             $record->getDebtors(),
             fn (ClarityPersonDebtor $debtor): array => [
                 sprintf('<b>%s</b>', $debtor->getName()),
@@ -151,12 +167,15 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             ],
             $full
         );
+
+        return $message;
     }
 
     private function getEdrsResultRecord(ClarityEdrsRecord $record, bool $full): string
     {
-        return $this->wrapResultRecord(
-            null,
+        $message = '🤔 ';
+        $message .= $this->wrapResultRecord(
+            $this->trans('edrs_title', ['count' => count($record->getEdrs())]),
             $record->getEdrs(),
             fn (ClarityEdr $edr): array => [
                 sprintf('<b>%s</b>', empty($edr->getHref()) || !$full ? $edr->getName() : sprintf('<a href="%s">%s</a>', $edr->getHref(), $edr->getName())),
@@ -167,5 +186,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             ],
             $full
         );
+
+        return $message;
     }
 }
