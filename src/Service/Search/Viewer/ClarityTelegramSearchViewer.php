@@ -19,14 +19,19 @@ use App\Entity\Search\Clarity\ClarityPersonEnforcementsRecord;
 use App\Entity\Search\Clarity\ClarityPersonSecurity;
 use App\Entity\Search\Clarity\ClarityPersonSecurityRecord;
 use App\Entity\Search\Clarity\ClarityPersonsRecord;
+use App\Enum\Feedback\SearchTermType;
+use App\Service\Util\String\SecretsAdder;
 use DateTimeImmutable;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
 {
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(
+        TranslatorInterface $translator,
+        SecretsAdder $secretsAdder
+    )
     {
-        parent::__construct($translator, 'clarity');
+        parent::__construct($translator, $secretsAdder, 'clarity');
     }
 
     public function getOnSearchTitle(FeedbackSearchTerm $searchTerm, array $context = []): string
@@ -54,7 +59,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             ClarityPersonCourtsRecord::class => $this->getPersonCourtsResultRecord($record, $full),
             ClarityPersonEnforcementsRecord::class => $this->getPersonEnforcementsResultRecord($record, $full),
             ClarityPersonDebtorsRecord::class => $this->getPersonDebtorsResultRecord($record, $full),
-            ClarityEdrsRecord::class => $this->getEdrsResultRecord($record, $full),
+            ClarityEdrsRecord::class => $this->getEdrsResultRecord($record, $searchTerm->getType(), $full),
         };
     }
 
@@ -64,10 +69,16 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $message .= $this->wrapResultRecord(
             $this->trans('persons_title', ['count' => count($record->getPersons())]),
             $record->getPersons(),
-            fn (ClarityPerson $person): array => [
-                sprintf('<b>%s</b>', empty($person->getHref()) || !$full ? addslashes($person->getName()) : sprintf('<a href="%s">%s</a>', $person->getHref(), $person->getName())),
-                empty($person->getCount()) ? null : sprintf('<i>%s</i>', $this->trans('person_count', ['count' => $person->getCount()])),
-            ],
+            fn (ClarityPerson $person): array => match (true) {
+                $full => [
+                    $this->modifier()->add($this->slashesModifier())->add($this->linkModifier($person->getHref()))->add($this->boldModifier())->apply($person->getName()),
+                    $this->modifier()->add($this->conditionalModifier($person->getCount()))->add($this->italicModifier())->apply($this->trans('person_count', ['count' => $person->getCount()])),
+                ],
+                default => [
+                    $this->modifier()->add($this->slashesModifier())->add($this->boldModifier())->apply($person->getName()),
+                    $this->modifier()->add($this->conditionalModifier($person->getCount()))->add($this->italicModifier())->apply($this->trans('person_count', ['count' => $person->getCount()])),
+                ],
+            },
             $full
         );
 
@@ -80,13 +91,22 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $message .= $this->wrapResultRecord(
             $this->trans('person_edrs_title', ['count' => count($record->getEdrs())]),
             $record->getEdrs(),
-            fn (ClarityPersonEdr $edr): array => [
-                sprintf('<b>%s</b>', empty($edr->getHref()) || !$full ? addslashes($edr->getName()) : sprintf('<a href="%s">%s</a>', $edr->getHref(), $edr->getName())),
-                empty($edr->getType()) ? null : $edr->getType(),
-                empty($edr->getNumber()) ? null : sprintf('%s [ %s ]', $edr->getNumber(), $this->trans('edr_number')),
-                $edr->getActive() === null ? null : sprintf('%s %s', $edr->getActive() ? '🟢' : '⚪️', $this->trans($edr->getActive() ? 'active' : 'inactive')),
-                empty($edr->getAddress()) ? null : $edr->getAddress(),
-            ],
+            fn (ClarityPersonEdr $edr): array => match (true) {
+                $full => [
+                    $this->modifier()->add($this->slashesModifier())->add($this->linkModifier($edr->getHref()))->add($this->boldModifier())->apply($edr->getName()),
+                    $edr->getType(),
+                    $this->modifier()->add($this->bracketsModifier('edr_number'))->apply($edr->getNumber()),
+                    $this->modifier()->add($this->greenWhiteModifier('active'))->apply($edr->getActive()),
+                    $edr->getAddress(),
+                ],
+                default => [
+                    $this->modifier()->add($this->slashesModifier())->add($this->boldModifier())->apply($edr->getName()),
+                    $edr->getType(),
+                    $this->modifier()->add($this->bracketsModifier('edr_number'))->apply($edr->getNumber()),
+                    $this->modifier()->add($this->greenWhiteModifier('active'))->apply($edr->getActive()),
+                    $edr->getAddress(),
+                ],
+            },
             $full
         );
 
@@ -100,13 +120,13 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             $this->trans('security_title', ['count' => count($record->getSecurity())]),
             $record->getSecurity(),
             fn (ClarityPersonSecurity $sec): array => [
-                sprintf('<b>%s</b>', $sec->getName()),
-                empty($sec->getBornAt()) ? null : sprintf('%s [ %s ]', $sec->getBornAt()->format('d.m.Y'), $this->trans('born_at')),
-                empty($sec->getArchive()) ? null : sprintf('%s %s', $sec->getArchive() ? '⚪️' : '🔴', $this->trans($sec->getArchive() ? 'archive' : 'actual')),
-                empty($sec->getCategory()) ? null : sprintf('<u>%s</u>', $sec->getCategory()),
-                empty($sec->getAbsentAt()) ? null : sprintf('%s [ %s ]', $sec->getAbsentAt()->format('d.m.Y'), $this->trans('absent_at')),
-                empty($sec->getAccusation()) ? null : sprintf('%s [ %s ]', $sec->getAccusation(), $this->trans('accusation')),
-                empty($sec->getPrecaution()) ? null : sprintf('%s [ %s ]', $sec->getPrecaution(), $this->trans('precaution')),
+                $this->modifier()->add($this->boldModifier())->apply($sec->getName()),
+                $this->modifier()->add($this->datetimeModifier('d.m.Y'))->add($this->bracketsModifier('born_at'))->apply($sec->getBornAt()),
+                $this->modifier()->add($this->redWhiteModifier('actual'))->apply(!$sec->getArchive()),
+                $this->modifier()->add($this->underlineModifier())->apply($sec->getCategory()),
+                $this->modifier()->add($this->datetimeModifier('d.m.Y'))->add($this->bracketsModifier('absent_at'))->apply($sec->getAbsentAt()),
+                $this->modifier()->add($this->bracketsModifier('accusation'))->apply($sec->getAccusation()),
+                $this->modifier()->add($this->bracketsModifier('precaution'))->apply($sec->getPrecaution()),
             ],
             $full
         );
@@ -121,11 +141,11 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             $this->trans('courts_title', ['count' => count($record->getCourts())]),
             $record->getCourts(),
             fn (ClarityPersonCourt $court): array => [
-                sprintf('<b>%s</b> [ %s ]', $court->getNumber(), $this->trans('case_number')),
-                empty($court->getState()) ? null : $court->getState(),
-                empty($court->getSide()) ? null : sprintf('%s %s', str_contains($court->getSide(), 'заявник') ? '⚪️' : '🔴', $court->getSide()),
-                empty($court->getDesc()) ? null : sprintf('<u>%s</u> [ %s ]', $court->getDesc(), $this->trans('desc')),
-                empty($court->getPlace()) ? null : $court->getPlace(),
+                $this->modifier()->add($this->boldModifier())->add($this->bracketsModifier('case_number'))->apply($court->getNumber()),
+                $court->getState(),
+                $this->modifier()->add($this->redWhiteModifier())->add($this->appendModifier($court->getSide()))->apply(!str_contains($court->getSide(), 'заявник')),
+                $this->modifier()->add($this->underlineModifier())->add($this->bracketsModifier('desc'))->apply($court->getDesc()),
+                $court->getPlace(),
             ],
             $full
         );
@@ -140,12 +160,12 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             $this->trans('enforcements_title', ['count' => count($record->getEnforcements())]),
             $record->getEnforcements(),
             fn (ClarityPersonEnforcement $enf): array => [
-                sprintf('<b>%s</b> [ %s ]', $enf->getNumber(), $this->trans('enf_number')),
-                empty($enf->getOpenedAt()) ? null : $enf->getOpenedAt()->format('d.m.Y'),
-                empty($enf->getDebtor()) ? null : sprintf('%s [ %s ]', $enf->getDebtor(), $this->trans('debtor')),
-                empty($enf->getBornAt()) ? null : sprintf('%s [ %s ]', $enf->getBornAt()->format('d.m.Y'), $this->trans('born_at')),
-                empty($enf->getState()) ? null : sprintf('%s %s', str_contains($enf->getState(), 'Відкрито') ? '🔴' : '⚪️', $enf->getState()),
-                empty($enf->getCollector()) ? null : sprintf('%s [ %s ]', $enf->getCollector(), $this->trans('collector')),
+                $this->modifier()->add($this->boldModifier())->add($this->bracketsModifier('enf_number'))->apply($enf->getNumber()),
+                $this->modifier()->add($this->datetimeModifier('d.m.Y'))->apply($enf->getOpenedAt()),
+                $this->modifier()->add($this->bracketsModifier('debtor'))->apply($enf->getDebtor()),
+                $this->modifier()->add($this->datetimeModifier('d.m.Y'))->add($this->bracketsModifier('born_at'))->apply($enf->getBornAt()),
+                $this->modifier()->add($this->redWhiteModifier())->add($this->appendModifier($enf->getState()))->apply(str_contains($enf->getState(), 'Відкрито')),
+                $this->modifier()->add($this->bracketsModifier('collector'))->apply($enf->getCollector()),
             ],
             $full
         );
@@ -160,10 +180,10 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             $this->trans('debtors_title', ['count' => count($record->getDebtors())]),
             $record->getDebtors(),
             fn (ClarityPersonDebtor $debtor): array => [
-                sprintf('<b>%s</b>', $debtor->getName()),
-                empty($debtor->getBornAt()) ? null : sprintf('%s [ %s ]', $debtor->getBornAt()->format('d.m.Y'), $this->trans('born_at')),
-                empty($debtor->getCategory()) ? null : sprintf('<u>%s</u>', $debtor->getCategory()),
-                empty($debtor->getActualAt()) ? null : sprintf('%s %s [ %s ]', ($archive = $debtor->getActualAt() < new DateTimeImmutable()) ? '⚪️' : '🔴', $debtor->getActualAt()->format('d.m.Y'), $this->trans($archive ? 'archive' : 'actual')),
+                $this->modifier()->add($this->slashesModifier())->add($this->boldModifier())->apply($debtor->getName()),
+                $this->modifier()->add($this->datetimeModifier('d.m.Y'))->add($this->bracketsModifier('born_at'))->apply($debtor->getBornAt()),
+                $this->modifier()->add($this->underlineModifier())->apply($debtor->getCategory()),
+                $this->modifier()->add($this->redWhiteModifier('actual'))->add($this->bracketsModifier('actual_at'))->apply($debtor->getActualAt() > new DateTimeImmutable()),
             ],
             $full
         );
@@ -171,18 +191,30 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         return $message;
     }
 
-    private function getEdrsResultRecord(ClarityEdrsRecord $record, bool $full): string
+    private function getEdrsResultRecord(ClarityEdrsRecord $record, SearchTermType $searchType, bool $full): string
     {
         $message = '🤔 ';
         $message .= $this->wrapResultRecord(
             $this->trans('edrs_title', ['count' => count($record->getEdrs())]),
             $record->getEdrs(),
-            fn (ClarityEdr $edr): array => [
-                sprintf('<b>%s</b>', empty($edr->getHref()) || !$full ? addslashes($edr->getName()) : sprintf('<a href="%s">%s</a>', $edr->getHref(), $edr->getName())),
-                empty($edr->getType()) ? null : $edr->getType(),
-                $edr->getActive() === null ? null : sprintf('%s %s', $edr->getActive() ? '🟢' : '⚪️', $this->trans($edr->getActive() ? 'active' : 'inactive')),
-                empty($edr->getAddress()) ? null : $edr->getAddress(),
-            ],
+            fn (ClarityEdr $edr): array => match (true) {
+                $full => [
+                    $this->modifier()->add($this->slashesModifier())->add($this->linkModifier($edr->getHref()))->add($this->boldModifier())->apply($edr->getName()),
+                    $edr->getType(),
+                    $this->modifier()->add($this->greenWhiteModifier('active'))->apply($edr->getActive()),
+                    $edr->getAddress(),
+                ],
+                $searchType === SearchTermType::phone_number => [
+                    $this->modifier()->add($this->slashesModifier())->add($this->secretsModifier())->add($this->boldModifier())->apply($edr->getName()),
+                    $this->modifier()->add($this->hiddenModifier('address'))->apply($edr->getAddress()),
+                ],
+                default => [
+                    $this->modifier()->add($this->slashesModifier())->add($this->boldModifier())->apply($edr->getName()),
+                    $edr->getType(),
+                    $this->modifier()->add($this->greenWhiteModifier('active'))->apply($edr->getActive()),
+                    $edr->getAddress(),
+                ]
+            },
             $full
         );
 

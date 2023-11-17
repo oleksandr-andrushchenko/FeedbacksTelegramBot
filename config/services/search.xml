@@ -28,6 +28,7 @@
         </service>
         <service id="app.search_viewer" class="App\Service\Search\Viewer\SearchViewer" abstract="true" lazy="true">
             <argument type="service" id="app.translator"/>
+            <argument type="service" id="app.string_secrets_adder"/>
         </service>
         <service id="app.search_viewer_telegram_feedbacks"
                  class="App\Service\Search\Viewer\FeedbackTelegramSearchViewer"

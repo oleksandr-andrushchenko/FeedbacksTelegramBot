@@ -52,6 +52,10 @@ class ClaritySearchProvider implements SearchProviderInterface
             return true;
         }
 
+        if ($this->supportsPhoneNumber($searchTerm->getType(), $searchTerm->getNormalizedText())) {
+            return true;
+        }
+
         return false;
     }
 
@@ -77,6 +81,14 @@ class ClaritySearchProvider implements SearchProviderInterface
 
         if ($this->supportsOrganizationName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
             yield fn () => [$this->searchEdrsRecord($searchTerm->getNormalizedText())];
+
+            return;
+        }
+
+        if ($this->supportsPhoneNumber($searchTerm->getType(), $searchTerm->getNormalizedText())) {
+            yield fn () => [$this->searchEdrsRecord($searchTerm->getNormalizedText())];
+
+            return;
         }
 
         yield from [];
@@ -142,6 +154,23 @@ class ClaritySearchProvider implements SearchProviderInterface
         }
 
         return false;
+    }
+
+    private function supportsPhoneNumber(SearchTermType $type, string $name): bool
+    {
+        if ($this->environment === 'test') {
+            return false;
+        }
+
+        if ($type !== SearchTermType::phone_number) {
+            return false;
+        }
+
+        if (!str_starts_with($name, '38')) {
+            return false;
+        }
+
+        return true;
     }
 
     private function searchPersonsRecord(string $name): ?ClarityPersonsRecord
@@ -563,10 +592,6 @@ class ClaritySearchProvider implements SearchProviderInterface
             }
 
             $source = $item->filter('.source-info')->text();
-
-            if (str_contains($source, 'Prozorro')) {
-                return;
-            }
 
             foreach (['ФОП', 'Бенефіціар', 'Засновник'] as $type_) {
                 if (str_contains($source, $type_)) {

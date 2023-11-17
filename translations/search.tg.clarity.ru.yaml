@@ -6,13 +6,13 @@ edr_type: степень отношения
 edr_number: ЕГРПОУ
 address: адрес
 active: активный
-inactive: не активен
+not_active: не активен
 security_title: 'Безопасность:'
 born_at: дата рождения
 region: регион
 absent_at: дата исчезновения, розыск
-archive: не актуально
 actual: актуально
+not_actual: не актуально
 accusation: обвинение
 precaution: мера пресечения
 courts_title: 'Судебные дела:'

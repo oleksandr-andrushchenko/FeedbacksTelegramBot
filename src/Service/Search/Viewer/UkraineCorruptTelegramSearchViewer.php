@@ -7,15 +7,17 @@ namespace App\Service\Search\Viewer;
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\UkraineCorrupt\UkraineCorruptPerson;
 use App\Entity\Search\UkraineCorrupt\UkraineCorruptPersonsRecord;
+use App\Service\Util\String\SecretsAdder;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UkraineCorruptTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
 {
     public function __construct(
         TranslatorInterface $translator,
+        SecretsAdder $secretsAdder
     )
     {
-        parent::__construct($translator, 'ukraine_corrupt');
+        parent::__construct($translator, $secretsAdder, 'ukraine_corrupt');
     }
 
     public function getOnSearchTitle(FeedbackSearchTerm $searchTerm, array $context = []): string

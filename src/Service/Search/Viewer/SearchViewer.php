@@ -4,37 +4,30 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Viewer;
 
+use App\Entity\Search\Viewer\Modifier;
+use App\Service\Util\String\SecretsAdder;
+use DateTimeInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class SearchViewer
 {
     public function __construct(
         private readonly TranslatorInterface $translator,
+        private readonly SecretsAdder $secretsAdder,
         private readonly string $transDomain,
     )
     {
     }
 
-    public function wrapTitle(string $title): string
-    {
-        return sprintf('<b>%s</b>', $title);
-    }
-
-    public function wrapList(array $list): string
+    protected function wrapResultRecord(string $title, array $items, callable $record, bool $full): string
     {
         // 🔴🟡🟢⚪️🚨‼️
         // ⬜️⬛️◻️◼️◽️◾️▫️▪️
         // 💥🔥✨⚡️💫🥳🤩
-        return '◻️ ' . implode("\n▫️ ", $this->normalizeAndFilterEmptyStrings($list));
-    }
 
-    protected function wrapResultRecord(string $title, array $items, callable $record, bool $full): string
-    {
         $messages = [];
 
-        if ($title !== null) {
-            $messages[] = $this->wrapTitle($title);
-        }
+        $messages[] = sprintf('<b>%s</b>', $title);
 
         $count = count($items);
 
@@ -48,19 +41,7 @@ abstract class SearchViewer
         $added = 0;
 
         foreach ($items as $item) {
-            $message = $this->wrapList($record($item));
-
-            if (empty($message)) {
-                continue;
-            }
-
-            $messageNotTags = trim(strip_tags($message));
-
-            if (empty($messageNotTags)) {
-                continue;
-            }
-
-            $messages[] = $message;
+            $messages[] = '◻️ ' . implode("\n▫️ ", $this->normalizeAndFilterEmptyStrings($record($item)));
             $added++;
 
             if ($added === $maxResults) {
@@ -69,12 +50,7 @@ abstract class SearchViewer
         }
 
         if ($maxResults !== $count) {
-            $parameters = [
-                'shown_count' => $maxResults,
-                'total_count' => $count,
-                'subscribe_command' => '/subscribe',
-            ];
-            $messages[] = sprintf('<i>[ %s ]</i>', $this->translator->trans('hidden_list', $parameters, 'search.tg'));
+            $messages[] = $this->transHiddenList($maxResults, $count);
         }
 
         return implode("\n\n", $messages);
@@ -101,6 +77,101 @@ abstract class SearchViewer
         }
 
         return $output;
+    }
+
+    protected function modifier(): Modifier
+    {
+        return new Modifier();
+    }
+
+    protected function boldModifier(): callable
+    {
+        return static fn (?string $text): ?string => empty($text) ? null : sprintf('<b>%s</b>', $text);
+    }
+
+    protected function italicModifier(): callable
+    {
+        return static fn (?string $text): ?string => empty($text) ? null : sprintf('<i>%s</i>', $text);
+    }
+
+    protected function underlineModifier(): callable
+    {
+        return static fn (?string $text): ?string => empty($text) ? null : sprintf('<u>%s</u>', $text);
+    }
+
+    protected function linkModifier(?string $href): callable
+    {
+        return static fn (?string $text): ?string => empty($text) ? null : (empty($href) ? $text : sprintf('<a href="%s">%s</a>', $href, $text));
+    }
+
+    protected function secretsModifier(): callable
+    {
+        return static fn (?string $text): ?string => empty($text) ? null : $this->secretsAdder->addSecrets($text);
+    }
+
+    protected function hiddenModifier(string $id): callable
+    {
+        return static fn (?string $text): ?string => empty($text) ? null : $this->transHidden($id);
+    }
+
+    protected function greenWhiteModifier(string $id): callable
+    {
+        return fn (?bool $active): ?string => $active === null ? null : sprintf('%s %s', $active ? '🟢' : '⚪️', $this->trans(($active ? '' : 'not_') . $id));
+    }
+
+    protected function redWhiteModifier(string $id = null): callable
+    {
+        return fn (?bool $active): ?string => $active === null ? null : (($active ? '🔴' : '⚪️') . ($id === null ? '' : (' ' . $this->trans(($active ? '' : 'not_') . $id))));
+    }
+
+    protected function slashesModifier(): callable
+    {
+        return static fn (?string $text): ?string => empty($text) ? null : addslashes($text);
+    }
+
+    protected function nullIfEmptyModifier(): callable
+    {
+        return static fn (?string $text): ?string => empty($text) ? null : $text;
+    }
+
+    protected function conditionalModifier($condition): callable
+    {
+        return static fn (?string $text): ?string => $condition ? $text : null;
+    }
+
+    protected function bracketsModifier(string $id): callable
+    {
+        return fn (?string $text): ?string => empty($text) ? null : sprintf('%s [ %s ]', $text, $this->trans($id));
+    }
+
+    protected function appendModifier(string $append): callable
+    {
+        return static fn (?string $text): ?string => empty($text) ? null : sprintf('%s %s', $text, $append);
+    }
+
+    protected function datetimeModifier(string $format): callable
+    {
+        return static fn (?DateTimeInterface $dateTime): ?string => $dateTime?->format($format);
+    }
+
+    protected function transHiddenList(int $maxResults, int $count): string
+    {
+        $parameters = [
+            'shown_count' => $maxResults,
+            'total_count' => $count,
+            'subscribe_command' => '/subscribe',
+        ];
+
+        return sprintf('<i>[ %s ]</i>', $this->translator->trans('hidden_list', $parameters, 'search.tg'));
+    }
+
+    protected function transHidden(string $id): string
+    {
+        $parameters = [
+            'entity' => $this->trans($id),
+        ];
+
+        return $this->translator->trans('hidden', $parameters, 'search.tg');
     }
 
     protected function trans($id, array $parameters = []): string

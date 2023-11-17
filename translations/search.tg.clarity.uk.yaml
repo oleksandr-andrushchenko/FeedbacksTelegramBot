@@ -6,13 +6,13 @@ edr_type: степінь відношення
 edr_number: ЄДРПОУ
 address: адреса
 active: активний
-inactive: не активний
+not_active: не активний
 security_title: 'Безпека:'
 born_at: дата народження
 region: регіон
 absent_at: дата зникнення, розшук
-archive: не актуально
 actual: актуально
+not_actual: не актуально
 accusation: звинувачення
 precaution: запобіжний захід
 courts_title: 'Судові справи:'

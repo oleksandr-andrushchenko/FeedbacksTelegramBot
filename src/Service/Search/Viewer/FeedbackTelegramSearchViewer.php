@@ -7,16 +7,18 @@ namespace App\Service\Search\Viewer;
 use App\Entity\Feedback\Feedback;
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Service\Feedback\Telegram\Bot\View\FeedbackTelegramViewProvider;
+use App\Service\Util\String\SecretsAdder;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
 {
     public function __construct(
         TranslatorInterface $translator,
+        SecretsAdder $secretsAdder,
         private readonly FeedbackTelegramViewProvider $feedbackTelegramViewProvider,
     )
     {
-        parent::__construct($translator, 'feedback');
+        parent::__construct($translator, $secretsAdder, 'feedback');
     }
 
     public function getOnSearchTitle(FeedbackSearchTerm $searchTerm, array $context = []): string
