@@ -82,3 +82,4 @@
 * add icons for search result lists
 * implement the same logic for clarity orgs (as for persons was mada)
 * implement search by tax_number for orgs
+* add lookup processors test coverage
