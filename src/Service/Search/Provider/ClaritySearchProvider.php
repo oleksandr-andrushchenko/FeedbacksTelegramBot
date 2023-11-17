@@ -44,11 +44,11 @@ class ClaritySearchProvider implements SearchProviderInterface
 
     public function supports(FeedbackSearchTerm $searchTerm, array $context = []): bool
     {
-        if ($this->supportsPersonName($searchTerm, $context)) {
+        if ($this->supportsPersonName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
             return true;
         }
 
-        if ($this->supportsOrganizationName($searchTerm, $context)) {
+        if ($this->supportsOrganizationName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
             return true;
         }
 
@@ -57,7 +57,7 @@ class ClaritySearchProvider implements SearchProviderInterface
 
     public function getSearchers(FeedbackSearchTerm $searchTerm, array $context = []): iterable
     {
-        if ($this->supportsPersonName($searchTerm, $context)) {
+        if ($this->supportsPersonName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
             $record = $this->searchPersonsRecord($searchTerm->getNormalizedText());
 
             if (count($record->getPersons()) === 1) {
@@ -75,14 +75,14 @@ class ClaritySearchProvider implements SearchProviderInterface
             yield fn () => [$record];
         }
 
-        if ($this->supportsOrganizationName($searchTerm, $context)) {
+        if ($this->supportsOrganizationName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
             yield fn () => [$this->searchEdrsRecord($searchTerm->getNormalizedText())];
         }
 
         yield from [];
     }
 
-    private function supportsPersonName(FeedbackSearchTerm $searchTerm, array $context = []): bool
+    private function supportsPersonName(SearchTermType $type, string $name, array $context = []): bool
     {
         if ($this->environment === 'test') {
             return false;
@@ -94,22 +94,22 @@ class ClaritySearchProvider implements SearchProviderInterface
             return false;
         }
 
-        if ($searchTerm->getType() !== SearchTermType::person_name) {
+        if ($type !== SearchTermType::person_name) {
             return false;
         }
 
-        if (count(explode(' ', $searchTerm->getNormalizedText())) === 1) {
+        if (count(explode(' ', $name)) === 1) {
             return false;
         }
 
-        if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $searchTerm->getNormalizedText()) !== 1) {
+        if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $name) !== 1) {
             return false;
         }
 
         return true;
     }
 
-    private function supportsOrganizationName(FeedbackSearchTerm $searchTerm, array $context = []): bool
+    private function supportsOrganizationName(SearchTermType $type, string $name, array $context = []): bool
     {
         if ($this->environment === 'test') {
             return false;
@@ -121,11 +121,9 @@ class ClaritySearchProvider implements SearchProviderInterface
             return false;
         }
 
-        if ($searchTerm->getType() !== SearchTermType::organization_name) {
+        if ($type !== SearchTermType::organization_name) {
             return false;
         }
-
-        $name = $searchTerm->getNormalizedText();
 
         if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $name) !== 1) {
             return false;
