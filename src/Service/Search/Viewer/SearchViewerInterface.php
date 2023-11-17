@@ -12,5 +12,5 @@ interface SearchViewerInterface
 
     public function getEmptyResultTitle(FeedbackSearchTerm $searchTerm, array $context = []): string;
 
-    public function getResultRecord($record, array $context = []): string;
+    public function getResultRecord($record, FeedbackSearchTerm $searchTerm, array $context = []): string;
 }

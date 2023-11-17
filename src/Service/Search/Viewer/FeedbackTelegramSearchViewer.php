@@ -29,7 +29,7 @@ class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerI
         return $this->trans('empty_result');
     }
 
-    public function getResultRecord($record, array $context = []): string
+    public function getResultRecord($record, FeedbackSearchTerm $searchTerm, array $context = []): string
     {
         $full = $context['full'] ?? false;
 
