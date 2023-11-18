@@ -125,12 +125,12 @@ class SearchViewerHelper
 
     public function secretsModifier(): callable
     {
-        return static fn (?string $text): ?string => empty($text) ? null : $this->secretsAdder->addSecrets($text);
+        return fn (?string $text): ?string => empty($text) ? null : $this->secretsAdder->addSecrets($text);
     }
 
     public function hiddenModifier(string $id): callable
     {
-        return static fn (?string $text): ?string => empty($text) ? null : $this->transHidden($id);
+        return fn (?string $text): ?string => empty($text) ? null : $this->transHidden($id);
     }
 
     public function greenWhiteModifier(string $id): callable
@@ -140,7 +140,7 @@ class SearchViewerHelper
 
     public function redModifier(): callable
     {
-        return fn (?bool $active): ?string => $active === null ? null : '🔴';
+        return static fn (?bool $active): ?string => $active === null ? null : '🔴';
     }
 
     public function redWhiteModifier(string $id = null): callable
