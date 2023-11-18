@@ -293,7 +293,9 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                         ->add($h->boldModifier())
                         ->apply($edr->getName()),
                     $h->modifier()
-                        ->add($h->hiddenModifier('address'))
+                        ->add($h->slashesModifier())
+                        ->add($h->secretsModifier())
+                        ->add($h->bracketsModifier('address'))
                         ->apply($edr->getAddress()),
                 ],
                 default => [
