@@ -25,7 +25,7 @@ class SearchTermTelegramViewProvider
 
     public function getSearchTermTelegramMainView(SearchTermTransfer $searchTerm, bool $addSecrets = false): string
     {
-        $message = '<u><b>';
+        $message = '<b>';
 
         $messenger = $this->searchTermMessengerProvider->getSearchTermMessenger($searchTerm->getType());
         // todo: add search term formatter & implement it here and everywhere
@@ -56,7 +56,7 @@ class SearchTermTelegramViewProvider
             }
         }
 
-        $message .= '</b></u>';
+        $message .= '</b>';
 
         return $message;
     }
