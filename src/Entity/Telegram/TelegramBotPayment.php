@@ -23,6 +23,7 @@ class TelegramBotPayment implements Stringable
         private readonly string $purpose,
         Money $price,
         private readonly array $payload,
+        private readonly TelegramBot $bot,
         private ?array $preCheckoutQuery = null,
         private ?array $successfulPayment = null,
         private ?TelegramBotPaymentStatus $status = TelegramBotPaymentStatus::REQUEST_SENT,
@@ -67,6 +68,11 @@ class TelegramBotPayment implements Stringable
     public function getPayload(): array
     {
         return $this->payload;
+    }
+
+    public function getBot(): TelegramBot
+    {
+        return $this->bot;
     }
 
     public function getPreCheckoutQuery(): ?array

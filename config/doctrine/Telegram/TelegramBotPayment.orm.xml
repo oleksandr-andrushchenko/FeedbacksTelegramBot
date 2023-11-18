@@ -9,7 +9,9 @@
 
         <id name="id" column="id" type="string" length="32"/>
 
-        <many-to-one field="messengerUser" target-entity="App\Entity\Messenger\MessengerUser"/>
+        <many-to-one field="messengerUser" target-entity="App\Entity\Messenger\MessengerUser">
+            <join-column nullable="false"/>
+        </many-to-one>
 
         <field name="chatId" column="chat_id" type="bigint"/>
 
@@ -19,6 +21,11 @@
         <field name="priceAmount" column="price_amount" type="decimal" precision="7" scale="2"/>
         <field name="priceCurrency" column="price_currency"/>
         <field name="payload" column="payload" type="json"/>
+
+        <many-to-one field="bot" target-entity="App\Entity\Telegram\TelegramBot">
+            <join-column nullable="false"/>
+        </many-to-one>
+
         <field name="preCheckoutQuery" column="pre_checkout_query" type="json" nullable="true"/>
         <field name="successfulPayment" column="successful_payment" type="json" nullable="true"/>
         <field name="status" column="status" type="smallint" enum-type="App\Enum\Telegram\TelegramBotPaymentStatus">

@@ -27,7 +27,12 @@ class FeedbackUserSubscriptionNormalizer implements NormalizerInterface
             }
 
             $data['plan'] = $object->getSubscriptionPlan()->name;
-            $data['bot'] = sprintf('@%s', $object->getTelegramBot()->getUsername());
+
+            $telegramBot = $object->getTelegramPayment()?->getBot();
+
+            if (!empty($telegramBot)) {
+                $data['telegram_bot'] = sprintf('@%s', $telegramBot->getUsername());
+            }
 
             return $data;
         }
