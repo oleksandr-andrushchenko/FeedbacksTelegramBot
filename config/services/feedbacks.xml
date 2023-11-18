@@ -618,6 +618,14 @@
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <tag name="console.command" command="feedbacks:normalize-search-terms"/>
         </service>
+        <service id="app.feedbacks_add_user_subscription_console_command"
+                 class="App\Command\Feedback\FeedbacksAddUserSubscriptionCommand" lazy="true">
+            <argument type="service" id="app.user_repository"/>
+            <argument type="service" id="app.feedback_subscription_manager"/>
+            <argument type="service" id="app.doctrine_dry_runner"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <tag name="console.command" command="feedbacks:subscription:add"/>
+        </service>
         <service id="app.notify_feedback_target_about_new_feedback_command_handler"
                  class="App\Message\CommandHandler\Feedback\NotifyFeedbackTargetAboutNewFeedbackCommandHandler"
                  lazy="true">
