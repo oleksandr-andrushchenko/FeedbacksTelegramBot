@@ -190,25 +190,23 @@ class SearchViewerHelper
             'total_count' => sprintf('<b>%d</b>', $count),
         ];
 
-        return $this->translator->trans('subscription_skipped_records', $parameters, 'search.tg');
+        return $this->trans('subscription_skipped_records', $parameters, generalDomain: true);
     }
 
     public function transSubscriptionSkippedData(): string
     {
-        $parameters = [];
-
-        return $this->translator->trans('subscription_skipped_data', $parameters, 'search.tg');
+        return $this->trans('subscription_skipped_data', generalDomain: true);
     }
 
     public function transSubscriptionBenefits(): string
     {
         $parameters = [
-            'all_records' => sprintf('<b>%s</b>', $this->translator->trans('subscription_all_records', domain: 'search.tg')),
-            'all_data' => sprintf('<b>%s</b>', $this->translator->trans('subscription_all_data', domain: 'search.tg')),
+            'all_records' => sprintf('<b>%s</b>', $this->trans('subscription_all_records', generalDomain: true)),
+            'all_data' => sprintf('<b>%s</b>', $this->trans('subscription_all_data', generalDomain: true)),
             'subscribe_command' => sprintf('<b>%s</b>', '/subscribe'),
         ];
 
-        return $this->translator->trans('subscription_benefits', $parameters, 'search.tg');
+        return $this->trans('subscription_benefits', $parameters, generalDomain: true);
     }
 
     public function transHidden(string $id): string
@@ -217,7 +215,7 @@ class SearchViewerHelper
             'entity' => $this->trans($id),
         ];
 
-        return $this->translator->trans('hidden', $parameters, 'search.tg');
+        return $this->trans('hidden', $parameters, generalDomain: true);
     }
 
     public function trans($id, array $parameters = [], bool $generalDomain = false): string
