@@ -78,7 +78,8 @@ class TelegramBotPaymentManager
             $paymentMethod,
             $purpose,
             $price,
-            $payload
+            $payload,
+            $bot->getEntity()
         );
         $this->entityManager->persist($payment);
 
