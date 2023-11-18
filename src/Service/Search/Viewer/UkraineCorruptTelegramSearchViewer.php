@@ -58,7 +58,14 @@ class UkraineCorruptTelegramSearchViewer extends SearchViewer implements SearchV
                     ->apply(true),
                 $h->modifier()
                     ->add($h->conditionalModifier($person->getPunishment()))
-                    ->add($h->appendModifier($h->modifier()->add($h->bracketsModifier($person->getPunishmentType()))->add($h->trimModifier())->apply(' ')))
+                    ->add(
+                        $h->appendModifier(
+                            $h->modifier()
+                                ->add($h->bracketsModifier($person->getPunishmentType()))
+                                ->add($h->trimModifier())
+                                ->apply(' ')
+                        )
+                    )
                     ->apply($person->getPunishment()),
                 $h->modifier()
                     ->add($h->bracketsModifier($h->trans('court_case_number')))

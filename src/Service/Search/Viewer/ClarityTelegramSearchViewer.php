@@ -67,12 +67,25 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             $record->getPersons(),
             fn (ClarityPerson $person): array => match (true) {
                 $full => [
-                    $h->modifier()->add($h->slashesModifier())->add($h->linkModifier($person->getHref()))->add($h->boldModifier())->apply($person->getName()),
-                    $h->modifier()->add($h->conditionalModifier($person->getCount()))->add($h->italicModifier())->apply($h->trans('person_count', ['count' => $person->getCount()])),
+                    $h->modifier()
+                        ->add($h->slashesModifier())
+                        ->add($h->linkModifier($person->getHref()))
+                        ->add($h->boldModifier())
+                        ->apply($person->getName()),
+                    $h->modifier()
+                        ->add($h->conditionalModifier($person->getCount()))
+                        ->add($h->italicModifier())
+                        ->apply($h->trans('person_count', ['count' => $person->getCount()])),
                 ],
                 default => [
-                    $h->modifier()->add($h->slashesModifier())->add($h->boldModifier())->apply($person->getName()),
-                    $h->modifier()->add($h->conditionalModifier($person->getCount()))->add($h->italicModifier())->apply($h->trans('person_count', ['count' => $person->getCount()])),
+                    $h->modifier()
+                        ->add($h->slashesModifier())
+                        ->add($h->boldModifier())
+                        ->apply($person->getName()),
+                    $h->modifier()
+                        ->add($h->conditionalModifier($person->getCount()))
+                        ->add($h->italicModifier())
+                        ->apply($h->trans('person_count', ['count' => $person->getCount()])),
                 ],
             },
             $full
@@ -88,19 +101,34 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $message .= $h->wrapResultRecord(
             $h->trans('person_edrs_title', ['count' => count($record->getEdrs())]),
             $record->getEdrs(),
-            fn (ClarityPersonEdr $edr): array => match (true) {
+            static fn (ClarityPersonEdr $edr): array => match (true) {
                 $full => [
-                    $h->modifier()->add($h->slashesModifier())->add($h->linkModifier($edr->getHref()))->add($h->boldModifier())->apply($edr->getName()),
+                    $h->modifier()
+                        ->add($h->slashesModifier())
+                        ->add($h->linkModifier($edr->getHref()))
+                        ->add($h->boldModifier())
+                        ->apply($edr->getName()),
                     $edr->getType(),
-                    $h->modifier()->add($h->bracketsModifier('edr_number'))->apply($edr->getNumber()),
-                    $h->modifier()->add($h->greenWhiteModifier('active'))->apply($edr->getActive()),
+                    $h->modifier()
+                        ->add($h->bracketsModifier('edr_number'))
+                        ->apply($edr->getNumber()),
+                    $h->modifier()
+                        ->add($h->greenWhiteModifier('active'))
+                        ->apply($edr->getActive()),
                     $edr->getAddress(),
                 ],
                 default => [
-                    $h->modifier()->add($h->slashesModifier())->add($h->boldModifier())->apply($edr->getName()),
+                    $h->modifier()
+                        ->add($h->slashesModifier())
+                        ->add($h->boldModifier())
+                        ->apply($edr->getName()),
                     $edr->getType(),
-                    $h->modifier()->add($h->bracketsModifier('edr_number'))->apply($edr->getNumber()),
-                    $h->modifier()->add($h->greenWhiteModifier('active'))->apply($edr->getActive()),
+                    $h->modifier()
+                        ->add($h->bracketsModifier('edr_number'))
+                        ->apply($edr->getNumber()),
+                    $h->modifier()
+                        ->add($h->greenWhiteModifier('active'))
+                        ->apply($edr->getActive()),
                     $edr->getAddress(),
                 ],
             },
@@ -117,14 +145,30 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $message .= $h->wrapResultRecord(
             $h->trans('security_title', ['count' => count($record->getSecurity())]),
             $record->getSecurity(),
-            fn (ClarityPersonSecurity $sec): array => [
-                $h->modifier()->add($h->boldModifier())->apply($sec->getName()),
-                $h->modifier()->add($h->datetimeModifier('d.m.Y'))->add($h->bracketsModifier('born_at'))->apply($sec->getBornAt()),
-                $h->modifier()->add($h->redWhiteModifier('actual'))->apply(!$sec->getArchive()),
-                $h->modifier()->add($h->underlineModifier())->apply($sec->getCategory()),
-                $h->modifier()->add($h->datetimeModifier('d.m.Y'))->add($h->bracketsModifier('absent_at'))->apply($sec->getAbsentAt()),
-                $h->modifier()->add($h->bracketsModifier('accusation'))->apply($sec->getAccusation()),
-                $h->modifier()->add($h->bracketsModifier('precaution'))->apply($sec->getPrecaution()),
+            static fn (ClarityPersonSecurity $sec): array => [
+                $h->modifier()
+                    ->add($h->boldModifier())
+                    ->apply($sec->getName()),
+                $h->modifier()
+                    ->add($h->datetimeModifier('d.m.Y'))
+                    ->add($h->bracketsModifier('born_at'))
+                    ->apply($sec->getBornAt()),
+                $h->modifier()
+                    ->add($h->redWhiteModifier('actual'))
+                    ->apply(!$sec->getArchive()),
+                $h->modifier()
+                    ->add($h->underlineModifier())
+                    ->apply($sec->getCategory()),
+                $h->modifier()
+                    ->add($h->datetimeModifier('d.m.Y'))
+                    ->add($h->bracketsModifier('absent_at'))
+                    ->apply($sec->getAbsentAt()),
+                $h->modifier()
+                    ->add($h->bracketsModifier('accusation'))
+                    ->apply($sec->getAccusation()),
+                $h->modifier()
+                    ->add($h->bracketsModifier('precaution'))
+                    ->apply($sec->getPrecaution()),
             ],
             $full
         );
@@ -139,11 +183,20 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $message .= $h->wrapResultRecord(
             $h->trans('courts_title', ['count' => count($record->getCourts())]),
             $record->getCourts(),
-            fn (ClarityPersonCourt $court): array => [
-                $h->modifier()->add($h->boldModifier())->add($h->bracketsModifier('case_number'))->apply($court->getNumber()),
+            static fn (ClarityPersonCourt $court): array => [
+                $h->modifier()
+                    ->add($h->boldModifier())
+                    ->add($h->bracketsModifier('case_number'))
+                    ->apply($court->getNumber()),
                 $court->getState(),
-                $h->modifier()->add($h->redWhiteModifier())->add($h->appendModifier($court->getSide()))->apply(!str_contains($court->getSide(), 'заявник')),
-                $h->modifier()->add($h->underlineModifier())->add($h->bracketsModifier('desc'))->apply($court->getDesc()),
+                $h->modifier()
+                    ->add($h->redWhiteModifier())
+                    ->add($h->appendModifier($court->getSide()))
+                    ->apply(!str_contains($court->getSide(), 'заявник')),
+                $h->modifier()
+                    ->add($h->underlineModifier())
+                    ->add($h->bracketsModifier('desc'))
+                    ->apply($court->getDesc()),
                 $court->getPlace(),
             ],
             $full
@@ -159,13 +212,28 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $message .= $h->wrapResultRecord(
             $h->trans('enforcements_title', ['count' => count($record->getEnforcements())]),
             $record->getEnforcements(),
-            fn (ClarityPersonEnforcement $enf): array => [
-                $h->modifier()->add($h->boldModifier())->add($h->bracketsModifier('enf_number'))->apply($enf->getNumber()),
-                $h->modifier()->add($h->datetimeModifier('d.m.Y'))->apply($enf->getOpenedAt()),
-                $h->modifier()->add($h->bracketsModifier('debtor'))->apply($enf->getDebtor()),
-                $h->modifier()->add($h->datetimeModifier('d.m.Y'))->add($h->bracketsModifier('born_at'))->apply($enf->getBornAt()),
-                $h->modifier()->add($h->redWhiteModifier())->add($h->appendModifier($enf->getState()))->apply(str_contains($enf->getState(), 'Відкрито')),
-                $h->modifier()->add($h->bracketsModifier('collector'))->apply($enf->getCollector()),
+            static fn (ClarityPersonEnforcement $enf): array => [
+                $h->modifier()
+                    ->add($h->boldModifier())
+                    ->add($h->bracketsModifier('enf_number'))
+                    ->apply($enf->getNumber()),
+                $h->modifier()
+                    ->add($h->datetimeModifier('d.m.Y'))
+                    ->apply($enf->getOpenedAt()),
+                $h->modifier()
+                    ->add($h->bracketsModifier('debtor'))
+                    ->apply($enf->getDebtor()),
+                $h->modifier()
+                    ->add($h->datetimeModifier('d.m.Y'))
+                    ->add($h->bracketsModifier('born_at'))
+                    ->apply($enf->getBornAt()),
+                $h->modifier()
+                    ->add($h->redWhiteModifier())
+                    ->add($h->appendModifier($enf->getState()))
+                    ->apply(str_contains($enf->getState(), 'Відкрито')),
+                $h->modifier()
+                    ->add($h->bracketsModifier('collector'))
+                    ->apply($enf->getCollector()),
             ],
             $full
         );
@@ -180,11 +248,22 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $message .= $h->wrapResultRecord(
             $h->trans('debtors_title', ['count' => count($record->getDebtors())]),
             $record->getDebtors(),
-            fn (ClarityPersonDebtor $debtor): array => [
-                $h->modifier()->add($h->slashesModifier())->add($h->boldModifier())->apply($debtor->getName()),
-                $h->modifier()->add($h->datetimeModifier('d.m.Y'))->add($h->bracketsModifier('born_at'))->apply($debtor->getBornAt()),
-                $h->modifier()->add($h->underlineModifier())->apply($debtor->getCategory()),
-                $h->modifier()->add($h->redWhiteModifier('actual'))->add($h->bracketsModifier('actual_at'))->apply($debtor->getActualAt() > new DateTimeImmutable()),
+            static fn (ClarityPersonDebtor $debtor): array => [
+                $h->modifier()
+                    ->add($h->slashesModifier())
+                    ->add($h->boldModifier())
+                    ->apply($debtor->getName()),
+                $h->modifier()
+                    ->add($h->datetimeModifier('d.m.Y'))
+                    ->add($h->bracketsModifier('born_at'))
+                    ->apply($debtor->getBornAt()),
+                $h->modifier()
+                    ->add($h->underlineModifier())
+                    ->apply($debtor->getCategory()),
+                $h->modifier()
+                    ->add($h->redWhiteModifier('actual'))
+                    ->add($h->bracketsModifier('actual_at'))
+                    ->apply($debtor->getActualAt() > new DateTimeImmutable()),
             ],
             $full
         );
@@ -199,21 +278,38 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $message .= $h->wrapResultRecord(
             $h->trans('edrs_title', ['count' => count($record->getEdrs())]),
             $record->getEdrs(),
-            fn (ClarityEdr $edr): array => match (true) {
+            static fn (ClarityEdr $edr): array => match (true) {
                 $full => [
-                    $h->modifier()->add($h->slashesModifier())->add($h->linkModifier($edr->getHref()))->add($h->boldModifier())->apply($edr->getName()),
+                    $h->modifier()
+                        ->add($h->slashesModifier())
+                        ->add($h->linkModifier($edr->getHref()))
+                        ->add($h->boldModifier())
+                        ->apply($edr->getName()),
                     $edr->getType(),
-                    $h->modifier()->add($h->greenWhiteModifier('active'))->apply($edr->getActive()),
+                    $h->modifier()
+                        ->add($h->greenWhiteModifier('active'))
+                        ->apply($edr->getActive()),
                     $edr->getAddress(),
                 ],
                 $searchType === SearchTermType::phone_number => [
-                    $h->modifier()->add($h->slashesModifier())->add($h->secretsModifier())->add($h->boldModifier())->apply($edr->getName()),
-                    $h->modifier()->add($h->hiddenModifier('address'))->apply($edr->getAddress()),
+                    $h->modifier()
+                        ->add($h->slashesModifier())
+                        ->add($h->secretsModifier())
+                        ->add($h->boldModifier())
+                        ->apply($edr->getName()),
+                    $h->modifier()
+                        ->add($h->hiddenModifier('address'))
+                        ->apply($edr->getAddress()),
                 ],
                 default => [
-                    $h->modifier()->add($h->slashesModifier())->add($h->boldModifier())->apply($edr->getName()),
+                    $h->modifier()
+                        ->add($h->slashesModifier())
+                        ->add($h->boldModifier())
+                        ->apply($edr->getName()),
                     $edr->getType(),
-                    $h->modifier()->add($h->greenWhiteModifier('active'))->apply($edr->getActive()),
+                    $h->modifier()
+                        ->add($h->greenWhiteModifier('active'))
+                        ->apply($edr->getActive()),
                     $edr->getAddress(),
                 ]
             },
