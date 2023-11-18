@@ -137,6 +137,11 @@ class SearchViewerHelper
         return fn (?bool $active): ?string => $active === null ? null : sprintf('%s %s', $active ? '🟢' : '⚪️', $this->trans(($active ? '' : 'not_') . $id));
     }
 
+    public function redModifier(): callable
+    {
+        return fn (?bool $active): ?string => $active === null ? null : '🔴';
+    }
+
     public function redWhiteModifier(string $id = null): callable
     {
         return fn (?bool $active): ?string => $active === null ? null : (($active ? '🔴' : '⚪️') . ($id === null ? '' : (' ' . $this->trans(($active ? '' : 'not_') . $id))));
@@ -157,6 +162,11 @@ class SearchViewerHelper
         return fn (?string $text): ?string => empty($text) ? null : sprintf('%s [ %s ]', $text, $this->trans($id));
     }
 
+    public function implodeModifier(string $separator): callable
+    {
+        return static fn (?array $array): ?string => empty($array) ? null : implode($separator, $array);
+    }
+
     public function appendModifier(string $append): callable
     {
         return static fn (?string $text): ?string => empty($text) ? null : sprintf('%s %s', $text, $append);
@@ -165,6 +175,11 @@ class SearchViewerHelper
     public function datetimeModifier(string $format): callable
     {
         return static fn (?DateTimeInterface $dateTime): ?string => $dateTime?->format($format);
+    }
+
+    public function trimModifier(): callable
+    {
+        return static fn (?string $text): ?string => empty($text) ? null : trim($text);
     }
 
     public function transSubscriptionSkippedRecords(int $maxResults, int $count): string
