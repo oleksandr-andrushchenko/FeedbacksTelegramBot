@@ -36,7 +36,7 @@ class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerI
                 $this->feedbackTelegramViewProvider->getFeedbackTelegramView(
                     $context['bot'] ?? $feedback->getTelegramBot(),
                     $feedback,
-                    addSecrets: true,
+                    addSecrets: !$full,
                     addTime: true,
                     addCountry: true,
                 ),

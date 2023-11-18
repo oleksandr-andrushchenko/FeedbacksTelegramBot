@@ -21,6 +21,7 @@ use App\Service\Feedback\Telegram\Bot\View\FeedbackSearchTelegramViewProvider;
 use App\Service\IdGenerator;
 use App\Service\Telegram\Bot\Api\TelegramBotMessageSenderInterface;
 use App\Service\Telegram\Bot\TelegramBotProvider;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -126,7 +127,7 @@ class NotifyFeedbackSearchTargetsAboutNewFeedbackSearchCommandHandler
         $message .= $this->feedbackSearchTelegramViewProvider->getFeedbackSearchTelegramView(
             $bot,
             $feedbackSearch,
-            addSecrets: true,
+            addSecrets: $messengerUser->getUser()?->getSubscriptionExpireAt() < new DateTimeImmutable(),
             addQuotes: true,
             localeCode: $localeCode
         );

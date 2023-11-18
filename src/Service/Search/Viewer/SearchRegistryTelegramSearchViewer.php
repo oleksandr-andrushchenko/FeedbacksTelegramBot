@@ -36,7 +36,7 @@ class SearchRegistryTelegramSearchViewer extends SearchViewer implements SearchV
                 $this->feedbackSearchTelegramViewProvider->getFeedbackSearchTelegramView(
                     $context['bot'] ?? $search->getTelegramBot(),
                     $search,
-                    addSecrets: true,
+                    addSecrets: !$full,
                     addTime: true,
                     addCountry: true,
                 ),
