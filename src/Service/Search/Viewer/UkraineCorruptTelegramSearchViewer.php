@@ -45,16 +45,37 @@ class UkraineCorruptTelegramSearchViewer extends SearchViewer implements SearchV
         $message .= $h->wrapResultRecord(
             $h->trans('persons_title', ['count' => count($record->getPersons())]),
             $record->getPersons(),
-            fn (UkraineCorruptPerson $person): array => [
-                empty($person->getLastName() && $person->getFirstName() && $person->getPatronymic()) ? null : sprintf('<b>%s</b>', $person->getLastName() . ' ' . $person->getFirstName() . ' ' . $person->getPatronymic()),
-                empty($person->getEntityType()) ? null : $person->getEntityType(),
-                empty($person->getOffenseName()) ? null : sprintf('🔴 %s', $person->getOffenseName()),
-                empty($person->getPunishment()) ? null : sprintf('%s %s', $person->getPunishment(), empty($person->getPunishmentType()) ? null : sprintf('[ %s ]', $person->getPunishmentType())),
-                empty($person->getCourtCaseNumber()) ? null : sprintf('%s [ %s ]', $person->getCourtCaseNumber(), $h->trans('court_case_number')),
-                empty($person->getCodexArticles()) ? null : sprintf('%s [ %s ]', implode('; ', $person->getCodexArticles()), $h->trans('codex_articles')),
-                empty($person->getCourtName()) ? null : $person->getCourtName(),
-                empty($person->getSentenceDate()) ? null : sprintf('%s [ %s ]', $person->getSentenceDate()->format('d.m.Y'), $h->trans('sentence_date')),
-                empty($person->getPunishmentStart()) ? null : sprintf('%s [ %s ]', $person->getPunishmentStart()->format('d.m.Y'), $h->trans('punishment_start')),
+            static fn (UkraineCorruptPerson $person): array => [
+                $h->modifier()
+                    ->add($h->conditionalModifier($person->getLastName() && $person->getFirstName() && $person->getPatronymic()))
+                    ->add($h->appendModifier($person->getFirstName()))
+                    ->add($h->appendModifier($person->getPatronymic()))
+                    ->apply($person->getLastName()),
+                $person->getEntityType(),
+                $h->modifier()
+                    ->add($h->redModifier())
+                    ->add($h->appendModifier($person->getOffenseName()))
+                    ->apply(true),
+                $h->modifier()
+                    ->add($h->conditionalModifier($person->getPunishment()))
+                    ->add($h->appendModifier($h->modifier()->add($h->bracketsModifier($person->getPunishmentType()))->add($h->trimModifier())->apply(' ')))
+                    ->apply($person->getPunishment()),
+                $h->modifier()
+                    ->add($h->bracketsModifier($h->trans('court_case_number')))
+                    ->apply($person->getCourtCaseNumber()),
+                $h->modifier()
+                    ->add($h->implodeModifier(';'))
+                    ->add($h->bracketsModifier($h->trans('codex_articles')))
+                    ->apply($person->getCodexArticles()),
+                $person->getCourtName(),
+                $h->modifier()
+                    ->add($h->datetimeModifier('d.m.Y'))
+                    ->add($h->bracketsModifier('sentence_date'))
+                    ->apply($person->getSentenceDate()),
+                $h->modifier()
+                    ->add($h->datetimeModifier('d.m.Y'))
+                    ->add($h->bracketsModifier('punishment_start'))
+                    ->apply($person->getPunishmentStart()),
             ],
             $full
         );
