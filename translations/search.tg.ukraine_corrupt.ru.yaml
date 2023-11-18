@@ -1,6 +1,5 @@
 on_search: Поиск по базе №2...
-empty_result: На данный момент ничего не найдено.
-persons_title: 'По вашему запросу найдено %count% людей:'
+persons_title: По вашему запросу найдено %count% людей
 court_case_number: Номер судебного дела
 codex_articles: Статья
 sentence_date: Дата судебного решения

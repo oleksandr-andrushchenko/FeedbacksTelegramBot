@@ -1,3 +1,2 @@
 on_search: Search across request database...
-empty_result: At the moment, no requests have been found.
-searches_title: 'There are %count% request(-s) have been found:'
+searches_title: 'There are %count% request(-s) have been found'

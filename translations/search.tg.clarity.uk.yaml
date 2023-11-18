@@ -1,13 +1,11 @@
 on_search: Пошук по базі №1...
-empty_result: На даний момент, нічого не знайдено.
-result_title: 'Знайдено наступну інформацію:'
-person_edrs_title: "Пов'язані компанії:"
+person_edrs_title: "Пов'язані компанії"
 edr_type: степінь відношення
 edr_number: ЄДРПОУ
 address: адреса
 active: активний
 not_active: не активний
-security_title: 'Безпека:'
+security_title: Безпека
 born_at: дата народження
 region: регіон
 absent_at: дата зникнення, розшук
@@ -15,19 +13,19 @@ actual: актуально
 not_actual: не актуально
 accusation: звинувачення
 precaution: запобіжний захід
-courts_title: 'Судові справи:'
+courts_title: Судові справи
 case_number: № справи
 case_state: стан розгляду
 case_side: сторона
 desc: опис
 court: суд
-enforcements_title: 'Виконавчі провадження:'
+enforcements_title: Виконавчі провадження
 enf_number: № провадження
 opened_at: дата відкриття
 collector: стягувач
 debtor: боржник
 enf_state: стан
-debtors_title: 'Банкрутство:'
+debtors_title: Банкрутство
 persons_title: По вашому запиту знайдено більше ніж один результат. Хто саме вас цікавить? [ Повторіть пошук використовуючи ПІБ особи зі списку ]
 person_count: 'Осіб з таким іменем: %count%'
 edrs_title: По вашому запиту знайдено більше ніж один результат. Що саме вас цікавить? [ Повторіть пошук використовуючи назву зі списку ]

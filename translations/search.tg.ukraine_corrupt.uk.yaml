@@ -1,6 +1,5 @@
 on_search: Пошук по базі №2...
-empty_result: На даний момент, нічого не знайдено.
-persons_title: 'За вашим запитом знайдено %count% осіб:'
+persons_title: За вашим запитом знайдено %count% осіб
 court_case_number: Номер судової справи
 codex_articles: Стаття
 sentence_date: Дата судового рішення

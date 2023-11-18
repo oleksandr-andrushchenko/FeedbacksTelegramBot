@@ -1,3 +1,2 @@
 on_search: Поиск по базе отзывов...
-empty_result: На данный момент, отзывов не найдено.
-feedbacks_title: '%count% отзывов найдено:'
+feedbacks_title: '%count% отзывов найдено'

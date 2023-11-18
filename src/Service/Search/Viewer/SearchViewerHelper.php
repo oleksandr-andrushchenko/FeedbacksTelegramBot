@@ -35,7 +35,7 @@ class SearchViewerHelper
 
         $messages = [];
 
-        $messages[] = sprintf('<b>%s</b>', $title);
+        $messages[] = sprintf('<u><b>%s</b></u>', $title);
 
         $count = count($items);
 
@@ -58,12 +58,13 @@ class SearchViewerHelper
         }
 
         if (!$full) {
-            $message = '';
+            $message = '🔒 ';
 
             if ($maxResults !== $count) {
                 $message .= sprintf('<i>%s</i>', $this->transSubscriptionSkippedRecords($maxResults, $count));
             }
 
+            $message .= ' ';
             $message .= sprintf('<i>%s</i>', $this->transSubscriptionSkippedData());
             $message .= "\n";
             $message .= sprintf('<i>%s</i>', $this->transSubscriptionBenefits());
@@ -185,8 +186,8 @@ class SearchViewerHelper
     public function transSubscriptionSkippedRecords(int $maxResults, int $count): string
     {
         $parameters = [
-            'shown_count' => $maxResults,
-            'total_count' => $count,
+            'shown_count' => sprintf('<b>%d</b>', $maxResults),
+            'total_count' => sprintf('<b>%d</b>', $count),
         ];
 
         return $this->translator->trans('subscription_skipped_records', $parameters, 'search.tg');

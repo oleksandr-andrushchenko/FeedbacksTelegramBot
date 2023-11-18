@@ -1,3 +1,2 @@
 on_search: Поиск по базе запросов...
-empty_result: На данный момент запросов не найдено.
-searches_title: '%count% запросов найдено:'
+searches_title: '%count% запросов найдено'

@@ -1,3 +1,4 @@
+empty_result: На даний момент, нічого не знайдено.
 subscription_skipped_records: Показано %shown_count% із %total_count% записів.
 subscription_skipped_data: Частина даних засекречена знаком зірочки (*).
 subscription_benefits: Премім-користувачі бачать %all_records% та %all_data% - %subscribe_command%.

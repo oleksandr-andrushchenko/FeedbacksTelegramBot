@@ -1,3 +1,2 @@
 on_search: Пошук по базі відгуків...
-empty_result: На даний момент, відгуків не знайдено.
-feedbacks_title: '%count% відгуків знайдено:'
+feedbacks_title: '%count% відгуків знайдено'

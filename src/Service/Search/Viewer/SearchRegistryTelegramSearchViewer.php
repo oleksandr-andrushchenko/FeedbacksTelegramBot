@@ -23,11 +23,6 @@ class SearchRegistryTelegramSearchViewer extends SearchViewer implements SearchV
         return $this->searchViewerHelper->trans('on_search');
     }
 
-    public function getEmptyResultTitle(FeedbackSearchTerm $searchTerm, array $context = []): string
-    {
-        return $this->searchViewerHelper->trans('empty_result');
-    }
-
     public function getResultRecord($record, FeedbackSearchTerm $searchTerm, array $context = []): string
     {
         $full = $context['full'] ?? false;

@@ -1,3 +1,2 @@
 on_search: Пошук по базі запитів...
-empty_result: На даний момент, запитів не знайдено.
-searches_title: '%count% запитів знайдено:'
+searches_title: '%count% запитів знайдено'

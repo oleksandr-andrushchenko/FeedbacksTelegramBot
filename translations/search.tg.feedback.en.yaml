@@ -1,3 +1,2 @@
 on_search: Search across review database...
-empty_result: At the moment, no reviews have been found.
-feedbacks_title: 'There are %count% feedback(-s) have been found:'
+feedbacks_title: 'There are %count% feedback(-s) have been found'

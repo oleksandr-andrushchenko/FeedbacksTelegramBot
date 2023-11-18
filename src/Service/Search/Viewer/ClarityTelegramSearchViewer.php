@@ -34,11 +34,6 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         return $this->searchViewerHelper->trans('on_search');
     }
 
-    public function getEmptyResultTitle(FeedbackSearchTerm $searchTerm, array $context = []): string
-    {
-        return $this->searchViewerHelper->trans('empty_result');
-    }
-
     public function getResultRecord($record, FeedbackSearchTerm $searchTerm, array $context = []): string
     {
         if (is_string($record)) {
