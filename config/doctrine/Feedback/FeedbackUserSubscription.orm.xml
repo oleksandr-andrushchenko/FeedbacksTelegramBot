@@ -10,6 +10,9 @@
 
         <id name="id" column="id" type="string" length="32"/>
 
+        <many-to-one field="user" target-entity="App\Entity\User\User">
+            <join-column nullable="false"/>
+        </many-to-one>
         <many-to-one field="messengerUser" target-entity="App\Entity\Messenger\MessengerUser"/>
 
         <field name="subscriptionPlan" column="subscription_plan" type="smallint"
@@ -20,7 +23,7 @@
         </field>
         <field name="expireAt" column="expire_at" type="datetime_immutable"/>
 
-        <one-to-one field="payment" target-entity="App\Entity\Telegram\TelegramBotPayment"/>
+        <one-to-one field="telegramPayment" target-entity="App\Entity\Telegram\TelegramBotPayment"/>
 
         <field name="createdAt" column="created_at" type="datetime_immutable"/>
         <field name="updatedAt" column="updated_at" type="datetime_immutable" nullable="true"/>

@@ -30,9 +30,9 @@ class SubscriptionTelegramViewProvider
         int $number = null
     ): string
     {
-        $currencyCode = $subscription->getPayment()->getPrice()->getCurrency();
+        $currencyCode = $subscription->getTelegramPayment()->getPrice()->getCurrency();
         $currency = $this->currencyProvider->getCurrency($currencyCode);
-        $price = $subscription->getPayment()->getPrice();
+        $price = $subscription->getTelegramPayment()->getPrice();
         $subscriptionPlan = $subscription->getSubscriptionPlan();
 
         $parameters = [

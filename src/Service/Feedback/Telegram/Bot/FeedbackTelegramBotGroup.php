@@ -231,7 +231,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
 
     public function acceptPayment(TelegramBotPayment $payment, TelegramBotAwareHelper $tg): void
     {
-        $subscription = $this->feedbackSubscriptionManager->createByTelegramPayment($payment);
+        $subscription = $this->feedbackSubscriptionManager->createFeedbackUserSubscriptionByTelegramPayment($payment);
 
         $plan = $this->feedbackSubscriptionPlanProvider->getSubscriptionPlanName($subscription->getSubscriptionPlan());
         $expireAt = $this->timeProvider->getDatetime($subscription->getExpireAt());

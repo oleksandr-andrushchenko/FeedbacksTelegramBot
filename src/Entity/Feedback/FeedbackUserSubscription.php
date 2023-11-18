@@ -6,6 +6,7 @@ namespace App\Entity\Feedback;
 
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBotPayment;
+use App\Entity\User\User;
 use App\Enum\Feedback\FeedbackSubscriptionPlanName;
 use DateTimeInterface;
 use Stringable;
@@ -14,10 +15,11 @@ class FeedbackUserSubscription implements Stringable
 {
     public function __construct(
         private readonly string $id,
-        private readonly MessengerUser $messengerUser,
+        private readonly User $user,
         private readonly FeedbackSubscriptionPlanName $subscriptionPlan,
         private readonly DateTimeInterface $expireAt,
-        private readonly ?TelegramBotPayment $payment = null,
+        private readonly ?MessengerUser $messengerUser = null,
+        private readonly ?TelegramBotPayment $telegramPayment = null,
         private ?DateTimeInterface $createdAt = null,
         private ?DateTimeInterface $updatedAt = null,
     )
@@ -29,7 +31,12 @@ class FeedbackUserSubscription implements Stringable
         return $this->id;
     }
 
-    public function getMessengerUser(): MessengerUser
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    public function getMessengerUser(): ?MessengerUser
     {
         return $this->messengerUser;
     }
@@ -39,9 +46,9 @@ class FeedbackUserSubscription implements Stringable
         return $this->subscriptionPlan;
     }
 
-    public function getPayment(): TelegramBotPayment
+    public function getTelegramPayment(): ?TelegramBotPayment
     {
-        return $this->payment;
+        return $this->telegramPayment;
     }
 
     public function getExpireAt(): DateTimeInterface

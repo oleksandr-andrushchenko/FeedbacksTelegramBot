@@ -7,6 +7,7 @@ namespace App\Service\Feedback\Subscription;
 use App\Entity\Feedback\FeedbackUserSubscription;
 use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBotPayment;
+use App\Entity\User\User;
 use App\Enum\Feedback\FeedbackSubscriptionPlanName;
 use App\Message\Event\ActivityEvent;
 use App\Repository\Feedback\FeedbackUserSubscriptionRepository;
@@ -27,23 +28,40 @@ class FeedbackSubscriptionManager
     {
     }
 
-    public function createByTelegramPayment(TelegramBotPayment $payment): FeedbackUserSubscription
+    public function createFeedbackUserSubscriptionByTelegramPayment(TelegramBotPayment $payment): FeedbackUserSubscription
     {
-        $subscriptionPlanName = FeedbackSubscriptionPlanName::fromName($payment->getPurpose());
-        $subscriptionPlan = $this->feedbackSubscriptionPlanProvider->getSubscriptionPlan($subscriptionPlanName);
+        $messengerUser = $payment->getMessengerUser();
+
+        return $this->createFeedbackUserSubscription(
+            $messengerUser->getUser(),
+            FeedbackSubscriptionPlanName::fromName($payment->getPurpose()),
+            $messengerUser,
+            $payment
+        );
+    }
+
+    public function createFeedbackUserSubscription(
+        User $user,
+        FeedbackSubscriptionPlanName $planName,
+        MessengerUser $messengerUser = null,
+        TelegramBotPayment $telegramPayment = null
+    ): FeedbackUserSubscription
+    {
+        $subscriptionPlan = $this->feedbackSubscriptionPlanProvider->getSubscriptionPlan($planName);
 
         $subscription = new FeedbackUserSubscription(
             $this->idGenerator->generateId(),
-            $payment->getMessengerUser(),
+            $user,
             $subscriptionPlan->getName(),
             (new DateTimeImmutable())->modify($subscriptionPlan->getDatetimeModifier()),
-            $payment
+            messengerUser: $messengerUser,
+            telegramPayment: $telegramPayment
         );
         $this->entityManager->persist($subscription);
 
         $this->eventBus->dispatch(new ActivityEvent(entity: $subscription, action: 'created'));
 
-        $payment->getMessengerUser()?->getUser()?->setSubscriptionExpireAt($subscription->getExpireAt());
+        $user->setSubscriptionExpireAt($subscription->getExpireAt());
 
         return $subscription;
     }
