@@ -128,11 +128,6 @@ class SearchViewerHelper
         return fn (?string $text): ?string => empty($text) ? null : $this->secretsAdder->addSecrets($text);
     }
 
-    public function hiddenModifier(string $id): callable
-    {
-        return fn (?string $text): ?string => empty($text) ? null : $this->transHidden($id);
-    }
-
     public function greenWhiteModifier(string $id): callable
     {
         return fn (?bool $active): ?string => $active === null ? null : sprintf('%s %s', $active ? '🟢' : '⚪️', $this->trans(($active ? '' : 'not_') . $id));
