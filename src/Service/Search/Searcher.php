@@ -48,6 +48,8 @@ class Searcher
                         $records = array_merge($records, $searcher($searchTerm, $context));
                     } catch (Throwable $exception) {
                         $this->logger->error($exception);
+
+                        $render($viewer->getErrorResultTitle($searchTerm, $context));
                     }
                 }
 

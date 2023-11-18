@@ -1,4 +1,5 @@
-empty_result: На данный момент ничего не найдено.
+empty_result: Ничего не найдено.
+error_result: Не доступно.
 subscription_skipped_records: Показано %shown_count% из %total_count% записей.
 subscription_skipped_data: Часть данных засекречена знаком звездочки (*).
 subscription_benefits: Премим-пользователи видят %all_records% и %all_data% - %subscribe_command%.
