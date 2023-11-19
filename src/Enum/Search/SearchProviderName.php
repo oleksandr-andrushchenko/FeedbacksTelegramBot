@@ -4,11 +4,22 @@ declare(strict_types=1);
 
 namespace App\Enum\Search;
 
-enum SearchProviderName: string
+enum SearchProviderName: int
 {
-    case feedbacks = 'feedbacks';
-    case clarity = 'clarity';
-    case searches = 'searches';
-    case ukr_corrupts = 'ukr_corrupts';
-    case ukr_missed = 'ukr_missed';
+    case feedbacks = 0;
+    case clarity = 1;
+    case searches = 2;
+    case ukr_corrupts = 3;
+    case ukr_missed = 4;
+
+    public static function fromName(string $name): ?self
+    {
+        foreach (self::cases() as $enum) {
+            if ($enum->name === $name) {
+                return $enum;
+            }
+        }
+
+        return null;
+    }
 }

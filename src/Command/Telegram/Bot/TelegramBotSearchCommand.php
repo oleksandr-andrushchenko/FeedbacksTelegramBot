@@ -50,7 +50,7 @@ class TelegramBotSearchCommand extends Command
             'full' => $input->getOption('full'),
         ];
         $providers = array_map(
-            static fn (string $provider): SearchProviderName => SearchProviderName::from($provider),
+            static fn (string $provider): SearchProviderName => SearchProviderName::fromName($provider),
             $input->getOption('provider')
         );
 

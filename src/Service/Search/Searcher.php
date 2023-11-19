@@ -78,7 +78,7 @@ class Searcher
     {
         $providers = empty($filter)
             ? array_keys($this->providerServiceLocator->getProvidedServices())
-            : array_map(static fn (SearchProviderName $provider): string => $provider->value, $filter);
+            : array_map(static fn (SearchProviderName $provider): string => $provider->name, $filter);
 
         foreach ($providers as $provider) {
             yield $this->providerServiceLocator->get($provider);
@@ -87,6 +87,6 @@ class Searcher
 
     private function getViewer(SearchProviderInterface $provider): SearchViewerInterface
     {
-        return $this->viewerServiceLocator->get($provider->getName()->value);
+        return $this->viewerServiceLocator->get($provider->getName()->name);
     }
 }
