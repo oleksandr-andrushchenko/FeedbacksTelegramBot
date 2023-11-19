@@ -64,6 +64,10 @@ class ClaritySearchProvider implements SearchProviderInterface
         if ($this->supportsPersonName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
             $record = $this->searchPersonsRecord($searchTerm->getNormalizedText());
 
+            if ($record === null) {
+                return;
+            }
+
             if (count($record->getPersons()) === 1) {
                 $name = $record->getPersons()[0]->getName();
 
@@ -77,6 +81,8 @@ class ClaritySearchProvider implements SearchProviderInterface
             }
 
             yield fn () => [$record];
+
+            return;
         }
 
         if ($this->supportsOrganizationName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
