@@ -8,11 +8,11 @@ use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\UkraineCorrupt\UkraineCorruptPerson;
 use App\Entity\Search\UkraineCorrupt\UkraineCorruptPersonsRecord;
 
-class UkraineCorruptTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
+class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
 {
     public function __construct(SearchViewerHelper $searchViewerHelper)
     {
-        parent::__construct($searchViewerHelper->withTransDomain('ukraine_corrupt'));
+        parent::__construct($searchViewerHelper->withTransDomain('ukr_corrupt'));
     }
 
     public function getOnSearchTitle(FeedbackSearchTerm $searchTerm, array $context = []): string

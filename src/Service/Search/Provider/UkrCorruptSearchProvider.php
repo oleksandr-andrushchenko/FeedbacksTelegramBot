@@ -16,7 +16,7 @@ use DateTimeImmutable;
  * @see https://corruptinfo.nazk.gov.ua/
  * @see https://corruptinfo.nazk.gov.ua/ep/swagger/ui/index
  */
-class UkraineCorruptSearchProvider implements SearchProviderInterface
+class UkrCorruptSearchProvider implements SearchProviderInterface
 {
     public function __construct(
         private readonly string $environment,
@@ -27,7 +27,7 @@ class UkraineCorruptSearchProvider implements SearchProviderInterface
 
     public function getName(): SearchProviderName
     {
-        return SearchProviderName::ukraine_corrupts;
+        return SearchProviderName::ukr_corrupts;
     }
 
     public function supports(FeedbackSearchTerm $searchTerm, array $context = []): bool

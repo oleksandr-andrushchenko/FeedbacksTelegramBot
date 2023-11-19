@@ -26,11 +26,11 @@
             <argument type="service" id="app.http_requester"/>
             <tag name="app.search_provider" provider="ukr_missed"/>
         </service>
-        <service id="app.search_provider_ukraine_corrupts"
-                 class="App\Service\Search\Provider\UkraineCorruptSearchProvider" lazy="true">
+        <service id="app.search_provider_ukr_corrupts" class="App\Service\Search\Provider\UkrCorruptSearchProvider"
+                 lazy="true">
             <argument>%kernel.environment%</argument>
             <argument type="service" id="app.http_requester"/>
-            <tag name="app.search_provider" provider="ukraine_corrupts"/>
+            <tag name="app.search_provider" provider="ukr_corrupts"/>
         </service>
         <service id="app.search_viewer_helper" class="App\Service\Search\Viewer\SearchViewerHelper" lazy="true">
             <argument type="service" id="app.translator"/>
@@ -59,10 +59,10 @@
                  class="App\Service\Search\Viewer\UkrMissedTelegramSearchViewer" parent="app.search_viewer" lazy="true">
             <tag name="app.search_viewer_telegram" provider="ukr_missed"/>
         </service>
-        <service id="app.search_viewer_telegram_ukraine_corrupts"
-                 class="App\Service\Search\Viewer\UkraineCorruptTelegramSearchViewer" parent="app.search_viewer"
+        <service id="app.search_viewer_telegram_ukr_corrupts"
+                 class="App\Service\Search\Viewer\UkrCorruptTelegramSearchViewer" parent="app.search_viewer"
                  lazy="true">
-            <tag name="app.search_viewer_telegram" provider="ukraine_corrupts"/>
+            <tag name="app.search_viewer_telegram" provider="ukr_corrupts"/>
         </service>
         <service id="app.search_searcher_telegram" class="App\Service\Search\Searcher" lazy="true">
             <argument type="tagged_locator" tag="app.search_provider" index-by="provider"/>

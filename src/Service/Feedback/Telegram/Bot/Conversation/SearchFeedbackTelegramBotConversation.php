@@ -458,7 +458,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 SearchProviderName::feedbacks,
                 SearchProviderName::clarity,
                 SearchProviderName::searches,
-                SearchProviderName::ukraine_corrupts,
+                SearchProviderName::ukr_corrupts,
                 SearchProviderName::ukr_missed,
             ];
 

@@ -9,6 +9,6 @@ enum SearchProviderName: string
     case feedbacks = 'feedbacks';
     case clarity = 'clarity';
     case searches = 'searches';
-    case ukraine_corrupts = 'ukraine_corrupts';
+    case ukr_corrupts = 'ukr_corrupts';
     case ukr_missed = 'ukr_missed';
 }
