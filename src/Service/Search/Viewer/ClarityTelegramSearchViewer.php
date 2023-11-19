@@ -60,7 +60,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $message .= $h->wrapResultRecord(
             $h->trans('persons_title', ['count' => count($record->getPersons())]),
             $record->getPersons(),
-            fn (ClarityPerson $person): array => match (true) {
+            static fn (ClarityPerson $person): array => match (true) {
                 $full => [
                     $h->modifier()
                         ->add($h->slashesModifier())
