@@ -39,6 +39,5 @@ class TelegramBotUserProvider
     public function getTelegramUserByUpdate(Update $update): ?User
     {
         return $this->getTelegramFromHolderByUpdate($update)?->getFrom();
-
     }
 }
