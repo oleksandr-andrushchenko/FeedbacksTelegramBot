@@ -459,6 +459,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 SearchProviderName::clarity,
                 SearchProviderName::searches,
                 SearchProviderName::ukraine_corrupts,
+                SearchProviderName::ukr_missed,
             ];
 
             $this->searcher->search($feedbackSearch->getSearchTerm(), $render, $context, $providers);

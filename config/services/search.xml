@@ -20,6 +20,12 @@
             <argument type="service" id="app.crawler_provider"/>
             <tag name="app.search_provider" provider="clarity"/>
         </service>
+        <service id="app.search_provider_ukr_missed" class="App\Service\Search\Provider\UkrMissedSearchProvider"
+                 lazy="true">
+            <argument>%kernel.environment%</argument>
+            <argument type="service" id="app.http_requester"/>
+            <tag name="app.search_provider" provider="ukr_missed"/>
+        </service>
         <service id="app.search_provider_ukraine_corrupts"
                  class="App\Service\Search\Provider\UkraineCorruptSearchProvider" lazy="true">
             <argument>%kernel.environment%</argument>
@@ -48,6 +54,10 @@
         <service id="app.search_viewer_telegram_clarity" class="App\Service\Search\Viewer\ClarityTelegramSearchViewer"
                  parent="app.search_viewer" lazy="true">
             <tag name="app.search_viewer_telegram" provider="clarity"/>
+        </service>
+        <service id="app.search_viewer_telegram_ukr_missed"
+                 class="App\Service\Search\Viewer\UkrMissedTelegramSearchViewer" parent="app.search_viewer" lazy="true">
+            <tag name="app.search_viewer_telegram" provider="ukr_missed"/>
         </service>
         <service id="app.search_viewer_telegram_ukraine_corrupts"
                  class="App\Service\Search\Viewer\UkraineCorruptTelegramSearchViewer" parent="app.search_viewer"
