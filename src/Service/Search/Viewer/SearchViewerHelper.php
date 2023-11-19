@@ -163,9 +163,9 @@ class SearchViewerHelper
         return static fn (?array $array): ?string => empty($array) ? null : implode($separator, $array);
     }
 
-    public function appendModifier(string $append): callable
+    public function appendModifier(?string $append): callable
     {
-        return static fn (?string $text): ?string => empty($text) ? null : sprintf('%s %s', $text, $append);
+        return static fn (?string $text): ?string => empty($text) ? null : (empty($append) ? $text : sprintf('%s %s', $text, $append));
     }
 
     public function datetimeModifier(string $format): callable
