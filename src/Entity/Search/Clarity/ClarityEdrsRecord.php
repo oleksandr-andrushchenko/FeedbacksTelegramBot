@@ -7,23 +7,18 @@ namespace App\Entity\Search\Clarity;
 class ClarityEdrsRecord
 {
     public function __construct(
-        /**
-         * @var ClarityEdr[]
-         */
-        private array $edrs = []
+        private array $items = []
     )
     {
     }
 
-    public function getEdrs(): array
+    public function getItems(): array
     {
-        return $this->edrs;
+        return $this->items;
     }
 
-    public function addEdr(ClarityEdr $edr): self
+    public function addItem(ClarityEdr $item): void
     {
-        $this->edrs[] = $edr;
-
-        return $this;
+        $this->items[] = $item;
     }
 }

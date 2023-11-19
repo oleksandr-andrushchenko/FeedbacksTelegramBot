@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Service\Search\Provider;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
-use App\Entity\Search\UkraineCorrupt\UkraineCorruptPerson;
-use App\Entity\Search\UkraineCorrupt\UkraineCorruptPersonsRecord;
+use App\Entity\Search\UkrCorrupt\UkrCorruptPerson;
+use App\Entity\Search\UkrCorrupt\UkrCorruptPersonsRecord;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Service\HttpRequester;
@@ -33,10 +33,6 @@ class UkrCorruptSearchProvider implements SearchProviderInterface
     public function supports(FeedbackSearchTerm $searchTerm, array $context = []): bool
     {
         if ($this->supportsPersonName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
-            return true;
-        }
-
-        if ($this->supportsOrganizationName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
             return true;
         }
 
@@ -71,61 +67,18 @@ class UkrCorruptSearchProvider implements SearchProviderInterface
         return true;
     }
 
-    private function supportsOrganizationName(SearchTermType $type, string $name, array $context = []): bool
-    {
-        return false;
-
-        if ($this->environment === 'test') {
-            return false;
-        }
-
-        $countryCode = $context['countryCode'] ?? null;
-
-        if ($countryCode !== 'ua') {
-            return false;
-        }
-
-        if ($type === SearchTermType::organization_name) {
-            if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $name) !== 1) {
-                return false;
-            }
-
-            return true;
-        }
-
-        if ($type === SearchTermType::tax_number) {
-            if (!is_numeric($name)) {
-                return false;
-            }
-
-            if (strlen($name) !== 8) {
-                return false;
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
     public function getSearchers(FeedbackSearchTerm $searchTerm, array $context = []): iterable
     {
         if ($this->supportsPersonName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
             yield fn () => [$this->searchPersons($searchTerm->getNormalizedText())];
-        }
 
-        if ($this->supportsOrganizationName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
-            if ($searchTerm->getType() === SearchTermType::organization_name) {
-                yield fn () => [$this->searchOrganizationsByName($searchTerm->getNormalizedText())];
-            } else {
-                yield fn () => [$this->searchOrganizationsByCode($searchTerm->getNormalizedText())];
-            }
+            return;
         }
 
         yield from [];
     }
 
-    public function searchPersons(string $name): ?UkraineCorruptPersonsRecord
+    public function searchPersons(string $name): ?UkrCorruptPersonsRecord
     {
         $words = array_map('trim', explode(' ', $name));
         $count = count($words);
@@ -161,7 +114,7 @@ class UkrCorruptSearchProvider implements SearchProviderInterface
             $data = $this->httpRequester->requestHttp('POST', $url, json: $bodyVariant, array: true);
 
             foreach ($data as $item) {
-                $records[] = new UkraineCorruptPerson(
+                $records[] = new UkrCorruptPerson(
                     punishmentType: isset($item['punishmentType'], $item['punishmentType']['name']) ? $item['punishmentType']['name'] : null,
                     entityType: isset($item['entityType'], $item['entityType']['name']) ? $item['entityType']['name'] : null,
                     lastName: $item['indLastNameOnOffenseMoment'] ?? null,
@@ -178,7 +131,7 @@ class UkrCorruptSearchProvider implements SearchProviderInterface
             }
         }
 
-        $records = array_filter($records, static function (UkraineCorruptPerson $record) use ($words): bool {
+        $records = array_filter($records, static function (UkrCorruptPerson $record) use ($words): bool {
             foreach ($words as $word) {
                 if (str_contains($record->getLastName(), $word)) {
                     continue;
@@ -198,16 +151,6 @@ class UkrCorruptSearchProvider implements SearchProviderInterface
             return true;
         });
 
-        return count($records) === 0 ? null : new UkraineCorruptPersonsRecord($records);
-    }
-
-    public function searchOrganizationsByName(string $name): ?array
-    {
-        return null;
-    }
-
-    public function searchOrganizationsByCode(string $code): ?array
-    {
-        return null;
+        return count($records) === 0 ? null : new UkrCorruptPersonsRecord($records);
     }
 }

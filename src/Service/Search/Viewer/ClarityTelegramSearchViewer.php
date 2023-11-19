@@ -53,8 +53,8 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $h = $this->searchViewerHelper;
         $message = '🤔 ';
         $message .= $h->wrapResultRecord(
-            $h->trans('persons_title', ['count' => count($record->getPersons())]),
-            $record->getPersons(),
+            $h->trans('persons_title', ['count' => count($record->getItems())]),
+            $record->getItems(),
             static fn (ClarityPerson $person): array => match (true) {
                 $full => [
                     $h->modifier()
@@ -89,8 +89,8 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $h = $this->searchViewerHelper;
         $message = '💫 ';
         $message .= $h->wrapResultRecord(
-            $h->trans('person_edrs_title', ['count' => count($record->getEdrs())]),
-            $record->getEdrs(),
+            $h->trans('person_edrs_title', ['count' => count($record->getItems())]),
+            $record->getItems(),
             static fn (ClarityPersonEdr $edr): array => match (true) {
                 $full => [
                     $h->modifier()
@@ -133,8 +133,8 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $h = $this->searchViewerHelper;
         $message = '🚨 ';
         $message .= $h->wrapResultRecord(
-            $h->trans('security_title', ['count' => count($record->getSecurity())]),
-            $record->getSecurity(),
+            $h->trans('security_title', ['count' => count($record->getItems())]),
+            $record->getItems(),
             static fn (ClarityPersonSecurity $sec): array => [
                 $h->modifier()
                     ->add($h->boldModifier())
@@ -171,8 +171,8 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $h = $this->searchViewerHelper;
         $message = '‼️ ';
         $message .= $h->wrapResultRecord(
-            $h->trans('courts_title', ['count' => count($record->getCourts())]),
-            $record->getCourts(),
+            $h->trans('courts_title', ['count' => count($record->getItems())]),
+            $record->getItems(),
             static fn (ClarityPersonCourt $court): array => [
                 $h->modifier()
                     ->add($h->boldModifier())
@@ -200,8 +200,8 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $h = $this->searchViewerHelper;
         $message = '‼️ ';
         $message .= $h->wrapResultRecord(
-            $h->trans('enforcements_title', ['count' => count($record->getEnforcements())]),
-            $record->getEnforcements(),
+            $h->trans('enforcements_title', ['count' => count($record->getItems())]),
+            $record->getItems(),
             static fn (ClarityPersonEnforcement $enf): array => [
                 $h->modifier()
                     ->add($h->boldModifier())
@@ -236,8 +236,8 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $h = $this->searchViewerHelper;
         $message = '‼️ ';
         $message .= $h->wrapResultRecord(
-            $h->trans('debtors_title', ['count' => count($record->getDebtors())]),
-            $record->getDebtors(),
+            $h->trans('debtors_title', ['count' => count($record->getItems())]),
+            $record->getItems(),
             static fn (ClarityPersonDebtor $debtor): array => [
                 $h->modifier()
                     ->add($h->slashesModifier())
@@ -266,8 +266,8 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $h = $this->searchViewerHelper;
         $message = '🤔 ';
         $message .= $h->wrapResultRecord(
-            $h->trans('edrs_title', ['count' => count($record->getEdrs())]),
-            $record->getEdrs(),
+            $h->trans('edrs_title', ['count' => count($record->getItems())]),
+            $record->getItems(),
             static fn (ClarityEdr $edr): array => match (true) {
                 $full => [
                     $h->modifier()

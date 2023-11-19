@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Service\Search\Viewer;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
-use App\Entity\Search\UkraineCorrupt\UkraineCorruptPerson;
-use App\Entity\Search\UkraineCorrupt\UkraineCorruptPersonsRecord;
+use App\Entity\Search\UkrCorrupt\UkrCorruptPerson;
+use App\Entity\Search\UkrCorrupt\UkrCorruptPersonsRecord;
 
 class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
 {
@@ -24,18 +24,18 @@ class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewe
         $full = $context['full'] ?? false;
 
         return match (get_class($record)) {
-            UkraineCorruptPersonsRecord::class => $this->getPersonsResultRecord($record, $full),
+            UkrCorruptPersonsRecord::class => $this->getPersonsResultRecord($record, $full),
         };
     }
 
-    public function getPersonsResultRecord(UkraineCorruptPersonsRecord $record, bool $full): string
+    public function getPersonsResultRecord(UkrCorruptPersonsRecord $record, bool $full): string
     {
         $h = $this->searchViewerHelper;
         $message = '‼️ ';
         $message .= $h->wrapResultRecord(
-            $h->trans('persons_title', ['count' => count($record->getPersons())]),
-            $record->getPersons(),
-            static fn (UkraineCorruptPerson $person): array => [
+            $h->trans('persons_title', ['count' => count($record->getItems())]),
+            $record->getItems(),
+            static fn (UkrCorruptPerson $person): array => [
                 $h->modifier()
                     ->add($h->conditionalModifier($person->getLastName() && $person->getFirstName() && $person->getPatronymic()))
                     ->add($h->appendModifier($person->getFirstName()))

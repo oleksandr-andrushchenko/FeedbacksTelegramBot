@@ -7,23 +7,18 @@ namespace App\Entity\Search\Clarity;
 class ClarityPersonCourtsRecord
 {
     public function __construct(
-        /**
-         * @var ClarityPersonCourt[]
-         */
-        private array $courts = []
+        private array $items = []
     )
     {
     }
 
-    public function getCourts(): array
+    public function getItems(): array
     {
-        return $this->courts;
+        return $this->items;
     }
 
-    public function addCourt(ClarityPersonCourt $court): self
+    public function addItem(ClarityPersonCourt $item): void
     {
-        $this->courts[] = $court;
-
-        return $this;
+        $this->items[] = $item;
     }
 }

@@ -7,23 +7,18 @@ namespace App\Entity\Search\Clarity;
 class ClarityPersonDebtorsRecord
 {
     public function __construct(
-        /**
-         * @var ClarityPersonDebtor[]
-         */
-        private array $debtors = []
+        private array $items = []
     )
     {
     }
 
-    public function getDebtors(): array
+    public function getItems(): array
     {
-        return $this->debtors;
+        return $this->items;
     }
 
-    public function addDebtor(ClarityPersonDebtor $debtor): self
+    public function addItem(ClarityPersonDebtor $item): void
     {
-        $this->debtors[] = $debtor;
-
-        return $this;
+        $this->items[] = $item;
     }
 }

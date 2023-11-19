@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Entity\Search\UkraineCorrupt;
+namespace App\Entity\Search\UkrCorrupt;
 
 use DateTimeInterface;
 
-readonly class UkraineCorruptPerson
+readonly class UkrCorruptPerson
 {
     public function __construct(
         private ?string $punishmentType = null,

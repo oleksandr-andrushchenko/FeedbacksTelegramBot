@@ -7,23 +7,18 @@ namespace App\Entity\Search\Clarity;
 class ClarityPersonSecurityRecord
 {
     public function __construct(
-        /**
-         * @var ClarityPersonSecurity[]
-         */
-        private array $security = []
+        private array $items = []
     )
     {
     }
 
-    public function getSecurity(): array
+    public function getItems(): array
     {
-        return $this->security;
+        return $this->items;
     }
 
-    public function addSecurity(ClarityPersonSecurity $security): self
+    public function addItem(ClarityPersonSecurity $item): void
     {
-        $this->security[] = $security;
-
-        return $this;
+        $this->items[] = $item;
     }
 }

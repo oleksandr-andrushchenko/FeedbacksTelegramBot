@@ -68,8 +68,8 @@ class ClaritySearchProvider implements SearchProviderInterface
                 return;
             }
 
-            if (count($record->getPersons()) === 1) {
-                $name = $record->getPersons()[0]->getName();
+            if (count($record->getItems()) === 1) {
+                $name = $record->getItems()[0]->getName();
 
                 yield fn () => [$this->searchPersonSecurityRecord($name)];
                 yield fn () => [$this->searchPersonCourtsRecord($name)];
@@ -213,10 +213,10 @@ class ClaritySearchProvider implements SearchProviderInterface
                 count: $count ?? null
             );
 
-            $record->addPerson($person);
+            $record->addItem($person);
         });
 
-        return count($record->getPersons()) === 0 ? null : $record;
+        return count($record->getItems()) === 0 ? null : $record;
     }
 
     private function searchPersonEdrsRecord(string $name): ?ClarityPersonEdrsRecord
@@ -292,10 +292,10 @@ class ClaritySearchProvider implements SearchProviderInterface
                 address: $address ?? null
             );
 
-            $record->addEdr($edr);
+            $record->addItem($edr);
         });
 
-        return count($record->getEdrs()) === 0 ? null : $record;
+        return count($record->getItems()) === 0 ? null : $record;
     }
 
     private function searchPersonCourtsRecord(string $name): ?ClarityPersonCourtsRecord
@@ -351,10 +351,10 @@ class ClaritySearchProvider implements SearchProviderInterface
                 place: $place ?? null
             );
 
-            $record->addCourt($court);
+            $record->addItem($court);
         });
 
-        return count($record->getCourts()) === 0 ? null : $record;
+        return count($record->getItems()) === 0 ? null : $record;
     }
 
     private function searchPersonDebtorsRecord(string $name): ?ClarityPersonDebtorsRecord
@@ -409,10 +409,10 @@ class ClaritySearchProvider implements SearchProviderInterface
                 actualAt: $actualAt ?? null,
             );
 
-            $record->addDebtor($debtor);
+            $record->addItem($debtor);
         });
 
-        return count($record->getDebtors()) === 0 ? null : $record;
+        return count($record->getItems()) === 0 ? null : $record;
     }
 
     private function searchPersonSecurityRecord(string $name): ?ClarityPersonSecurityRecord
@@ -497,10 +497,10 @@ class ClaritySearchProvider implements SearchProviderInterface
                 precaution: $precaution ?? null
             );
 
-            $record->addSecurity($security);
+            $record->addItem($security);
         });
 
-        return count($record->getSecurity()) === 0 ? null : $record;
+        return count($record->getItems()) === 0 ? null : $record;
     }
 
     private function searchPersonEnforcementsRecord(string $name): ?ClarityPersonEnforcementsRecord
@@ -569,10 +569,10 @@ class ClaritySearchProvider implements SearchProviderInterface
                 state: $state ?? null
             );
 
-            $record->addEnforcement($enforcement);
+            $record->addItem($enforcement);
         });
 
-        return count($record->getEnforcements()) === 0 ? null : $record;
+        return count($record->getItems()) === 0 ? null : $record;
     }
 
     private function searchEdrsRecord(string $name): ?ClarityEdrsRecord
@@ -634,10 +634,10 @@ class ClaritySearchProvider implements SearchProviderInterface
                 address: $address ?? null
             );
 
-            $record->addEdr($edr);
+            $record->addItem($edr);
         });
 
-        return count($record->getEdrs()) === 0 ? null : $record;
+        return count($record->getItems()) === 0 ? null : $record;
     }
 
     private function getBaseUri(): string
