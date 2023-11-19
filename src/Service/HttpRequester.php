@@ -19,15 +19,19 @@ class HttpRequester
         string $method,
         string $url,
         array $headers = null,
+        array $query = null,
         array $body = null,
         array $json = null,
+        float $timeout = 3.0,
         bool $array = false
     ): string|array
     {
         $options = array_filter([
             'headers' => $headers,
+            'query' => $query,
             'body' => $body,
             'json' => $json,
+            'timeout' => $timeout,
         ]);
 
         $response = $this->httpClient->request($method, $url, $options);
