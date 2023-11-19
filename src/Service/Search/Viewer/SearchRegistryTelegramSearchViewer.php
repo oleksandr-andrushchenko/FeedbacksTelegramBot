@@ -18,11 +18,6 @@ class SearchRegistryTelegramSearchViewer extends SearchViewer implements SearchV
         parent::__construct($searchViewerHelper->withTransDomain('search'));
     }
 
-    public function getOnSearchTitle(FeedbackSearchTerm $searchTerm, array $context = []): string
-    {
-        return $this->searchViewerHelper->trans('on_search');
-    }
-
     public function getResultRecord($record, FeedbackSearchTerm $searchTerm, array $context = []): string
     {
         $full = $context['full'] ?? false;

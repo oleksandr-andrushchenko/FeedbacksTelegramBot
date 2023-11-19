@@ -29,11 +29,6 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         parent::__construct($searchViewerHelper->withTransDomain('clarity'));
     }
 
-    public function getOnSearchTitle(FeedbackSearchTerm $searchTerm, array $context = []): string
-    {
-        return $this->searchViewerHelper->trans('on_search');
-    }
-
     public function getResultRecord($record, FeedbackSearchTerm $searchTerm, array $context = []): string
     {
         if (is_string($record)) {

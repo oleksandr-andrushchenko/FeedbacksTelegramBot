@@ -18,11 +18,6 @@ class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerI
         parent::__construct($searchViewerHelper->withTransDomain('feedback'));
     }
 
-    public function getOnSearchTitle(FeedbackSearchTerm $searchTerm, array $context = []): string
-    {
-        return $this->searchViewerHelper->trans('on_search');
-    }
-
     public function getResultRecord($record, FeedbackSearchTerm $searchTerm, array $context = []): string
     {
         $full = $context['full'] ?? false;
