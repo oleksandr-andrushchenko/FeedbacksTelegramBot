@@ -44,15 +44,15 @@ class ClaritySearchProvider implements SearchProviderInterface
 
     public function supports(FeedbackSearchTerm $searchTerm, array $context = []): bool
     {
-        if ($this->supportsPersonName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
-            return true;
-        }
+        $type = $searchTerm->getType();
+        $term = $searchTerm->getNormalizedText();
 
-        if ($this->supportsOrganizationName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
-            return true;
-        }
-
-        if ($this->supportsPhoneNumber($searchTerm->getType(), $searchTerm->getNormalizedText())) {
+        if (
+            $this->supportsPersonName($type, $term, $context)
+            || $this->supportsOrganizationName($type, $term, $context)
+            || $this->supportsTaxNumber($type, $term, $context)
+            || $this->supportsPhoneNumber($type, $term)
+        ) {
             return true;
         }
 
@@ -61,8 +61,11 @@ class ClaritySearchProvider implements SearchProviderInterface
 
     public function getSearchers(FeedbackSearchTerm $searchTerm, array $context = []): iterable
     {
-        if ($this->supportsPersonName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
-            $record = $this->searchPersonsRecord($searchTerm->getNormalizedText());
+        $type = $searchTerm->getType();
+        $term = $searchTerm->getNormalizedText();
+
+        if ($this->supportsPersonName($type, $term, $context)) {
+            $record = $this->searchPersonsRecord($term);
 
             if ($record === null) {
                 return;
@@ -76,28 +79,20 @@ class ClaritySearchProvider implements SearchProviderInterface
                 yield fn () => [$this->searchPersonDebtorsRecord($name)];
                 yield fn () => [$this->searchPersonEnforcementsRecord($name)];
                 yield fn () => [$this->searchPersonEdrsRecord($name)];
-
-                return;
+            } else {
+                yield fn () => [$record];
             }
 
-            yield fn () => [$record];
-
             return;
         }
 
-        if ($this->supportsOrganizationName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
-            yield fn () => [$this->searchEdrsRecord($searchTerm->getNormalizedText())];
-
-            return;
+        if (
+            $this->supportsOrganizationName($type, $term, $context)
+            || $this->supportsTaxNumber($type, $term, $context)
+            || $this->supportsPhoneNumber($type, $term)
+        ) {
+            yield fn () => [$this->searchEdrsRecord($term)];
         }
-
-        if ($this->supportsPhoneNumber($searchTerm->getType(), $searchTerm->getNormalizedText())) {
-            yield fn () => [$this->searchEdrsRecord($searchTerm->getNormalizedText())];
-
-            return;
-        }
-
-        yield from [];
     }
 
     private function supportsPersonName(SearchTermType $type, string $name, array $context = []): bool
@@ -139,27 +134,42 @@ class ClaritySearchProvider implements SearchProviderInterface
             return false;
         }
 
-        if ($type === SearchTermType::organization_name) {
-            if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $name) !== 1) {
-                return false;
-            }
-
-            return true;
+        if ($type !== SearchTermType::organization_name) {
+            return false;
         }
 
-        if ($type === SearchTermType::tax_number) {
-            if (!is_numeric($name)) {
-                return false;
-            }
-
-            if (strlen($name) !== 8) {
-                return false;
-            }
-
-            return true;
+        if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $name) !== 1) {
+            return false;
         }
 
-        return false;
+        return true;
+    }
+
+    private function supportsTaxNumber(SearchTermType $type, string $name, array $context = []): bool
+    {
+        if ($this->environment === 'test') {
+            return false;
+        }
+
+        $countryCode = $context['countryCode'] ?? null;
+
+        if ($countryCode !== 'ua') {
+            return false;
+        }
+
+        if ($type !== SearchTermType::tax_number) {
+            return false;
+        }
+
+        if (!is_numeric($name)) {
+            return false;
+        }
+
+        if (strlen($name) !== 8) {
+            return false;
+        }
+
+        return true;
     }
 
     private function supportsPhoneNumber(SearchTermType $type, string $name): bool
