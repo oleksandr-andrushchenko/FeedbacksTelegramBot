@@ -73,15 +73,7 @@ class ClaritySearchProvider implements SearchProviderInterface
                 }
 
                 if (count($record->getItems()) === 1) {
-                    $name = $record->getItems()[0]->getName();
-
-                    return [
-                        $this->searchPersonSecurityRecord($name),
-                        $this->searchPersonCourtsRecord($name),
-                        $this->searchPersonDebtorsRecord($name),
-                        $this->searchPersonEnforcementsRecord($name),
-                        $this->searchPersonEdrsRecord($name),
-                    ];
+                    return $this->searchPersonRecords($record->getItems()[0]->getName());
                 }
 
                 return [
@@ -428,6 +420,17 @@ class ClaritySearchProvider implements SearchProviderInterface
         return count($record->getItems()) === 0 ? null : $record;
     }
 
+    private function searchPersonRecords(string $name): array
+    {
+        return [
+            $this->searchPersonSecurityRecord($name),
+            $this->searchPersonCourtsRecord($name),
+            $this->searchPersonDebtorsRecord($name),
+            $this->searchPersonEnforcementsRecord($name),
+            $this->searchPersonEdrsRecord($name),
+        ];
+    }
+
     private function searchPersonSecurityRecord(string $name): ?ClarityPersonSecurityRecord
     {
         $record = new ClarityPersonSecurityRecord();
@@ -665,7 +668,7 @@ class ClaritySearchProvider implements SearchProviderInterface
 
     private function getPersonCrawler(string $name): Crawler
     {
-        return $this->crawlerProvider->getCrawler('/person/' . mb_strtoupper($name), baseUri: $this->getBaseUri());
+        return $this->crawlerProvider->getCrawler('/person/' . $name, baseUri: $this->getBaseUri());
     }
 
     private function getEdrsCrawler(string $name): Crawler
