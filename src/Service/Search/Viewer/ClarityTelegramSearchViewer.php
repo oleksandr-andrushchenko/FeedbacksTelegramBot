@@ -103,7 +103,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                         ->apply($edr->getName()),
                     $edr->getType(),
                     $h->modifier()
-                        ->add($h->bracketsModifier('edr_number'))
+                        ->add($h->transBracketsModifier('edr_number'))
                         ->apply($edr->getNumber()),
                     $h->modifier()
                         ->add($h->greenWhiteModifier('active'))
@@ -117,7 +117,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                         ->apply($edr->getName()),
                     $edr->getType(),
                     $h->modifier()
-                        ->add($h->bracketsModifier('edr_number'))
+                        ->add($h->transBracketsModifier('edr_number'))
                         ->apply($edr->getNumber()),
                     $h->modifier()
                         ->add($h->greenWhiteModifier('active'))
@@ -144,7 +144,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->apply($sec->getName()),
                 $h->modifier()
                     ->add($h->datetimeModifier('d.m.Y'))
-                    ->add($h->bracketsModifier('born_at'))
+                    ->add($h->transBracketsModifier('born_at'))
                     ->apply($sec->getBornAt()),
                 $h->modifier()
                     ->add($h->redWhiteModifier('actual'))
@@ -154,13 +154,13 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->apply($sec->getCategory()),
                 $h->modifier()
                     ->add($h->datetimeModifier('d.m.Y'))
-                    ->add($h->bracketsModifier('absent_at'))
+                    ->add($h->transBracketsModifier('absent_at'))
                     ->apply($sec->getAbsentAt()),
                 $h->modifier()
-                    ->add($h->bracketsModifier('accusation'))
+                    ->add($h->transBracketsModifier('accusation'))
                     ->apply($sec->getAccusation()),
                 $h->modifier()
-                    ->add($h->bracketsModifier('precaution'))
+                    ->add($h->transBracketsModifier('precaution'))
                     ->apply($sec->getPrecaution()),
             ],
             $full
@@ -179,7 +179,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             static fn (ClarityPersonCourt $court): array => [
                 $h->modifier()
                     ->add($h->boldModifier())
-                    ->add($h->bracketsModifier('case_number'))
+                    ->add($h->transBracketsModifier('case_number'))
                     ->apply($court->getNumber()),
                 $court->getState(),
                 $h->modifier()
@@ -188,7 +188,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->apply(!str_contains($court->getSide(), 'заявник')),
                 $h->modifier()
                     ->add($h->underlineModifier())
-                    ->add($h->bracketsModifier('desc'))
+                    ->add($h->transBracketsModifier('desc'))
                     ->apply($court->getDesc()),
                 $court->getPlace(),
             ],
@@ -208,24 +208,24 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             static fn (ClarityPersonEnforcement $enf): array => [
                 $h->modifier()
                     ->add($h->boldModifier())
-                    ->add($h->bracketsModifier('enf_number'))
+                    ->add($h->transBracketsModifier('enf_number'))
                     ->apply($enf->getNumber()),
                 $h->modifier()
                     ->add($h->datetimeModifier('d.m.Y'))
                     ->apply($enf->getOpenedAt()),
                 $h->modifier()
-                    ->add($h->bracketsModifier('debtor'))
+                    ->add($h->transBracketsModifier('debtor'))
                     ->apply($enf->getDebtor()),
                 $h->modifier()
                     ->add($h->datetimeModifier('d.m.Y'))
-                    ->add($h->bracketsModifier('born_at'))
+                    ->add($h->transBracketsModifier('born_at'))
                     ->apply($enf->getBornAt()),
                 $h->modifier()
                     ->add($h->redWhiteModifier())
                     ->add($h->appendModifier($enf->getState()))
                     ->apply(str_contains($enf->getState(), 'Відкрито')),
                 $h->modifier()
-                    ->add($h->bracketsModifier('collector'))
+                    ->add($h->transBracketsModifier('collector'))
                     ->apply($enf->getCollector()),
             ],
             $full
@@ -248,14 +248,14 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->apply($debtor->getName()),
                 $h->modifier()
                     ->add($h->datetimeModifier('d.m.Y'))
-                    ->add($h->bracketsModifier('born_at'))
+                    ->add($h->transBracketsModifier('born_at'))
                     ->apply($debtor->getBornAt()),
                 $h->modifier()
                     ->add($h->underlineModifier())
                     ->apply($debtor->getCategory()),
                 $h->modifier()
                     ->add($h->redWhiteModifier('actual'))
-                    ->add($h->bracketsModifier('actual_at'))
+                    ->add($h->transBracketsModifier('actual_at'))
                     ->apply($debtor->getActualAt() > new DateTimeImmutable()),
             ],
             $full
@@ -279,10 +279,10 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                         ->add($h->boldModifier())
                         ->apply($item->getName()),
                     $h->modifier()
-                        ->add($h->bracketsModifier('year'))
+                        ->add($h->transBracketsModifier('year'))
                         ->apply($item->getYear()),
                     $h->modifier()
-                        ->add($h->bracketsModifier('position'))
+                        ->add($h->transBracketsModifier('position'))
                         ->apply($item->getPosition()),
                 ],
                 default => [
@@ -291,10 +291,10 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                         ->add($h->boldModifier())
                         ->apply($item->getName()),
                     $h->modifier()
-                        ->add($h->bracketsModifier('year'))
+                        ->add($h->transBracketsModifier('year'))
                         ->apply($item->getYear()),
                     $h->modifier()
-                        ->add($h->bracketsModifier('position'))
+                        ->add($h->transBracketsModifier('position'))
                         ->add($h->secretsModifier())
                         ->apply($item->getPosition()),
                 ],
@@ -334,7 +334,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     $h->modifier()
                         ->add($h->slashesModifier())
                         ->add($h->secretsModifier())
-                        ->add($h->bracketsModifier('address'))
+                        ->add($h->transBracketsModifier('address'))
                         ->apply($edr->getAddress()),
                 ],
                 default => [

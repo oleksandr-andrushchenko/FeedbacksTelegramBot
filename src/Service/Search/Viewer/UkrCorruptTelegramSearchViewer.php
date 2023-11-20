@@ -58,20 +58,20 @@ class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewe
                     )
                     ->apply($person->getPunishment()),
                 $h->modifier()
-                    ->add($h->bracketsModifier($h->trans('court_case_number')))
+                    ->add($h->transBracketsModifier('court_case_number'))
                     ->apply($person->getCourtCaseNumber()),
                 $h->modifier()
                     ->add($h->implodeModifier(';'))
-                    ->add($h->bracketsModifier($h->trans('codex_articles')))
+                    ->add($h->transBracketsModifier('codex_articles'))
                     ->apply($person->getCodexArticles()),
                 $person->getCourtName(),
                 $h->modifier()
                     ->add($h->datetimeModifier('d.m.Y'))
-                    ->add($h->bracketsModifier('sentence_date'))
+                    ->add($h->transBracketsModifier('sentence_date'))
                     ->apply($person->getSentenceDate()),
                 $h->modifier()
                     ->add($h->datetimeModifier('d.m.Y'))
-                    ->add($h->bracketsModifier('punishment_start'))
+                    ->add($h->transBracketsModifier('punishment_start'))
                     ->apply($person->getPunishmentStart()),
             ],
             $full

@@ -153,9 +153,14 @@ class SearchViewerHelper
         return static fn (?string $text): ?string => $condition ? $text : null;
     }
 
-    public function bracketsModifier(string $id): callable
+    public function transBracketsModifier(string $id): callable
     {
         return fn (?string $text): ?string => empty($text) ? null : sprintf('%s [ %s ]', $text, $this->trans($id));
+    }
+
+    public function bracketsModifier(?string $add): callable
+    {
+        return fn (?string $text): ?string => empty($text) ? null : (empty($add) ? $text : sprintf('%s [ %s ]', $text, $add));
     }
 
     public function implodeModifier(string $separator): callable

@@ -72,7 +72,7 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
                 $person->getSex(),
                 $h->modifier()
                     ->add($h->datetimeModifier('d.m.Y'))
-                    ->add($h->bracketsModifier('born_at'))
+                    ->add($h->transBracketsModifier('born_at'))
                     ->apply($person->getBirthday()),
                 $person->getPrecaution(),
                 $h->modifier()
@@ -89,7 +89,7 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
                 $person->getOrgan(),
                 $h->modifier()
                     ->add($h->datetimeModifier('d.m.Y'))
-                    ->add($h->bracketsModifier('absent_at'))
+                    ->add($h->transBracketsModifier('absent_at'))
                     ->apply($person->getDate()),
             ],
             default => [
@@ -103,7 +103,7 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
                 $h->modifier()
                     ->add($h->datetimeModifier('d.m.Y'))
                     ->add($h->secretsModifier())
-                    ->add($h->bracketsModifier('born_at'))
+                    ->add($h->transBracketsModifier('born_at'))
                     ->apply($person->getBirthday()),
                 $person->getPrecaution(),
                 $h->modifier()
@@ -120,7 +120,7 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
                 $person->getOrgan(),
                 $h->modifier()
                     ->add($h->datetimeModifier('d.m.Y'))
-                    ->add($h->bracketsModifier('absent_at'))
+                    ->add($h->transBracketsModifier('absent_at'))
                     ->apply($person->getDate()),
             ],
         };
