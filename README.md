@@ -80,3 +80,5 @@
 * add lookup processors test coverage
 * implement rpvoder search term variants as keyboard buttons
 * improve secrets for phone searching (add more)
+* array_unique for feedbacks & feedback searches
+* search providers health checkers
