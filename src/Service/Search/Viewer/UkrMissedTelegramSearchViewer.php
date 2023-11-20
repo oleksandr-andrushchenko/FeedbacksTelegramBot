@@ -61,68 +61,36 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
 
     public function getWrapResultRecord(bool $full, SearchViewerHelper $h): callable
     {
-        return static fn (UkrMissedPerson $person): array => match (true) {
-            $full => [
-                $h->modifier()
-                    ->add($h->appendModifier($person->getName()))
-                    ->add($h->appendModifier($person->getMiddleName()))
-                    ->add($h->slashesModifier())
-                    ->add($h->boldModifier())
-                    ->apply($person->getSurname()),
-                $person->getSex(),
-                $h->modifier()
-                    ->add($h->datetimeModifier('d.m.Y'))
-                    ->add($h->transBracketsModifier('born_at'))
-                    ->apply($person->getBirthday()),
-                $person->getPrecaution(),
-                $h->modifier()
-                    ->add($h->redWhiteModifier())
-                    ->add($h->appendModifier($person->getCategory()))
-                    ->add(
-                        $h->appendModifier(
-                            $h->modifier()
-                                ->add($h->implodeModifier('; '))
-                                ->apply($person->getArticles())
-                        )
+        return static fn (UkrMissedPerson $person): array => [
+            $h->modifier()
+                ->add($h->appendModifier($person->getName()))
+                ->add($h->appendModifier($person->getMiddleName()))
+                ->add($h->slashesModifier())
+                ->add($h->boldModifier())
+                ->apply($person->getSurname()),
+            $person->getSex(),
+            $h->modifier()
+                ->add($h->datetimeModifier('d.m.Y'))
+                ->add($full ? $h->nullModifier() : $h->secretsModifier())
+                ->add($h->transBracketsModifier('born_at'))
+                ->apply($person->getBirthday()),
+            $person->getPrecaution(),
+            $h->modifier()
+                ->add($h->redWhiteModifier())
+                ->add($h->appendModifier($person->getCategory()))
+                ->add(
+                    $h->appendModifier(
+                        $h->modifier()
+                            ->add($h->implodeModifier('; '))
+                            ->apply($person->getArticles())
                     )
-                    ->apply($person->getDisappeared() === false),
-                $person->getOrgan(),
-                $h->modifier()
-                    ->add($h->datetimeModifier('d.m.Y'))
-                    ->add($h->transBracketsModifier('absent_at'))
-                    ->apply($person->getDate()),
-            ],
-            default => [
-                $h->modifier()
-                    ->add($h->appendModifier($person->getName()))
-                    ->add($h->appendModifier($person->getMiddleName()))
-                    ->add($h->slashesModifier())
-                    ->add($h->boldModifier())
-                    ->apply($person->getSurname()),
-                $person->getSex(),
-                $h->modifier()
-                    ->add($h->datetimeModifier('d.m.Y'))
-                    ->add($h->secretsModifier())
-                    ->add($h->transBracketsModifier('born_at'))
-                    ->apply($person->getBirthday()),
-                $person->getPrecaution(),
-                $h->modifier()
-                    ->add($h->redWhiteModifier())
-                    ->add($h->appendModifier($person->getCategory()))
-                    ->add(
-                        $h->appendModifier(
-                            $h->modifier()
-                                ->add($h->implodeModifier('; '))
-                                ->apply($person->getArticles())
-                        )
-                    )
-                    ->apply($person->getDisappeared() === false),
-                $person->getOrgan(),
-                $h->modifier()
-                    ->add($h->datetimeModifier('d.m.Y'))
-                    ->add($h->transBracketsModifier('absent_at'))
-                    ->apply($person->getDate()),
-            ],
-        };
+                )
+                ->apply($person->getDisappeared() === false),
+            $person->getOrgan(),
+            $h->modifier()
+                ->add($h->datetimeModifier('d.m.Y'))
+                ->add($h->transBracketsModifier('absent_at'))
+                ->apply($person->getDate()),
+        ];
     }
 }
