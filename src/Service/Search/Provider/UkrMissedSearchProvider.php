@@ -69,16 +69,19 @@ class UkrMissedSearchProvider implements SearchProviderInterface
         return true;
     }
 
-    public function getSearchers(FeedbackSearchTerm $searchTerm, array $context = []): iterable
+    public function getSearcher(FeedbackSearchTerm $searchTerm, array $context = []): ?callable
     {
-        if ($this->supportsPersonName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
-            yield fn () => [$this->searchDisappearedPersons($searchTerm->getNormalizedText())];
-            yield fn () => [$this->searchWantedPersons($searchTerm->getNormalizedText())];
+        $type = $searchTerm->getType();
+        $term = $searchTerm->getNormalizedText();
 
-            return;
+        if ($this->supportsPersonName($type, $term, $context)) {
+            return fn (): array => [
+                $this->searchDisappearedPersons($term),
+                $this->searchWantedPersons($term),
+            ];
         }
 
-        yield from [];
+        return null;
     }
 
     public function searchDisappearedPersons(string $name): ?DisappearedPersonsUkrMissedRecord

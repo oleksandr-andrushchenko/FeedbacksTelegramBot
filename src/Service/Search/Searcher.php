@@ -43,14 +43,13 @@ class Searcher
 
                 $records = [];
 
-                foreach ($provider->getSearchers($searchTerm, $context) as $searcher) {
-                    try {
-                        $records = array_merge($records, $searcher($searchTerm, $context));
-                    } catch (Throwable $exception) {
-                        $this->logger->error($exception);
+                try {
+                    $searcher = $provider->getSearcher($searchTerm, $context);
+                    $records = array_merge($records, $searcher === null ? [] : $searcher());
+                } catch (Throwable $exception) {
+                    $this->logger->error($exception);
 
-                        $render($viewer->getErrorResultTitle($searchTerm, $context));
-                    }
+                    $render($viewer->getErrorResultTitle($searchTerm, $context));
                 }
 
                 $records = array_filter($records);

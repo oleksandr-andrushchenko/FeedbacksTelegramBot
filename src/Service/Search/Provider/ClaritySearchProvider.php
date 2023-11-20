@@ -59,31 +59,35 @@ class ClaritySearchProvider implements SearchProviderInterface
         return false;
     }
 
-    public function getSearchers(FeedbackSearchTerm $searchTerm, array $context = []): iterable
+    public function getSearcher(FeedbackSearchTerm $searchTerm, array $context = []): ?callable
     {
         $type = $searchTerm->getType();
         $term = $searchTerm->getNormalizedText();
 
         if ($this->supportsPersonName($type, $term, $context)) {
-            $record = $this->searchPersonsRecord($term);
+            return function () use ($term): array {
+                $record = $this->searchPersonsRecord($term);
 
-            if ($record === null) {
-                return;
-            }
+                if ($record === null) {
+                    return [];
+                }
 
-            if (count($record->getItems()) === 1) {
-                $name = $record->getItems()[0]->getName();
+                if (count($record->getItems()) === 1) {
+                    $name = $record->getItems()[0]->getName();
 
-                yield fn () => [$this->searchPersonSecurityRecord($name)];
-                yield fn () => [$this->searchPersonCourtsRecord($name)];
-                yield fn () => [$this->searchPersonDebtorsRecord($name)];
-                yield fn () => [$this->searchPersonEnforcementsRecord($name)];
-                yield fn () => [$this->searchPersonEdrsRecord($name)];
-            } else {
-                yield fn () => [$record];
-            }
+                    return [
+                        $this->searchPersonSecurityRecord($name),
+                        $this->searchPersonCourtsRecord($name),
+                        $this->searchPersonDebtorsRecord($name),
+                        $this->searchPersonEnforcementsRecord($name),
+                        $this->searchPersonEdrsRecord($name),
+                    ];
+                }
 
-            return;
+                return [
+                    $record,
+                ];
+            };
         }
 
         if (
@@ -91,8 +95,12 @@ class ClaritySearchProvider implements SearchProviderInterface
             || $this->supportsTaxNumber($type, $term, $context)
             || $this->supportsPhoneNumber($type, $term)
         ) {
-            yield fn () => [$this->searchEdrsRecord($term)];
+            return fn (): array => [
+                $this->searchEdrsRecord($term),
+            ];
         }
+
+        return null;
     }
 
     private function supportsPersonName(SearchTermType $type, string $name, array $context = []): bool
