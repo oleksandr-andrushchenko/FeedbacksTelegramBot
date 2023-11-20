@@ -12,6 +12,8 @@ use App\Entity\Search\Clarity\ClarityPersonCourt;
 use App\Entity\Search\Clarity\ClarityPersonCourtsRecord;
 use App\Entity\Search\Clarity\ClarityPersonDebtor;
 use App\Entity\Search\Clarity\ClarityPersonDebtorsRecord;
+use App\Entity\Search\Clarity\ClarityPersonDeclaration;
+use App\Entity\Search\Clarity\ClarityPersonDeclarationsRecord;
 use App\Entity\Search\Clarity\ClarityPersonEdr;
 use App\Entity\Search\Clarity\ClarityPersonEdrsRecord;
 use App\Entity\Search\Clarity\ClarityPersonEnforcement;
@@ -428,6 +430,7 @@ class ClaritySearchProvider implements SearchProviderInterface
             $this->searchPersonDebtorsRecord($name),
             $this->searchPersonEnforcementsRecord($name),
             $this->searchPersonEdrsRecord($name),
+            $this->searchPersonDeclarationsRecord($name),
         ];
     }
 
@@ -586,6 +589,66 @@ class ClaritySearchProvider implements SearchProviderInterface
             );
 
             $record->addItem($enforcement);
+        });
+
+        return count($record->getItems()) === 0 ? null : $record;
+    }
+
+    private function searchPersonDeclarationsRecord(string $name): ?ClarityPersonDeclarationsRecord
+    {
+        $record = new ClarityPersonDeclarationsRecord();
+
+        $crawler = $this->getPersonCrawler($name);
+        $baseUri = $this->getBaseUri();
+
+        $table = $crawler->filter('[data-id="declarations"] table')->eq(0);
+        $header = [];
+        $tr = $table->children('tr')->eq(0);
+        $tr->filter('th')->each(function (Crawler $th) use (&$header) {
+            $header[] = trim($th->text());
+        });
+
+        if (!isset($header[0]) || !str_contains($header[0], 'Рік')) {
+            return null;
+        }
+
+        if (!isset($header[1]) || !str_contains($header[1], 'ПІБ')) {
+            return null;
+        }
+
+        if (!isset($header[2]) || !str_contains($header[2], 'Посада')) {
+            return null;
+        }
+
+        $table->children('tr.item')->each(static function (Crawler $tr) use ($baseUri, $header, $record): void {
+            $tds = $tr->filter('td');
+
+            if (isset($header[1]) && $tds->eq(1)->count() > 0) {
+                $name = trim($tds->eq(1)->text() ?? '');
+                $href = trim($tds->eq(1)->filter('a')->eq(0)->attr('href') ?? '');
+                $href = empty($href) ? null : ($baseUri . $href);
+            }
+
+            if (empty($name)) {
+                return;
+            }
+
+            if (isset($header[0]) && $tds->eq(0)->count() > 0) {
+                $year = trim($tds->eq(0)->text() ?? '');
+            }
+
+            if (isset($header[2]) && $tds->eq(2)->count() > 0) {
+                $position = trim($tds->eq(2)->text() ?? '');
+            }
+
+            $item = new ClarityPersonDeclaration(
+                $name,
+                href: $href ?? null,
+                year: $year ?? null,
+                position: $position ?? null
+            );
+
+            $record->addItem($item);
         });
 
         return count($record->getItems()) === 0 ? null : $record;

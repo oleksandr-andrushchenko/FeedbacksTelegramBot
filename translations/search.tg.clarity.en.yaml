@@ -26,6 +26,9 @@ collector: collector
 debtor: debtor
 enf_state: state
 debtors_title: Bankruptcy
+person_declarations_title: Declarations
+year: Year
+position: Position
 persons_title: More than one result was found for your query. Who exactly interests you? [ Repeat the search using the name of the person from the list ]
 person_count: 'Persons with this name: %count%'
 edrs_title: More than one result was found for your query. What interests you? [ Repeat the search using the name from the list ]

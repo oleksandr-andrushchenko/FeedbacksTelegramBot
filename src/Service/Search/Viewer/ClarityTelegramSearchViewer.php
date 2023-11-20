@@ -12,6 +12,8 @@ use App\Entity\Search\Clarity\ClarityPersonCourt;
 use App\Entity\Search\Clarity\ClarityPersonCourtsRecord;
 use App\Entity\Search\Clarity\ClarityPersonDebtor;
 use App\Entity\Search\Clarity\ClarityPersonDebtorsRecord;
+use App\Entity\Search\Clarity\ClarityPersonDeclaration;
+use App\Entity\Search\Clarity\ClarityPersonDeclarationsRecord;
 use App\Entity\Search\Clarity\ClarityPersonEdr;
 use App\Entity\Search\Clarity\ClarityPersonEdrsRecord;
 use App\Entity\Search\Clarity\ClarityPersonEnforcement;
@@ -44,6 +46,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             ClarityPersonCourtsRecord::class => $this->getPersonCourtsResultRecord($record, $full),
             ClarityPersonEnforcementsRecord::class => $this->getPersonEnforcementsResultRecord($record, $full),
             ClarityPersonDebtorsRecord::class => $this->getPersonDebtorsResultRecord($record, $full),
+            ClarityPersonDeclarationsRecord::class => $this->getPersonDeclarationsResultRecord($record, $full),
             ClarityEdrsRecord::class => $this->getEdrsResultRecord($record, $searchTerm->getType(), $full),
         };
     }
@@ -255,6 +258,47 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($h->bracketsModifier('actual_at'))
                     ->apply($debtor->getActualAt() > new DateTimeImmutable()),
             ],
+            $full
+        );
+
+        return $message;
+    }
+
+    private function getPersonDeclarationsResultRecord(ClarityPersonDeclarationsRecord $record, bool $full): string
+    {
+        $h = $this->searchViewerHelper;
+        $message = '💫 ';
+        $message .= $h->wrapResultRecord(
+            $h->trans('person_declarations_title', ['count' => count($record->getItems())]),
+            $record->getItems(),
+            static fn (ClarityPersonDeclaration $item): array => match (true) {
+                $full => [
+                    $h->modifier()
+                        ->add($h->slashesModifier())
+                        ->add($h->linkModifier($item->getHref()))
+                        ->add($h->boldModifier())
+                        ->apply($item->getName()),
+                    $h->modifier()
+                        ->add($h->bracketsModifier('year'))
+                        ->apply($item->getYear()),
+                    $h->modifier()
+                        ->add($h->bracketsModifier('position'))
+                        ->apply($item->getPosition()),
+                ],
+                default => [
+                    $h->modifier()
+                        ->add($h->slashesModifier())
+                        ->add($h->boldModifier())
+                        ->apply($item->getName()),
+                    $h->modifier()
+                        ->add($h->bracketsModifier('year'))
+                        ->apply($item->getYear()),
+                    $h->modifier()
+                        ->add($h->bracketsModifier('position'))
+                        ->add($h->secretsModifier())
+                        ->apply($item->getPosition()),
+                ],
+            },
             $full
         );
 
