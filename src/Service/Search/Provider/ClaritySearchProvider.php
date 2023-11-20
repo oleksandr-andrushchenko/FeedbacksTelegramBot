@@ -204,26 +204,21 @@ class ClaritySearchProvider implements SearchProviderInterface
         $crawler = $this->getPersonsCrawler($name);
         $baseUri = $this->getBaseUri();
 
-        $crawler->filter('.list .item')->each(static function (Crawler $item) use ($baseUri, $record): void {
-            if ($item->filter('.name')->count() < 1) {
+        $crawler->filter('.results-wrap .item')->each(static function (Crawler $item) use ($baseUri, $record): void {
+            $a = $item->filter('a');
+
+            if ($a->count() < 1) {
                 return;
             }
 
-            $name = trim($item->filter('.name')->text() ?? '');
+            $name = trim($a->eq(0)->text() ?? '');
 
             if (empty($name)) {
                 return;
             }
 
-            if ($item->filter('a')->eq(0)->count() > 0) {
-                $href = trim($item->filter('a')->eq(0)->attr('href') ?? '');
-                $href = empty($href) ? null : ($baseUri . $href);
-            }
-
-            if ($item->filter('.count')->eq(0)->count() > 0) {
-                $count = trim($item->filter('.count')->eq(0)->text() ?? '');
-                $count = empty($count) ? null : (int) $count;
-            }
+            $href = trim($a->eq(0)->attr('href') ?? '');
+            $href = empty($href) ? null : ($baseUri . $href);
 
             $person = new ClarityPerson(
                 $name,
