@@ -456,6 +456,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
             ];
             $providers = [
                 SearchProviderName::feedbacks,
+                SearchProviderName::otzyvua,
                 SearchProviderName::clarity,
                 SearchProviderName::searches,
                 SearchProviderName::ukr_corrupts,

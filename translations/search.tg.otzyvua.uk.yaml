@@ -1,0 +1,8 @@
+on_search: Пошук по базі відгуків №2...
+feedback_search_terms_title: Що конкретно вас цікавить? [ Повторіть пошук використовуючи назву зі списку ]
+category: Категорія
+rating: Рейтинг %value% із %total%
+feedback_count: Кількість відгуків
+feedbacks_title: Знайдено наступні відгуки
+author: Автор
+created_at: Дата створення

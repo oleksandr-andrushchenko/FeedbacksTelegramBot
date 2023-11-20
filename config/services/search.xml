@@ -32,6 +32,11 @@
             <argument type="service" id="app.http_requester"/>
             <tag name="app.search_provider" provider="ukr_corrupts"/>
         </service>
+        <service id="app.search_provider_otzyvua" class="App\Service\Search\Provider\OtzyvuaSearchProvider" lazy="true">
+            <argument>%kernel.environment%</argument>
+            <argument type="service" id="app.crawler_provider"/>
+            <tag name="app.search_provider" provider="otzyvua"/>
+        </service>
         <service id="app.search_viewer_helper" class="App\Service\Search\Viewer\SearchViewerHelper" lazy="true">
             <argument type="service" id="app.translator"/>
             <argument type="service" id="app.string_secrets_adder"/>
@@ -63,6 +68,10 @@
                  class="App\Service\Search\Viewer\UkrCorruptTelegramSearchViewer" parent="app.search_viewer"
                  lazy="true">
             <tag name="app.search_viewer_telegram" provider="ukr_corrupts"/>
+        </service>
+        <service id="app.search_viewer_telegram_otzyvua" class="App\Service\Search\Viewer\OtzyvuaTelegramSearchViewer"
+                 parent="app.search_viewer" lazy="true">
+            <tag name="app.search_viewer_telegram" provider="otzyvua"/>
         </service>
         <service id="app.search_searcher_telegram" class="App\Service\Search\Searcher" lazy="true">
             <argument type="tagged_locator" tag="app.search_provider" index-by="provider"/>

@@ -1,0 +1,8 @@
+on_search: 'Search across review database #2...'
+feedback_search_terms_title: What specifically are you interested in? [ Repeat the search using the name from the list ]
+category: Category
+rating: Rating %value% from %total%
+feedback_count: Number of feedbacks
+feedbacks_title: Found the following feedback
+author: Author
+created_at: Date created
