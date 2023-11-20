@@ -66,7 +66,9 @@ class SearchViewerHelper
 
             $message .= ' ';
             $message .= sprintf('<i>%s</i>', $this->transSubscriptionSkippedData());
-            $message .= "\n";
+            $message .= ' ';
+            $message .= sprintf('<i>%s</i>', $this->transSubscriptionSkippedLinks());
+            $message .= ' ';
             $message .= sprintf('<i>%s</i>', $this->transSubscriptionBenefits());
 
             $messages[] = $message;
@@ -153,9 +155,9 @@ class SearchViewerHelper
         return static fn (?string $text): ?string => $condition ? $text : null;
     }
 
-    public function transBracketsModifier(string $id): callable
+    public function transBracketsModifier(string $id, array $parameters = []): callable
     {
-        return fn (?string $text): ?string => empty($text) ? null : sprintf('%s [ %s ]', $text, $this->trans($id));
+        return fn (?string $text): ?string => empty($text) ? null : sprintf('%s [ %s ]', $text, $this->trans($id, $parameters));
     }
 
     public function bracketsModifier(?string $add): callable
@@ -183,6 +185,21 @@ class SearchViewerHelper
         return static fn (?string $text): ?string => empty($text) ? null : trim($text);
     }
 
+    public function numberFormatModifier(int $decimals = 0, ?string $decimalSeparator = '.', ?string $thousandsSeparator = ','): callable
+    {
+        return static fn (?string $text): ?string => empty($text) ? null : number_format((float) $text, $decimals, $decimalSeparator, $thousandsSeparator);
+    }
+
+    public function ratingModifier(): callable
+    {
+        return static fn (?string $rating): ?string => empty($rating) ? null : str_repeat('⭐️', (int) round((float) $rating));
+    }
+
+    public function nullModifier(): callable
+    {
+        return static fn (mixed $any): mixed => $any;
+    }
+
     public function transSubscriptionSkippedRecords(int $maxResults, int $count): string
     {
         $parameters = [
@@ -198,24 +215,21 @@ class SearchViewerHelper
         return $this->trans('subscription_skipped_data', generalDomain: true);
     }
 
+    public function transSubscriptionSkippedLinks(): string
+    {
+        return $this->trans('subscription_skipped_links', generalDomain: true);
+    }
+
     public function transSubscriptionBenefits(): string
     {
         $parameters = [
             'all_records' => sprintf('<b>%s</b>', $this->trans('subscription_all_records', generalDomain: true)),
+            'all_links' => sprintf('<b>%s</b>', $this->trans('subscription_all_links', generalDomain: true)),
             'all_data' => sprintf('<b>%s</b>', $this->trans('subscription_all_data', generalDomain: true)),
             'subscribe_command' => sprintf('<b>%s</b>', '/subscribe'),
         ];
 
         return $this->trans('subscription_benefits', $parameters, generalDomain: true);
-    }
-
-    public function transHidden(string $id): string
-    {
-        $parameters = [
-            'entity' => $this->trans($id),
-        ];
-
-        return $this->trans('hidden', $parameters, generalDomain: true);
     }
 
     public function trans($id, array $parameters = [], bool $generalDomain = false): string
