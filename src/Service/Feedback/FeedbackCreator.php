@@ -116,7 +116,7 @@ class FeedbackCreator
             if (
                 $messengerUser?->getUsername() !== null
                 && $messengerUser?->getMessenger() !== null
-                && strcasecmp($messengerUser->getUsername(), $searchTerm->getNormalizedText() ?? $searchTerm->getText()) === 0
+                && strcmp(mb_strtolower($messengerUser->getUsername()), mb_strtolower($searchTerm->getNormalizedText() ?? $searchTerm->getText())) === 0
                 && $messengerUser->getMessenger() === $messenger
             ) {
                 throw new FeedbackOnOneselfException($messengerUser);
