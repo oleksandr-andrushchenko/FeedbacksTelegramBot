@@ -73,7 +73,16 @@ class ClaritySearchProvider implements SearchProviderInterface
             }
 
             if (count($record->getItems()) === 1) {
-                return $this->searchPersonRecords($record->getItems()[0]->getName());
+                $name = $record->getItems()[0]->getName();
+
+                return [
+                    $this->searchPersonSecurityRecord($name),
+                    $this->searchPersonCourtsRecord($name),
+                    $this->searchPersonDebtorsRecord($name),
+                    $this->searchPersonEnforcementsRecord($name),
+                    $this->searchPersonEdrsRecord($name),
+                    $this->searchPersonDeclarationsRecord($name),
+                ];
             }
 
             return [
@@ -393,18 +402,6 @@ class ClaritySearchProvider implements SearchProviderInterface
         });
 
         return count($record->getItems()) === 0 ? null : $record;
-    }
-
-    private function searchPersonRecords(string $name): array
-    {
-        return [
-            $this->searchPersonSecurityRecord($name),
-            $this->searchPersonCourtsRecord($name),
-            $this->searchPersonDebtorsRecord($name),
-            $this->searchPersonEnforcementsRecord($name),
-            $this->searchPersonEdrsRecord($name),
-            $this->searchPersonDeclarationsRecord($name),
-        ];
     }
 
     private function searchPersonSecurityRecord(string $name): ?ClarityPersonSecurityRecord
