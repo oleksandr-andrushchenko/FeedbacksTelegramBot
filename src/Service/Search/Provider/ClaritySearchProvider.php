@@ -65,10 +65,11 @@ class ClaritySearchProvider implements SearchProviderInterface
         $type = $searchTerm->getType();
         $term = $searchTerm->getNormalizedText();
 
-        if ($this->supportsPersonName($type, $term, $context)) {
+        if ($type === SearchTermType::person_name) {
             $record = $this->searchPersonsRecord($term);
 
             if ($record === null) {
+                // todo check person by direct link (+check if 3 words)
                 return [];
             }
 
@@ -196,13 +197,13 @@ class ClaritySearchProvider implements SearchProviderInterface
             $href = trim($a->eq(0)->attr('href') ?? '');
             $href = empty($href) ? null : ($baseUri . $href);
 
-            $person = new ClarityPerson(
+            $item = new ClarityPerson(
                 $name,
                 href: $href ?? null,
                 count: $count ?? null
             );
 
-            $record->addItem($person);
+            $record->addItem($item);
         });
 
         return count($record->getItems()) === 0 ? null : $record;
@@ -272,7 +273,7 @@ class ClaritySearchProvider implements SearchProviderInterface
                 $type = trim($tds->eq(3)->text() ?? '');
             }
 
-            $edr = new ClarityPersonEdr(
+            $item = new ClarityPersonEdr(
                 $name,
                 type: $type ?? null,
                 href: $href ?? null,
@@ -281,7 +282,7 @@ class ClaritySearchProvider implements SearchProviderInterface
                 address: $address ?? null
             );
 
-            $record->addItem($edr);
+            $record->addItem($item);
         });
 
         return count($record->getItems()) === 0 ? null : $record;
@@ -332,7 +333,7 @@ class ClaritySearchProvider implements SearchProviderInterface
                 $place = trim($tds->eq(4)->text() ?? '');
             }
 
-            $court = new ClarityPersonCourt(
+            $item = new ClarityPersonCourt(
                 $number,
                 state: $state ?? null,
                 side: $side ?? null,
@@ -340,7 +341,7 @@ class ClaritySearchProvider implements SearchProviderInterface
                 place: $place ?? null
             );
 
-            $record->addItem($court);
+            $record->addItem($item);
         });
 
         return count($record->getItems()) === 0 ? null : $record;
@@ -391,14 +392,14 @@ class ClaritySearchProvider implements SearchProviderInterface
                 $actualAt = $actualAt === false ? null : $actualAt;
             }
 
-            $debtor = new ClarityPersonDebtor(
+            $item = new ClarityPersonDebtor(
                 $name,
                 bornAt: $bornAt ?? null,
                 category: $category ?? null,
                 actualAt: $actualAt ?? null,
             );
 
-            $record->addItem($debtor);
+            $record->addItem($item);
         });
 
         return count($record->getItems()) === 0 ? null : $record;
@@ -475,7 +476,7 @@ class ClaritySearchProvider implements SearchProviderInterface
                 }
             }
 
-            $security = new ClarityPersonSecurity(
+            $item = new ClarityPersonSecurity(
                 $name,
                 bornAt: $bornAt ?? null,
                 category: $category ?? null,
@@ -486,7 +487,7 @@ class ClaritySearchProvider implements SearchProviderInterface
                 precaution: $precaution ?? null
             );
 
-            $record->addItem($security);
+            $record->addItem($item);
         });
 
         return count($record->getItems()) === 0 ? null : $record;
@@ -549,7 +550,7 @@ class ClaritySearchProvider implements SearchProviderInterface
                 $state = trim($tds->eq($tds->count() - 1)?->text() ?? '');
             }
 
-            $enforcement = new ClarityPersonEnforcement(
+            $item = new ClarityPersonEnforcement(
                 $number,
                 openedAt: $openedAt ?? null,
                 collector: $collector ?? null,
@@ -558,7 +559,7 @@ class ClaritySearchProvider implements SearchProviderInterface
                 state: $state ?? null
             );
 
-            $record->addItem($enforcement);
+            $record->addItem($item);
         });
 
         return count($record->getItems()) === 0 ? null : $record;
@@ -675,7 +676,7 @@ class ClaritySearchProvider implements SearchProviderInterface
                 $address = trim(str_replace(['Адреса:'], '', $address));
             }
 
-            $edr = new ClarityEdr(
+            $item = new ClarityEdr(
                 $name,
                 type: $type ?? null,
                 href: $href ?? null,
@@ -683,7 +684,7 @@ class ClaritySearchProvider implements SearchProviderInterface
                 address: $address ?? null
             );
 
-            $record->addItem($edr);
+            $record->addItem($item);
         });
 
         return count($record->getItems()) === 0 ? null : $record;
