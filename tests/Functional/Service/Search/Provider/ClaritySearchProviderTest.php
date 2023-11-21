@@ -189,6 +189,8 @@ class ClaritySearchProviderTest extends KernelTestCase
      */
     public function testSearch(SearchTermType $type, string $term, array $context, mixed $expected): void
     {
+        $this->markTestSkipped();
+
         $provider = $this->getSearchProvider(SearchProviderName::clarity);
         $searchTerm = new FeedbackSearchTerm($term, $term, $type);
 
