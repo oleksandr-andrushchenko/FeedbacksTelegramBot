@@ -33,7 +33,6 @@ use Symfony\Component\DomCrawler\Crawler;
 class ClaritySearchProvider implements SearchProviderInterface
 {
     public function __construct(
-        private readonly string $environment,
         private readonly CrawlerProvider $crawlerProvider,
     )
     {
@@ -99,10 +98,6 @@ class ClaritySearchProvider implements SearchProviderInterface
 
     private function supportsPersonName(SearchTermType $type, string $name, array $context = []): bool
     {
-        if ($this->environment === 'test') {
-            return false;
-        }
-
         $countryCode = $context['countryCode'] ?? null;
 
         if ($countryCode !== 'ua') {
@@ -126,10 +121,6 @@ class ClaritySearchProvider implements SearchProviderInterface
 
     private function supportsOrganizationName(SearchTermType $type, string $name, array $context = []): bool
     {
-        if ($this->environment === 'test') {
-            return false;
-        }
-
         $countryCode = $context['countryCode'] ?? null;
 
         if ($countryCode !== 'ua') {
@@ -149,10 +140,6 @@ class ClaritySearchProvider implements SearchProviderInterface
 
     private function supportsTaxNumber(SearchTermType $type, string $name, array $context = []): bool
     {
-        if ($this->environment === 'test') {
-            return false;
-        }
-
         $countryCode = $context['countryCode'] ?? null;
 
         if ($countryCode !== 'ua') {
@@ -176,10 +163,6 @@ class ClaritySearchProvider implements SearchProviderInterface
 
     private function supportsPhoneNumber(SearchTermType $type, string $name): bool
     {
-        if ($this->environment === 'test') {
-            return false;
-        }
-
         if ($type !== SearchTermType::phone_number) {
             return false;
         }

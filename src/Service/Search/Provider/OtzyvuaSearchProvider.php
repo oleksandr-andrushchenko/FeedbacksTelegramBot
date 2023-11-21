@@ -23,7 +23,6 @@ use Symfony\Component\DomCrawler\Crawler;
 class OtzyvuaSearchProvider implements SearchProviderInterface
 {
     public function __construct(
-        private readonly string $environment,
         private readonly CrawlerProvider $crawlerProvider,
     )
     {
@@ -36,10 +35,6 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
 
     public function supports(FeedbackSearchTerm $searchTerm, array $context = []): bool
     {
-        if ($this->environment === 'test') {
-            return false;
-        }
-
         $countryCode = $context['countryCode'] ?? null;
 
         if ($countryCode !== 'ua') {

@@ -19,7 +19,6 @@ use DateTimeImmutable;
 class UkrCorruptSearchProvider implements SearchProviderInterface
 {
     public function __construct(
-        private readonly string $environment,
         private readonly HttpRequester $httpRequester,
     )
     {
@@ -42,10 +41,6 @@ class UkrCorruptSearchProvider implements SearchProviderInterface
 
     private function supportsPersonName(SearchTermType $type, string $name, array $context = []): bool
     {
-        if ($this->environment === 'test') {
-            return false;
-        }
-
         $countryCode = $context['countryCode'] ?? null;
 
         if ($countryCode !== 'ua') {

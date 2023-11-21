@@ -16,24 +16,20 @@
             <tag name="app.search_provider" provider="searches"/>
         </service>
         <service id="app.search_provider_clarity" class="App\Service\Search\Provider\ClaritySearchProvider" lazy="true">
-            <argument>%kernel.environment%</argument>
             <argument type="service" id="app.crawler_provider"/>
             <tag name="app.search_provider" provider="clarity"/>
         </service>
         <service id="app.search_provider_ukr_missed" class="App\Service\Search\Provider\UkrMissedSearchProvider"
                  lazy="true">
-            <argument>%kernel.environment%</argument>
             <argument type="service" id="app.http_requester"/>
             <tag name="app.search_provider" provider="ukr_missed"/>
         </service>
         <service id="app.search_provider_ukr_corrupts" class="App\Service\Search\Provider\UkrCorruptSearchProvider"
                  lazy="true">
-            <argument>%kernel.environment%</argument>
             <argument type="service" id="app.http_requester"/>
             <tag name="app.search_provider" provider="ukr_corrupts"/>
         </service>
         <service id="app.search_provider_otzyvua" class="App\Service\Search\Provider\OtzyvuaSearchProvider" lazy="true">
-            <argument>%kernel.environment%</argument>
             <argument type="service" id="app.crawler_provider"/>
             <tag name="app.search_provider" provider="otzyvua"/>
         </service>
