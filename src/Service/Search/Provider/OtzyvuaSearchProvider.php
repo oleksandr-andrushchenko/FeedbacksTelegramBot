@@ -95,7 +95,7 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
                 return;
             }
 
-            $name = trim($nameEl->eq(0)->text() ?? '');
+            $name = trim($nameEl->eq(0)->text());
             $href = trim($nameEl->eq(0)->attr('href') ?? '');
 
             if (empty($name)) {
@@ -105,13 +105,13 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
             $categoryEl = $col->filter('.h2_descr');
 
             if ($categoryEl->count() > 0) {
-                $category = trim($categoryEl->eq(0)->text() ?? '');
+                $category = trim($categoryEl->eq(0)->text());
             }
 
             $ratingEl = $col->filter('.rtng_val');
 
             if ($ratingEl->count() > 0) {
-                $rating = trim($ratingEl->eq(0)->text() ?? '');
+                $rating = trim($ratingEl->eq(0)->text());
                 $rating = empty($rating) ? null : (float) $rating;
             }
 
@@ -125,8 +125,8 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
             $item = new OtzyvuaFeedbackSearchTerm(
                 $name,
                 $href,
-                category: $category ?? null,
-                rating: $rating ?? null,
+                category: empty($category) ? null : $category,
+                rating: empty($rating) ? null : $rating,
                 count: $count ?? null
             );
 
@@ -161,7 +161,7 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
                 return;
             }
 
-            $title = trim($titleEl->eq(0)->text() ?? '');
+            $title = trim($titleEl->eq(0)->text());
             $href = trim($titleEl->eq(0)->attr('href') ?? '');
 
             if (empty($title)) {
@@ -179,7 +179,7 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
             $authorEl = $row->filter('.author_name ins');
 
             if ($authorEl->count() > 0) {
-                $authorName = trim($authorEl->eq(0)->text() ?? '');
+                $authorName = trim($authorEl->eq(0)->text());
 
                 if ($authorEl->filter('a')->count() > 0) {
                     $authorHref = trim($authorEl->filter('a')->eq(0)->attr('href') ?? '');
@@ -198,20 +198,20 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
 
             if ($descEl->count() > 0) {
                 if ($descEl->filter('.review-full-text')->count() > 0) {
-                    $description = trim($descEl->filter('.review-full-text')->text() ?? '');
+                    $description = trim($descEl->filter('.review-full-text')->text());
                 } elseif ($descEl->filter('.review-snippet')->count() > 0) {
-                    $description = trim($descEl->filter('.review-snippet')->text() ?? '');
+                    $description = trim($descEl->filter('.review-snippet')->text());
                 }
             }
 
             $item = new OtzyvuaFeedback(
                 $title,
                 $href,
-                rating: $rating ?? null,
-                authorName: $authorName ?? null,
-                authorHref: $authorHref ?? null,
-                description: $description ?? null,
-                createdAt: $createdAt ?? null,
+                rating: empty($rating) ? null : $rating,
+                authorName: empty($authorName) ? null : $authorName,
+                authorHref: empty($authorHref) ? null : $authorHref,
+                description: empty($description) ? null : $description,
+                createdAt: empty($createdAt) ? null : $createdAt,
             );
 
             $record->addItem($item);
