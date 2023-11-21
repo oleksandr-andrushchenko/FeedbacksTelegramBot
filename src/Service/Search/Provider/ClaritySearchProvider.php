@@ -29,6 +29,9 @@ use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * @see https://clarity-project.info/persons
+ * @see https://clarity-project.info/edrs
+ * @see https://clarity-project.info/edr/2762811968/history/prozorro
+ * @see https://clarity-project.info/edr/2762811968/persons
  */
 class ClaritySearchProvider implements SearchProviderInterface
 {
@@ -65,16 +68,20 @@ class ClaritySearchProvider implements SearchProviderInterface
         $type = $searchTerm->getType();
         $term = $searchTerm->getNormalizedText();
 
-        if ($type === SearchTermType::person_name) {
-            $record = $this->searchPersonsRecord($term);
+        $edrsRecord = $this->searchEdrsRecord($term);
 
-            if ($record === null) {
+        if ($type === SearchTermType::person_name) {
+            $personsRecord = $this->searchPersonsRecord($term);
+
+            if ($personsRecord === null) {
                 // todo check person by direct link (+check if 3 words)
-                return [];
+                return [
+                    $edrsRecord,
+                ];
             }
 
-            if (count($record->getItems()) === 1) {
-                $name = $record->getItems()[0]->getName();
+            if (count($personsRecord->getItems()) === 1) {
+                $name = $personsRecord->getItems()[0]->getName();
 
                 return [
                     $this->searchPersonSecurityRecord($name),
@@ -83,16 +90,19 @@ class ClaritySearchProvider implements SearchProviderInterface
                     $this->searchPersonEnforcementsRecord($name),
                     $this->searchPersonEdrsRecord($name),
                     $this->searchPersonDeclarationsRecord($name),
+                    $edrsRecord,
                 ];
             }
 
             return [
-                $record,
+                $personsRecord,
+                $edrsRecord,
             ];
         }
 
+        // todo parse edr page if single result (implemente the same as for persons made)
         return [
-            $this->searchEdrsRecord($term),
+            $edrsRecord,
         ];
     }
 
@@ -188,7 +198,7 @@ class ClaritySearchProvider implements SearchProviderInterface
                 return;
             }
 
-            $name = trim($a->eq(0)->text() ?? '');
+            $name = trim($a->eq(0)->text());
 
             if (empty($name)) {
                 return;
@@ -199,8 +209,8 @@ class ClaritySearchProvider implements SearchProviderInterface
 
             $item = new ClarityPerson(
                 $name,
-                href: $href ?? null,
-                count: $count ?? null
+                href: empty($href) ? null : $href,
+                count: empty($count) ? null : $count
             );
 
             $record->addItem($item);
@@ -243,18 +253,22 @@ class ClaritySearchProvider implements SearchProviderInterface
 
             $tds = $tr->filter('td');
 
-            if ($tds->eq(0)->count() < 1) {
+            $nameEl = $tds->eq(0);
+
+            if ($nameEl->count() < 1) {
                 return;
             }
 
-            $name = trim($tds->eq(0)->text() ?? '');
+            $active = str_contains(trim($nameEl->text()), 'Зареєстровано');
+
+            $toRemove = $tds->eq(0)->children()->last()->getNode(0);
+            $toRemove->parentNode->removeChild($toRemove);
+
+            $name = trim($tds->eq(0)->text());
 
             if (empty($name)) {
                 return;
             }
-
-            $active = str_contains($name, 'Зареєстровано');
-            $name = trim(str_replace(['Стан: Зареєстровано', 'Стан: Припинено', 'Зареєстровано', 'Припинено'], '', $name));
 
             if ($tr->filter('a')->eq(0)->count() > 0) {
                 $href = trim($tr->filter('a')->eq(0)->attr('href') ?? '');
@@ -262,24 +276,24 @@ class ClaritySearchProvider implements SearchProviderInterface
             }
 
             if (isset($header[1]) && str_contains($header[1], 'ЄДРПОУ') && $tds->eq(1)->count() > 0) {
-                $number = preg_replace('/[^0-9]/', '', trim($tds->eq(1)->text() ?? ''));
+                $number = preg_replace('/[^0-9]/', '', trim($tds->eq(1)->text()));
             }
 
             if (isset($header[2]) && $tds->eq(2)->count() > 0) {
-                $address = trim($tds->eq(2)->text() ?? '');
+                $address = trim($tds->eq(2)->text());
             }
 
             if (isset($header[3]) && $tds->eq(3)->count() > 0) {
-                $type = trim($tds->eq(3)->text() ?? '');
+                $type = trim($tds->eq(3)->text());
             }
 
             $item = new ClarityPersonEdr(
                 $name,
-                type: $type ?? null,
-                href: $href ?? null,
-                number: $number ?? null,
+                type: empty($type) ? null : $type,
+                href: empty($href) ? null : $href,
+                number: empty($number) ? null : $number,
                 active: $active,
-                address: $address ?? null
+                address: empty($address) ? null : $address
             );
 
             $record->addItem($item);
@@ -311,34 +325,34 @@ class ClaritySearchProvider implements SearchProviderInterface
                 return;
             }
 
-            $number = trim($tds->eq(0)->text() ?? '');
+            $number = trim($tds->eq(0)->text());
 
             if (empty($number)) {
                 return;
             }
 
             if (isset($header[1]) && str_contains($header[1], 'Стан') && $tds->eq(1)->count() > 0) {
-                $state = trim($tds->eq(1)->text() ?? '');
+                $state = trim($tds->eq(1)->text());
             }
 
             if (isset($header[2]) && str_contains($header[2], 'Сторона') && $tds->eq(2)->count() > 0) {
-                $side = trim($tds->eq(2)->text() ?? '');
+                $side = trim($tds->eq(2)->text());
             }
 
             if (isset($header[3]) && str_contains($header[3], 'Опис') && $tds->eq(3)->count() > 0) {
-                $desc = trim($tds->eq(3)->text() ?? '');
+                $desc = trim($tds->eq(3)->text());
             }
 
             if (isset($header[4]) && str_contains($header[4], 'Суд') && $tds->eq(4)->count() > 0) {
-                $place = trim($tds->eq(4)->text() ?? '');
+                $place = trim($tds->eq(4)->text());
             }
 
             $item = new ClarityPersonCourt(
                 $number,
-                state: $state ?? null,
-                side: $side ?? null,
-                desc: $desc ?? null,
-                place: $place ?? null
+                state: empty($state) ? null : $state,
+                side: empty($side) ? null : $side,
+                desc: empty($desc) ? null : $desc,
+                place: empty($place) ? null : $place
             );
 
             $record->addItem($item);
@@ -370,33 +384,33 @@ class ClaritySearchProvider implements SearchProviderInterface
                 return;
             }
 
-            $name = trim($tds->eq(0)->text() ?? '');
+            $name = trim($tds->eq(0)->text());
 
             if (empty($name)) {
                 return;
             }
 
             if (isset($header[1]) && str_contains($header[1], 'народження') && $tds->eq(1)->count() > 0) {
-                $bornAt = trim($tds->eq(1)->text() ?? '');
-                $bornAt = empty($bornAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $bornAt);
+                $bornAt = trim($tds->eq(1)->text());
+                $bornAt = empty($bornAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $bornAt)->setTime(0, 0);
                 $bornAt = $bornAt === false ? null : $bornAt;
             }
 
             if (isset($header[2]) && str_contains($header[2], 'Запис') && $tds->eq(2)->count() > 0) {
-                $category = trim($tds->eq(2)->text() ?? '');
+                $category = trim($tds->eq(2)->text());
             }
 
             if (isset($header[3]) && str_contains($header[3], 'Актуально') && $tds->eq(3)->count() > 0) {
-                $actualAt = trim($tds->eq(3)->text() ?? '');
-                $actualAt = empty($actualAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $actualAt);
+                $actualAt = trim($tds->eq(3)->text());
+                $actualAt = empty($actualAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $actualAt)->setTime(0, 0);
                 $actualAt = $actualAt === false ? null : $actualAt;
             }
 
             $item = new ClarityPersonDebtor(
                 $name,
-                bornAt: $bornAt ?? null,
-                category: $category ?? null,
-                actualAt: $actualAt ?? null,
+                bornAt: empty($bornAt) ? null : $bornAt,
+                category: empty($category) ? null : $category,
+                actualAt: empty($actualAt) ? null : $actualAt,
             );
 
             $record->addItem($item);
@@ -428,35 +442,35 @@ class ClaritySearchProvider implements SearchProviderInterface
                 return;
             }
 
-            $name = trim($tds->eq(0)->text() ?? '');
+            $name = trim($tds->eq(0)->text());
 
             if (empty($name)) {
                 return;
             }
 
             if (isset($header[1]) && str_contains($header[1], 'народження') && $tds->eq(1)->count() > 0) {
-                $bornAt = trim($tds->eq(1)->text() ?? '');
-                $bornAt = empty($bornAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $bornAt);
+                $bornAt = trim($tds->eq(1)->text());
+                $bornAt = empty($bornAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $bornAt)->setTime(0, 0);
                 $bornAt = $bornAt === false ? null : $bornAt;
             }
 
             if (isset($header[2]) && str_contains($header[2], 'Категорія') && $tds->eq(2)->count() > 0) {
-                $category = trim($tds->eq(2)->text() ?? '');
+                $category = trim($tds->eq(2)->text());
             }
 
             if (isset($header[3]) && str_contains($header[3], 'Регіон') && $tds->eq(3)->count() > 0) {
-                $region = trim($tds->eq(3)->text() ?? '');
+                $region = trim($tds->eq(3)->text());
             }
 
             if (isset($header[4]) && str_contains($header[4], 'зникнення') && $tds->eq(4)->count() > 0) {
                 if ($tds->eq(4)->filter('.small')->count() > 0) {
-                    $archive = trim($tds->eq(4)->filter('.small')->text() ?? '');
+                    $archive = trim($tds->eq(4)->filter('.small')->text());
                     $archive = empty($archive) ? null : str_contains($archive, 'архівна');
                 }
 
                 if (!empty($tds->eq(4)->getNode(0)?->firstChild?->textContent)) {
                     $absentAt = trim($tds->eq(4)->getNode(0)->firstChild->textContent ?? '');
-                    $absentAt = empty($absentAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $absentAt);
+                    $absentAt = empty($absentAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $absentAt)->setTime(0, 0);
                     $absentAt = $absentAt === false ? null : $absentAt;
                 }
             }
@@ -469,22 +483,22 @@ class ClaritySearchProvider implements SearchProviderInterface
             if ($nextTr->matches('.table-collapse-details')) {
                 $trs = $nextTr->filter('tr');
                 if ($trs->eq(5)->filter('td')->eq(0)->count() > 0 && str_contains($trs->eq(5)->filter('td')->eq(0)->text(), 'Звинувачення')) {
-                    $accusation = trim($trs->eq(5)->filter('td')->eq(1)->text() ?? '');
+                    $accusation = trim($trs->eq(5)->filter('td')->eq(1)->text());
                 }
                 if ($trs->eq(6)->filter('td')->eq(0)->count() > 0 && str_contains($trs->eq(6)->filter('td')->eq(0)->text(), 'Запобіжний')) {
-                    $precaution = trim($trs->eq(6)->filter('td')->eq(1)->text() ?? '');
+                    $precaution = trim($trs->eq(6)->filter('td')->eq(1)->text());
                 }
             }
 
             $item = new ClarityPersonSecurity(
                 $name,
-                bornAt: $bornAt ?? null,
-                category: $category ?? null,
-                region: $region ?? null,
-                absentAt: $absentAt ?? null,
+                bornAt: empty($bornAt) ? null : $bornAt,
+                category: empty($category) ? null : $category,
+                region: empty($region) ? null : $region,
+                absentAt: empty($absentAt) ? null : $absentAt,
                 archive: $archive ?? null,
-                accusation: $accusation ?? null,
-                precaution: $precaution ?? null
+                accusation: empty($accusation) ? null : $accusation,
+                precaution: empty($precaution) ? null : $precaution
             );
 
             $record->addItem($item);
@@ -523,40 +537,40 @@ class ClaritySearchProvider implements SearchProviderInterface
             }
 
             if (isset($header[1]) && str_contains($header[1], 'відкриття') && $tds->eq(1)->count() > 0) {
-                $openedAt = trim($tds->eq(1)->text() ?? '');
-                $openedAt = empty($openedAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $openedAt);
+                $openedAt = trim($tds->eq(1)->text());
+                $openedAt = empty($openedAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $openedAt)->setTime(0, 0);
                 $openedAt = $openedAt === false ? null : $openedAt;
             }
 
             if (isset($header[2]) && str_contains($header[2], 'Стягувач') && $tds->eq(2)->count() > 0) {
-                $collector = trim($tds->eq(2)->text() ?? '');
+                $collector = trim($tds->eq(2)->text());
             }
 
             if (isset($header[3]) && str_contains($header[3], 'Боржник') && $tds->eq(3)->count() > 0) {
-                $debtor = trim($tds->eq(3)->text() ?? '');
+                $debtor = trim($tds->eq(3)->text());
 
                 if ($tds->count() === count($header) + 1) {
                     if ($tds->eq(4)->count() > 0) {
-                        $bornAt = trim($tds->eq(4)->text() ?? '');
+                        $bornAt = trim($tds->eq(4)->text());
                         $peaces = explode(' ', $bornAt);
                         $bornAt = $peaces[count($peaces) - 1];
-                        $bornAt = empty($bornAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $bornAt);
+                        $bornAt = empty($bornAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $bornAt)->setTime(0, 0);
                         $bornAt = $bornAt === false ? null : $bornAt;
                     }
                 }
             }
 
             if (isset($header[4]) && str_contains($header[4], 'Стан') && $tds->eq($tds->count() - 1)->count() > 0) {
-                $state = trim($tds->eq($tds->count() - 1)?->text() ?? '');
+                $state = trim($tds->eq($tds->count() - 1)?->text());
             }
 
             $item = new ClarityPersonEnforcement(
                 $number,
-                openedAt: $openedAt ?? null,
-                collector: $collector ?? null,
-                debtor: $debtor ?? null,
-                bornAt: $bornAt ?? null,
-                state: $state ?? null
+                openedAt: empty($openedAt) ? null : $openedAt,
+                collector: empty($collector) ? null : $collector,
+                debtor: empty($debtor) ? null : $debtor,
+                bornAt: empty($bornAt) ? null : $bornAt,
+                state: empty($state) ? null : $state
             );
 
             $record->addItem($item);
@@ -595,7 +609,7 @@ class ClaritySearchProvider implements SearchProviderInterface
             $tds = $tr->filter('td');
 
             if (isset($header[1]) && $tds->eq(1)->count() > 0) {
-                $name = trim($tds->eq(1)->text() ?? '');
+                $name = trim($tds->eq(1)->text());
                 $href = trim($tds->eq(1)->filter('a')->eq(0)->attr('href') ?? '');
                 $href = empty($href) ? null : ($baseUri . $href);
             }
@@ -605,18 +619,18 @@ class ClaritySearchProvider implements SearchProviderInterface
             }
 
             if (isset($header[0]) && $tds->eq(0)->count() > 0) {
-                $year = trim($tds->eq(0)->text() ?? '');
+                $year = trim($tds->eq(0)->text());
             }
 
             if (isset($header[2]) && $tds->eq(2)->count() > 0) {
-                $position = trim($tds->eq(2)->text() ?? '');
+                $position = trim($tds->eq(2)->text());
             }
 
             $item = new ClarityPersonDeclaration(
                 $name,
-                href: $href ?? null,
-                year: $year ?? null,
-                position: $position ?? null
+                href: empty($href) ? null : $href,
+                year: empty($year) ? null : $year,
+                position: empty($position) ? null : $position
             );
 
             $record->addItem($item);
@@ -632,56 +646,46 @@ class ClaritySearchProvider implements SearchProviderInterface
         $crawler = $this->getEdrsCrawler($name);
         $baseUri = $this->getBaseUri();
 
-        $crawler->filter('.list .item')->each(static function (Crawler $item) use ($baseUri, $record): void {
-            if ($item->filter('.name')->count() < 1) {
+        $crawler->filter('.results-wrap .item')->each(static function (Crawler $item) use ($baseUri, $record): void {
+            $nameEl = $item->filter('h5');
+
+            if ($nameEl->count() < 1) {
                 return;
             }
 
-            $name = trim($item->filter('.name')->text() ?? '');
+            $name = trim($nameEl->text());
 
             if (empty($name)) {
                 return;
             }
 
-            if ($item->filter('.source-info')->count() < 1) {
-                return;
-            }
+            $hrefEl = $nameEl->filter('a');
 
-            $source = $item->filter('.source-info')->text();
-
-            foreach (['ФОП', 'Бенефіціар', 'Засновник'] as $type_) {
-                if (str_contains($source, $type_)) {
-                    $type = $type_;
-                    break;
-                }
-            }
-
-            if ($item->filter('a')->eq(0)->count() > 0) {
-                $href = trim($item->filter('a')->eq(0)->attr('href') ?? '');
+            if ($hrefEl->count() > 0) {
+                $href = trim($hrefEl->eq(0)->attr('href') ?? '');
                 $href = empty($href) ? null : ($baseUri . $href);
             }
 
-            if ($item->filter('.status')->count() > 0) {
-                $status = $item->filter('.status')->text();
+            $numberEl = $item->filter('.small');
 
-                if (str_contains($status, 'Припинено')) {
-                    $active = false;
-                } elseif (str_contains($status, 'Зареєстровано')) {
-                    $active = true;
-                }
+            if ($numberEl->count() > 0) {
+                preg_match('/[0-9]{8}/', $numberEl->text(), $m);
+                $number = isset($m, $m[0]) ? $m[0] : null;
             }
 
-            if ($item->filter('.address')->count() > 0) {
-                $address = trim($item->filter('.address')->text() ?? '');
-                $address = trim(str_replace(['Адреса:'], '', $address));
+            $addressEl = $item->filter('.address');
+
+            if ($addressEl->count() > 0) {
+                $address = trim($addressEl->text());
             }
 
             $item = new ClarityEdr(
                 $name,
-                type: $type ?? null,
-                href: $href ?? null,
+                type: empty($type) ? null : $type,
+                href: empty($href) ? null : $href,
+                number: empty($number) ? null : $number,
                 active: $active ?? null,
-                address: $address ?? null
+                address: empty($address) ? null : $address
             );
 
             $record->addItem($item);
