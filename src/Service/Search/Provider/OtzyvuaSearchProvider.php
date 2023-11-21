@@ -50,33 +50,30 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
         return true;
     }
 
-    public function getSearcher(FeedbackSearchTerm $searchTerm, array $context = []): callable
+    public function search(FeedbackSearchTerm $searchTerm, array $context = []): array
     {
         $term = $searchTerm->getNormalizedText();
+        $record = $this->searchFeedbackSearchTermsRecord($term, sortByLength: true);
 
-        return function () use ($term): array {
-            $record = $this->searchFeedbackSearchTermsRecord($term, sortByLength: true);
+        if ($record === null) {
+            return [];
+        }
 
-            if ($record === null) {
-                return [];
-            }
+        if (count($record->getItems()) === 1) {
+            $url = $record->getItems()[0]->getHref();
+        } elseif (strcmp(mb_strtolower($term), mb_strtolower($record->getItems()[0]->getName())) === 0) {
+            $url = $record->getItems()[0]->getHref();
+        }
 
-            if (count($record->getItems()) === 1) {
-                $url = $record->getItems()[0]->getHref();
-            } elseif (strcmp(mb_strtolower($term), mb_strtolower($record->getItems()[0]->getName())) === 0) {
-                $url = $record->getItems()[0]->getHref();
-            }
-
-            if (isset($url)) {
-                return [
-                    $this->searchFeedbacksRecord($url),
-                ];
-            }
-
+        if (isset($url)) {
             return [
-                $record,
+                $this->searchFeedbacksRecord($url),
             ];
-        };
+        }
+
+        return [
+            $record,
+        ];
     }
 
     private function getFeedbackSearchTermsCrawler(string $name): Crawler

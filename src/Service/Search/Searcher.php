@@ -44,7 +44,7 @@ class Searcher
                 $records = [];
 
                 try {
-                    $records = array_merge($records, $provider->getSearcher($searchTerm, $context)());
+                    $records = array_merge($records, $provider->search($searchTerm, $context));
                 } catch (Throwable $exception) {
                     $this->logger->error($exception);
 

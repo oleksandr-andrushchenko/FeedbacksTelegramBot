@@ -60,30 +60,28 @@ class ClaritySearchProvider implements SearchProviderInterface
         return false;
     }
 
-    public function getSearcher(FeedbackSearchTerm $searchTerm, array $context = []): callable
+    public function search(FeedbackSearchTerm $searchTerm, array $context = []): array
     {
         $type = $searchTerm->getType();
         $term = $searchTerm->getNormalizedText();
 
         if ($this->supportsPersonName($type, $term, $context)) {
-            return function () use ($term): array {
-                $record = $this->searchPersonsRecord($term);
+            $record = $this->searchPersonsRecord($term);
 
-                if ($record === null) {
-                    return [];
-                }
+            if ($record === null) {
+                return [];
+            }
 
-                if (count($record->getItems()) === 1) {
-                    return $this->searchPersonRecords($record->getItems()[0]->getName());
-                }
+            if (count($record->getItems()) === 1) {
+                return $this->searchPersonRecords($record->getItems()[0]->getName());
+            }
 
-                return [
-                    $record,
-                ];
-            };
+            return [
+                $record,
+            ];
         }
 
-        return fn (): array => [
+        return [
             $this->searchEdrsRecord($term),
         ];
     }

@@ -13,5 +13,5 @@ interface SearchProviderInterface
 
     public function supports(FeedbackSearchTerm $searchTerm, array $context = []): bool;
 
-    public function getSearcher(FeedbackSearchTerm $searchTerm, array $context = []): callable;
+    public function search(FeedbackSearchTerm $searchTerm, array $context = []): array;
 }
