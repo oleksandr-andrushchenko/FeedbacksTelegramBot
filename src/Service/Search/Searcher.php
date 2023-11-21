@@ -15,8 +15,8 @@ use Throwable;
 class Searcher
 {
     public function __construct(
-        private readonly ServiceLocator $providerServiceLocator,
-        private readonly ServiceLocator $viewerServiceLocator,
+        private readonly ServiceLocator $providers,
+        private readonly ServiceLocator $viewers,
         private readonly LoggerInterface $logger,
     )
     {
@@ -76,16 +76,16 @@ class Searcher
     private function getProviders(array $filter = null): iterable
     {
         $providers = empty($filter)
-            ? array_keys($this->providerServiceLocator->getProvidedServices())
+            ? array_keys($this->providers->getProvidedServices())
             : array_map(static fn (SearchProviderName $provider): string => $provider->name, $filter);
 
         foreach ($providers as $provider) {
-            yield $this->providerServiceLocator->get($provider);
+            yield $this->providers->get($provider);
         }
     }
 
     private function getViewer(SearchProviderInterface $provider): SearchViewerInterface
     {
-        return $this->viewerServiceLocator->get($provider->getName()->name);
+        return $this->viewers->get($provider->getName()->name);
     }
 }
