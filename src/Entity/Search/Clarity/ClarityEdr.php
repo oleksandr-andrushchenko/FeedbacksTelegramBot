@@ -10,6 +10,7 @@ readonly class ClarityEdr
         private string $name,
         private ?string $type = null,
         private ?string $href = null,
+        private ?string $number = null,
         private ?bool $active = null,
         private ?string $address = null,
     )
@@ -29,6 +30,11 @@ readonly class ClarityEdr
     public function getHref(): ?string
     {
         return $this->href;
+    }
+
+    public function getNumber(): ?string
+    {
+        return $this->number;
     }
 
     public function getActive(): ?bool
