@@ -60,7 +60,7 @@ class ClaritySearchProvider implements SearchProviderInterface
         return false;
     }
 
-    public function getSearcher(FeedbackSearchTerm $searchTerm, array $context = []): ?callable
+    public function getSearcher(FeedbackSearchTerm $searchTerm, array $context = []): callable
     {
         $type = $searchTerm->getType();
         $term = $searchTerm->getNormalizedText();
@@ -83,17 +83,9 @@ class ClaritySearchProvider implements SearchProviderInterface
             };
         }
 
-        if (
-            $this->supportsOrganizationName($type, $term, $context)
-            || $this->supportsTaxNumber($type, $term, $context)
-            || $this->supportsPhoneNumber($type, $term)
-        ) {
-            return fn (): array => [
-                $this->searchEdrsRecord($term),
-            ];
-        }
-
-        return null;
+        return fn (): array => [
+            $this->searchEdrsRecord($term),
+        ];
     }
 
     private function supportsPersonName(SearchTermType $type, string $name, array $context = []): bool

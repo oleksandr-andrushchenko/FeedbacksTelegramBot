@@ -26,7 +26,7 @@ class SearchRegistrySearchProvider implements SearchProviderInterface
         return true;
     }
 
-    public function getSearcher(FeedbackSearchTerm $searchTerm, array $context = []): ?callable
+    public function getSearcher(FeedbackSearchTerm $searchTerm, array $context = []): callable
     {
         return fn (): array => [
             $this->feedbackSearchSearcher->searchFeedbackSearches($searchTerm, withUsers: $context['addTime'] ?? false),

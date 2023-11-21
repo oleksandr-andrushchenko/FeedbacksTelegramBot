@@ -62,18 +62,13 @@ class UkrCorruptSearchProvider implements SearchProviderInterface
         return true;
     }
 
-    public function getSearcher(FeedbackSearchTerm $searchTerm, array $context = []): ?callable
+    public function getSearcher(FeedbackSearchTerm $searchTerm, array $context = []): callable
     {
-        $type = $searchTerm->getType();
         $term = $searchTerm->getNormalizedText();
 
-        if ($this->supportsPersonName($type, $term, $context)) {
-            return fn (): array => [
-                $this->searchPersons($term),
-            ];
-        }
-
-        return null;
+        return fn (): array => [
+            $this->searchPersons($term),
+        ];
     }
 
     public function searchPersons(string $name): ?UkrCorruptPersonsRecord

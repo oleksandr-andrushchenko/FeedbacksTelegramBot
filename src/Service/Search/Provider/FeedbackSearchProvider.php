@@ -26,7 +26,7 @@ class FeedbackSearchProvider implements SearchProviderInterface
         return true;
     }
 
-    public function getSearcher(FeedbackSearchTerm $searchTerm, array $context = []): ?callable
+    public function getSearcher(FeedbackSearchTerm $searchTerm, array $context = []): callable
     {
         return fn (): array => [
             $this->feedbackSearcher->searchFeedbacks($searchTerm, withUsers: $context['addTime'] ?? false),

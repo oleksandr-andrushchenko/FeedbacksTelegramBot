@@ -50,7 +50,7 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
         return true;
     }
 
-    public function getSearcher(FeedbackSearchTerm $searchTerm, array $context = []): ?callable
+    public function getSearcher(FeedbackSearchTerm $searchTerm, array $context = []): callable
     {
         $term = $searchTerm->getNormalizedText();
 
