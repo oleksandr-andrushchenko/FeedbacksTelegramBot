@@ -159,7 +159,7 @@ class ClaritySearchProvider implements SearchProviderInterface
             return false;
         }
 
-        if (!str_starts_with($name, '38')) {
+        if (!str_starts_with($name, '380')) {
             return false;
         }
 
