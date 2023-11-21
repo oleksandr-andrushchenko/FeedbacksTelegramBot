@@ -185,9 +185,9 @@ class ClaritySearchProviderTest extends KernelTestCase
      * @param mixed $expected
      * @return void
      * @throws Exception
-     * @dataProvider searcherDataProvider
+     * @dataProvider searchDataProvider
      */
-    public function testSearcher(SearchTermType $type, string $term, array $context, mixed $expected): void
+    public function testSearch(SearchTermType $type, string $term, array $context, mixed $expected): void
     {
         $provider = $this->getSearchProvider(SearchProviderName::clarity);
         $searchTerm = new FeedbackSearchTerm($term, $term, $type);
@@ -209,7 +209,7 @@ class ClaritySearchProviderTest extends KernelTestCase
         }
     }
 
-    public function searcherDataProvider(): Generator
+    public function searchDataProvider(): Generator
     {
         yield 'person name & nothing for person found' => [
             'type' => SearchTermType::person_name,
