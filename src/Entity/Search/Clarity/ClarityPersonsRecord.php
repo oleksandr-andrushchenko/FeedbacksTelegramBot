@@ -12,6 +12,9 @@ class ClarityPersonsRecord
     {
     }
 
+    /**
+     * @return ClarityPerson[]
+     */
     public function getItems(): array
     {
         return $this->items;
