@@ -109,7 +109,7 @@ class OtzyvuaSearchProviderTest extends KernelTestCase
      */
     public function testSearch(SearchTermType $type, string $term, array $context, mixed $expected): void
     {
-        $this->markTestSkipped();
+        $this->skipSearchTest(__CLASS__);
 
         $provider = $this->getSearchProvider(SearchProviderName::otzyvua);
         $searchTerm = new FeedbackSearchTerm($term, $term, $type);
