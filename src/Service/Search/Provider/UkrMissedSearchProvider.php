@@ -139,21 +139,20 @@ class UkrMissedSearchProvider implements SearchProviderInterface
                 'page' => '1',
             ]);
 
-            $data = $this->httpRequester->requestHttp('GET', $disappeared ? self::URL_DISAPPEARED : self::URL_WANTED, query: $queryVariant, array: true);
+            $data = $this->httpRequester->requestHttp('GET', $disappeared ? self::URL_DISAPPEARED : self::URL_WANTED, query: $queryVariant, user: true, array: true);
 
             foreach ($data['items'] as $item) {
-                var_dump($item);
                 $records[] = new UkrMissedPerson(
                     surname: isset($item['person'], $item['person']['surname']) ? $item['person']['surname'] : null,
                     name: isset($item['person'], $item['person']['name']) ? $item['person']['name'] : null,
                     middleName: isset($item['person'], $item['person']['middlename']) ? $item['person']['middlename'] : null,
                     sex: isset($item['person'], $item['person']['sex']) ? $item['person']['sex'] : null,
-                    birthday: isset($item['person'], $item['person']['birthday']) ? DateTimeImmutable::createFromFormat(DATE_RFC3339_EXTENDED, $item['person']['birthday']) : null,
+                    birthday: isset($item['person'], $item['person']['birthday']) ? DateTimeImmutable::createFromFormat(DATE_RFC3339_EXTENDED, $item['person']['birthday'])->setTime(0, 0) : null,
                     photo: isset($item['person'], $item['person']['photo']) ? $item['person']['photo'] : null,
                     category: isset($item['wanted'], $item['wanted']['category']) ? $item['wanted']['category'] : null,
                     disappeared: $disappeared,
                     articles: isset($item['wanted'], $item['wanted']['articles']) ? $item['wanted']['articles'] : null,
-                    date: isset($item['wanted'], $item['wanted']['datetime']) ? DateTimeImmutable::createFromFormat(DATE_RFC3339_EXTENDED, $item['wanted']['datetime']) : null,
+                    date: isset($item['wanted'], $item['wanted']['datetime']) ? DateTimeImmutable::createFromFormat(DATE_RFC3339_EXTENDED, $item['wanted']['datetime'])->setTime(0, 0) : null,
                     organ: isset($item['wanted'], $item['wanted']['organ']) ? $item['wanted']['organ'] : null,
                     precaution: isset($item['wanted'], $item['wanted']['precaution']) ? $item['wanted']['precaution'] : null,
                     address: implode(', ', array_filter([
@@ -163,6 +162,10 @@ class UkrMissedSearchProvider implements SearchProviderInterface
                         isset($item['address'], $item['address']['locality']) ? $item['address']['locality'] : null,
                     ])),
                 );
+            }
+
+            if (count($records) > 0) {
+                break;
             }
         }
 
