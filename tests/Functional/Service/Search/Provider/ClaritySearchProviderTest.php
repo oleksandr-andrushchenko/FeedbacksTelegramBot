@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Service\Search\Provider;
 
-use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\Clarity\ClarityEdr;
 use App\Entity\Search\Clarity\ClarityEdrsRecord;
 use App\Entity\Search\Clarity\ClarityPerson;
@@ -24,34 +23,15 @@ use App\Entity\Search\Clarity\ClarityPersonsRecord;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Tests\Traits\Search\SearchProviderTrait;
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Generator;
-use Exception;
 use DateTimeImmutable;
 
 class ClaritySearchProviderTest extends KernelTestCase
 {
-    use ArraySubsetAsserts;
     use SearchProviderTrait;
 
-    /**
-     * @param SearchTermType $type
-     * @param string $term
-     * @param array $context
-     * @param bool $expected
-     * @return void
-     * @dataProvider supportsDataProvider
-     */
-    public function testSupports(SearchTermType $type, string $term, array $context, bool $expected): void
-    {
-        $provider = $this->getSearchProvider(SearchProviderName::clarity);
-        $searchTerm = new FeedbackSearchTerm($term, $term, $type);
-
-        $actual = $provider->supports($searchTerm, $context);
-
-        $this->assertEquals($expected, $actual);
-    }
+    protected static SearchProviderName $searchProviderName = SearchProviderName::clarity;
 
     public function supportsDataProvider(): Generator
     {
@@ -176,39 +156,6 @@ class ClaritySearchProviderTest extends KernelTestCase
             'context' => [],
             'expected' => true,
         ];
-    }
-
-    /**
-     * @param SearchTermType $type
-     * @param string $term
-     * @param array $context
-     * @param mixed $expected
-     * @return void
-     * @throws Exception
-     * @dataProvider searchDataProvider
-     */
-    public function testSearch(SearchTermType $type, string $term, array $context, mixed $expected): void
-    {
-        $this->skipSearchTest(__CLASS__);
-
-        $provider = $this->getSearchProvider(SearchProviderName::clarity);
-        $searchTerm = new FeedbackSearchTerm($term, $term, $type);
-
-        $actual = $provider->search($searchTerm, $context);
-
-        foreach ($expected as $index => $e) {
-            if (is_object($e) && method_exists($e, 'getItems')) {
-                $this->assertArraySubset($e->getItems(), $actual[$index]->getItems());
-            } elseif ($e === null) {
-                $this->assertNull($actual[$index]);
-            } else {
-                $this->assertEquals($e, $actual[$index]);
-            }
-        }
-
-        if (count($expected) === 0) {
-            $this->assertEmpty($actual);
-        }
     }
 
     public function searchDataProvider(): Generator
