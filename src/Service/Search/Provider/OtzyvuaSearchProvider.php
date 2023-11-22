@@ -43,11 +43,16 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
 
         $type = $searchTerm->getType();
 
-        if (in_array($type, SearchTermType::messengers, true)) {
-            return false;
+        if (in_array($type, [
+            SearchTermType::email,
+            SearchTermType::phone_number,
+            SearchTermType::organization_name,
+            SearchTermType::place_name,
+        ], true)) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     public function search(FeedbackSearchTerm $searchTerm, array $context = []): array
