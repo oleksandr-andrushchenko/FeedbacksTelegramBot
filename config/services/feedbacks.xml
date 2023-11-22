@@ -63,6 +63,13 @@
         <parameter key="app.search.search_term_type_step">true</parameter>
         <parameter key="app.search.confirm_step">false</parameter>
         <parameter key="app.search.create_confirm_step">false</parameter>
+        <parameter key="app.search.search_providers" type="collection">
+            <parameter>otzyvua</parameter>
+            <parameter>clarity</parameter>
+            <parameter>searches</parameter>
+            <parameter>ukr_corrupts</parameter>
+            <parameter>ukr_missed</parameter>
+        </parameter>
 
         <parameter key="app.lookup.search_term_type_step">true</parameter>
         <parameter key="app.lookup.confirm_step">false</parameter>
@@ -499,6 +506,7 @@
             <argument>%app.search.search_term_type_step%</argument>
             <argument>%app.search.confirm_step%</argument>
             <argument>%app.search.create_confirm_step%</argument>
+            <argument>%app.search.search_providers%</argument>
             <tag name="app.telegram_conversation_feedbacks"/>
         </service>
         <service id="app.telegram_conversation_lookup"

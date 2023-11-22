@@ -50,6 +50,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
         private readonly bool $searchTermTypeStep,
         private readonly bool $confirmStep,
         private readonly bool $createConfirmStep,
+        private readonly array $searchProviders,
     )
     {
         parent::__construct(new SearchFeedbackTelegramBotConversationState());
@@ -454,14 +455,8 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 'countryCode' => $tg->getBot()->getEntity()->getCountryCode(),
                 'full' => $tg->getBot()->getMessengerUser()?->getUser()?->getSubscriptionExpireAt() > new DateTimeImmutable(),
             ];
-            $providers = [
-                SearchProviderName::feedbacks,
-                SearchProviderName::otzyvua,
-                SearchProviderName::clarity,
-                SearchProviderName::searches,
-                SearchProviderName::ukr_corrupts,
-                SearchProviderName::ukr_missed,
-            ];
+            $providers = array_map(static fn (string $name): SearchProviderName => SearchProviderName::fromName($name), $this->searchProviders);
+            array_unshift($providers, SearchProviderName::feedbacks);
 
             $this->searcher->search($feedbackSearch->getSearchTerm(), $render, $context, $providers);
 
