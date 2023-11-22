@@ -116,8 +116,8 @@ class UkrCorruptSearchProvider implements SearchProviderInterface
                     offenseName: $item['offenseName'] ?? null,
                     punishment: $item['punishment'] ?? null,
                     courtCaseNumber: $item['courtCaseNumber'] ?? null,
-                    sentenceDate: isset($item['sentenceDate']) ? DateTimeImmutable::createFromFormat('Y-m-d', $item['sentenceDate']) : null,
-                    punishmentStart: isset($item['punishmentStart']) ? DateTimeImmutable::createFromFormat('Y-m-d', $item['punishmentStart']) : null,
+                    sentenceDate: isset($item['sentenceDate']) ? DateTimeImmutable::createFromFormat('Y-m-d', $item['sentenceDate'])->setTime(0, 0) : null,
+                    punishmentStart: isset($item['punishmentStart']) ? DateTimeImmutable::createFromFormat('Y-m-d', $item['punishmentStart'])->setTime(0, 0) : null,
                     courtName: $item['courtName'] ?? null,
                     codexArticles: isset($item['codexArticles']) ? array_map(fn (array $article) => $article['codexArticleName'], $item['codexArticles']) : null
                 );
@@ -144,6 +144,6 @@ class UkrCorruptSearchProvider implements SearchProviderInterface
             return true;
         });
 
-        return count($records) === 0 ? null : new UkrCorruptPersonsRecord($records);
+        return count($records) === 0 ? null : new UkrCorruptPersonsRecord(array_values($records));
     }
 }
