@@ -35,6 +35,8 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class ClaritySearchProvider implements SearchProviderInterface
 {
+    public const BASE_URL = 'https://clarity-project.info';
+
     public function __construct(
         private readonly CrawlerProvider $crawlerProvider,
     )
@@ -81,15 +83,15 @@ class ClaritySearchProvider implements SearchProviderInterface
             }
 
             if (count($personsRecord->getItems()) === 1) {
-                $name = $personsRecord->getItems()[0]->getName();
+                $url = $personsRecord->getItems()[0]->getHref();
 
                 return [
-                    $this->searchPersonSecurityRecord($name),
-                    $this->searchPersonCourtsRecord($name),
-                    $this->searchPersonDebtorsRecord($name),
-                    $this->searchPersonEnforcementsRecord($name),
-                    $this->searchPersonEdrsRecord($name),
-                    $this->searchPersonDeclarationsRecord($name),
+                    $this->searchPersonSecurityRecord($url),
+                    $this->searchPersonCourtsRecord($url),
+                    $this->searchPersonDebtorsRecord($url),
+                    $this->searchPersonEnforcementsRecord($url),
+                    $this->searchPersonEdrsRecord($url),
+                    $this->searchPersonDeclarationsRecord($url),
                     $edrsRecord,
                 ];
             }
@@ -189,9 +191,8 @@ class ClaritySearchProvider implements SearchProviderInterface
         $record = new ClarityPersonsRecord();
 
         $crawler = $this->getPersonsCrawler($name);
-        $baseUrl = $this->getBaseUrl();
 
-        $crawler->filter('.results-wrap .item')->each(static function (Crawler $item) use ($baseUrl, $record): void {
+        $crawler->filter('.results-wrap .item')->each(static function (Crawler $item) use ($record): void {
             $a = $item->filter('a');
 
             if ($a->count() < 1) {
@@ -205,7 +206,7 @@ class ClaritySearchProvider implements SearchProviderInterface
             }
 
             $href = trim($a->eq(0)->attr('href') ?? '');
-            $href = empty($href) ? null : ($baseUrl . $href);
+            $href = empty($href) ? null : (self::BASE_URL . $href);
 
             $item = new ClarityPerson(
                 $name,
@@ -219,12 +220,11 @@ class ClaritySearchProvider implements SearchProviderInterface
         return count($record->getItems()) === 0 ? null : $record;
     }
 
-    private function searchPersonEdrsRecord(string $name): ?ClarityPersonEdrsRecord
+    private function searchPersonEdrsRecord(string $url): ?ClarityPersonEdrsRecord
     {
         $record = new ClarityPersonEdrsRecord();
 
-        $crawler = $this->getPersonCrawler($name);
-        $baseUrl = $this->getBaseUrl();
+        $crawler = $this->getPersonCrawler($url);
 
         // todo: replace with https://clarity-project.info/edrs/?search=%name% (this variant holds addresses for fops)
         // todo: process @mainEntity json
@@ -242,7 +242,7 @@ class ClaritySearchProvider implements SearchProviderInterface
 
         $ids = [];
 
-        $table->children('tr.item')->each(static function (Crawler $tr) use ($baseUrl, $header, $record, &$ids): void {
+        $table->children('tr.item')->each(static function (Crawler $tr) use ($header, $record, &$ids): void {
             $id = $tr->attr('data-id');
 
             if (in_array($id, $ids, true)) {
@@ -270,9 +270,11 @@ class ClaritySearchProvider implements SearchProviderInterface
                 return;
             }
 
-            if ($tr->filter('a')->eq(0)->count() > 0) {
-                $href = trim($tr->filter('a')->eq(0)->attr('href') ?? '');
-                $href = empty($href) ? null : ($baseUrl . $href);
+            $hrefEl = $tr->filter('a');
+
+            if ($hrefEl->count() > 0) {
+                $href = trim($hrefEl->eq(0)->attr('href') ?? '');
+                $href = empty($href) ? null : (self::BASE_URL . $href);
             }
 
             if (isset($header[1]) && str_contains($header[1], 'ЄДРПОУ') && $tds->eq(1)->count() > 0) {
@@ -302,11 +304,11 @@ class ClaritySearchProvider implements SearchProviderInterface
         return count($record->getItems()) === 0 ? null : $record;
     }
 
-    private function searchPersonCourtsRecord(string $name): ?ClarityPersonCourtsRecord
+    private function searchPersonCourtsRecord(string $url): ?ClarityPersonCourtsRecord
     {
         $record = new ClarityPersonCourtsRecord();
 
-        $crawler = $this->getPersonCrawler($name);
+        $crawler = $this->getPersonCrawler($url);
 
         $table = $crawler->filter('[data-id="court-involved"]');
         $header = [];
@@ -361,11 +363,11 @@ class ClaritySearchProvider implements SearchProviderInterface
         return count($record->getItems()) === 0 ? null : $record;
     }
 
-    private function searchPersonDebtorsRecord(string $name): ?ClarityPersonDebtorsRecord
+    private function searchPersonDebtorsRecord(string $url): ?ClarityPersonDebtorsRecord
     {
         $record = new ClarityPersonDebtorsRecord();
 
-        $crawler = $this->getPersonCrawler($name);
+        $crawler = $this->getPersonCrawler($url);
 
         $table = $crawler->filter('[data-id="debtors"]');
         $header = [];
@@ -419,11 +421,11 @@ class ClaritySearchProvider implements SearchProviderInterface
         return count($record->getItems()) === 0 ? null : $record;
     }
 
-    private function searchPersonSecurityRecord(string $name): ?ClarityPersonSecurityRecord
+    private function searchPersonSecurityRecord(string $url): ?ClarityPersonSecurityRecord
     {
         $record = new ClarityPersonSecurityRecord();
 
-        $crawler = $this->getPersonCrawler($name);
+        $crawler = $this->getPersonCrawler($url);
 
         $table = $crawler->filter('[data-id="security"]');
         $header = [];
@@ -507,11 +509,11 @@ class ClaritySearchProvider implements SearchProviderInterface
         return count($record->getItems()) === 0 ? null : $record;
     }
 
-    private function searchPersonEnforcementsRecord(string $name): ?ClarityPersonEnforcementsRecord
+    private function searchPersonEnforcementsRecord(string $url): ?ClarityPersonEnforcementsRecord
     {
         $record = new ClarityPersonEnforcementsRecord();
 
-        $crawler = $this->getPersonCrawler($name);
+        $crawler = $this->getPersonCrawler($url);
 
         $table = $crawler->filter('[data-id="enforcements"]');
         $header = [];
@@ -579,12 +581,11 @@ class ClaritySearchProvider implements SearchProviderInterface
         return count($record->getItems()) === 0 ? null : $record;
     }
 
-    private function searchPersonDeclarationsRecord(string $name): ?ClarityPersonDeclarationsRecord
+    private function searchPersonDeclarationsRecord(string $url): ?ClarityPersonDeclarationsRecord
     {
         $record = new ClarityPersonDeclarationsRecord();
 
-        $crawler = $this->getPersonCrawler($name);
-        $baseUrl = $this->getBaseUrl();
+        $crawler = $this->getPersonCrawler($url);
 
         $table = $crawler->filter('[data-id="declarations"] table')->eq(0);
         $header = [];
@@ -605,13 +606,18 @@ class ClaritySearchProvider implements SearchProviderInterface
             return null;
         }
 
-        $table->children('tr.item')->each(static function (Crawler $tr) use ($baseUrl, $header, $record): void {
+        $table->children('tr.item')->each(static function (Crawler $tr) use ($header, $record): void {
             $tds = $tr->filter('td');
 
             if (isset($header[1]) && $tds->eq(1)->count() > 0) {
                 $name = trim($tds->eq(1)->text());
-                $href = trim($tds->eq(1)->filter('a')->eq(0)->attr('href') ?? '');
-                $href = empty($href) ? null : ($baseUrl . $href);
+
+                $hrefEl = $tds->eq(1)->filter('a');
+
+                if ($hrefEl->count() > 0) {
+                    $href = trim($hrefEl->eq(0)->attr('href') ?? '');
+                    $href = empty($href) ? null : (self::BASE_URL . $href);
+                }
             }
 
             if (empty($name)) {
@@ -644,9 +650,8 @@ class ClaritySearchProvider implements SearchProviderInterface
         $record = new ClarityEdrsRecord();
 
         $crawler = $this->getEdrsCrawler($name);
-        $baseUrl = $this->getBaseUrl();
 
-        $crawler->filter('.results-wrap .item')->each(static function (Crawler $item) use ($baseUrl, $record): void {
+        $crawler->filter('.results-wrap .item')->each(static function (Crawler $item) use ($record): void {
             $nameEl = $item->filter('h5');
 
             if ($nameEl->count() < 1) {
@@ -663,7 +668,7 @@ class ClaritySearchProvider implements SearchProviderInterface
 
             if ($hrefEl->count() > 0) {
                 $href = trim($hrefEl->eq(0)->attr('href') ?? '');
-                $href = empty($href) ? null : ($baseUrl . $href);
+                $href = empty($href) ? null : (self::BASE_URL . $href);
             }
 
             $numberEl = $item->filter('.small');
@@ -694,23 +699,18 @@ class ClaritySearchProvider implements SearchProviderInterface
         return count($record->getItems()) === 0 ? null : $record;
     }
 
-    private function getBaseUrl(): string
-    {
-        return 'https://clarity-project.info';
-    }
-
     private function getPersonsCrawler(string $name): Crawler
     {
-        return $this->crawlerProvider->getCrawler('GET', '/persons?search=' . $name, base: $this->getBaseUrl(), user: true);
+        return $this->crawlerProvider->getCrawler('GET', '/persons?search=' . $name, base: self::BASE_URL, user: true);
     }
 
-    private function getPersonCrawler(string $name): Crawler
+    private function getPersonCrawler(string $url): Crawler
     {
-        return $this->crawlerProvider->getCrawler('GET', '/person/' . $name, base: $this->getBaseUrl());
+        return $this->crawlerProvider->getCrawler('GET', $url, base: str_starts_with($url, self::BASE_URL) ? null : self::BASE_URL);
     }
 
     private function getEdrsCrawler(string $name): Crawler
     {
-        return $this->crawlerProvider->getCrawler('GET', '/edrs?search=' . $name, base: $this->getBaseUrl(), user: true);
+        return $this->crawlerProvider->getCrawler('GET', '/edrs?search=' . $name, base: self::BASE_URL, user: true);
     }
 }
