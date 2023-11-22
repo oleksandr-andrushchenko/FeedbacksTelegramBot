@@ -39,7 +39,7 @@ class Searcher
 
                 $viewer = $this->getViewer($provider);
 
-                $render('🔍 ' . $viewer->getOnSearchTitle($searchTerm));
+                $render($viewer->getOnSearchTitle($searchTerm));
 
                 $records = [];
 
