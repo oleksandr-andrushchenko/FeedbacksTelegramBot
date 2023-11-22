@@ -2,13 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Viewer;
+namespace App\Service\Search\Viewer\Telegram;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\Otzyvua\OtzyvuaFeedback;
 use App\Entity\Search\Otzyvua\OtzyvuaFeedbackSearchTerm;
 use App\Entity\Search\Otzyvua\OtzyvuaFeedbackSearchTermsRecord;
 use App\Entity\Search\Otzyvua\OtzyvuaFeedbacksRecord;
+use App\Service\Search\Viewer\SearchViewer;
+use App\Service\Search\Viewer\SearchViewerHelper;
+use App\Service\Search\Viewer\SearchViewerInterface;
 
 class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
 {

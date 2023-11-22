@@ -2,12 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Viewer;
+namespace App\Service\Search\Viewer\Telegram;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\UkrMissed\DisappearedPersonsUkrMissedRecord;
 use App\Entity\Search\UkrMissed\UkrMissedPerson;
 use App\Entity\Search\UkrMissed\WantedPersonsUkrMissedRecord;
+use App\Service\Search\Viewer\SearchViewer;
+use App\Service\Search\Viewer\SearchViewerHelper;
+use App\Service\Search\Viewer\SearchViewerInterface;
 
 class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
 {
@@ -59,7 +62,7 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
     }
 
 
-    public function getWrapResultRecord(bool $full, SearchViewerHelper $h): callable
+    public function getWrapResultRecord(bool $full, TelegramSearchViewerHelper $h): callable
     {
         return static fn (UkrMissedPerson $person): array => [
             $h->modifier()

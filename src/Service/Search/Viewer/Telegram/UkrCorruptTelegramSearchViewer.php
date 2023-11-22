@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Viewer;
+namespace App\Service\Search\Viewer\Telegram;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\UkrCorrupt\UkrCorruptPerson;
 use App\Entity\Search\UkrCorrupt\UkrCorruptPersonsRecord;
+use App\Service\Search\Viewer\SearchViewer;
+use App\Service\Search\Viewer\SearchViewerHelper;
+use App\Service\Search\Viewer\SearchViewerInterface;
 
 class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
 {

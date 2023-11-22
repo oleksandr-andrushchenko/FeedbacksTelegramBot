@@ -16,16 +16,16 @@ abstract class SearchViewer implements SearchViewerInterface
 
     public function getOnSearchTitle(FeedbackSearchTerm $searchTerm, array $context = []): string
     {
-        return '🔍 ' . $this->searchViewerHelper->trans('on_search');
+        return $this->searchViewerHelper->getOnSearchTitle();
     }
 
     public function getEmptyResultTitle(FeedbackSearchTerm $searchTerm, array $context = []): string
     {
-        return $this->searchViewerHelper->trans('empty_result', generalDomain: true);
+        return $this->searchViewerHelper->getEmptyResultTitle();
     }
 
     public function getErrorResultTitle(FeedbackSearchTerm $searchTerm, array $context = []): string
     {
-        return $this->searchViewerHelper->trans('error_result', generalDomain: true);
+        return $this->searchViewerHelper->getErrorResultTitle();
     }
 }

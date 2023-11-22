@@ -14,6 +14,7 @@ class SearchViewerHelper
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly SecretsAdder $secretsAdder,
+        private readonly string $transDomainPrefix,
         private ?string $transDomain = null,
     )
     {
@@ -234,6 +235,21 @@ class SearchViewerHelper
 
     public function trans($id, array $parameters = [], bool $generalDomain = false): string
     {
-        return $this->translator->trans($id, $parameters, 'search.tg' . ($generalDomain ? '' : ('.' . $this->transDomain)));
+        return $this->translator->trans($id, $parameters, $this->transDomainPrefix . ($generalDomain ? '' : ('.' . $this->transDomain)));
+    }
+
+    public function getOnSearchTitle(): string
+    {
+        return '🔍 ' . $this->trans('on_search');
+    }
+
+    public function getEmptyResultTitle(): string
+    {
+        return $this->trans('empty_result', generalDomain: true);
+    }
+
+    public function getErrorResultTitle(): string
+    {
+        return $this->trans('error_result', generalDomain: true);
     }
 }

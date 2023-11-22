@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Viewer;
+namespace App\Service\Search\Viewer\Telegram;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\Clarity\ClarityEdr;
@@ -22,6 +22,9 @@ use App\Entity\Search\Clarity\ClarityPersonSecurity;
 use App\Entity\Search\Clarity\ClarityPersonSecurityRecord;
 use App\Entity\Search\Clarity\ClarityPersonsRecord;
 use App\Enum\Feedback\SearchTermType;
+use App\Service\Search\Viewer\SearchViewer;
+use App\Service\Search\Viewer\SearchViewerHelper;
+use App\Service\Search\Viewer\SearchViewerInterface;
 use DateTimeImmutable;
 
 class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
