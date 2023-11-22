@@ -20,6 +20,9 @@ use DateTimeImmutable;
  */
 class UkrMissedSearchProvider implements SearchProviderInterface
 {
+    private const URL_DISAPPEARED = 'https://www.npu.gov.ua/api/integration/disappeared-persons-by-constituent-data';
+    private const URL_WANTED = 'https://www.npu.gov.ua/api/integration/wanted-persons-by-constituent-data';
+
     public function __construct(
         private readonly HttpRequester $httpRequester,
     )
@@ -33,7 +36,10 @@ class UkrMissedSearchProvider implements SearchProviderInterface
 
     public function supports(FeedbackSearchTerm $searchTerm, array $context = []): bool
     {
-        if ($this->supportsPersonName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
+        $type = $searchTerm->getType();
+        $term = $searchTerm->getNormalizedText();
+
+        if ($this->supportsPersonName($type, $term, $context)) {
             return true;
         }
 
@@ -76,9 +82,7 @@ class UkrMissedSearchProvider implements SearchProviderInterface
 
     public function searchDisappearedPersons(string $name): ?DisappearedPersonsUkrMissedRecord
     {
-        $url = 'https://www.npu.gov.ua/api/integration/disappeared-persons-by-constituent-data';
-        $disappeared = true;
-        $persons = $this->searchPersons($name, $url, $disappeared);
+        $persons = $this->searchPersons($name, true);
 
         if ($persons === null) {
             return null;
@@ -89,9 +93,7 @@ class UkrMissedSearchProvider implements SearchProviderInterface
 
     public function searchWantedPersons(string $name): ?WantedPersonsUkrMissedRecord
     {
-        $url = 'https://www.npu.gov.ua/api/integration/wanted-persons-by-constituent-data';
-        $disappeared = false;
-        $persons = $this->searchPersons($name, $url, $disappeared);
+        $persons = $this->searchPersons($name, false);
 
         if ($persons === null) {
             return null;
@@ -100,7 +102,7 @@ class UkrMissedSearchProvider implements SearchProviderInterface
         return new WantedPersonsUkrMissedRecord($persons);
     }
 
-    public function searchPersons(string $name, string $url, bool $disappeared): ?array
+    public function searchPersons(string $name, bool $disappeared): ?array
     {
         $words = array_map('trim', explode(' ', $name));
         $count = count($words);
@@ -137,7 +139,7 @@ class UkrMissedSearchProvider implements SearchProviderInterface
                 'page' => '1',
             ]);
 
-            $data = $this->httpRequester->requestHttp('GET', $url, query: $queryVariant, array: true);
+            $data = $this->httpRequester->requestHttp('GET', $disappeared ? self::URL_DISAPPEARED : self::URL_WANTED, query: $queryVariant, array: true);
 
             foreach ($data['items'] as $item) {
                 var_dump($item);

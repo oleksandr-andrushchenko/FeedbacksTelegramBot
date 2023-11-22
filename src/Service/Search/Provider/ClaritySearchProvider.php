@@ -35,7 +35,7 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class ClaritySearchProvider implements SearchProviderInterface
 {
-    public const BASE_URL = 'https://clarity-project.info';
+    public const URL = 'https://clarity-project.info';
 
     public function __construct(
         private readonly CrawlerProvider $crawlerProvider,
@@ -206,7 +206,7 @@ class ClaritySearchProvider implements SearchProviderInterface
             }
 
             $href = trim($a->eq(0)->attr('href') ?? '');
-            $href = empty($href) ? null : (self::BASE_URL . $href);
+            $href = empty($href) ? null : (self::URL . $href);
 
             $item = new ClarityPerson(
                 $name,
@@ -274,7 +274,7 @@ class ClaritySearchProvider implements SearchProviderInterface
 
             if ($hrefEl->count() > 0) {
                 $href = trim($hrefEl->eq(0)->attr('href') ?? '');
-                $href = empty($href) ? null : (self::BASE_URL . $href);
+                $href = empty($href) ? null : (self::URL . $href);
             }
 
             if (isset($header[1]) && str_contains($header[1], 'ЄДРПОУ') && $tds->eq(1)->count() > 0) {
@@ -616,7 +616,7 @@ class ClaritySearchProvider implements SearchProviderInterface
 
                 if ($hrefEl->count() > 0) {
                     $href = trim($hrefEl->eq(0)->attr('href') ?? '');
-                    $href = empty($href) ? null : (self::BASE_URL . $href);
+                    $href = empty($href) ? null : (self::URL . $href);
                 }
             }
 
@@ -668,7 +668,7 @@ class ClaritySearchProvider implements SearchProviderInterface
 
             if ($hrefEl->count() > 0) {
                 $href = trim($hrefEl->eq(0)->attr('href') ?? '');
-                $href = empty($href) ? null : (self::BASE_URL . $href);
+                $href = empty($href) ? null : (self::URL . $href);
             }
 
             $numberEl = $item->filter('.small');
@@ -701,16 +701,16 @@ class ClaritySearchProvider implements SearchProviderInterface
 
     private function getPersonsCrawler(string $name): Crawler
     {
-        return $this->crawlerProvider->getCrawler('GET', '/persons?search=' . $name, base: self::BASE_URL, user: true);
+        return $this->crawlerProvider->getCrawler('GET', '/persons?search=' . $name, base: self::URL, user: true);
     }
 
     private function getPersonCrawler(string $url): Crawler
     {
-        return $this->crawlerProvider->getCrawler('GET', $url, base: str_starts_with($url, self::BASE_URL) ? null : self::BASE_URL);
+        return $this->crawlerProvider->getCrawler('GET', $url, base: str_starts_with($url, self::URL) ? null : self::URL);
     }
 
     private function getEdrsCrawler(string $name): Crawler
     {
-        return $this->crawlerProvider->getCrawler('GET', '/edrs?search=' . $name, base: self::BASE_URL, user: true);
+        return $this->crawlerProvider->getCrawler('GET', '/edrs?search=' . $name, base: self::URL, user: true);
     }
 }
