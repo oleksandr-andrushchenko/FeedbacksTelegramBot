@@ -22,7 +22,7 @@ class HttpRequester
         array $query = null,
         array $body = null,
         array $json = null,
-        float $timeout = 3.0,
+        float $timeout = 5.0,
         bool $user = false,
         bool $array = false
     ): string|array
