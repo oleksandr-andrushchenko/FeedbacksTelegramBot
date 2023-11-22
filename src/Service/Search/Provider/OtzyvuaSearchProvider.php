@@ -78,7 +78,7 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
 
     private function getFeedbackSearchTermsCrawler(string $name): Crawler
     {
-        return $this->crawlerProvider->getCrawler('https://www.otzyvua.net/uk/search/?q=' . $name);
+        return $this->crawlerProvider->getCrawler('GET', 'https://www.otzyvua.net/uk/search/?q=' . $name);
     }
 
     private function searchFeedbackSearchTermsRecord(string $name, bool $sortByLength = false): ?OtzyvuaFeedbackSearchTermsRecord
@@ -142,9 +142,9 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
         return count($record->getItems()) === 0 ? null : $record;
     }
 
-    private function getFeedbacksCrawler(string $uri): Crawler
+    private function getFeedbacksCrawler(string $url): Crawler
     {
-        return $this->crawlerProvider->getCrawler($uri);
+        return $this->crawlerProvider->getCrawler('GET', $url);
     }
 
     private function searchFeedbacksRecord(string $uri): ?OtzyvuaFeedbacksRecord
