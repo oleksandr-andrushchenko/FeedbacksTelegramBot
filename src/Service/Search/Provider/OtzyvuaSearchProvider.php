@@ -58,7 +58,7 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
     public function search(FeedbackSearchTerm $searchTerm, array $context = []): array
     {
         $term = $searchTerm->getNormalizedText();
-        $record = $this->searchFeedbackSearchTermsRecord($term, sortByLength: true);
+        $record = $this->searchFeedbackSearchTermsRecord($term, sortByLength: $context['sortByLength'] ?? true);
 
         if ($record === null) {
             return [];
@@ -195,7 +195,7 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
 
             if ($createdEl->count() > 0) {
                 $createdAt = trim($createdEl->eq(0)->attr('title') ?? '');
-                $createdAt = empty($createdAt) ? null : DateTimeImmutable::createFromFormat('Y-m-d', $createdAt);
+                $createdAt = empty($createdAt) ? null : DateTimeImmutable::createFromFormat('Y-m-d', $createdAt)->setTime(0, 0);
                 $createdAt = $createdAt === false ? null : $createdAt;
             }
 
