@@ -18,6 +18,8 @@ use DateTimeImmutable;
  */
 class UkrCorruptSearchProvider implements SearchProviderInterface
 {
+    private const URL = 'https://corruptinfo.nazk.gov.ua/ep/1.0/corrupt/findData';
+
     public function __construct(
         private readonly HttpRequester $httpRequester,
     )
@@ -103,8 +105,7 @@ class UkrCorruptSearchProvider implements SearchProviderInterface
         $records = [];
 
         foreach ($bodyVariants as $bodyVariant) {
-            $url = 'https://corruptinfo.nazk.gov.ua/ep/1.0/corrupt/findData';
-            $data = $this->httpRequester->requestHttp('POST', $url, json: $bodyVariant, array: true);
+            $data = $this->httpRequester->requestHttp('POST', self::URL, json: $bodyVariant, array: true);
 
             foreach ($data as $item) {
                 $records[] = new UkrCorruptPerson(
