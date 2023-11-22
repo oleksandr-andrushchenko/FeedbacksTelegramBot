@@ -123,6 +123,10 @@ class UkrCorruptSearchProvider implements SearchProviderInterface
                     codexArticles: isset($item['codexArticles']) ? array_map(fn (array $article) => $article['codexArticleName'], $item['codexArticles']) : null
                 );
             }
+
+            if (count($records) > 0) {
+                break;
+            }
         }
 
         $records = array_filter($records, static function (UkrCorruptPerson $record) use ($words): bool {
