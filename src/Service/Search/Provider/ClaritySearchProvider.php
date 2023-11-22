@@ -323,7 +323,7 @@ class ClaritySearchProvider implements SearchProviderInterface
         $table->filter('tr.item')->each(static function (Crawler $tr) use ($header, $record): void {
             $tds = $tr->filter('td');
 
-            if ($tds->eq(0)->count() < 1) {
+            if ($tds->count() < 1) {
                 return;
             }
 
@@ -382,7 +382,7 @@ class ClaritySearchProvider implements SearchProviderInterface
         $table->filter('tr.item')->each(static function (Crawler $tr) use ($header, $record): void {
             $tds = $tr->filter('td');
 
-            if ($tds->eq(0)->count() < 1) {
+            if ($tds->count() < 1) {
                 return;
             }
 
@@ -440,7 +440,7 @@ class ClaritySearchProvider implements SearchProviderInterface
         $table->filter('tr.item')->each(static function (Crawler $tr) use ($header, $record): void {
             $tds = $tr->filter('td');
 
-            if ($tds->eq(0)->count() < 1) {
+            if ($tds->count() < 1) {
                 return;
             }
 
@@ -484,10 +484,10 @@ class ClaritySearchProvider implements SearchProviderInterface
 
             if ($nextTr->matches('.table-collapse-details')) {
                 $trs = $nextTr->filter('tr');
-                if ($trs->eq(5)->filter('td')->eq(0)->count() > 0 && str_contains($trs->eq(5)->filter('td')->eq(0)->text(), 'Звинувачення')) {
+                if ($trs->eq(5)->filter('td')->count() > 0 && str_contains($trs->eq(5)->filter('td')->eq(0)->text(), 'Звинувачення')) {
                     $accusation = trim($trs->eq(5)->filter('td')->eq(1)->text());
                 }
-                if ($trs->eq(6)->filter('td')->eq(0)->count() > 0 && str_contains($trs->eq(6)->filter('td')->eq(0)->text(), 'Запобіжний')) {
+                if ($trs->eq(6)->filter('td')->count() > 0 && str_contains($trs->eq(6)->filter('td')->eq(0)->text(), 'Запобіжний')) {
                     $precaution = trim($trs->eq(6)->filter('td')->eq(1)->text());
                 }
             }
@@ -528,7 +528,7 @@ class ClaritySearchProvider implements SearchProviderInterface
         $table->filter('tr.item')->each(static function (Crawler $tr) use ($header, $record): void {
             $tds = $tr->filter('td');
 
-            if ($tds->eq(0)->count() < 1) {
+            if ($tds->count() < 1) {
                 return;
             }
 
@@ -624,7 +624,7 @@ class ClaritySearchProvider implements SearchProviderInterface
                 return;
             }
 
-            if (isset($header[0]) && $tds->eq(0)->count() > 0) {
+            if (isset($header[0]) && $tds->count() > 0) {
                 $year = trim($tds->eq(0)->text());
             }
 
