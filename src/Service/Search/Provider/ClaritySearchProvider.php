@@ -701,7 +701,7 @@ class ClaritySearchProvider implements SearchProviderInterface
 
     private function getPersonsCrawler(string $name): Crawler
     {
-        return $this->crawlerProvider->getCrawler('GET', '/persons?search=' . $name, base: $this->getBaseUrl());
+        return $this->crawlerProvider->getCrawler('GET', '/persons?search=' . $name, base: $this->getBaseUrl(), user: true);
     }
 
     private function getPersonCrawler(string $name): Crawler
@@ -711,6 +711,6 @@ class ClaritySearchProvider implements SearchProviderInterface
 
     private function getEdrsCrawler(string $name): Crawler
     {
-        return $this->crawlerProvider->getCrawler('GET', '/edrs?search=' . $name, base: $this->getBaseUrl());
+        return $this->crawlerProvider->getCrawler('GET', '/edrs?search=' . $name, base: $this->getBaseUrl(), user: true);
     }
 }
