@@ -218,7 +218,6 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($h->transBracketsModifier('born_at'))
                     ->apply($item->getBornAt()),
                 $h->modifier()
-                    ->add($h->slashesModifier())
                     ->add($h->redWhiteModifier())
                     ->add(
                         $h->appendModifier(
