@@ -62,7 +62,7 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
     }
 
 
-    public function getWrapResultRecord(bool $full, TelegramSearchViewerHelper $h): callable
+    public function getWrapResultRecord(bool $full, SearchViewerHelper $h): callable
     {
         return static fn (UkrMissedPerson $person): array => [
             $h->modifier()
