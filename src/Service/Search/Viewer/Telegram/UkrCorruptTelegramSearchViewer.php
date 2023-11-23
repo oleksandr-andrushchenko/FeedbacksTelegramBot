@@ -40,7 +40,7 @@ class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewe
             $record->getItems(),
             static fn (UkrCorruptPerson $item): array => [
                 $h->modifier()
-                    ->add($h->conditionalModifier($item->getLastName() && $item->getFirstName() && $item->getPatronymic()))
+                    ->add($h->conditionalModifier($item->getFirstName() || $item->getPatronymic()))
                     ->add($h->slashesModifier())
                     ->add($h->appendModifier($item->getFirstName()))
                     ->add($h->appendModifier($item->getPatronymic()))
