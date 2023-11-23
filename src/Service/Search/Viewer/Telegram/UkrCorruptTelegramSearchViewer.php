@@ -41,16 +41,26 @@ class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewe
             static fn (UkrCorruptPerson $person): array => [
                 $h->modifier()
                     ->add($h->conditionalModifier($person->getLastName() && $person->getFirstName() && $person->getPatronymic()))
+                    ->add($h->slashesModifier())
                     ->add($h->appendModifier($person->getFirstName()))
                     ->add($h->appendModifier($person->getPatronymic()))
                     ->apply($person->getLastName()),
-                $person->getEntityType(),
+                $h->modifier()
+                    ->add($h->slashesModifier())
+                    ->apply($person->getEntityType()),
                 $h->modifier()
                     ->add($h->redModifier())
-                    ->add($h->appendModifier($person->getOffenseName()))
+                    ->add(
+                        $h->appendModifier(
+                            $h->modifier()
+                                ->add($h->slashesModifier())
+                                ->apply($person->getOffenseName())
+                        )
+                    )
                     ->apply(true),
                 $h->modifier()
                     ->add($h->conditionalModifier($person->getPunishment()))
+                    ->add($h->slashesModifier())
                     ->add(
                         $h->appendModifier(
                             $h->modifier()
@@ -62,9 +72,11 @@ class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewe
                     ->apply($person->getPunishment()),
                 $h->modifier()
                     ->add($h->transBracketsModifier('court_case_number'))
+                    ->add($h->slashesModifier())
                     ->apply($person->getCourtCaseNumber()),
                 $h->modifier()
                     ->add($h->implodeModifier(';'))
+                    ->add($h->slashesModifier())
                     ->add($h->transBracketsModifier('codex_articles'))
                     ->apply($person->getCodexArticles()),
                 $person->getCourtName(),

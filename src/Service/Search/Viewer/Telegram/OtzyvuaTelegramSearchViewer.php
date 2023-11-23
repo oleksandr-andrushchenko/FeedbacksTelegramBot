@@ -48,6 +48,7 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($h->boldModifier())
                     ->apply($item->getName()),
                 $h->modifier()
+                    ->add($h->slashesModifier())
                     ->add($h->transBracketsModifier('category'))
                     ->add($h->underlineModifier())
                     ->apply($item->getCategory()),
@@ -84,6 +85,7 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($h->transBracketsModifier('rating', ['value' => $item->getRating(), 'total' => 5]))
                     ->apply((string) $item->getRating()),
                 $h->modifier()
+                    ->add($h->slashesModifier())
                     ->add($h->italicModifier())
                     ->apply($item->getDescription()),
                 $h->modifier()

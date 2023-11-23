@@ -77,19 +77,30 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
                 ->add($full ? $h->nullModifier() : $h->secretsModifier())
                 ->add($h->transBracketsModifier('born_at'))
                 ->apply($person->getBirthday()),
-            $person->getPrecaution(),
+            $h->modifier()
+                ->add($h->slashesModifier())
+                ->apply($person->getPrecaution()),
             $h->modifier()
                 ->add($h->redWhiteModifier())
-                ->add($h->appendModifier($person->getCategory()))
+                ->add(
+                    $h->appendModifier(
+                        $h->modifier()
+                            ->add($h->slashesModifier())
+                            ->apply($person->getCategory())
+                    )
+                )
                 ->add(
                     $h->appendModifier(
                         $h->modifier()
                             ->add($h->implodeModifier('; '))
+                            ->add($h->slashesModifier())
                             ->apply($person->getArticles())
                     )
                 )
                 ->apply($person->getDisappeared() === false),
-            $person->getOrgan(),
+            $h->modifier()
+                ->add($h->slashesModifier())
+                ->apply($person->getOrgan()),
             $h->modifier()
                 ->add($h->datetimeModifier('d.m.Y'))
                 ->add($h->transBracketsModifier('absent_at'))

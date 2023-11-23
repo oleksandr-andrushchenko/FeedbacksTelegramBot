@@ -91,14 +91,18 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($full ? $h->linkModifier($edr->getHref()) : $h->nullModifier())
                     ->add($h->boldModifier())
                     ->apply($edr->getName()),
-                $edr->getType(),
+                $h->modifier()
+                    ->add($h->slashesModifier())
+                    ->apply($edr->getType()),
                 $h->modifier()
                     ->add($h->transBracketsModifier('edr_number'))
                     ->apply($edr->getNumber()),
                 $h->modifier()
                     ->add($h->greenWhiteModifier('active'))
                     ->apply($edr->getActive()),
-                $edr->getAddress(),
+                $h->modifier()
+                    ->add($h->slashesModifier())
+                    ->apply($edr->getAddress()),
             ],
             $full
         );
@@ -115,6 +119,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             $record->getItems(),
             static fn (ClarityPersonSecurity $sec): array => [
                 $h->modifier()
+                    ->add($h->slashesModifier())
                     ->add($h->boldModifier())
                     ->apply($sec->getName()),
                 $h->modifier()
@@ -125,6 +130,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($h->redWhiteModifier('actual'))
                     ->apply(!$sec->getArchive()),
                 $h->modifier()
+                    ->add($h->slashesModifier())
                     ->add($h->underlineModifier())
                     ->apply($sec->getCategory()),
                 $h->modifier()
@@ -132,9 +138,11 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($h->transBracketsModifier('absent_at'))
                     ->apply($sec->getAbsentAt()),
                 $h->modifier()
+                    ->add($h->slashesModifier())
                     ->add($h->transBracketsModifier('accusation'))
                     ->apply($sec->getAccusation()),
                 $h->modifier()
+                    ->add($h->slashesModifier())
                     ->add($h->transBracketsModifier('precaution'))
                     ->apply($sec->getPrecaution()),
             ],
@@ -153,19 +161,31 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             $record->getItems(),
             static fn (ClarityPersonCourt $court): array => [
                 $h->modifier()
+                    ->add($h->slashesModifier())
                     ->add($h->boldModifier())
                     ->add($h->transBracketsModifier('case_number'))
                     ->apply($court->getNumber()),
-                $court->getState(),
+                $h->modifier()
+                    ->add($h->slashesModifier())
+                    ->apply($court->getState()),
                 $h->modifier()
                     ->add($h->redWhiteModifier())
-                    ->add($h->appendModifier($court->getSide()))
+                    ->add(
+                        $h->appendModifier(
+                            $h->modifier()
+                                ->add($h->slashesModifier())
+                                ->apply($court->getSide())
+                        )
+                    )
                     ->apply(!str_contains($court->getSide(), 'заявник')),
                 $h->modifier()
+                    ->add($h->slashesModifier())
                     ->add($h->underlineModifier())
                     ->add($h->transBracketsModifier('desc'))
                     ->apply($court->getDesc()),
-                $court->getPlace(),
+                $h->modifier()
+                    ->add($h->slashesModifier())
+                    ->apply($court->getPlace()),
             ],
             $full
         );
@@ -182,6 +202,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             $record->getItems(),
             static fn (ClarityPersonEnforcement $enf): array => [
                 $h->modifier()
+                    ->add($h->slashesModifier())
                     ->add($h->boldModifier())
                     ->add($h->transBracketsModifier('enf_number'))
                     ->apply($enf->getNumber()),
@@ -189,6 +210,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($h->datetimeModifier('d.m.Y'))
                     ->apply($enf->getOpenedAt()),
                 $h->modifier()
+                    ->add($h->slashesModifier())
                     ->add($h->transBracketsModifier('debtor'))
                     ->apply($enf->getDebtor()),
                 $h->modifier()
@@ -196,10 +218,18 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($h->transBracketsModifier('born_at'))
                     ->apply($enf->getBornAt()),
                 $h->modifier()
+                    ->add($h->slashesModifier())
                     ->add($h->redWhiteModifier())
-                    ->add($h->appendModifier($enf->getState()))
+                    ->add(
+                        $h->appendModifier(
+                            $h->modifier()
+                                ->add($h->slashesModifier())
+                                ->apply($enf->getState())
+                        )
+                    )
                     ->apply(str_contains($enf->getState(), 'Відкрито')),
                 $h->modifier()
+                    ->add($h->slashesModifier())
                     ->add($h->transBracketsModifier('collector'))
                     ->apply($enf->getCollector()),
             ],
@@ -226,6 +256,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($h->transBracketsModifier('born_at'))
                     ->apply($debtor->getBornAt()),
                 $h->modifier()
+                    ->add($h->slashesModifier())
                     ->add($h->underlineModifier())
                     ->apply($debtor->getCategory()),
                 $h->modifier()
@@ -253,9 +284,11 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($h->boldModifier())
                     ->apply($item->getName()),
                 $h->modifier()
+                    ->add($h->slashesModifier())
                     ->add($h->transBracketsModifier('year'))
                     ->apply($item->getYear()),
                 $h->modifier()
+                    ->add($h->slashesModifier())
                     ->add($h->transBracketsModifier('position'))
                     ->add($full ? $h->nullModifier() : $h->secretsModifier())
                     ->apply($item->getPosition()),
@@ -283,6 +316,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->apply($edr->getName()),
                 $h->modifier()
                     ->add($h->conditionalModifier($full || !$phoneSearch))
+                    ->add($h->slashesModifier())
                     ->apply($edr->getType()),
                 $h->modifier()
                     ->add($h->conditionalModifier($full || !$phoneSearch))
