@@ -13,7 +13,9 @@ use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Service\CrawlerProvider;
 use DateTimeImmutable;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
+use Throwable;
 
 /**
  * @see https://www.otzyvua.net/uk/privat-bank.html
@@ -24,6 +26,7 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
 {
     public function __construct(
         private readonly CrawlerProvider $crawlerProvider,
+        private readonly LoggerInterface $logger,
     )
     {
     }
@@ -71,14 +74,26 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
         }
 
         if (isset($url)) {
+            $feedbacksRecord = $this->tryCatch(fn () => $this->searchFeedbacksRecord($url), null);
+
             return [
-                $this->searchFeedbacksRecord($url),
+                $feedbacksRecord,
             ];
         }
 
         return [
             $record,
         ];
+    }
+
+    private function tryCatch(callable $job, mixed $failed): mixed
+    {
+        try {
+            return $job();
+        } catch (Throwable $exception) {
+            $this->logger->error($exception);
+            return $failed;
+        }
     }
 
     private function getFeedbackSearchTermsCrawler(string $name): Crawler

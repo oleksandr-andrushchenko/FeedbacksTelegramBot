@@ -32,6 +32,7 @@
         </service>
         <service id="app.search_provider_otzyvua" class="App\Service\Search\Provider\OtzyvuaSearchProvider" lazy="true">
             <argument type="service" id="app.crawler_provider"/>
+            <argument type="service" id="logger"/>
             <tag name="app.search_provider" provider="otzyvua"/>
         </service>
         <service id="app.search_viewer_helper_telegram" class="App\Service\Search\Viewer\SearchViewerHelper"
