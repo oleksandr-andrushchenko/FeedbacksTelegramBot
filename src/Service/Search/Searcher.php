@@ -60,7 +60,11 @@ class Searcher
                 }
 
                 foreach ($records as $index => $record) {
-                    $render($viewer->getResultRecord($record, $searchTerm, $context + ['index' => $index]));
+                    try {
+                        $render($viewer->getResultRecord($record, $searchTerm, $context + ['index' => $index]));
+                    } catch (Throwable $exception) {
+                        $this->logger->error($exception);
+                    }
                 }
             } catch (Throwable $exception) {
                 $this->logger->error($exception);
