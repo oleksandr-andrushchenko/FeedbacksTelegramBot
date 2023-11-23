@@ -64,29 +64,29 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
 
     public function getWrapResultRecord(bool $full, SearchViewerHelper $h): callable
     {
-        return static fn (UkrMissedPerson $person): array => [
+        return static fn (UkrMissedPerson $item): array => [
             $h->modifier()
-                ->add($h->appendModifier($person->getName()))
-                ->add($h->appendModifier($person->getMiddleName()))
+                ->add($h->appendModifier($item->getName()))
+                ->add($h->appendModifier($item->getMiddleName()))
                 ->add($h->slashesModifier())
                 ->add($h->boldModifier())
-                ->apply($person->getSurname()),
-            $person->getSex(),
+                ->apply($item->getSurname()),
+            $item->getSex(),
             $h->modifier()
                 ->add($h->datetimeModifier('d.m.Y'))
                 ->add($full ? $h->nullModifier() : $h->secretsModifier())
                 ->add($h->transBracketsModifier('born_at'))
-                ->apply($person->getBirthday()),
+                ->apply($item->getBirthday()),
             $h->modifier()
                 ->add($h->slashesModifier())
-                ->apply($person->getPrecaution()),
+                ->apply($item->getPrecaution()),
             $h->modifier()
                 ->add($h->redWhiteModifier())
                 ->add(
                     $h->appendModifier(
                         $h->modifier()
                             ->add($h->slashesModifier())
-                            ->apply($person->getCategory())
+                            ->apply($item->getCategory())
                     )
                 )
                 ->add(
@@ -94,17 +94,17 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
                         $h->modifier()
                             ->add($h->implodeModifier('; '))
                             ->add($h->slashesModifier())
-                            ->apply($person->getArticles())
+                            ->apply($item->getArticles())
                     )
                 )
-                ->apply($person->getDisappeared() === false),
+                ->apply($item->getDisappeared() === false),
             $h->modifier()
                 ->add($h->slashesModifier())
-                ->apply($person->getOrgan()),
+                ->apply($item->getOrgan()),
             $h->modifier()
                 ->add($h->datetimeModifier('d.m.Y'))
                 ->add($h->transBracketsModifier('absent_at'))
-                ->apply($person->getDate()),
+                ->apply($item->getDate()),
         ];
     }
 }
