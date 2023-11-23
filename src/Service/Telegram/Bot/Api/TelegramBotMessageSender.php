@@ -8,6 +8,7 @@ use App\Entity\Telegram\TelegramBot;
 use App\Service\Telegram\Bot\TelegramBotRegistry;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\ServerResponse;
+use Longman\TelegramBot\Request;
 
 class TelegramBotMessageSender implements TelegramBotMessageSenderInterface
 {
@@ -60,6 +61,44 @@ class TelegramBotMessageSender implements TelegramBotMessageSenderInterface
             $data['disable_web_page_preview'] = $disableWebPagePreview;
         }
 
+        if ($parseMode === 'HTML') {
+            return $this->sendHtmlMessage($bot, $data);
+        }
+
         return $bot->sendMessage($data);
+    }
+
+    private function sendHtmlMessage($bot, array $data, int $max = 4096): ServerResponse
+    {
+        $text = $data['text'];
+        $length = mb_strlen($text);
+
+        if ($length <= $max) {
+            return $bot->sendMessage($data);
+        }
+
+        if ($text === strip_tags($text)) {
+            return $bot->sendMessage($data);
+        }
+
+        do {
+            while ($length > 0) {
+                $text = mb_substr($text, 0, $length);
+
+                $countOpen = preg_match_all('#<[^/][a-z]*>#', $text);
+                $countClose = preg_match_all('#</[a-z]+>#', $text);
+
+                if ($countOpen === $countClose) {
+                    $data['text'] = $text;
+                    $response = $bot->sendMessage($data);
+                    $text = mb_substr($text, $length);
+                    break;
+                }
+
+                $length--;
+            }
+        } while (!empty($text));
+
+        return $response ?? Request::emptyResponse();
     }
 }
