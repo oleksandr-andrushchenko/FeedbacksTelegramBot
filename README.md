@@ -82,3 +82,4 @@
 * improve secrets for phone searching (add more)
 * array_unique for feedbacks & feedback searches
 * search providers health checkers
+* cover search viewers with tests
