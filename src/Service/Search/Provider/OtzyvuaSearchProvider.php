@@ -74,6 +74,7 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
         }
 
         if (isset($url)) {
+            sleep(1);
             $feedbacksRecord = $this->tryCatch(fn () => $this->searchFeedbacksRecord($url), null);
 
             return [
