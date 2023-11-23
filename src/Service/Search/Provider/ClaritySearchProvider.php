@@ -73,6 +73,7 @@ class ClaritySearchProvider implements SearchProviderInterface
         $edrsRecord = $this->searchEdrsRecord($term);
 
         if ($type === SearchTermType::person_name) {
+            sleep(1);
             $personsRecord = $this->searchPersonsRecord($term);
 
             if ($personsRecord === null) {
@@ -83,6 +84,7 @@ class ClaritySearchProvider implements SearchProviderInterface
             }
 
             if (count($personsRecord->getItems()) === 1) {
+                sleep(1);
                 $url = $personsRecord->getItems()[0]->getHref();
 
                 return [
