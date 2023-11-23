@@ -73,21 +73,19 @@ class ClaritySearchProvider implements SearchProviderInterface
         $type = $searchTerm->getType();
         $term = $searchTerm->getNormalizedText();
 
-        $edrsRecord = $this->tryCatch(fn () => $this->searchEdrsRecord($term), null);
-
         if ($type === SearchTermType::person_name) {
-            sleep(1);
             $personsRecord = $this->tryCatch(fn () => $this->searchPersonsRecord($term), null);
 
             if ($personsRecord === null) {
+                sleep(2);
                 // todo check person by direct link (+check if 3 words)
                 return [
-                    $edrsRecord,
+                    $this->tryCatch(fn () => $this->searchEdrsRecord($term), null),
                 ];
             }
 
             if (count($personsRecord->getItems()) === 1) {
-                sleep(1);
+                sleep(2);
                 $url = $personsRecord->getItems()[0]->getHref();
 
                 $personRecords = $this->tryCatch(fn () => [
@@ -99,21 +97,23 @@ class ClaritySearchProvider implements SearchProviderInterface
                     $this->searchPersonDeclarationsRecord($url),
                 ], []);
 
+                sleep(2);
+
                 return [
                     ...$personRecords,
-                    $edrsRecord,
+                    $this->tryCatch(fn () => $this->searchEdrsRecord($term), null),
                 ];
             }
 
             return [
                 $personsRecord,
-                $edrsRecord,
+                $this->tryCatch(fn () => $this->searchEdrsRecord($term), null),
             ];
         }
 
         // todo parse edr page if single result (implemente the same as for persons made)
         return [
-            $edrsRecord,
+            $this->tryCatch(fn () => $this->searchEdrsRecord($term), null),
         ];
     }
 
