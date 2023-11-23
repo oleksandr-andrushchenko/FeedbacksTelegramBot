@@ -25,7 +25,9 @@ use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Service\CrawlerProvider;
 use DateTimeImmutable;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
+use Throwable;
 
 /**
  * @see https://clarity-project.info/persons
@@ -39,6 +41,7 @@ class ClaritySearchProvider implements SearchProviderInterface
 
     public function __construct(
         private readonly CrawlerProvider $crawlerProvider,
+        private readonly LoggerInterface $logger,
     )
     {
     }
@@ -70,11 +73,11 @@ class ClaritySearchProvider implements SearchProviderInterface
         $type = $searchTerm->getType();
         $term = $searchTerm->getNormalizedText();
 
-        $edrsRecord = $this->searchEdrsRecord($term);
+        $edrsRecord = $this->tryCatch(fn () => $this->searchEdrsRecord($term), null);
 
         if ($type === SearchTermType::person_name) {
             sleep(1);
-            $personsRecord = $this->searchPersonsRecord($term);
+            $personsRecord = $this->tryCatch(fn () => $this->searchPersonsRecord($term), null);
 
             if ($personsRecord === null) {
                 // todo check person by direct link (+check if 3 words)
@@ -87,13 +90,17 @@ class ClaritySearchProvider implements SearchProviderInterface
                 sleep(1);
                 $url = $personsRecord->getItems()[0]->getHref();
 
-                return [
+                $personRecords = $this->tryCatch(fn () => [
                     $this->searchPersonSecurityRecord($url),
                     $this->searchPersonCourtsRecord($url),
                     $this->searchPersonDebtorsRecord($url),
                     $this->searchPersonEnforcementsRecord($url),
                     $this->searchPersonEdrsRecord($url),
                     $this->searchPersonDeclarationsRecord($url),
+                ], []);
+
+                return [
+                    ...$personRecords,
                     $edrsRecord,
                 ];
             }
@@ -108,6 +115,16 @@ class ClaritySearchProvider implements SearchProviderInterface
         return [
             $edrsRecord,
         ];
+    }
+
+    private function tryCatch(callable $job, mixed $failed): mixed
+    {
+        try {
+            return $job();
+        } catch (Throwable $exception) {
+            $this->logger->error($exception);
+            return $failed;
+        }
     }
 
     private function supportsPersonName(SearchTermType $type, string $name, array $context = []): bool
