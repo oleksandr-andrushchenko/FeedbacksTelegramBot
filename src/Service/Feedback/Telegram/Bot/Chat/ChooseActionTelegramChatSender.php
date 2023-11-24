@@ -49,7 +49,7 @@ class ChooseActionTelegramChatSender
         $buttons = [];
         $buttons[] = $this->getSearchButton($tg);
         $buttons[] = $this->getCreateButton($tg);
-        $buttons[] = $this->getDonateButton($tg);
+        $buttons[] = $this->getContactButton($tg);
 
         $messengerUser = $tg->getBot()->getMessengerUser();
 
@@ -67,7 +67,7 @@ class ChooseActionTelegramChatSender
 //            $buttons[] = $this->getCommandsButton($tg);
             $buttons[] = $this->getLimitsButton($tg);
 //            $buttons[] = $this->getRestartButton($tg);
-            $buttons[] = $this->getContactButton($tg);
+            $buttons[] = $this->getDonateButton($tg);
 //            $buttons[] = $this->getPurgeButton($tg);
             $buttons[] = $this->getShowLessButton($tg);
         } else {

@@ -347,7 +347,7 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
         $buttons = [
             $this->command('create'),
             $this->command('search'),
-            $this->command('donate'),
+            $this->command('contact'),
         ];
 
         if ($extended) {
@@ -357,7 +357,7 @@ abstract class TelegramBotCommandFunctionalTestCase extends DatabaseTestCase
                 $this->command('country'),
                 $this->command('locale'),
                 $this->command('purge'),
-                $this->command('contact'),
+                $this->command('donate'),
                 $this->command('commands'),
                 $this->command('limits'),
                 $this->command('restart'),
