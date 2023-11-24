@@ -12,6 +12,7 @@ enum SearchProviderName: int
     case ukr_corrupts = 3;
     case ukr_missed = 4;
     case otzyvua = 5;
+    case ukr_missed_cars = 6;
 
     public static function fromName(string $name): ?self
     {

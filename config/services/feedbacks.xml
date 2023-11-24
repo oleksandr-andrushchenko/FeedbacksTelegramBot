@@ -69,6 +69,7 @@
             <parameter>searches</parameter>
             <parameter>ukr_corrupts</parameter>
             <parameter>ukr_missed</parameter>
+            <parameter>ukr_missed_cars</parameter>
         </parameter>
 
         <parameter key="app.lookup.search_term_type_step">true</parameter>
