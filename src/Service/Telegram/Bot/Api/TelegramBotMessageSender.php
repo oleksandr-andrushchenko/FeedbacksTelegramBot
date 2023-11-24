@@ -6,9 +6,9 @@ namespace App\Service\Telegram\Bot\Api;
 
 use App\Entity\Telegram\TelegramBot;
 use App\Service\Telegram\Bot\TelegramBotRegistry;
+use LogicException;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\ServerResponse;
-use Longman\TelegramBot\Request;
 
 class TelegramBotMessageSender implements TelegramBotMessageSenderInterface
 {
@@ -73,6 +73,7 @@ class TelegramBotMessageSender implements TelegramBotMessageSenderInterface
         $text = $data['text'];
         $length = mb_strlen($text);
 
+
         if ($length <= $max) {
             return $bot->sendMessage($data);
         }
@@ -82,16 +83,22 @@ class TelegramBotMessageSender implements TelegramBotMessageSenderInterface
         }
 
         do {
-            while ($length > 0) {
-                $text = mb_substr($text, 0, $length);
+            $length = $max;
 
-                $countOpen = preg_match_all('#<[^/][a-z]*>#', $text);
-                $countClose = preg_match_all('#</[a-z]+>#', $text);
+            while (true) {
+                if ($length === 0) {
+                    throw new LogicException('Not enough chunk size');
+                }
 
-                if ($countOpen === $countClose) {
-                    $data['text'] = $text;
+                $expose = mb_substr($text, 0, $length);
+
+                $countOpen = preg_match_all('#<[^/]#', $expose);
+                $countClose = preg_match_all('#</#', $expose);
+
+                if ($countOpen == $countClose) {
+                    $data['text'] = $expose;
                     $response = $bot->sendMessage($data);
-                    $text = mb_substr($text, $length);
+                    $text = mb_substr($text, mb_strlen($expose));
                     break;
                 }
 
@@ -99,6 +106,6 @@ class TelegramBotMessageSender implements TelegramBotMessageSenderInterface
             }
         } while (!empty($text));
 
-        return $response ?? Request::emptyResponse();
+        return $response;
     }
 }
