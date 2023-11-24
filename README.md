@@ -81,5 +81,4 @@
 * implement rpvoder search term variants as keyboard buttons
 * improve secrets for phone searching (add more)
 * array_unique for feedbacks & feedback searches
-* search providers health checkers
-* cover search viewers with tests
+* wrap all search records into object with parsed link (and show it for premium users)
