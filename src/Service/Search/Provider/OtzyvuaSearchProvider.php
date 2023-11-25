@@ -97,101 +97,85 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
         }
     }
 
-    private function getFeedbackSearchTermsCrawler(string $name): Crawler
-    {
-        return $this->crawlerProvider->getCrawler('GET', 'https://www.otzyvua.net/uk/search/?q=' . $name, user: true);
-    }
-
     private function searchFeedbackSearchTermsRecord(string $name, bool $sortByLength = false): ?OtzyvuaFeedbackSearchTermsRecord
     {
-        $record = new OtzyvuaFeedbackSearchTermsRecord();
+        $crawler = $this->crawlerProvider->getCrawler('GET', 'https://www.otzyvua.net/uk/search/?q=' . urlencode($name), user: true);
 
-        $crawler = $this->getFeedbackSearchTermsCrawler($name);
-
-        $crawler->filter('#container .otzyv_box_float .row')->each(static function (Crawler $item) use ($record): void {
+        $items = $crawler->filter('#container .otzyv_box_float .row')->each(static function (Crawler $item): ?OtzyvuaFeedbackSearchTerm {
             $col = $item->filter('.col')->last();
             $nameEl = $col->filter('h2 a');
 
-            if ($nameEl->count() < 1) {
-                return;
+            if ($nameEl->count() === 0) {
+                return null;
             }
 
             $name = trim($nameEl->eq(0)->text());
             $href = trim($nameEl->eq(0)->attr('href') ?? '');
 
             if (empty($name)) {
-                return;
+                return null;
             }
 
             $categoryEl = $col->filter('.h2_descr');
 
-            if ($categoryEl->count() > 0) {
+            if ($categoryEl->count() !== 0) {
                 $category = trim($categoryEl->eq(0)->text());
             }
 
             $ratingEl = $col->filter('.rtng_val');
 
-            if ($ratingEl->count() > 0) {
+            if ($ratingEl->count() !== 0) {
                 $rating = trim($ratingEl->eq(0)->text());
                 $rating = empty($rating) ? null : (float) $rating;
             }
 
             $countEl = $col->filter('.num_rev');
 
-            if ($countEl->count() > 0) {
+            if ($countEl->count() !== 0) {
                 $count = trim(preg_replace('/[^0-9]/', '', $countEl->eq(0)->text()) ?? '');
                 $count = empty($count) ? null : (int) $count;
             }
 
-            $item = new OtzyvuaFeedbackSearchTerm(
+            return new OtzyvuaFeedbackSearchTerm(
                 $name,
                 $href,
                 category: empty($category) ? null : $category,
                 rating: empty($rating) ? null : $rating,
                 count: $count ?? null
             );
-
-            $record->addItem($item);
         });
 
+        $items = array_values(array_filter($items));
+
         if ($sortByLength) {
-            $items = $record->getItems();
             usort($items, static fn (OtzyvuaFeedbackSearchTerm $a, OtzyvuaFeedbackSearchTerm $b): int => mb_strlen($a->getName()) <=> mb_strlen($b->getName()));
-            $record->setItems($items);
         }
 
-        return count($record->getItems()) === 0 ? null : $record;
+        return count($items) === 0 ? null : new OtzyvuaFeedbackSearchTermsRecord($items);
     }
 
-    private function getFeedbacksCrawler(string $url): Crawler
+    private function searchFeedbacksRecord(string $url): ?OtzyvuaFeedbacksRecord
     {
-        return $this->crawlerProvider->getCrawler('GET', $url);
-    }
+        $crawler = $this->crawlerProvider->getCrawler('GET', $url);
 
-    private function searchFeedbacksRecord(string $uri): ?OtzyvuaFeedbacksRecord
-    {
-        $record = new OtzyvuaFeedbacksRecord();
-
-        $crawler = $this->getFeedbacksCrawler($uri);
-
-        $crawler->filter('#comments_container .commentbox')->each(static function (Crawler $item) use ($record): void {
+        $items = $crawler->filter('#comments_container .commentbox')->each(static function (Crawler $item): ?OtzyvuaFeedback {
             $row = $item->filter('.comment_row')->first();
             $titleEl = $row->filter('h2 a');
 
             if ($titleEl->count() < 1) {
-                return;
+                return null;
             }
 
             $title = trim($titleEl->eq(0)->text());
             $href = trim($titleEl->eq(0)->attr('href') ?? '');
 
             if (empty($title)) {
-                return;
+                return null;
             }
 
             $ratingEl = $row->filter('.star_ring span');
 
-            if ($ratingEl->count() > 0) {
+            if ($ratingEl->count() !== 0) {
                 $width = preg_replace('/[^0-9]/', '', trim($ratingEl->eq(0)->attr('style') ?? ''));
                 $width = empty($width) ? null : (int) $width;
                 $rating = empty($width) ? null : (int) ($width / 13);
@@ -199,17 +183,17 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
 
             $authorEl = $row->filter('.author_name ins');
 
-            if ($authorEl->count() > 0) {
+            if ($authorEl->count() !== 0) {
                 $authorName = trim($authorEl->eq(0)->text());
 
-                if ($authorEl->filter('a')->count() > 0) {
+                if ($authorEl->filter('a')->count() !== 0) {
                     $authorHref = trim($authorEl->filter('a')->eq(0)->attr('href') ?? '');
                 }
             }
 
             $createdEl = $row->filter('.dtreviewed .value-title');
 
-            if ($createdEl->count() > 0) {
+            if ($createdEl->count() !== 0) {
                 $createdAt = trim($createdEl->eq(0)->attr('title') ?? '');
                 $createdAt = empty($createdAt) ? null : DateTimeImmutable::createFromFormat('Y-m-d', $createdAt)->setTime(0, 0);
                 $createdAt = $createdAt === false ? null : $createdAt;
@@ -217,15 +201,15 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
 
             $descEl = $row->filter('.comment.description');
 
-            if ($descEl->count() > 0) {
-                if ($descEl->filter('.review-full-text')->count() > 0) {
+            if ($descEl->count() !== 0) {
+                if ($descEl->filter('.review-full-text')->count() !== 0) {
                     $description = trim($descEl->filter('.review-full-text')->text());
-                } elseif ($descEl->filter('.review-snippet')->count() > 0) {
+                } elseif ($descEl->filter('.review-snippet')->count() !== 0) {
                     $description = trim($descEl->filter('.review-snippet')->text());
                 }
             }
 
-            $item = new OtzyvuaFeedback(
+            return new OtzyvuaFeedback(
                 $title,
                 $href,
                 rating: empty($rating) ? null : $rating,
@@ -234,10 +218,10 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
                 description: empty($description) ? null : $description,
                 createdAt: empty($createdAt) ? null : $createdAt,
             );
-
-            $record->addItem($item);
         });
 
-        return count($record->getItems()) === 0 ? null : $record;
+        $items = array_values(array_filter($items));
+
+        return count($items) === 0 ? null : new OtzyvuaFeedbacksRecord($items);
     }
 }

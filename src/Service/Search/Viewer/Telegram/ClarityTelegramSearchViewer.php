@@ -59,7 +59,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $h = $this->searchViewerHelper;
         $message = '🤔 ';
         $message .= $h->wrapResultRecord(
-            $h->trans('persons_title', ['count' => count($record->getItems())]),
+            $h->trans('persons_title'),
             $record->getItems(),
             static fn (ClarityPerson $item): array => [
                 $h->modifier()
@@ -83,7 +83,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $h = $this->searchViewerHelper;
         $message = '💫 ';
         $message .= $h->wrapResultRecord(
-            $h->trans('person_edrs_title', ['count' => count($record->getItems())]),
+            $h->trans('person_edrs_title'),
             $record->getItems(),
             static fn (ClarityPersonEdr $item): array => [
                 $h->modifier()
@@ -115,7 +115,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $h = $this->searchViewerHelper;
         $message = '🚨 ';
         $message .= $h->wrapResultRecord(
-            $h->trans('security_title', ['count' => count($record->getItems())]),
+            $h->trans('security_title'),
             $record->getItems(),
             static fn (ClarityPersonSecurity $item): array => [
                 $h->modifier()
@@ -157,7 +157,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $h = $this->searchViewerHelper;
         $message = '‼️ ';
         $message .= $h->wrapResultRecord(
-            $h->trans('courts_title', ['count' => count($record->getItems())]),
+            $h->trans('courts_title'),
             $record->getItems(),
             static fn (ClarityPersonCourt $item): array => [
                 $h->modifier()
@@ -198,7 +198,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $h = $this->searchViewerHelper;
         $message = '‼️ ';
         $message .= $h->wrapResultRecord(
-            $h->trans('enforcements_title', ['count' => count($record->getItems())]),
+            $h->trans('enforcements_title'),
             $record->getItems(),
             static fn (ClarityPersonEnforcement $item): array => [
                 $h->modifier()
@@ -243,7 +243,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $h = $this->searchViewerHelper;
         $message = '‼️ ';
         $message .= $h->wrapResultRecord(
-            $h->trans('debtors_title', ['count' => count($record->getItems())]),
+            $h->trans('debtors_title'),
             $record->getItems(),
             static fn (ClarityPersonDebtor $item): array => [
                 $h->modifier()
@@ -274,7 +274,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $h = $this->searchViewerHelper;
         $message = '💫 ';
         $message .= $h->wrapResultRecord(
-            $h->trans('person_declarations_title', ['count' => count($record->getItems())]),
+            $h->trans('person_declarations_title'),
             $record->getItems(),
             static fn (ClarityPersonDeclaration $item): array => [
                 $h->modifier()
@@ -302,29 +302,28 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
     {
         $h = $this->searchViewerHelper;
         $message = '🤔 ';
-        $phoneSearch = $searchType === SearchTermType::phone_number;
         $message .= $h->wrapResultRecord(
-            $h->trans('edrs_title', ['count' => count($record->getItems())]),
+            $h->trans('edrs_title'),
             $record->getItems(),
             static fn (ClarityEdr $item): array => [
                 $h->modifier()
                     ->add($h->slashesModifier())
-                    ->add($full ? $h->nullModifier() : ($phoneSearch ? $h->secretsModifier() : $h->nullModifier()))
+                    ->add($full ? $h->nullModifier() : $h->secretsModifier())
                     ->add($full ? $h->linkModifier($item->getHref()) : $h->nullModifier())
                     ->add($h->boldModifier())
                     ->apply($item->getName()),
                 $h->modifier()
-                    ->add($h->conditionalModifier($full || !$phoneSearch))
+                    ->add($full ? $h->nullModifier() : $h->secretsModifier())
                     ->add($h->slashesModifier())
                     ->apply($item->getType()),
                 $h->modifier()
-                    ->add($h->conditionalModifier($full || !$phoneSearch))
+                    ->add($full ? $h->nullModifier() : $h->secretsModifier())
                     ->add($h->greenWhiteModifier('active'))
                     ->apply($item->getActive()),
                 $h->modifier()
                     ->add($h->slashesModifier())
-                    ->add($full ? $h->nullModifier() : ($phoneSearch ? $h->secretsModifier() : $h->nullModifier()))
-                    ->add($full ? $h->nullModifier() : ($phoneSearch ? $h->transBracketsModifier('address') : $h->nullModifier()))
+                    ->add($full ? $h->nullModifier() : $h->secretsModifier())
+                    ->add($full ? $h->nullModifier() : $h->transBracketsModifier('address'))
                     ->apply($item->getAddress()),
             ],
             $full

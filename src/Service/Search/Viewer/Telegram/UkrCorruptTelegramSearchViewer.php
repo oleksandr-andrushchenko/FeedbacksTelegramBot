@@ -75,7 +75,7 @@ class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewe
                     ->add($h->slashesModifier())
                     ->apply($item->getCourtCaseNumber()),
                 $h->modifier()
-                    ->add($h->implodeModifier(';'))
+                    ->add($h->implodeModifier('; '))
                     ->add($h->slashesModifier())
                     ->add($h->transBracketsModifier('codex_articles'))
                     ->apply($item->getCodexArticles()),

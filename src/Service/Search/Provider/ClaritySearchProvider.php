@@ -207,42 +207,38 @@ class ClaritySearchProvider implements SearchProviderInterface
 
     private function searchPersonsRecord(string $name): ?ClarityPersonsRecord
     {
-        $record = new ClarityPersonsRecord();
+        $crawler = $this->crawlerProvider->getCrawler('GET', '/persons?search=' . urlencode($name), base: self::URL, user: true);
 
-        $crawler = $this->getPersonsCrawler($name);
-
-        $crawler->filter('.results-wrap .item')->each(static function (Crawler $item) use ($record): void {
+        $items = $crawler->filter('.results-wrap .item')->each(static function (Crawler $item): ?ClarityPerson {
             $a = $item->filter('a');
 
-            if ($a->count() < 1) {
-                return;
+            if ($a->count() === 0) {
+                return null;
             }
 
             $name = trim($a->eq(0)->text());
 
             if (empty($name)) {
-                return;
+                return null;
             }
 
             $href = trim($a->eq(0)->attr('href') ?? '');
             $href = empty($href) ? null : (self::URL . $href);
 
-            $item = new ClarityPerson(
+            return new ClarityPerson(
                 $name,
                 href: empty($href) ? null : $href,
                 count: empty($count) ? null : $count
             );
-
-            $record->addItem($item);
         });
 
-        return count($record->getItems()) === 0 ? null : $record;
+        $items = array_values(array_filter($items));
+
+        return count($items) === 0 ? null : new ClarityPersonsRecord($items);
     }
 
     private function searchPersonEdrsRecord(string $url): ?ClarityPersonEdrsRecord
     {
-        $record = new ClarityPersonEdrsRecord();
-
         $crawler = $this->getPersonCrawler($url);
 
         // todo: replace with https://clarity-project.info/edrs/?search=%name% (this variant holds addresses for fops)
@@ -261,11 +257,11 @@ class ClaritySearchProvider implements SearchProviderInterface
 
         $ids = [];
 
-        $table->children('tr.item')->each(static function (Crawler $tr) use ($header, $record, &$ids): void {
+        $items = $table->children('tr.item')->each(static function (Crawler $tr) use ($header, &$ids): ?ClarityPersonEdr {
             $id = $tr->attr('data-id');
 
             if (in_array($id, $ids, true)) {
-                return;
+                return null;
             }
 
             $ids[] = $id;
@@ -274,8 +270,8 @@ class ClaritySearchProvider implements SearchProviderInterface
 
             $nameEl = $tds->eq(0);
 
-            if ($nameEl->count() < 1) {
-                return;
+            if ($nameEl->count() === 0) {
+                return null;
             }
 
             $active = str_contains(trim($nameEl->text()), 'Зареєстровано');
@@ -286,29 +282,29 @@ class ClaritySearchProvider implements SearchProviderInterface
             $name = trim($tds->eq(0)->text());
 
             if (empty($name)) {
-                return;
+                return null;
             }
 
             $hrefEl = $tr->filter('a');
 
-            if ($hrefEl->count() > 0) {
+            if ($hrefEl->count() !== 0) {
                 $href = trim($hrefEl->eq(0)->attr('href') ?? '');
                 $href = empty($href) ? null : (self::URL . $href);
             }
 
-            if (isset($header[1]) && str_contains($header[1], 'ЄДРПОУ') && $tds->eq(1)->count() > 0) {
+            if (isset($header[1]) && str_contains($header[1], 'ЄДРПОУ') && $tds->eq(1)->count() !== 0) {
                 $number = preg_replace('/[^0-9]/', '', trim($tds->eq(1)->text()));
             }
 
-            if (isset($header[2]) && $tds->eq(2)->count() > 0) {
+            if (isset($header[2]) && $tds->eq(2)->count() !== 0) {
                 $address = trim($tds->eq(2)->text());
             }
 
-            if (isset($header[3]) && $tds->eq(3)->count() > 0) {
+            if (isset($header[3]) && $tds->eq(3)->count() !== 0) {
                 $type = trim($tds->eq(3)->text());
             }
 
-            $item = new ClarityPersonEdr(
+            return new ClarityPersonEdr(
                 $name,
                 type: empty($type) ? null : $type,
                 href: empty($href) ? null : $href,
@@ -316,17 +312,15 @@ class ClaritySearchProvider implements SearchProviderInterface
                 active: $active,
                 address: empty($address) ? null : $address
             );
-
-            $record->addItem($item);
         });
 
-        return count($record->getItems()) === 0 ? null : $record;
+        $items = array_values(array_filter($items));
+
+        return count($items) === 0 ? null : new ClarityPersonEdrsRecord($items);
     }
 
     private function searchPersonCourtsRecord(string $url): ?ClarityPersonCourtsRecord
     {
-        $record = new ClarityPersonCourtsRecord();
-
         $crawler = $this->getPersonCrawler($url);
 
         $table = $crawler->filter('[data-id="court-involved"]');
@@ -339,53 +333,51 @@ class ClaritySearchProvider implements SearchProviderInterface
             return null;
         }
 
-        $table->filter('tr.item')->each(static function (Crawler $tr) use ($header, $record): void {
+        $items = $table->filter('tr.item')->each(static function (Crawler $tr) use ($header): ?ClarityPersonCourt {
             $tds = $tr->filter('td');
 
-            if ($tds->count() < 1) {
-                return;
+            if ($tds->count() === 1) {
+                return null;
             }
 
             $number = trim($tds->eq(0)->text());
 
             if (empty($number)) {
-                return;
+                return null;
             }
 
-            if (isset($header[1]) && str_contains($header[1], 'Стан') && $tds->eq(1)->count() > 0) {
+            if (isset($header[1]) && str_contains($header[1], 'Стан') && $tds->eq(1)->count() !== 0) {
                 $state = trim($tds->eq(1)->text());
             }
 
-            if (isset($header[2]) && str_contains($header[2], 'Сторона') && $tds->eq(2)->count() > 0) {
+            if (isset($header[2]) && str_contains($header[2], 'Сторона') && $tds->eq(2)->count() !== 0) {
                 $side = trim($tds->eq(2)->text());
             }
 
-            if (isset($header[3]) && str_contains($header[3], 'Опис') && $tds->eq(3)->count() > 0) {
+            if (isset($header[3]) && str_contains($header[3], 'Опис') && $tds->eq(3)->count() !== 0) {
                 $desc = trim($tds->eq(3)->text());
             }
 
-            if (isset($header[4]) && str_contains($header[4], 'Суд') && $tds->eq(4)->count() > 0) {
+            if (isset($header[4]) && str_contains($header[4], 'Суд') && $tds->eq(4)->count() !== 0) {
                 $place = trim($tds->eq(4)->text());
             }
 
-            $item = new ClarityPersonCourt(
+            return new ClarityPersonCourt(
                 $number,
                 state: empty($state) ? null : $state,
                 side: empty($side) ? null : $side,
                 desc: empty($desc) ? null : $desc,
                 place: empty($place) ? null : $place
             );
-
-            $record->addItem($item);
         });
 
-        return count($record->getItems()) === 0 ? null : $record;
+        $items = array_values(array_filter($items));
+
+        return count($items) === 0 ? null : new ClarityPersonCourtsRecord($items);
     }
 
     private function searchPersonDebtorsRecord(string $url): ?ClarityPersonDebtorsRecord
     {
-        $record = new ClarityPersonDebtorsRecord();
-
         $crawler = $this->getPersonCrawler($url);
 
         $table = $crawler->filter('[data-id="debtors"]');
@@ -398,52 +390,50 @@ class ClaritySearchProvider implements SearchProviderInterface
             return null;
         }
 
-        $table->filter('tr.item')->each(static function (Crawler $tr) use ($header, $record): void {
+        $items = $table->filter('tr.item')->each(static function (Crawler $tr) use ($header): ?ClarityPersonDebtor {
             $tds = $tr->filter('td');
 
-            if ($tds->count() < 1) {
-                return;
+            if ($tds->count() === 1) {
+                return null;
             }
 
             $name = trim($tds->eq(0)->text());
 
             if (empty($name)) {
-                return;
+                return null;
             }
 
-            if (isset($header[1]) && str_contains($header[1], 'народження') && $tds->eq(1)->count() > 0) {
+            if (isset($header[1]) && str_contains($header[1], 'народження') && $tds->eq(1)->count() !== 0) {
                 $bornAt = trim($tds->eq(1)->text());
                 $bornAt = empty($bornAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $bornAt)->setTime(0, 0);
                 $bornAt = $bornAt === false ? null : $bornAt;
             }
 
-            if (isset($header[2]) && str_contains($header[2], 'Запис') && $tds->eq(2)->count() > 0) {
+            if (isset($header[2]) && str_contains($header[2], 'Запис') && $tds->eq(2)->count() !== 0) {
                 $category = trim($tds->eq(2)->text());
             }
 
-            if (isset($header[3]) && str_contains($header[3], 'Актуально') && $tds->eq(3)->count() > 0) {
+            if (isset($header[3]) && str_contains($header[3], 'Актуально') && $tds->eq(3)->count() !== 0) {
                 $actualAt = trim($tds->eq(3)->text());
                 $actualAt = empty($actualAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $actualAt)->setTime(0, 0);
                 $actualAt = $actualAt === false ? null : $actualAt;
             }
 
-            $item = new ClarityPersonDebtor(
+            return new ClarityPersonDebtor(
                 $name,
                 bornAt: empty($bornAt) ? null : $bornAt,
                 category: empty($category) ? null : $category,
                 actualAt: empty($actualAt) ? null : $actualAt,
             );
-
-            $record->addItem($item);
         });
 
-        return count($record->getItems()) === 0 ? null : $record;
+        $items = array_values(array_filter($items));
+
+        return count($items) === 0 ? null : new ClarityPersonDebtorsRecord($items);
     }
 
     private function searchPersonSecurityRecord(string $url): ?ClarityPersonSecurityRecord
     {
-        $record = new ClarityPersonSecurityRecord();
-
         $crawler = $this->getPersonCrawler($url);
 
         $table = $crawler->filter('[data-id="security"]');
@@ -456,35 +446,35 @@ class ClaritySearchProvider implements SearchProviderInterface
             return null;
         }
 
-        $table->filter('tr.item')->each(static function (Crawler $tr) use ($header, $record): void {
+        $items = $table->filter('tr.item')->each(static function (Crawler $tr) use ($header): ?ClarityPersonSecurity {
             $tds = $tr->filter('td');
 
-            if ($tds->count() < 1) {
-                return;
+            if ($tds->count() === 1) {
+                return null;
             }
 
             $name = trim($tds->eq(0)->text());
 
             if (empty($name)) {
-                return;
+                return null;
             }
 
-            if (isset($header[1]) && str_contains($header[1], 'народження') && $tds->eq(1)->count() > 0) {
+            if (isset($header[1]) && str_contains($header[1], 'народження') && $tds->eq(1)->count() !== 0) {
                 $bornAt = trim($tds->eq(1)->text());
                 $bornAt = empty($bornAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $bornAt)->setTime(0, 0);
                 $bornAt = $bornAt === false ? null : $bornAt;
             }
 
-            if (isset($header[2]) && str_contains($header[2], 'Категорія') && $tds->eq(2)->count() > 0) {
+            if (isset($header[2]) && str_contains($header[2], 'Категорія') && $tds->eq(2)->count() !== 0) {
                 $category = trim($tds->eq(2)->text());
             }
 
-            if (isset($header[3]) && str_contains($header[3], 'Регіон') && $tds->eq(3)->count() > 0) {
+            if (isset($header[3]) && str_contains($header[3], 'Регіон') && $tds->eq(3)->count() !== 0) {
                 $region = trim($tds->eq(3)->text());
             }
 
-            if (isset($header[4]) && str_contains($header[4], 'зникнення') && $tds->eq(4)->count() > 0) {
-                if ($tds->eq(4)->filter('.small')->count() > 0) {
+            if (isset($header[4]) && str_contains($header[4], 'зникнення') && $tds->eq(4)->count() !== 0) {
+                if ($tds->eq(4)->filter('.small')->count() !== 0) {
                     $archive = trim($tds->eq(4)->filter('.small')->text());
                     $archive = empty($archive) ? null : str_contains($archive, 'архівна');
                 }
@@ -503,15 +493,15 @@ class ClaritySearchProvider implements SearchProviderInterface
 
             if ($nextTr->matches('.table-collapse-details')) {
                 $trs = $nextTr->filter('tr');
-                if ($trs->eq(5)->filter('td')->count() > 0 && str_contains($trs->eq(5)->filter('td')->eq(0)->text(), 'Звинувачення')) {
+                if ($trs->eq(5)->filter('td')->count() !== 0 && str_contains($trs->eq(5)->filter('td')->eq(0)->text(), 'Звинувачення')) {
                     $accusation = trim($trs->eq(5)->filter('td')->eq(1)->text());
                 }
-                if ($trs->eq(6)->filter('td')->count() > 0 && str_contains($trs->eq(6)->filter('td')->eq(0)->text(), 'Запобіжний')) {
+                if ($trs->eq(6)->filter('td')->count() !== 0 && str_contains($trs->eq(6)->filter('td')->eq(0)->text(), 'Запобіжний')) {
                     $precaution = trim($trs->eq(6)->filter('td')->eq(1)->text());
                 }
             }
 
-            $item = new ClarityPersonSecurity(
+            return new ClarityPersonSecurity(
                 $name,
                 bornAt: empty($bornAt) ? null : $bornAt,
                 category: empty($category) ? null : $category,
@@ -521,17 +511,15 @@ class ClaritySearchProvider implements SearchProviderInterface
                 accusation: empty($accusation) ? null : $accusation,
                 precaution: empty($precaution) ? null : $precaution
             );
-
-            $record->addItem($item);
         });
 
-        return count($record->getItems()) === 0 ? null : $record;
+        $items = array_values(array_filter($items));
+
+        return count($items) === 0 ? null : new ClarityPersonSecurityRecord($items);
     }
 
     private function searchPersonEnforcementsRecord(string $url): ?ClarityPersonEnforcementsRecord
     {
-        $record = new ClarityPersonEnforcementsRecord();
-
         $crawler = $this->getPersonCrawler($url);
 
         $table = $crawler->filter('[data-id="enforcements"]');
@@ -544,34 +532,34 @@ class ClaritySearchProvider implements SearchProviderInterface
             return null;
         }
 
-        $table->filter('tr.item')->each(static function (Crawler $tr) use ($header, $record): void {
+        $items = $table->filter('tr.item')->each(static function (Crawler $tr) use ($header): ?ClarityPersonEnforcement {
             $tds = $tr->filter('td');
 
-            if ($tds->count() < 1) {
-                return;
+            if ($tds->count() === 1) {
+                return null;
             }
 
             $number = trim($tds->eq(0)->text());
 
             if (empty($number)) {
-                return;
+                return null;
             }
 
-            if (isset($header[1]) && str_contains($header[1], 'відкриття') && $tds->eq(1)->count() > 0) {
+            if (isset($header[1]) && str_contains($header[1], 'відкриття') && $tds->eq(1)->count() !== 0) {
                 $openedAt = trim($tds->eq(1)->text());
                 $openedAt = empty($openedAt) ? null : DateTimeImmutable::createFromFormat('d.m.Y', $openedAt)->setTime(0, 0);
                 $openedAt = $openedAt === false ? null : $openedAt;
             }
 
-            if (isset($header[2]) && str_contains($header[2], 'Стягувач') && $tds->eq(2)->count() > 0) {
+            if (isset($header[2]) && str_contains($header[2], 'Стягувач') && $tds->eq(2)->count() !== 0) {
                 $collector = trim($tds->eq(2)->text());
             }
 
-            if (isset($header[3]) && str_contains($header[3], 'Боржник') && $tds->eq(3)->count() > 0) {
+            if (isset($header[3]) && str_contains($header[3], 'Боржник') && $tds->eq(3)->count() !== 0) {
                 $debtor = trim($tds->eq(3)->text());
 
                 if ($tds->count() === count($header) + 1) {
-                    if ($tds->eq(4)->count() > 0) {
+                    if ($tds->eq(4)->count() !== 0) {
                         $bornAt = trim($tds->eq(4)->text());
                         $peaces = explode(' ', $bornAt);
                         $bornAt = $peaces[count($peaces) - 1];
@@ -581,11 +569,11 @@ class ClaritySearchProvider implements SearchProviderInterface
                 }
             }
 
-            if (isset($header[4]) && str_contains($header[4], 'Стан') && $tds->eq($tds->count() - 1)->count() > 0) {
+            if (isset($header[4]) && str_contains($header[4], 'Стан') && $tds->eq($tds->count() - 1)->count() !== 0) {
                 $state = trim($tds->eq($tds->count() - 1)?->text());
             }
 
-            $item = new ClarityPersonEnforcement(
+            return new ClarityPersonEnforcement(
                 $number,
                 openedAt: empty($openedAt) ? null : $openedAt,
                 collector: empty($collector) ? null : $collector,
@@ -593,17 +581,15 @@ class ClaritySearchProvider implements SearchProviderInterface
                 bornAt: empty($bornAt) ? null : $bornAt,
                 state: empty($state) ? null : $state
             );
-
-            $record->addItem($item);
         });
 
-        return count($record->getItems()) === 0 ? null : $record;
+        $items = array_values(array_filter($items));
+
+        return count($items) === 0 ? null : new ClarityPersonEnforcementsRecord($items);
     }
 
     private function searchPersonDeclarationsRecord(string $url): ?ClarityPersonDeclarationsRecord
     {
-        $record = new ClarityPersonDeclarationsRecord();
-
         $crawler = $this->getPersonCrawler($url);
 
         $table = $crawler->filter('[data-id="declarations"] table')->eq(0);
@@ -625,85 +611,83 @@ class ClaritySearchProvider implements SearchProviderInterface
             return null;
         }
 
-        $table->children('tr.item')->each(static function (Crawler $tr) use ($header, $record): void {
+        $items = $table->children('tr.item')->each(static function (Crawler $tr) use ($header): ?ClarityPersonDeclaration {
             $tds = $tr->filter('td');
 
-            if (isset($header[1]) && $tds->eq(1)->count() > 0) {
+            if (isset($header[1]) && $tds->eq(1)->count() !== 0) {
                 $name = trim($tds->eq(1)->text());
 
                 $hrefEl = $tds->eq(1)->filter('a');
 
-                if ($hrefEl->count() > 0) {
+                if ($hrefEl->count() !== 0) {
                     $href = trim($hrefEl->eq(0)->attr('href') ?? '');
                     $href = empty($href) ? null : (self::URL . $href);
                 }
             }
 
             if (empty($name)) {
-                return;
+                return null;
             }
 
-            if (isset($header[0]) && $tds->count() > 0) {
+            if (isset($header[0]) && $tds->count() !== 0) {
                 $year = trim($tds->eq(0)->text());
             }
 
-            if (isset($header[2]) && $tds->eq(2)->count() > 0) {
+            if (isset($header[2]) && $tds->eq(2)->count() !== 0) {
                 $position = trim($tds->eq(2)->text());
             }
 
-            $item = new ClarityPersonDeclaration(
+            return new ClarityPersonDeclaration(
                 $name,
                 href: empty($href) ? null : $href,
                 year: empty($year) ? null : $year,
                 position: empty($position) ? null : $position
             );
-
-            $record->addItem($item);
         });
 
-        return count($record->getItems()) === 0 ? null : $record;
+        $items = array_values(array_filter($items));
+
+        return count($items) === 0 ? null : new ClarityPersonDeclarationsRecord($items);
     }
 
     private function searchEdrsRecord(string $name): ?ClarityEdrsRecord
     {
-        $record = new ClarityEdrsRecord();
+        $crawler = $this->crawlerProvider->getCrawler('GET', '/edrs?search=' . urlencode($name), base: self::URL, user: true);
 
-        $crawler = $this->getEdrsCrawler($name);
-
-        $crawler->filter('.results-wrap .item')->each(static function (Crawler $item) use ($record): void {
+        $items = $crawler->filter('.results-wrap .item')->each(static function (Crawler $item): ?ClarityEdr {
             $nameEl = $item->filter('h5');
 
-            if ($nameEl->count() < 1) {
-                return;
+            if ($nameEl->count() === 0) {
+                return null;
             }
 
             $name = trim($nameEl->text());
 
             if (empty($name)) {
-                return;
+                return null;
             }
 
             $hrefEl = $nameEl->filter('a');
 
-            if ($hrefEl->count() > 0) {
+            if ($hrefEl->count() !== 0) {
                 $href = trim($hrefEl->eq(0)->attr('href') ?? '');
                 $href = empty($href) ? null : (self::URL . $href);
             }
 
             $numberEl = $item->filter('.small');
 
-            if ($numberEl->count() > 0) {
+            if ($numberEl->count() !== 0) {
                 preg_match('/[0-9]{8}/', $numberEl->text(), $m);
                 $number = isset($m, $m[0]) ? $m[0] : null;
             }
 
             $addressEl = $item->filter('.address');
 
-            if ($addressEl->count() > 0) {
+            if ($addressEl->count() !== 0) {
                 $address = trim($addressEl->text());
             }
 
-            $item = new ClarityEdr(
+            return new ClarityEdr(
                 $name,
                 type: empty($type) ? null : $type,
                 href: empty($href) ? null : $href,
@@ -711,25 +695,15 @@ class ClaritySearchProvider implements SearchProviderInterface
                 active: $active ?? null,
                 address: empty($address) ? null : $address
             );
-
-            $record->addItem($item);
         });
 
-        return count($record->getItems()) === 0 ? null : $record;
-    }
+        $items = array_values(array_filter($items));
 
-    private function getPersonsCrawler(string $name): Crawler
-    {
-        return $this->crawlerProvider->getCrawler('GET', '/persons?search=' . $name, base: self::URL, user: true);
+        return count($items) === 0 ? null : new ClarityEdrsRecord($items);
     }
 
     private function getPersonCrawler(string $url): Crawler
     {
         return $this->crawlerProvider->getCrawler('GET', $url, base: str_starts_with($url, self::URL) ? null : self::URL);
-    }
-
-    private function getEdrsCrawler(string $name): Crawler
-    {
-        return $this->crawlerProvider->getCrawler('GET', '/edrs?search=' . $name, base: self::URL, user: true);
     }
 }

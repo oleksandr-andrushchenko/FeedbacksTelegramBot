@@ -16,8 +16,6 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class UkrMissedCarSearchProvider implements SearchProviderInterface
 {
-    private const URL = 'https://wanted.mvs.gov.ua/searchtransport';
-
     public function __construct(
         private readonly CrawlerProvider $crawlerProvider,
     )
@@ -55,22 +53,17 @@ class UkrMissedCarSearchProvider implements SearchProviderInterface
         ];
     }
 
-    private function getMissedCarsCrawler(string $number): Crawler
+    private function searchMissedCars(string $number): ?array
     {
-        return $this->crawlerProvider->getCrawler('GET', self::URL, query: ['NOM' => $number], user: true);
-    }
+        $parameters = ['NOM' => $number];
+        $url = 'https://wanted.mvs.gov.ua/searchtransport?' . http_build_query($parameters);
+        $crawler = $this->crawlerProvider->getCrawler('GET', $url, user: true);
 
-    private function searchMissedCars(string $number): array
-    {
-        $records = [];
-
-        $crawler = $this->getMissedCarsCrawler($number);
-
-        $crawler->filter('.cards-list > .card > .info-list')->each(static function (Crawler $item) use (&$records): void {
+        $items = $crawler->filter('.cards-list > .card > .info-list')->each(static function (Crawler $item): ?UkrMissedCar {
             $listItems = $item->filter('.info-list-item');
 
             if ($listItems->count() === 0) {
-                return;
+                return null;
             }
 
             $map = [
@@ -103,10 +96,10 @@ class UkrMissedCarSearchProvider implements SearchProviderInterface
             $carNumber = $values['carNumber'];
 
             if (empty($carNumber)) {
-                return;
+                return null;
             }
 
-            $records[] = new UkrMissedCar(
+            return new UkrMissedCar(
                 $carNumber,
                 region: empty($values['region']) ? null : $values['region'],
                 model: empty($values['model']) ? null : $values['model'],
@@ -116,6 +109,8 @@ class UkrMissedCarSearchProvider implements SearchProviderInterface
             );
         });
 
-        return $records;
+        $items = array_values(array_filter($items));
+
+        return count($items) === 0 ? null : $items;
     }
 }

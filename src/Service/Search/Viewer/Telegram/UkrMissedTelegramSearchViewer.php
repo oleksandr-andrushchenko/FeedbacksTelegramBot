@@ -35,12 +35,11 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
 
     private function getDisappearedPersonsResultRecord(DisappearedPersonsUkrMissedRecord $record, bool $full): string
     {
-        $h = $this->searchViewerHelper;
         $message = '😐 ';
-        $message .= $h->wrapResultRecord(
-            $h->trans('disappeared_persons_title', ['count' => count($record->getItems())]),
+        $message .= $this->searchViewerHelper->wrapResultRecord(
+            $this->searchViewerHelper->trans('disappeared_persons_title'),
             $record->getItems(),
-            $this->getWrapResultRecord($full, $h),
+            $this->getWrapResultRecordCallback($full),
             $full
         );
 
@@ -49,21 +48,21 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
 
     private function getWantedPersonsResultRecord(WantedPersonsUkrMissedRecord $record, bool $full): string
     {
-        $h = $this->searchViewerHelper;
         $message = '🚨 ';
-        $message .= $h->wrapResultRecord(
-            $h->trans('wanted_persons_title', ['count' => count($record->getItems())]),
+        $message .= $this->searchViewerHelper->wrapResultRecord(
+            $this->searchViewerHelper->trans('wanted_persons_title'),
             $record->getItems(),
-            $this->getWrapResultRecord($full, $h),
+            $this->getWrapResultRecordCallback($full),
             $full
         );
 
         return $message;
     }
 
-
-    public function getWrapResultRecord(bool $full, SearchViewerHelper $h): callable
+    public function getWrapResultRecordCallback(bool $full): callable
     {
+        $h = $this->searchViewerHelper;
+
         return static fn (UkrMissedPerson $item): array => [
             $h->modifier()
                 ->add($h->appendModifier($item->getName()))
