@@ -160,6 +160,66 @@ class ClaritySearchProviderTest extends KernelTestCase
 
     public function searchDataProvider(): Generator
     {
+        yield 'person name & no matches & direct person found' => [
+            'type' => SearchTermType::person_name,
+            'term' => 'Солтис Денис Миколайович',
+            'context' => [
+                'countryCode' => 'ua',
+            ],
+            'expected' => [
+                null,
+                new ClarityPersonCourtsRecord([
+                    new ClarityPersonCourt(
+                        '752/2460/20',
+                        state: null,
+                        side: 'обвинувачений',
+                        desc: null,
+                        place: 'Голосіївський районний суд міста Києва'
+                    ),
+                ]),
+                null,
+                new ClarityPersonEnforcementsRecord([
+                    new ClarityPersonEnforcement(
+                        '67242704',
+                        openedAt: new DateTimeImmutable('2021-10-25'),
+                        collector: 'ГОЛОВНЕ УПРАВЛІННЯ ДПС У М.КИЄВІ #44116011',
+                        debtor: 'СОЛТИС ДЕНИС МИКОЛАЙОВИЧ',
+                        bornAt: new DateTimeImmutable('1988-11-02'),
+                        state: 'Завершено'
+                    ),
+                    new ClarityPersonEnforcement(
+                        '60748938',
+                        openedAt: new DateTimeImmutable('2019-12-03'),
+                        collector: 'ДНІПРОВСЬКИЙ РАЙОННИЙ СУД МІСТА КИЄВА #02896696',
+                        debtor: 'СОЛТИС ДЕНИС МИКОЛАЙОВИЧ',
+                        bornAt: new DateTimeImmutable('1988-11-02'),
+                        state: 'Завершено'
+                    ),
+                ]),
+                new ClarityPersonEdrsRecord([
+                    new ClarityPersonEdr(
+                        'СОЛТИС ДЕНИС МИКОЛАЙОВИЧ',
+                        type: 'ФОП',
+                        href: 'https://clarity-project.info/fop/b26232bdf69675680f0b154f4cca4147',
+                        number: null,
+                        active: false,
+                        address: 'Київ'
+                    ),
+                ]),
+                null,
+                new ClarityEdrsRecord([
+                    new ClarityEdr(
+                        'ПРИВАТНЕ ПІДПРИЄМСТВО "СОЛТИС ГРУП"',
+                        type: null,
+                        href: 'https://clarity-project.info/edr/35881355',
+                        number: '35881355',
+                        active: null,
+                        address: 'ОДЕСЬКА ОБЛ., М. ОДЕСА, ВУЛ. ПІВДЕННА, БУД. 27'
+                    ),
+                ]),
+            ],
+        ];
+
         yield 'person name & nothing for person found' => [
             'type' => SearchTermType::person_name,
             'term' => 'Андрущенко Олександр Сергійович',

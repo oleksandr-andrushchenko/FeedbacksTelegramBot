@@ -77,7 +77,29 @@ class ClaritySearchProvider implements SearchProviderInterface
             $personsRecord = $this->tryCatch(fn () => $this->searchPersonsRecord($term), null);
 
             if ($personsRecord === null) {
+                if (count(explode(' ', $term)) === 3) {
+                    sleep(2);
+                    $url = 'https://clarity-project.info/person/' . md5(mb_strtoupper($term));
+
+                    $personRecords = $this->tryCatch(fn () => [
+                        $this->searchPersonSecurityRecord($url),
+                        $this->searchPersonCourtsRecord($url),
+                        $this->searchPersonDebtorsRecord($url),
+                        $this->searchPersonEnforcementsRecord($url),
+                        $this->searchPersonEdrsRecord($url),
+                        $this->searchPersonDeclarationsRecord($url),
+                    ], []);
+
+                    sleep(2);
+
+                    return [
+                        ...$personRecords,
+                        $this->tryCatch(fn () => $this->searchEdrsRecord($term), null),
+                    ];
+                }
+
                 sleep(2);
+
                 // todo check person by direct link (+check if 3 words)
                 return [
                     $this->tryCatch(fn () => $this->searchEdrsRecord($term), null),
