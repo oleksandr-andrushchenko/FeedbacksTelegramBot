@@ -17,7 +17,7 @@ use App\Service\Feedback\SearchTerm\SearchTermMessengerProvider;
 use App\Service\Feedback\Statistic\FeedbackUserStatisticProviderInterface;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\IdGenerator;
-use App\Service\Validator;
+use App\Service\Validator\Validator;
 use App\Transfer\Feedback\FeedbackTransfer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;

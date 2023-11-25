@@ -24,7 +24,7 @@ use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\Payment\TelegramBotPaymentManager;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
 use App\Service\Telegram\Bot\TelegramBotUserProvider;
-use App\Service\Validator;
+use App\Service\Validator\Validator;
 use Longman\TelegramBot\Entities\KeyboardButton;
 use Psr\Log\LoggerInterface;
 

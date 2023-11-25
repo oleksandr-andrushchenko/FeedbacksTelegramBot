@@ -16,7 +16,6 @@ class ValidatorHelper
         private readonly ArrayKeyQuoter $arrayKeyQuoter,
     )
     {
-
     }
 
     public function withContext(ExecutionContextInterface $context): static

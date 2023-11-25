@@ -21,7 +21,7 @@ use App\Service\Search\Searcher;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversation;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
-use App\Service\Validator;
+use App\Service\Validator\Validator;
 use App\Transfer\Feedback\FeedbackSearchTransfer;
 use App\Transfer\Feedback\SearchTermTransfer;
 use DateTimeImmutable;
