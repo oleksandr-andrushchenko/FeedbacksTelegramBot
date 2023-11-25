@@ -153,7 +153,7 @@ class SearchViewerHelper
 
     public function conditionalModifier($condition): callable
     {
-        return static fn (?string $text): ?string => $condition ? $text : null;
+        return static fn (mixed $text): mixed => $condition ? $text : null;
     }
 
     public function transBracketsModifier(string $id, array $parameters = []): callable
