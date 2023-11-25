@@ -40,6 +40,12 @@
             <argument type="service" id="app.crawler_provider"/>
             <tag name="app.search_provider" provider="ukr_missed_cars"/>
         </service>
+        <service id="app.search_provider_business_guide" class="App\Service\Search\Provider\BusinessGuideSearchProvider"
+                 lazy="true">
+            <argument type="service" id="app.crawler_provider"/>
+            <argument type="service" id="logger"/>
+            <tag name="app.search_provider" provider="business_guide"/>
+        </service>
         <service id="app.search_viewer_helper_telegram" class="App\Service\Search\Viewer\SearchViewerHelper"
                  lazy="true">
             <argument type="service" id="app.translator"/>
@@ -86,6 +92,11 @@
                  class="App\Service\Search\Viewer\Telegram\UkrMissedCarTelegramSearchViewer"
                  parent="app.search_viewer_telegram" lazy="true">
             <tag name="app.search_viewer_telegram" provider="ukr_missed_cars"/>
+        </service>
+        <service id="app.search_viewer_telegram_business_guide"
+                 class="App\Service\Search\Viewer\Telegram\BusinessGuideTelegramSearchViewer"
+                 parent="app.search_viewer_telegram" lazy="true">
+            <tag name="app.search_viewer_telegram" provider="business_guide"/>
         </service>
         <service id="app.search_searcher_telegram" class="App\Service\Search\Searcher" lazy="true">
             <argument type="tagged_locator" tag="app.search_provider" index-by="provider"/>
