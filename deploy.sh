@@ -23,7 +23,8 @@ if [[ $kernelLogDir == //* ]]; then
     exit 1
 fi
 
-if ! docker compose run -e FORCE_SKIPPED=1 php php bin/phpunit; then
+#if ! docker compose run -e FORCE_SKIPPED=1 php php bin/phpunit; then
+if ! docker compose run php php bin/phpunit; then
     echo "some test has been failed"
     exit 1
 fi

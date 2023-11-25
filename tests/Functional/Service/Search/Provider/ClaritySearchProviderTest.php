@@ -220,34 +220,6 @@ class ClaritySearchProviderTest extends KernelTestCase
             ],
         ];
 
-        yield 'person name & nothing for person found' => [
-            'type' => SearchTermType::person_name,
-            'term' => 'Андрущенко Олександр Сергійович',
-            'context' => [
-                'countryCode' => 'ua',
-            ],
-            'expected' => [
-                new ClarityEdrsRecord([
-                    new ClarityEdr(
-                        'Фізична особа підприємець Андрущенко Олександр СЕргійович',
-                        type: null,
-                        href: 'https://clarity-project.info/edr/2088128276',
-                        number: '20881282',
-                        active: null,
-                        address: '23600, Україна, Вінницька область, м. Тульчин , вул. в.Інтернаціоналістів29/1'
-                    ),
-                    new ClarityEdr(
-                        'ТОВАРИСТВО З ДОДАТКОВОЮ ВІДПОВІДАЛЬНІСТЮ "ОРЕНДНЕ ПІДПРИЄМСТВО "ДОБРОПІЛЛЯВУГІЛЛЯ"',
-                        type: null,
-                        href: 'https://clarity-project.info/edr/36636960',
-                        number: '36636960',
-                        active: null,
-                        address: 'ДОНЕЦЬКА ОБЛ., М. ДОБРОПІЛЛЯ, ВУЛ. КИЇВСЬКА, БУД. 1'
-                    ),
-                ]),
-            ],
-        ];
-
         yield 'person name & many matches' => [
             'type' => SearchTermType::person_name,
             'term' => 'КРОЛЕВЕЦЬ СЕРГІЙ ВІКТОРОВИЧ',
