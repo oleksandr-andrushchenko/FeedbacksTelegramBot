@@ -105,6 +105,8 @@ class ClaritySearchProvider implements SearchProviderInterface
                 ];
             }
 
+            sleep(2);
+
             return [
                 $personsRecord,
                 $this->tryCatch(fn () => $this->searchEdrsRecord($term), null),
