@@ -11,5 +11,6 @@
         <service id="app.validator_helper" class="App\Service\Validator\ValidatorHelper" lazy="true">
             <argument type="service" id="app.array_key_quoter"/>
         </service>
+        <service id="app.validator_html" class="App\Service\Validator\ValidatorHtml" lazy="true"/>
     </services>
 </container>

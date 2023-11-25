@@ -368,6 +368,7 @@
         <service id="app.telegram_bot_message_sender" class="App\Service\Telegram\Bot\Api\TelegramBotMessageSender"
                  lazy="true">
             <argument type="service" id="app.telegram_bot_registry"/>
+            <argument type="service" id="app.validator_html"/>
         </service>
         <service id="app.telegram_bot_chat_action_sender"
                  class="App\Service\Telegram\Bot\Api\TelegramBotChatActionSender"

@@ -6,6 +6,7 @@ namespace App\Service\Telegram\Bot\Api;
 
 use App\Entity\Telegram\TelegramBot;
 use App\Service\Telegram\Bot\TelegramBotRegistry;
+use App\Service\Validator\HtmlValidator;
 use LogicException;
 use Longman\TelegramBot\Entities\Keyboard;
 use Longman\TelegramBot\Entities\ServerResponse;
@@ -14,6 +15,7 @@ class TelegramBotMessageSender implements TelegramBotMessageSenderInterface
 {
     public function __construct(
         private readonly TelegramBotRegistry $telegramBotRegistry,
+        private readonly HtmlValidator $htmlValidator,
     )
     {
     }
@@ -92,10 +94,7 @@ class TelegramBotMessageSender implements TelegramBotMessageSenderInterface
 
                 $expose = mb_substr($text, 0, $length);
 
-                $countOpen = preg_match_all('#<[^/]#', $expose);
-                $countClose = preg_match_all('#</#', $expose);
-
-                if ($countOpen == $countClose) {
+                if ($this->htmlValidator->validateHtml($expose)) {
                     $data['text'] = $expose;
                     $response = $bot->sendMessage($data);
                     $text = mb_substr($text, mb_strlen($expose));
