@@ -19,12 +19,11 @@ class CrawlerProvider
         string $url,
         string $base = null,
         array $headers = null,
-        array $query = null,
         array $body = null,
         array $json = null,
+        callable $contentModifier = null,
         float $timeout = 3.0,
-        bool $user = false,
-        bool $array = false
+        bool $user = false
     ): Crawler
     {
         static $crawlers = [];
@@ -38,13 +37,15 @@ class CrawlerProvider
                 $method,
                 $url,
                 headers: $headers,
-                query: $query,
                 body: $body,
                 json: $json,
                 timeout: $timeout,
-                user: $user,
-                array: $array
+                user: $user
             );
+
+            if ($contentModifier !== null) {
+                $content = $contentModifier($content);
+            }
 
             $crawlers[$url] = new Crawler($content, baseHref: $base);
         }
