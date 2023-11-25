@@ -207,7 +207,11 @@ class ClaritySearchProvider implements SearchProviderInterface
 
     private function searchPersonsRecord(string $name): ?ClarityPersonsRecord
     {
-        $crawler = $this->crawlerProvider->getCrawler('GET', '/persons?search=' . urlencode($name), base: self::URL, user: true);
+        $url = '/persons?search=' . urlencode($name);
+        $headers = [
+            'Referer' => 'https://clarity-project.info/persons',
+        ];
+        $crawler = $this->crawlerProvider->getCrawler('GET', $url, base: self::URL, headers: $headers, user: true);
 
         $items = $crawler->filter('.results-wrap .item')->each(static function (Crawler $item): ?ClarityPerson {
             $a = $item->filter('a');
@@ -652,7 +656,11 @@ class ClaritySearchProvider implements SearchProviderInterface
 
     private function searchEdrsRecord(string $name): ?ClarityEdrsRecord
     {
-        $crawler = $this->crawlerProvider->getCrawler('GET', '/edrs?search=' . urlencode($name), base: self::URL, user: true);
+        $url = '/edrs?search=' . urlencode($name);
+        $headers = [
+            'Referer' => 'https://clarity-project.info/edrs',
+        ];
+        $crawler = $this->crawlerProvider->getCrawler('GET', $url, base: self::URL, headers: $headers, user: true);
 
         $items = $crawler->filter('.results-wrap .item')->each(static function (Crawler $item): ?ClarityEdr {
             $nameEl = $item->filter('h5');
