@@ -82,3 +82,4 @@
 * improve secrets for phone searching (add more)
 * array_unique for feedbacks & feedback searches
 * wrap all search records into object with parsed link (and show it for premium users)
+* improve secrets modifier, add brackets for secreted values (just user to know what is hidden)
