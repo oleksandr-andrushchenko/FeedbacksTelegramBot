@@ -49,7 +49,6 @@ class ContactTelegramBotConversation extends TelegramBotConversation implements 
 
         $tg->reply($message, protectContent: true);
 
-        return $this->chooseActionTelegramChatSender->sendActions($tg);
         return $this->queryLeftMessageConfirm($tg);
     }
 
