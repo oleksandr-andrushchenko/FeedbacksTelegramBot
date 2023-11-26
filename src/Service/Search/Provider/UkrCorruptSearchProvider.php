@@ -33,31 +33,24 @@ class UkrCorruptSearchProvider implements SearchProviderInterface
 
     public function supports(FeedbackSearchTerm $searchTerm, array $context = []): bool
     {
-        if ($this->supportsPersonName($searchTerm->getType(), $searchTerm->getNormalizedText(), $context)) {
-            return true;
-        }
-
-        return false;
-    }
-
-
-    private function supportsPersonName(SearchTermType $type, string $name, array $context = []): bool
-    {
         $countryCode = $context['countryCode'] ?? null;
 
         if ($countryCode !== 'ua') {
             return false;
         }
 
+        $type = $searchTerm->getType();
+        $term = $searchTerm->getNormalizedText();
+
         if ($type !== SearchTermType::person_name) {
             return false;
         }
 
-        if (count(explode(' ', $name)) === 1) {
+        if (count(explode(' ', $term)) === 1) {
             return false;
         }
 
-        if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $name) !== 1) {
+        if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $term) !== 1) {
             return false;
         }
 
