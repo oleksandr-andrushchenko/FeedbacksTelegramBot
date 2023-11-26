@@ -97,6 +97,7 @@ class ChooseActionTelegramChatSender
         return [
             $this->getCreateButton($tg)->getText(),
             $tg->command('create_old_1'),
+            $tg->command('create_old_2'),
         ];
     }
 
