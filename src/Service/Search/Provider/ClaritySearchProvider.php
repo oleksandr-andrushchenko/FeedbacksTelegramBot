@@ -56,14 +56,51 @@ class ClaritySearchProvider implements SearchProviderInterface
         $type = $searchTerm->getType();
         $term = $searchTerm->getNormalizedText();
 
-        if (
-            $this->supportsPersonName($type, $term, $context)
-            || $this->supportsOrganizationName($type, $term, $context)
-            || $this->supportsTaxNumber($type, $term, $context)
-            || $this->supportsPhoneNumber($type, $term)
-        ) {
+        $countryCode = $context['countryCode'] ?? null;
+
+        if ($countryCode !== 'ua') {
+            return false;
+        }
+
+        if ($type === SearchTermType::person_name) {
+            if (count(explode(' ', $term)) === 1) {
+                return false;
+            }
+
+            if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $term) !== 1) {
+                return false;
+            }
+
             return true;
         }
+
+        if ($type === SearchTermType::organization_name) {
+            if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $term) !== 1) {
+                return false;
+            }
+
+            return true;
+        }
+
+        if ($type === SearchTermType::tax_number) {
+            if (!is_numeric($term)) {
+                return false;
+            }
+
+            if (strlen($term) !== 8) {
+                return false;
+            }
+
+            return true;
+        }
+
+//        if ($type === SearchTermType::phone_number) {
+//            if (!str_starts_with($term, '380')) {
+//                return false;
+//            }
+//
+//            return true;
+//        }
 
         return false;
     }
@@ -74,64 +111,36 @@ class ClaritySearchProvider implements SearchProviderInterface
         $term = $searchTerm->getNormalizedText();
 
         if ($type === SearchTermType::person_name) {
-            $personsRecord = $this->tryCatch(fn () => $this->searchPersonsRecord($term), null);
+            if (count(explode(' ', $term)) === 3) {
+                $url = 'https://clarity-project.info/person/' . md5(mb_strtoupper($term));
+                $referer = 'https://clarity-project.info/persons?search=' . urlencode($term);
+                $records = $this->tryCatch(fn () => $this->searchPersonRecords($url, $referer), []);
+                $records = array_values(array_filter($records));
 
-            if ($personsRecord === null) {
-                if (count(explode(' ', $term)) === 3) {
-                    sleep(2);
-                    $url = 'https://clarity-project.info/person/' . md5(mb_strtoupper($term));
-
-                    $personRecords = $this->tryCatch(fn () => [
-                        $this->searchPersonSecurityRecord($url),
-                        $this->searchPersonCourtsRecord($url),
-                        $this->searchPersonDebtorsRecord($url),
-                        $this->searchPersonEnforcementsRecord($url),
-                        $this->searchPersonEdrsRecord($url),
-                        $this->searchPersonDeclarationsRecord($url),
-                    ], []);
-
-                    sleep(2);
-
-                    return [
-                        ...$personRecords,
-                        $this->tryCatch(fn () => $this->searchEdrsRecord($term), null),
-                    ];
+                if (!empty($records)) {
+                    return $records;
                 }
 
                 sleep(2);
-
-                // todo check person by direct link (+check if 3 words)
-                return [
-                    $this->tryCatch(fn () => $this->searchEdrsRecord($term), null),
-                ];
             }
 
-            if (count($personsRecord->getItems()) === 1) {
-                sleep(2);
-                $url = $personsRecord->getItems()[0]->getHref();
+            /** @var ClarityPersonsRecord $record */
+            $record = $this->tryCatch(fn () => $this->searchPersonsRecord($term), null);
 
-                $personRecords = $this->tryCatch(fn () => [
-                    $this->searchPersonSecurityRecord($url),
-                    $this->searchPersonCourtsRecord($url),
-                    $this->searchPersonDebtorsRecord($url),
-                    $this->searchPersonEnforcementsRecord($url),
-                    $this->searchPersonEdrsRecord($url),
-                    $this->searchPersonDeclarationsRecord($url),
-                ], []);
-
-                sleep(2);
-
-                return [
-                    ...$personRecords,
-                    $this->tryCatch(fn () => $this->searchEdrsRecord($term), null),
-                ];
+            if ($record === null) {
+                return [];
             }
 
-            sleep(2);
+            if (count($record->getItems()) === 1) {
+                sleep(2);
+                $url = $record->getItems()[0]->getHref();
+                $referer = 'https://clarity-project.info/persons?search=' . urlencode($term);
+
+                return $this->tryCatch(fn () => $this->searchPersonRecords($url, $referer), []);
+            }
 
             return [
-                $personsRecord,
-                $this->tryCatch(fn () => $this->searchEdrsRecord($term), null),
+                $record,
             ];
         }
 
@@ -151,82 +160,16 @@ class ClaritySearchProvider implements SearchProviderInterface
         }
     }
 
-    private function supportsPersonName(SearchTermType $type, string $name, array $context = []): bool
+    private function searchPersonRecords(string $url, string $referer = null): array
     {
-        $countryCode = $context['countryCode'] ?? null;
-
-        if ($countryCode !== 'ua') {
-            return false;
-        }
-
-        if ($type !== SearchTermType::person_name) {
-            return false;
-        }
-
-        if (count(explode(' ', $name)) === 1) {
-            return false;
-        }
-
-        if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $name) !== 1) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function supportsOrganizationName(SearchTermType $type, string $name, array $context = []): bool
-    {
-        $countryCode = $context['countryCode'] ?? null;
-
-        if ($countryCode !== 'ua') {
-            return false;
-        }
-
-        if ($type !== SearchTermType::organization_name) {
-            return false;
-        }
-
-        if (preg_match('/^[\p{Cyrillic}\s]+$/ui', $name) !== 1) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function supportsTaxNumber(SearchTermType $type, string $name, array $context = []): bool
-    {
-        $countryCode = $context['countryCode'] ?? null;
-
-        if ($countryCode !== 'ua') {
-            return false;
-        }
-
-        if ($type !== SearchTermType::tax_number) {
-            return false;
-        }
-
-        if (!is_numeric($name)) {
-            return false;
-        }
-
-        if (strlen($name) !== 8) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function supportsPhoneNumber(SearchTermType $type, string $name): bool
-    {
-        if ($type !== SearchTermType::phone_number) {
-            return false;
-        }
-
-        if (!str_starts_with($name, '380')) {
-            return false;
-        }
-
-        return true;
+        return [
+            $this->searchPersonSecurityRecord($url, $referer),
+            $this->searchPersonCourtsRecord($url, $referer),
+            $this->searchPersonDebtorsRecord($url, $referer),
+            $this->searchPersonEnforcementsRecord($url, $referer),
+            $this->searchPersonEdrsRecord($url, $referer),
+            $this->searchPersonDeclarationsRecord($url, $referer),
+        ];
     }
 
     private function searchPersonsRecord(string $name): ?ClarityPersonsRecord
@@ -265,9 +208,9 @@ class ClaritySearchProvider implements SearchProviderInterface
         return count($items) === 0 ? null : new ClarityPersonsRecord($items);
     }
 
-    private function searchPersonEdrsRecord(string $url): ?ClarityPersonEdrsRecord
+    private function searchPersonEdrsRecord(string $url, string $referer = null): ?ClarityPersonEdrsRecord
     {
-        $crawler = $this->getPersonCrawler($url);
+        $crawler = $this->getPersonCrawler($url, $referer);
 
         // todo: replace with https://clarity-project.info/edrs/?search=%name% (this variant holds addresses for fops)
         // todo: process @mainEntity json
@@ -347,9 +290,9 @@ class ClaritySearchProvider implements SearchProviderInterface
         return count($items) === 0 ? null : new ClarityPersonEdrsRecord($items);
     }
 
-    private function searchPersonCourtsRecord(string $url): ?ClarityPersonCourtsRecord
+    private function searchPersonCourtsRecord(string $url, string $referer = null): ?ClarityPersonCourtsRecord
     {
-        $crawler = $this->getPersonCrawler($url);
+        $crawler = $this->getPersonCrawler($url, $referer);
 
         $table = $crawler->filter('[data-id="court-involved"]');
         $header = [];
@@ -404,9 +347,9 @@ class ClaritySearchProvider implements SearchProviderInterface
         return count($items) === 0 ? null : new ClarityPersonCourtsRecord($items);
     }
 
-    private function searchPersonDebtorsRecord(string $url): ?ClarityPersonDebtorsRecord
+    private function searchPersonDebtorsRecord(string $url, string $referer = null): ?ClarityPersonDebtorsRecord
     {
-        $crawler = $this->getPersonCrawler($url);
+        $crawler = $this->getPersonCrawler($url, $referer);
 
         $table = $crawler->filter('[data-id="debtors"]');
         $header = [];
@@ -460,9 +403,9 @@ class ClaritySearchProvider implements SearchProviderInterface
         return count($items) === 0 ? null : new ClarityPersonDebtorsRecord($items);
     }
 
-    private function searchPersonSecurityRecord(string $url): ?ClarityPersonSecurityRecord
+    private function searchPersonSecurityRecord(string $url, string $referer = null): ?ClarityPersonSecurityRecord
     {
-        $crawler = $this->getPersonCrawler($url);
+        $crawler = $this->getPersonCrawler($url, $referer);
 
         $table = $crawler->filter('[data-id="security"]');
         $header = [];
@@ -546,9 +489,9 @@ class ClaritySearchProvider implements SearchProviderInterface
         return count($items) === 0 ? null : new ClarityPersonSecurityRecord($items);
     }
 
-    private function searchPersonEnforcementsRecord(string $url): ?ClarityPersonEnforcementsRecord
+    private function searchPersonEnforcementsRecord(string $url, string $referer = null): ?ClarityPersonEnforcementsRecord
     {
-        $crawler = $this->getPersonCrawler($url);
+        $crawler = $this->getPersonCrawler($url, $referer);
 
         $table = $crawler->filter('[data-id="enforcements"]');
         $header = [];
@@ -616,9 +559,9 @@ class ClaritySearchProvider implements SearchProviderInterface
         return count($items) === 0 ? null : new ClarityPersonEnforcementsRecord($items);
     }
 
-    private function searchPersonDeclarationsRecord(string $url): ?ClarityPersonDeclarationsRecord
+    private function searchPersonDeclarationsRecord(string $url, string $referer = null): ?ClarityPersonDeclarationsRecord
     {
-        $crawler = $this->getPersonCrawler($url);
+        $crawler = $this->getPersonCrawler($url, $referer);
 
         $table = $crawler->filter('[data-id="declarations"] table')->eq(0);
         $header = [];
@@ -734,8 +677,11 @@ class ClaritySearchProvider implements SearchProviderInterface
         return count($items) === 0 ? null : new ClarityEdrsRecord($items);
     }
 
-    private function getPersonCrawler(string $url): Crawler
+    private function getPersonCrawler(string $url, string $referer = null): Crawler
     {
-        return $this->crawlerProvider->getCrawler('GET', $url, base: str_starts_with($url, self::URL) ? null : self::URL);
+        $headers = $referer === null ? ['Referer' => $referer] : null;
+        $base = str_starts_with($url, self::URL) ? null : self::URL;
+
+        return $this->crawlerProvider->getCrawler('GET', $url, base: $base, headers: $headers);
     }
 }

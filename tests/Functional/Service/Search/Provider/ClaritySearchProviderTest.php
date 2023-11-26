@@ -143,125 +143,23 @@ class ClaritySearchProviderTest extends KernelTestCase
             'expected' => true,
         ];
 
-        yield 'phone number & not ukr' => [
-            'type' => SearchTermType::phone_number,
-            'term' => '15613145672',
-            'context' => [],
-            'expected' => false,
-        ];
-
-        yield 'phone number & ok' => [
-            'type' => SearchTermType::phone_number,
-            'term' => '380969603103',
-            'context' => [],
-            'expected' => true,
-        ];
+//        yield 'phone number & not ukr' => [
+//            'type' => SearchTermType::phone_number,
+//            'term' => '15613145672',
+//            'context' => [],
+//            'expected' => false,
+//        ];
+//
+//        yield 'phone number & ok' => [
+//            'type' => SearchTermType::phone_number,
+//            'term' => '380969603103',
+//            'context' => [],
+//            'expected' => true,
+//        ];
     }
 
     public function searchDataProvider(): Generator
     {
-        yield 'person name & no matches & direct person found' => [
-            'type' => SearchTermType::person_name,
-            'term' => 'Солтис Денис Миколайович',
-            'context' => [
-                'countryCode' => 'ua',
-            ],
-            'expected' => [
-                null,
-                new ClarityPersonCourtsRecord([
-                    new ClarityPersonCourt(
-                        '752/2460/20',
-                        state: null,
-                        side: 'обвинувачений',
-                        desc: null,
-                        place: 'Голосіївський районний суд міста Києва'
-                    ),
-                ]),
-                null,
-                new ClarityPersonEnforcementsRecord([
-                    new ClarityPersonEnforcement(
-                        '67242704',
-                        openedAt: new DateTimeImmutable('2021-10-25'),
-                        collector: 'ГОЛОВНЕ УПРАВЛІННЯ ДПС У М.КИЄВІ #44116011',
-                        debtor: 'СОЛТИС ДЕНИС МИКОЛАЙОВИЧ',
-                        bornAt: new DateTimeImmutable('1988-11-02'),
-                        state: 'Завершено'
-                    ),
-                    new ClarityPersonEnforcement(
-                        '60748938',
-                        openedAt: new DateTimeImmutable('2019-12-03'),
-                        collector: 'ДНІПРОВСЬКИЙ РАЙОННИЙ СУД МІСТА КИЄВА #02896696',
-                        debtor: 'СОЛТИС ДЕНИС МИКОЛАЙОВИЧ',
-                        bornAt: new DateTimeImmutable('1988-11-02'),
-                        state: 'Завершено'
-                    ),
-                ]),
-                new ClarityPersonEdrsRecord([
-                    new ClarityPersonEdr(
-                        'СОЛТИС ДЕНИС МИКОЛАЙОВИЧ',
-                        type: 'ФОП',
-                        href: 'https://clarity-project.info/fop/b26232bdf69675680f0b154f4cca4147',
-                        number: null,
-                        active: false,
-                        address: 'Київ'
-                    ),
-                ]),
-                null,
-                new ClarityEdrsRecord([
-                    new ClarityEdr(
-                        'ПРИВАТНЕ ПІДПРИЄМСТВО "СОЛТИС ГРУП"',
-                        type: null,
-                        href: 'https://clarity-project.info/edr/35881355',
-                        number: '35881355',
-                        active: null,
-                        address: 'ОДЕСЬКА ОБЛ., М. ОДЕСА, ВУЛ. ПІВДЕННА, БУД. 27'
-                    ),
-                ]),
-            ],
-        ];
-
-        yield 'person name & many matches' => [
-            'type' => SearchTermType::person_name,
-            'term' => 'КРОЛЕВЕЦЬ СЕРГІЙ ВІКТОРОВИЧ',
-            'context' => [
-                'countryCode' => 'ua',
-            ],
-            'expected' => [
-                new ClarityPersonsRecord([
-                    new ClarityPerson(
-                        'КРОЛЕВЕЦЬ СЕРГІЙ ВІКТОРОВИЧ',
-                        href: 'https://clarity-project.info/person/daa29a8ba998791640c6414679cd0ead'
-                    ),
-                    new ClarityPerson(
-                        'КРОЛЕВЕЦЬ СЕРГІЙ ВІКТОРОВИЧ ІНД',
-                        href: 'https://clarity-project.info/person/e83d020ec512538d33b4eab554018816'
-                    ),
-                    new ClarityPerson(
-                        'КІНЦЕВИЙ БЕНЕФІЦІАРНИЙ ВЛАСНИК (КОНТРОЛЕР) КРОЛЕВЕЦЬ СЕРГІЙ ВІКТОРОВИЧ',
-                        href: 'https://clarity-project.info/person/e49c2b7414e9d9ab2d56d3bec868ee26'
-                    ),
-                ]),
-                new ClarityEdrsRecord([
-                    new ClarityEdr(
-                        'КП "Центр первинної медико - санітарної допомоги" Кролевецької міської ради',
-                        type: null,
-                        href: 'https://clarity-project.info/edr/40992732',
-                        number: '40992732',
-                        active: null,
-                        address: '41300, Україна, Сумська область, місто Кролевець, бульвар Шевченка 57'
-                    ),
-                    new ClarityEdr(
-                        'КП "Кролевецька лікарня" Кролевецької міської ради',
-                        type: null,
-                        href: 'https://clarity-project.info/edr/02007549',
-                        number: '02007549',
-                        active: null,
-                        address: '41300, Україна, Сумська область, місто Кролевець, бульвар Шевченка,57'
-                    ),
-                ]),
-            ],
-        ];
-
         yield 'person name & single match' => [
             'type' => SearchTermType::person_name,
             'term' => 'АНДРУЩЕНКО СЕРГІЙ МИКОЛАЙОВИЧ',
@@ -326,14 +224,71 @@ class ClaritySearchProviderTest extends KernelTestCase
                         position: 'молодший інспектор відділу нагляду і безпеки, Державна установа "Біленьківська виправна колонія (№ 99)"'
                     ),
                 ]),
-                new ClarityEdrsRecord([
-                    new ClarityEdr(
-                        'ТОВАРИСТВО З ДОДАТКОВОЮ ВІДПОВІДАЛЬНІСТЮ "МЕЛІТОПОЛЬНАФТОСЕРВІС"',
-                        type: null,
-                        href: 'https://clarity-project.info/edr/31585277',
-                        number: '31585277',
-                        active: null,
-                        address: 'ЗАПОРІЗЬКА ОБЛ., М. МЕЛІТОПОЛЬ, ВУЛ. ГЕТЬМАНА САГАЙДАЧНОГО, БУД. 212'
+            ],
+        ];
+
+        yield 'person name & many matches' => [
+            'type' => SearchTermType::person_name,
+            'term' => 'КРОЛЕВЕЦЬ СЕРГІЙ ВІКТОРОВИЧ',
+            'context' => [
+                'countryCode' => 'ua',
+            ],
+            'expected' => [
+                new ClarityPersonEdrsRecord([
+                    new ClarityPersonEdr(
+                        'СІЛЬСЬКОГОСПОДАРСЬКИЙ ВИРОБНИЧИЙ КООПЕРАТИВ "СУПІЙ"',
+                        type: 'Засновник (Історичні дані)',
+                        href: 'https://clarity-project.info/edr/03756388',
+                        number: '03756388',
+                        active: false,
+                        address: 'Положаї'
+                    ),
+                ]),
+            ],
+        ];
+
+        yield 'person name & no matches & direct person found' => [
+            'type' => SearchTermType::person_name,
+            'term' => 'Солтис Денис Миколайович',
+            'context' => [
+                'countryCode' => 'ua',
+            ],
+            'expected' => [
+                new ClarityPersonCourtsRecord([
+                    new ClarityPersonCourt(
+                        '752/2460/20',
+                        state: null,
+                        side: 'обвинувачений',
+                        desc: null,
+                        place: 'Голосіївський районний суд міста Києва'
+                    ),
+                ]),
+                new ClarityPersonEnforcementsRecord([
+                    new ClarityPersonEnforcement(
+                        '67242704',
+                        openedAt: new DateTimeImmutable('2021-10-25'),
+                        collector: 'ГОЛОВНЕ УПРАВЛІННЯ ДПС У М.КИЄВІ #44116011',
+                        debtor: 'СОЛТИС ДЕНИС МИКОЛАЙОВИЧ',
+                        bornAt: new DateTimeImmutable('1988-11-02'),
+                        state: 'Завершено'
+                    ),
+                    new ClarityPersonEnforcement(
+                        '60748938',
+                        openedAt: new DateTimeImmutable('2019-12-03'),
+                        collector: 'ДНІПРОВСЬКИЙ РАЙОННИЙ СУД МІСТА КИЄВА #02896696',
+                        debtor: 'СОЛТИС ДЕНИС МИКОЛАЙОВИЧ',
+                        bornAt: new DateTimeImmutable('1988-11-02'),
+                        state: 'Завершено'
+                    ),
+                ]),
+                new ClarityPersonEdrsRecord([
+                    new ClarityPersonEdr(
+                        'СОЛТИС ДЕНИС МИКОЛАЙОВИЧ',
+                        type: 'ФОП',
+                        href: 'https://clarity-project.info/fop/b26232bdf69675680f0b154f4cca4147',
+                        number: null,
+                        active: false,
+                        address: 'Київ'
                     ),
                 ]),
             ],
