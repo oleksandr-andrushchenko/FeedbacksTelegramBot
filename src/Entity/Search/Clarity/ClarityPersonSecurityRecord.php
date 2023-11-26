@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Entity\Search\Clarity;
 
-class ClarityPersonSecurityRecord
+readonly class ClarityPersonSecurityRecord
 {
     public function __construct(
-        private array $items = []
+        private array $items
     )
     {
     }
@@ -15,10 +15,5 @@ class ClarityPersonSecurityRecord
     public function getItems(): array
     {
         return $this->items;
-    }
-
-    public function addItem(ClarityPersonSecurity $item): void
-    {
-        $this->items[] = $item;
     }
 }

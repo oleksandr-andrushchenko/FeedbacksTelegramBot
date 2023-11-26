@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Entity\Search\Otzyvua;
 
-class OtzyvuaFeedbacksRecord
+readonly class OtzyvuaFeedbacksRecord
 {
     public function __construct(
-        private array $items = []
+        private array $items
     )
     {
     }
@@ -15,10 +15,5 @@ class OtzyvuaFeedbacksRecord
     public function getItems(): array
     {
         return $this->items;
-    }
-
-    public function addItem(OtzyvuaFeedback $item): void
-    {
-        $this->items[] = $item;
     }
 }

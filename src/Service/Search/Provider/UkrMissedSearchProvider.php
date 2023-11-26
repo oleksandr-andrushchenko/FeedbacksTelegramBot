@@ -94,34 +94,34 @@ class UkrMissedSearchProvider implements SearchProviderInterface
         $words = array_map('trim', explode(' ', $name));
         $count = count($words);
 
-        $queryVariants = [];
+        $queries = [];
 
         if ($count === 3) {
-            $queryVariants[] = [
+            $queries[] = [
                 'surname' => $words[0],
                 'name' => $words[1],
                 'middlename' => $words[2],
             ];
-            $queryVariants[] = [
+            $queries[] = [
                 'surname' => $words[1],
                 'name' => $words[0],
                 'middlename' => $words[2],
             ];
         } elseif ($count == 2) {
-            $queryVariants[] = [
+            $queries[] = [
                 'surname' => $words[0],
                 'name' => $words[1],
             ];
-            $queryVariants[] = [
+            $queries[] = [
                 'surname' => $words[1],
                 'name' => $words[0],
             ];
         }
 
-        $records = [];
+        $items = [];
 
-        foreach ($queryVariants as $queryVariant) {
-            $queryVariant = array_merge($queryVariant, [
+        foreach ($queries as $query) {
+            $query = array_merge($query, [
                 'apiType' => '0',
                 'page' => '1',
             ]);
@@ -132,12 +132,12 @@ class UkrMissedSearchProvider implements SearchProviderInterface
                 $url = 'https://www.npu.gov.ua/api/integration/wanted-persons-by-constituent-data';
             }
 
-            $url .= '?' . http_build_query($queryVariant);
+            $url .= '?' . http_build_query($query);
 
             $data = $this->httpRequester->requestHttp('GET', $url, user: true, array: true);
 
             foreach ($data['items'] as $item) {
-                $records[] = new UkrMissedPerson(
+                $items[] = new UkrMissedPerson(
                     surname: isset($item['person'], $item['person']['surname']) ? $item['person']['surname'] : null,
                     name: isset($item['person'], $item['person']['name']) ? $item['person']['name'] : null,
                     middleName: isset($item['person'], $item['person']['middlename']) ? $item['person']['middlename'] : null,
@@ -159,11 +159,11 @@ class UkrMissedSearchProvider implements SearchProviderInterface
                 );
             }
 
-            if (count($records) > 0) {
-                break;
+            if (count($items) > 0) {
+                return $items;
             }
         }
 
-        return count($records) === 0 ? null : $records;
+        return null;
     }
 }
