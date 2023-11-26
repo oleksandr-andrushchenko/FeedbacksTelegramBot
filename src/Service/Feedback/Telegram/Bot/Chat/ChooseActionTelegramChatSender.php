@@ -246,6 +246,7 @@ class ChooseActionTelegramChatSender
     {
         return [
             $this->getContactButton($tg)->getText(),
+            $tg->command('contact_old_1'),
         ];
     }
 
