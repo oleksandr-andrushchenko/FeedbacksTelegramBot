@@ -454,6 +454,7 @@
             <argument type="service" id="app.feedback_search_command_options"/>
             <argument type="service" id="app.feedback_lookup_command_options"/>
             <argument type="service" id="app.event_bus"/>
+            <argument type="service" id="app.contact_options_factory"/>
             <tag name="app.telegram_group" group="feedbacks"/>
         </service>
         <service id="app.telegram_conversation_country"

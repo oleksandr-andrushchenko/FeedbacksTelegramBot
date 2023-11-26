@@ -11,6 +11,7 @@ use App\Entity\Telegram\TelegramBotCommandHandler;
 use App\Entity\Telegram\TelegramBotMyChatMemberHandler;
 use App\Entity\Telegram\TelegramBotPayment;
 use App\Message\Event\ActivityEvent;
+use App\Service\ContactOptionsFactory;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionPlanProvider;
 use App\Service\Feedback\Telegram\Bot\Chat\ChooseActionTelegramChatSender;
@@ -81,6 +82,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
         private readonly FeedbackCommandOptions $feedbackSearchCommandOptions,
         private readonly FeedbackCommandOptions $feedbackLookupCommandOptions,
         private readonly MessageBusInterface $eventBus,
+        private readonly ContactOptionsFactory $contactOptionsFactory,
     )
     {
         parent::__construct($telegramBotAwareHelper, $telegramBotConversationFactory);
@@ -294,7 +296,19 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
 
     public function contact(TelegramBotAwareHelper $tg): null
     {
-        return $tg->stopCurrentConversation()->startConversation(ContactTelegramBotConversation::class)->null();
+//        return $tg->stopCurrentConversation()->startConversation(ContactTelegramBotConversation::class)->null();
+
+        $tg->stopCurrentConversation();
+
+        $contacts = $this->contactOptionsFactory->createContactOptionsByTelegramBot($tg->getBot()->getEntity());
+
+        $message = $tg->view('contact', [
+            'contacts' => $contacts,
+        ]);
+
+        $tg->reply($message, protectContent: true);
+
+        return $this->chooseActionTelegramChatSender->sendActions($tg);
     }
 
     public function commands(TelegramBotAwareHelper $tg): null
