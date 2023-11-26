@@ -36,7 +36,7 @@ class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewe
         $h = $this->searchViewerHelper;
         $message = '‼️ ';
         $message .= $h->wrapResultRecord(
-            $h->trans('persons_title', ['count' => count($record->getItems())]),
+            $h->trans('persons_title'),
             $record->getItems(),
             static fn (UkrCorruptPerson $item): array => [
                 $h->modifier()
