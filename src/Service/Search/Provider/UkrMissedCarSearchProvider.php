@@ -49,11 +49,11 @@ class UkrMissedCarSearchProvider implements SearchProviderInterface
         $term = $searchTerm->getNormalizedText();
 
         return [
-            $this->searchMissedCars($term),
+            $this->searchCars($term),
         ];
     }
 
-    private function searchMissedCars(string $number): ?array
+    private function searchCars(string $number): ?array
     {
         $parameters = ['NOM' => $number];
         $url = 'https://wanted.mvs.gov.ua/searchtransport?' . http_build_query($parameters);

@@ -82,25 +82,25 @@ class BusinessGuideSearchProvider implements SearchProviderInterface
             }
         }
 
-        $enterprisesRecord = $this->tryCatch(fn () => $this->searchEnterprises($term), null);
+        $enterprises = $this->tryCatch(fn () => $this->searchEnterprises($term), null);
 
-        if ($enterprisesRecord === null) {
+        if ($enterprises === null) {
             return [];
         }
 
-        if (count($enterprisesRecord->getItems()) === 1) {
+        if (count($enterprises->getItems()) === 1) {
             sleep(2);
-            $url = $enterprisesRecord->getItems()[0]->getHref();
+            $url = $enterprises->getItems()[0]->getHref();
 
-            $enterpriseRecord = $this->tryCatch(fn () => $this->searchEnterprise($url), []);
+            $enterprise = $this->tryCatch(fn () => $this->searchEnterprise($url), []);
 
             return [
-                $enterpriseRecord,
+                $enterprise,
             ];
         }
 
         return [
-            $enterprisesRecord,
+            $enterprises,
         ];
     }
 
