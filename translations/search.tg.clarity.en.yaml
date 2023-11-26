@@ -1,34 +1,34 @@
 on_search: 'Search by database #1...'
 person_edrs_title: Related companies
-edr_type: degree of relation
+edr_type: Degree of relation
 edr_number: EDRPOU
-address: address
-active: active
-not_active: not active
+address: Address
+active: Active
+not_active: Not active
 security_title: Security
-born_at: date of birth
-region: region
-absent_at: date of disappearance, wanted
-actual: actual
-not_actual: not actual
-accusation: accusation
-precaution: precautionary measure
+born_at: Date of birth
+region: Region
+absent_at: Date of disappearance
+actual: Actual
+not_actual: Not actual
+accusation: Accusation
+precaution: Precautionary measure
 courts_title: Court cases
-case_number: case number
-case_state: case state
-case_side: side
-desc: description
-court: court
+case_number: Case number
+case_state: Case state
+case_side: Side
+desc: Description
+court: Court
 enforcements_title: Enforcement proceedings
-enf_number: number of proceedings
-opened_at: opened date
-collector: collector
-debtor: debtor
-enf_state: state
+enf_number: Number of proceedings
+opened_at: Opened date
+collector: Collector
+debtor: Debtor
+enf_state: State
 debtors_title: Bankruptcy
 person_declarations_title: Declarations
 year: Year
 position: Position
-persons_title: More than one result was found for your query. Who exactly interests you? [ Repeat the search using the name of the person from the list ]
+persons_title: Who exactly interests you? [ Repeat the search using the name of the person from the list ]
 person_count: 'Persons with this name: %count%'
-edrs_title: More than one result was found for your query. What interests you? [ Repeat the search using the name from the list ]
+edrs_title: What exactly interests you? [ Repeat the search using the name from the list ]

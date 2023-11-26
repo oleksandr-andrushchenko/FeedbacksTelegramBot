@@ -1,34 +1,34 @@
 on_search: Пошук по базі №1...
 person_edrs_title: "Пов'язані компанії"
-edr_type: степінь відношення
+edr_type: Степінь відношення
 edr_number: ЄДРПОУ
-address: адреса
-active: активний
-not_active: не активний
+address: Адреса
+active: Активний
+not_active: Не активний
 security_title: Безпека
-born_at: дата народження
-region: регіон
-absent_at: дата зникнення, розшук
-actual: актуально
-not_actual: не актуально
-accusation: звинувачення
-precaution: запобіжний захід
+born_at: Дата народження
+region: Регіон
+absent_at: Дата зникнення
+actual: Актуально
+not_actual: Не актуально
+accusation: Звинувачення
+precaution: Запобіжний захід
 courts_title: Судові справи
 case_number: № справи
-case_state: стан розгляду
-case_side: сторона
-desc: опис
-court: суд
+case_state: Стан розгляду
+case_side: Сторона
+desc: Опис
+court: Суд
 enforcements_title: Виконавчі провадження
 enf_number: № провадження
-opened_at: дата відкриття
-collector: стягувач
-debtor: боржник
-enf_state: стан
+opened_at: Дата відкриття
+collector: Стягувач
+debtor: Боржник
+enf_state: Стан
 debtors_title: Банкрутство
 person_declarations_title: Декларації
 year: Рік
 position: Посада
-persons_title: По вашому запиту знайдено більше ніж один результат. Хто саме вас цікавить? [ Повторіть пошук використовуючи ПІБ особи зі списку ]
+persons_title: Хто саме вас цікавить? [ Повторіть пошук використовуючи ПІБ особи зі списку ]
 person_count: 'Осіб з таким іменем: %count%'
-edrs_title: По вашому запиту знайдено більше ніж один результат. Що саме вас цікавить? [ Повторіть пошук використовуючи назву зі списку ]
+edrs_title: Що саме вас цікавить? [ Повторіть пошук використовуючи назву зі списку ]

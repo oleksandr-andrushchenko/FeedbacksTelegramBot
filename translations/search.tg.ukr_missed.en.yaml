@@ -1,5 +1,5 @@
 on_search: 'Search by database #3...'
 disappeared_persons_title: Disappeared citizens
-born_at: date of birth
-absent_at: date of absence
+born_at: Date of birth
+absent_at: Date of absence
 wanted_persons_title: Persons hiding from authorities

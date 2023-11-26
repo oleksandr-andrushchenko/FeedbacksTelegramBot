@@ -1,34 +1,34 @@
 on_search: Поиск по базе №1...
 person_edrs_title: Связанные компании
-edr_type: степень отношения
+edr_type: Степень отношения
 edr_number: ЕГРПОУ
-address: адрес
-active: активный
-not_active: не активен
+address: Адрес
+active: Активный
+not_active: Не активен
 security_title: Безопасность
-born_at: дата рождения
-region: регион
-absent_at: дата исчезновения, розыск
-actual: актуально
-not_actual: не актуально
-accusation: обвинение
-precaution: мера пресечения
+born_at: Дата рождения
+region: Регион
+absent_at: Дата исчезновения
+actual: Актуально
+not_actual: Не актуально
+accusation: Обвинение
+precaution: Мера пресечения
 courts_title: Судебные дела
 case_number: № дела
-case_state: состояние рассмотрения
-case_side: сторона
-desc: описание
-court: суд
+case_state: Состояние рассмотрения
+case_side: Сторона
+desc: Описание
+court: Суд
 enforcements_title: Исполнительные производства
 enf_number: № производства
-opened_at: дата открытия
-collector: взиматель
-debtor: должник
-enf_state: состояние
+opened_at: Дата открытия
+collector: Взиматель
+debtor: Должник
+enf_state: Состояние
 debtors_title: Банкротство
 person_declarations_title: Декларации
 year: Год
 position: Должность
-persons_title: По вашему запросу найдено более одного результата. Кто вас интересует? [ Повторите поиск используя ФИО лица из списка ]
+persons_title: Кто конкретно вас интересует? [ Повторите поиск используя ФИО лица из списка ]
 person_count: 'Людей с таким именем: %count%'
-edrs_title: По вашему запросу найдено более одного результата. Что вас интересует? [ Повторите поиск, используя название из списка ]
+edrs_title: Что конкретно вас интересует? [ Повторите поиск, используя название из списка ]
