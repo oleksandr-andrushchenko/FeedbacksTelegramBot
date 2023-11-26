@@ -682,6 +682,6 @@ class ClaritySearchProvider implements SearchProviderInterface
         $headers = $referer === null ? ['Referer' => $referer] : null;
         $base = str_starts_with($url, self::URL) ? null : self::URL;
 
-        return $this->crawlerProvider->getCrawler('GET', $url, base: $base, headers: $headers);
+        return $this->crawlerProvider->getCrawler('GET', $url, base: $base, headers: $headers, user: true);
     }
 }
