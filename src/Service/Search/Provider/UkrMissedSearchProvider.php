@@ -20,9 +20,6 @@ use DateTimeImmutable;
  */
 class UkrMissedSearchProvider implements SearchProviderInterface
 {
-    private const URL_DISAPPEARED = 'https://www.npu.gov.ua/api/integration/disappeared-persons-by-constituent-data';
-    private const URL_WANTED = 'https://www.npu.gov.ua/api/integration/wanted-persons-by-constituent-data';
-
     public function __construct(
         private readonly HttpRequester $httpRequester,
     )
@@ -139,7 +136,15 @@ class UkrMissedSearchProvider implements SearchProviderInterface
                 'page' => '1',
             ]);
 
-            $data = $this->httpRequester->requestHttp('GET', $disappeared ? self::URL_DISAPPEARED : self::URL_WANTED, query: $queryVariant, user: true, array: true);
+            if ($disappeared) {
+                $url = 'https://www.npu.gov.ua/api/integration/disappeared-persons-by-constituent-data';
+            } else {
+                $url = 'https://www.npu.gov.ua/api/integration/wanted-persons-by-constituent-data';
+            }
+
+            $url .= '?' . http_build_query($queryVariant);
+
+            $data = $this->httpRequester->requestHttp('GET', $url, user: true, array: true);
 
             foreach ($data['items'] as $item) {
                 $records[] = new UkrMissedPerson(
