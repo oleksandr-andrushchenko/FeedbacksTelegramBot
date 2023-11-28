@@ -6,28 +6,11 @@ namespace App\Tests\Functional\Service\Search\Provider;
 
 use App\Entity\Search\BusinessGuide\BusinessGuideEnterprise;
 use App\Entity\Search\BusinessGuide\BusinessGuideEnterprises;
-use App\Entity\Search\Clarity\ClarityEdr;
-use App\Entity\Search\Clarity\ClarityEdrsRecord;
-use App\Entity\Search\Clarity\ClarityPerson;
-use App\Entity\Search\Clarity\ClarityPersonCourt;
-use App\Entity\Search\Clarity\ClarityPersonCourtsRecord;
-use App\Entity\Search\Clarity\ClarityPersonDebtor;
-use App\Entity\Search\Clarity\ClarityPersonDebtorsRecord;
-use App\Entity\Search\Clarity\ClarityPersonDeclaration;
-use App\Entity\Search\Clarity\ClarityPersonDeclarationsRecord;
-use App\Entity\Search\Clarity\ClarityPersonEdr;
-use App\Entity\Search\Clarity\ClarityPersonEdrsRecord;
-use App\Entity\Search\Clarity\ClarityPersonEnforcement;
-use App\Entity\Search\Clarity\ClarityPersonEnforcementsRecord;
-use App\Entity\Search\Clarity\ClarityPersonSecurity;
-use App\Entity\Search\Clarity\ClarityPersonSecurityRecord;
-use App\Entity\Search\Clarity\ClarityPersonsRecord;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Tests\Traits\Search\SearchProviderTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Generator;
-use DateTimeImmutable;
 
 class BusinessGuideSearchProviderTest extends KernelTestCase
 {
@@ -137,8 +120,8 @@ class BusinessGuideSearchProviderTest extends KernelTestCase
 
     public function searchDataProvider(): Generator
     {
-        yield 'phone number & many matches' => [
-            'type' => SearchTermType::phone_number,
+        yield 'org name & many matches' => [
+            'type' => SearchTermType::organization_name,
             'term' => 'Ерідон',
             'context' => [
                 'countryCode' => 'ua',

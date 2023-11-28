@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Service\Search\Provider;
 
-use App\Entity\Search\UkrMissedCar\UkrMissedCar;
 use App\Entity\Search\UkrWantedPerson\UkrWantedPerson;
 use App\Entity\Search\UkrWantedPerson\UkrWantedPersons;
 use App\Enum\Feedback\SearchTermType;

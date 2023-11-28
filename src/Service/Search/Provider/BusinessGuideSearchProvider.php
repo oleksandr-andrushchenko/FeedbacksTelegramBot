@@ -164,14 +164,9 @@ class BusinessGuideSearchProvider implements SearchProviderInterface
         return count($items) === 0 ? null : new BusinessGuideEnterprises($items);
     }
 
-    private function getEnterpriseCrawler(string $url): Crawler
-    {
-        return $this->crawlerProvider->getCrawler('GET', $url);
-    }
-
     private function searchEnterprise(string $url): ?BusinessGuideEnterprise
     {
-        $crawler = $this->getEnterpriseCrawler($url);
+        $crawler = $this->crawlerProvider->getCrawler('GET', $url);
 
         $nameEl = $crawler->filter('.kartkaNazva h1');
 
