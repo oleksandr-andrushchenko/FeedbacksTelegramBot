@@ -71,6 +71,7 @@
             <parameter>ukr_missed</parameter>
             <parameter>ukr_missed_cars</parameter>
             <parameter>business_guide</parameter>
+            <parameter>ukr_wanted_persons</parameter>
         </parameter>
 
         <parameter key="app.lookup.search_term_type_step">true</parameter>
