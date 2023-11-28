@@ -166,6 +166,11 @@ class SearchViewerHelper
         return fn (?string $text): ?string => empty($text) ? null : (empty($add) ? $text : sprintf('%s [ %s ]', $text, $add));
     }
 
+    public function filterModifier(): callable
+    {
+        return static fn (?array $array): ?array => empty($array) ? null : array_filter($array);
+    }
+
     public function implodeModifier(string $separator): callable
     {
         return static fn (?array $array): ?string => empty($array) ? null : implode($separator, $array);
