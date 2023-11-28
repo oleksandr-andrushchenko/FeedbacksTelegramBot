@@ -52,6 +52,13 @@
             <argument type="service" id="logger"/>
             <tag name="app.search_provider" provider="ukr_wanted_persons"/>
         </service>
+        <service id="app.search_provider_blackbox" class="App\Service\Search\Provider\BlackboxSearchProvider"
+                 lazy="true">
+            <argument type="service" id="app.crawler_provider"/>
+            <argument type="service" id="app.http_requester"/>
+            <argument type="service" id="logger"/>
+            <tag name="app.search_provider" provider="blackbox"/>
+        </service>
         <service id="app.search_viewer_helper_telegram" class="App\Service\Search\Viewer\SearchViewerHelper"
                  lazy="true">
             <argument type="service" id="app.translator"/>
@@ -108,6 +115,11 @@
                  class="App\Service\Search\Viewer\Telegram\UkrWantedPersonTelegramSearchViewer"
                  parent="app.search_viewer_telegram" lazy="true">
             <tag name="app.search_viewer_telegram" provider="ukr_wanted_persons"/>
+        </service>
+        <service id="app.search_viewer_telegram_blackbox"
+                 class="App\Service\Search\Viewer\Telegram\BlackboxTelegramSearchViewer"
+                 parent="app.search_viewer_telegram" lazy="true">
+            <tag name="app.search_viewer_telegram" provider="blackbox"/>
         </service>
         <service id="app.search_searcher_telegram" class="App\Service\Search\Searcher" lazy="true">
             <argument type="tagged_locator" tag="app.search_provider" index-by="provider"/>
