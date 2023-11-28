@@ -1,2 +1,2 @@
-on_search: Search across review database...
-feedbacks_title: 'There are %count% feedback(-s) have been found'
+on_search: 'Search on the database of reviews #1...'
+feedbacks_title: Found the following feedbacks

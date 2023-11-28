@@ -25,10 +25,9 @@ class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerI
     {
         $full = $context['full'] ?? false;
 
-        $h = $this->searchViewerHelper;
         $message = '💫 ';
-        $message .= $h->wrapResultRecord(
-            $h->trans('feedbacks_title', ['count' => count($record)]),
+        $message .= $this->searchViewerHelper->wrapResultRecord(
+            $this->searchViewerHelper->trans('feedbacks_title'),
             $record,
             fn (Feedback $feedback): array => [
                 $this->feedbackTelegramViewProvider->getFeedbackTelegramView(
