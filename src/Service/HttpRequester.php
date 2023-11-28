@@ -32,7 +32,7 @@ class HttpRequester
             'query' => $query,
             'body' => $body,
             'json' => $json,
-            'timeout' => $timeout,
+//            'timeout' => $timeout,
         ]);
 
         if (!isset($options['headers'])) {
