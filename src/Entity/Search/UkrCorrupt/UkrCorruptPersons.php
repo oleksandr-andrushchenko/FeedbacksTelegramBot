@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\Search\UkrCorrupt;
 
-readonly class UkrCorruptPersonsRecord
+readonly class UkrCorruptPersons
 {
     public function __construct(
         private array $items = [],

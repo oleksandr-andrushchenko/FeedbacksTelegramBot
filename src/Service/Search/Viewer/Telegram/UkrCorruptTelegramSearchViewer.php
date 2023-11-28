@@ -6,7 +6,7 @@ namespace App\Service\Search\Viewer\Telegram;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\UkrCorrupt\UkrCorruptPerson;
-use App\Entity\Search\UkrCorrupt\UkrCorruptPersonsRecord;
+use App\Entity\Search\UkrCorrupt\UkrCorruptPersons;
 use App\Service\Search\Viewer\SearchViewer;
 use App\Service\Search\Viewer\SearchViewerHelper;
 use App\Service\Search\Viewer\SearchViewerInterface;
@@ -27,11 +27,11 @@ class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewe
         $full = $context['full'] ?? false;
 
         return match (get_class($record)) {
-            UkrCorruptPersonsRecord::class => $this->getPersonsResultRecord($record, $full),
+            UkrCorruptPersons::class => $this->getPersonsResultRecord($record, $full),
         };
     }
 
-    public function getPersonsResultRecord(UkrCorruptPersonsRecord $record, bool $full): string
+    public function getPersonsResultRecord(UkrCorruptPersons $record, bool $full): string
     {
         $h = $this->searchViewerHelper;
         $message = '‼️ ';

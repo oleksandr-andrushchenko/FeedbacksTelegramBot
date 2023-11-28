@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\Search\UkrMissed;
 
-class WantedPersonsUkrMissedRecord
+readonly class UkrMissedDisappearedPersons
 {
     public function __construct(
         private array $items = []
@@ -15,10 +15,5 @@ class WantedPersonsUkrMissedRecord
     public function getItems(): array
     {
         return $this->items;
-    }
-
-    public function addItem(UkrMissedPerson $item): void
-    {
-        $this->items[] = $item;
     }
 }

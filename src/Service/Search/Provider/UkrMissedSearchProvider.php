@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Service\Search\Provider;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
+use App\Entity\Search\UkrMissed\UkrMissedDisappearedPersons;
 use App\Entity\Search\UkrMissed\UkrMissedPerson;
-use App\Entity\Search\UkrMissed\DisappearedPersonsUkrMissedRecord;
-use App\Entity\Search\UkrMissed\WantedPersonsUkrMissedRecord;
+use App\Entity\Search\UkrMissed\UkrMissedWantedPersons;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Service\HttpRequester;
@@ -67,7 +67,7 @@ class UkrMissedSearchProvider implements SearchProviderInterface
         ];
     }
 
-    public function searchDisappearedPersons(string $name): ?DisappearedPersonsUkrMissedRecord
+    public function searchDisappearedPersons(string $name): ?UkrMissedDisappearedPersons
     {
         $persons = $this->searchPersons($name, true);
 
@@ -75,10 +75,10 @@ class UkrMissedSearchProvider implements SearchProviderInterface
             return null;
         }
 
-        return new DisappearedPersonsUkrMissedRecord($persons);
+        return new UkrMissedDisappearedPersons($persons);
     }
 
-    public function searchWantedPersons(string $name): ?WantedPersonsUkrMissedRecord
+    public function searchWantedPersons(string $name): ?UkrMissedWantedPersons
     {
         $persons = $this->searchPersons($name, false);
 
@@ -86,7 +86,7 @@ class UkrMissedSearchProvider implements SearchProviderInterface
             return null;
         }
 
-        return new WantedPersonsUkrMissedRecord($persons);
+        return new UkrMissedWantedPersons($persons);
     }
 
     public function searchPersons(string $name, bool $disappeared): ?array

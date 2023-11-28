@@ -6,7 +6,7 @@ namespace App\Service\Search\Provider;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\UkrCorrupt\UkrCorruptPerson;
-use App\Entity\Search\UkrCorrupt\UkrCorruptPersonsRecord;
+use App\Entity\Search\UkrCorrupt\UkrCorruptPersons;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Service\HttpRequester;
@@ -66,30 +66,30 @@ class UkrCorruptSearchProvider implements SearchProviderInterface
         ];
     }
 
-    public function searchPersons(string $name): ?UkrCorruptPersonsRecord
+    public function searchPersons(string $name): ?UkrCorruptPersons
     {
         $words = array_map('trim', explode(' ', $name));
         $count = count($words);
 
-        $bodyVariants = [];
+        $bodies = [];
 
         if ($count === 3) {
-            $bodyVariants[] = [
+            $bodies[] = [
                 'indLastNameOnOffenseMoment' => $words[0],
                 'indFirstNameOnOffenseMoment' => $words[1],
                 'indPatronymicOnOffenseMoment' => $words[2],
             ];
-            $bodyVariants[] = [
+            $bodies[] = [
                 'indLastNameOnOffenseMoment' => $words[1],
                 'indFirstNameOnOffenseMoment' => $words[0],
                 'indPatronymicOnOffenseMoment' => $words[2],
             ];
         } elseif ($count == 2) {
-            $bodyVariants[] = [
+            $bodies[] = [
                 'indLastNameOnOffenseMoment' => $words[0],
                 'indFirstNameOnOffenseMoment' => $words[1],
             ];
-            $bodyVariants[] = [
+            $bodies[] = [
                 'indLastNameOnOffenseMoment' => $words[1],
                 'indFirstNameOnOffenseMoment' => $words[0],
             ];
@@ -97,8 +97,8 @@ class UkrCorruptSearchProvider implements SearchProviderInterface
 
         $records = [];
 
-        foreach ($bodyVariants as $bodyVariant) {
-            $data = $this->httpRequester->requestHttp('POST', self::URL, json: $bodyVariant, array: true);
+        foreach ($bodies as $body) {
+            $data = $this->httpRequester->requestHttp('POST', self::URL, json: $body, array: true);
 
             foreach ($data as $item) {
                 $records[] = new UkrCorruptPerson(
@@ -142,6 +142,6 @@ class UkrCorruptSearchProvider implements SearchProviderInterface
             return true;
         });
 
-        return count($records) === 0 ? null : new UkrCorruptPersonsRecord(array_values($records));
+        return count($records) === 0 ? null : new UkrCorruptPersons(array_values($records));
     }
 }

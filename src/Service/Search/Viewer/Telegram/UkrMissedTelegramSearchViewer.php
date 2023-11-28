@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Service\Search\Viewer\Telegram;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
-use App\Entity\Search\UkrMissed\DisappearedPersonsUkrMissedRecord;
+use App\Entity\Search\UkrMissed\UkrMissedDisappearedPersons;
 use App\Entity\Search\UkrMissed\UkrMissedPerson;
-use App\Entity\Search\UkrMissed\WantedPersonsUkrMissedRecord;
+use App\Entity\Search\UkrMissed\UkrMissedWantedPersons;
 use App\Service\Search\Viewer\SearchViewer;
 use App\Service\Search\Viewer\SearchViewerHelper;
 use App\Service\Search\Viewer\SearchViewerInterface;
@@ -28,12 +28,12 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
         $full = $context['full'] ?? false;
 
         return match (get_class($record)) {
-            DisappearedPersonsUkrMissedRecord::class => $this->getDisappearedPersonsResultRecord($record, $full),
-            WantedPersonsUkrMissedRecord::class => $this->getWantedPersonsResultRecord($record, $full),
+            UkrMissedDisappearedPersons::class => $this->getDisappearedPersonsResultRecord($record, $full),
+            UkrMissedWantedPersons::class => $this->getWantedPersonsResultRecord($record, $full),
         };
     }
 
-    private function getDisappearedPersonsResultRecord(DisappearedPersonsUkrMissedRecord $record, bool $full): string
+    private function getDisappearedPersonsResultRecord(UkrMissedDisappearedPersons $record, bool $full): string
     {
         $message = '😐 ';
         $message .= $this->searchViewerHelper->wrapResultRecord(
@@ -46,7 +46,7 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
         return $message;
     }
 
-    private function getWantedPersonsResultRecord(WantedPersonsUkrMissedRecord $record, bool $full): string
+    private function getWantedPersonsResultRecord(UkrMissedWantedPersons $record, bool $full): string
     {
         $message = '🚨 ';
         $message .= $this->searchViewerHelper->wrapResultRecord(

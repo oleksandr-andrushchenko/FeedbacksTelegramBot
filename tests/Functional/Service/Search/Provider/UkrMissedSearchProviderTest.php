@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Service\Search\Provider;
 
-use App\Entity\Search\UkrMissed\DisappearedPersonsUkrMissedRecord;
+use App\Entity\Search\UkrMissed\UkrMissedDisappearedPersons;
 use App\Entity\Search\UkrMissed\UkrMissedPerson;
-use App\Entity\Search\UkrMissed\WantedPersonsUkrMissedRecord;
+use App\Entity\Search\UkrMissed\UkrMissedWantedPersons;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Tests\Traits\Search\SearchProviderTrait;
@@ -77,7 +77,7 @@ class UkrMissedSearchProviderTest extends KernelTestCase
                 'countryCode' => 'ua',
             ],
             'expected' => [
-                new DisappearedPersonsUkrMissedRecord([
+                new UkrMissedDisappearedPersons([
                     new UkrMissedPerson(
                         surname: 'АНДРУЩЕНКО',
                         name: 'ТЕТЯНА',
@@ -113,7 +113,7 @@ class UkrMissedSearchProviderTest extends KernelTestCase
             ],
             'expected' => [
                 null,
-                new WantedPersonsUkrMissedRecord([
+                new UkrMissedWantedPersons([
                     new UkrMissedPerson(
                         surname: 'АНДРУЩЕНКО',
                         name: 'НАТАЛІЯ',

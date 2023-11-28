@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Service\Search\Provider;
 
 use App\Entity\Search\UkrCorrupt\UkrCorruptPerson;
-use App\Entity\Search\UkrCorrupt\UkrCorruptPersonsRecord;
+use App\Entity\Search\UkrCorrupt\UkrCorruptPersons;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Tests\Traits\Search\SearchProviderTrait;
@@ -76,7 +76,7 @@ class UkrCorruptSearchProviderTest extends KernelTestCase
                 'countryCode' => 'ua',
             ],
             'expected' => [
-                new UkrCorruptPersonsRecord([
+                new UkrCorruptPersons([
                     new UkrCorruptPerson(
                         punishmentType: 'Судове рішення',
                         entityType: 'Фізична особа',
