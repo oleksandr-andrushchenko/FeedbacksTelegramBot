@@ -25,9 +25,7 @@ use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Service\CrawlerProvider;
 use DateTimeImmutable;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
-use Throwable;
 
 /**
  * @see https://clarity-project.info/persons
@@ -35,15 +33,16 @@ use Throwable;
  * @see https://clarity-project.info/edr/2762811968/history/prozorro
  * @see https://clarity-project.info/edr/2762811968/persons
  */
-class ClaritySearchProvider implements SearchProviderInterface
+class ClaritySearchProvider extends SearchProvider implements SearchProviderInterface
 {
     public const URL = 'https://clarity-project.info';
 
     public function __construct(
+        SearchProviderHelper $searchProviderHelper,
         private readonly CrawlerProvider $crawlerProvider,
-        private readonly LoggerInterface $logger,
     )
     {
+        parent::__construct($searchProviderHelper);
     }
 
     public function getName(): SearchProviderName
@@ -114,7 +113,7 @@ class ClaritySearchProvider implements SearchProviderInterface
             if (count(explode(' ', $term)) === 3) {
                 $url = 'https://clarity-project.info/person/' . md5(mb_strtoupper($term));
                 $referer = 'https://clarity-project.info/persons?search=' . urlencode($term);
-                $records = $this->tryCatch(fn () => $this->searchPersonRecords($url, $referer), []);
+                $records = $this->searchProviderHelper->tryCatch(fn () => $this->searchPersonRecords($url, $referer), []);
                 $records = array_values(array_filter($records));
 
                 if (!empty($records)) {
@@ -125,7 +124,7 @@ class ClaritySearchProvider implements SearchProviderInterface
             }
 
             /** @var ClarityPersonsRecord $record */
-            $record = $this->tryCatch(fn () => $this->searchPersonsRecord($term), null);
+            $record = $this->searchProviderHelper->tryCatch(fn () => $this->searchPersonsRecord($term), null);
 
             if ($record === null) {
                 return [];
@@ -136,7 +135,7 @@ class ClaritySearchProvider implements SearchProviderInterface
                 $url = $record->getItems()[0]->getHref();
                 $referer = 'https://clarity-project.info/persons?search=' . urlencode($term);
 
-                return $this->tryCatch(fn () => $this->searchPersonRecords($url, $referer), []);
+                return $this->searchProviderHelper->tryCatch(fn () => $this->searchPersonRecords($url, $referer), []);
             }
 
             return [
@@ -146,18 +145,8 @@ class ClaritySearchProvider implements SearchProviderInterface
 
         // todo parse edr page if single result (implemente the same as for persons made)
         return [
-            $this->tryCatch(fn () => $this->searchEdrsRecord($term), null),
+            $this->searchProviderHelper->tryCatch(fn () => $this->searchEdrsRecord($term), null),
         ];
-    }
-
-    private function tryCatch(callable $job, mixed $failed): mixed
-    {
-        try {
-            return $job();
-        } catch (Throwable $exception) {
-            $this->logger->error($exception);
-            return $failed;
-        }
     }
 
     private function searchPersonRecords(string $url, string $referer = null): array

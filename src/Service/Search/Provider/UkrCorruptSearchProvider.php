@@ -16,14 +16,16 @@ use DateTimeImmutable;
  * @see https://corruptinfo.nazk.gov.ua/
  * @see https://corruptinfo.nazk.gov.ua/ep/swagger/ui/index
  */
-class UkrCorruptSearchProvider implements SearchProviderInterface
+class UkrCorruptSearchProvider extends SearchProvider implements SearchProviderInterface
 {
     private const URL = 'https://corruptinfo.nazk.gov.ua/ep/1.0/corrupt/findData';
 
     public function __construct(
+        SearchProviderHelper $searchProviderHelper,
         private readonly HttpRequester $httpRequester,
     )
     {
+        parent::__construct($searchProviderHelper);
     }
 
     public function getName(): SearchProviderName

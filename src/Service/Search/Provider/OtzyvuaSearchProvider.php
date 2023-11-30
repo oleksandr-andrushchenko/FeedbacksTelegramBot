@@ -13,22 +13,21 @@ use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Service\CrawlerProvider;
 use DateTimeImmutable;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
-use Throwable;
 
 /**
  * @see https://www.otzyvua.net/uk/privat-bank.html
  * @see https://www.otzyvua.net/ajax/?mode=search&q=%D0%BF%D1%80%D0%B8%D0%B2%D0%B0%D1%82
  * @see https://www.otzyvua.net/search/?q=380965137629
  */
-class OtzyvuaSearchProvider implements SearchProviderInterface
+class OtzyvuaSearchProvider extends SearchProvider implements SearchProviderInterface
 {
     public function __construct(
+        SearchProviderHelper $searchProviderHelper,
         private readonly CrawlerProvider $crawlerProvider,
-        private readonly LoggerInterface $logger,
     )
     {
+        parent::__construct($searchProviderHelper);
     }
 
     public function getName(): SearchProviderName
@@ -75,7 +74,7 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
 
         if (isset($url)) {
             sleep(1);
-            $feedbacksRecord = $this->tryCatch(fn () => $this->searchFeedbacksRecord($url), null);
+            $feedbacksRecord = $this->searchProviderHelper->tryCatch(fn () => $this->searchFeedbacksRecord($url), null);
 
             return [
                 $feedbacksRecord,
@@ -85,16 +84,6 @@ class OtzyvuaSearchProvider implements SearchProviderInterface
         return [
             $record,
         ];
-    }
-
-    private function tryCatch(callable $job, mixed $failed): mixed
-    {
-        try {
-            return $job();
-        } catch (Throwable $exception) {
-            $this->logger->error($exception);
-            return $failed;
-        }
     }
 
     private function searchFeedbackSearchTermsRecord(string $name, bool $sortByLength = false): ?OtzyvuaFeedbackSearchTermsRecord

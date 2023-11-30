@@ -8,12 +8,14 @@ use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Enum\Search\SearchProviderName;
 use App\Service\Feedback\FeedbackSearchSearcher;
 
-class SearchRegistrySearchProvider implements SearchProviderInterface
+class SearchRegistrySearchProvider extends SearchProvider implements SearchProviderInterface
 {
     public function __construct(
+        SearchProviderHelper $searchProviderHelper,
         private readonly FeedbackSearchSearcher $feedbackSearchSearcher,
     )
     {
+        parent::__construct($searchProviderHelper);
     }
 
     public function getName(): SearchProviderName

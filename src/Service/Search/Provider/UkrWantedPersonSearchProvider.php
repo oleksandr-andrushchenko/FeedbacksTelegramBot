@@ -11,24 +11,23 @@ use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Service\CrawlerProvider;
 use DateTimeImmutable;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
-use Throwable;
 
 /**
  * @see https://wanted.mvs.gov.ua/searchperson/
  * @see https://wanted.mvs.gov.ua/searchperson/?PRUFM=%D0%90%D0%BD%D0%B4%D1%80%D1%83%D1%89%D0%B5%D0%BD%D0%BA%D0%BE&PRUIM=%D0%9E%D0%BB%D0%B5%D0%BA%D1%81%D0%B0%D0%BD%D0%B4%D1%80&PRUOT=%D0%9C%D0%B8%D1%85%D0%B0%D0%B9%D0%BB%D0%BE%D0%B2%D0%B8%D1%87&FIRST_NAME=&LAST_NAME=&MIDDLE_NAME=&OVD=&BIRTH_DATE1=&BIRTH_DATE2=&LOST_DATE1=&LOST_DATE2=&SEX=&g-recaptcha-response=03AFcWeA4j72hfpRJmnm_eKEp83-ThEDD5DqfmJatRZgdjZpNSao6aCGFiNbPsALea6tTbxpGtggYoDgHadvgVYaN-Oxrr8EOuVJCL2KKby0l-fcawjzdX38HvqRvYRN93rvaCy-Q_btE8USwNeIRRgrEPEnv59gMilGqaqg8wT5XoQ7R4iB9N3v4oT2KcVtZYLGKWpwYzzIxBvOdAkXz1bgCIhCeCNLDiKVEpity8HGmRKOxaX87CcyOr-zL2yO_N4DK6QXoO5QFn3DhuFsq_7KfI170xdoBDWCWa-_yJ8wHCrlLFTBs4osQUx7_HaiiS6Trx_jnGx-luaogW0KT2_GASxDNRnHxDkS3IMhgthsRmr3CWuUm0SDjuS-TVU_qeDZCM4NNwA5Zaekv0NSUowUza6L-tMSRDz6sZaDblZQOdzpTh-0V9F9lqwUn2qsNM4gLz4Y710iolMR7WD6LYpBwKapVC3oQJAfE24o5Gg-Nm8wmNW3ZHh_vROitYhprVZ9mJl7RD6syjtUfSHIVN5y9QKD8YbCa9V4yVeUXnLVSJTI1hiiFqACOjasFu3VsnobTRSCmd2_8j6gLVH3Y2TGZQezirFlC2aZt4KsAM1VuTZQJKNbU2Q-0
  * @see https://wanted.mvs.gov.ua/searchperson/details/?id=3023314580705560
  */
-class UkrWantedPersonSearchProvider implements SearchProviderInterface
+class UkrWantedPersonSearchProvider extends SearchProvider implements SearchProviderInterface
 {
     public const URL = 'https://wanted.mvs.gov.ua';
 
     public function __construct(
+        SearchProviderHelper $searchProviderHelper,
         private readonly CrawlerProvider $crawlerProvider,
-        private readonly LoggerInterface $logger,
     )
     {
+        parent::__construct($searchProviderHelper);
     }
 
     public function getName(): SearchProviderName
@@ -66,7 +65,7 @@ class UkrWantedPersonSearchProvider implements SearchProviderInterface
     {
         $term = $searchTerm->getNormalizedText();
 
-        $persons = $this->tryCatch(fn () => $this->searchPersons($term), null);
+        $persons = $this->searchProviderHelper->tryCatch(fn () => $this->searchPersons($term), null);
 
         if ($persons === null) {
             return [];
@@ -76,7 +75,7 @@ class UkrWantedPersonSearchProvider implements SearchProviderInterface
             sleep(2);
             $url = $persons->getItems()[0]->getHref();
 
-            $person = $this->tryCatch(fn () => $this->searchPerson($url), []);
+            $person = $this->searchProviderHelper->tryCatch(fn () => $this->searchPerson($url), []);
 
             return [
                 $person,
@@ -86,16 +85,6 @@ class UkrWantedPersonSearchProvider implements SearchProviderInterface
         return [
             $persons,
         ];
-    }
-
-    private function tryCatch(callable $job, mixed $failed): mixed
-    {
-        try {
-            return $job();
-        } catch (Throwable $exception) {
-            $this->logger->error($exception);
-            return $failed;
-        }
     }
 
     public function searchPersons(string $term): ?UkrWantedPersons

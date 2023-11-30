@@ -12,24 +12,22 @@ use App\Enum\Search\SearchProviderName;
 use App\Service\CrawlerProvider;
 use App\Service\HttpRequester;
 use DateTimeImmutable;
-use DOMNode;
-use Psr\Log\LoggerInterface;
-use Throwable;
 
 /**
  * @see https://blackbox.net.ua/
  * @see https://blackbox.net.ua/0667524039/
  */
-class BlackboxSearchProvider implements SearchProviderInterface
+class BlackboxSearchProvider extends SearchProvider implements SearchProviderInterface
 {
     private const URL = 'https://blackbox.net.ua';
 
     public function __construct(
+        SearchProviderHelper $searchProviderHelper,
         private readonly CrawlerProvider $crawlerProvider,
         private readonly HttpRequester $httpRequester,
-        private readonly LoggerInterface $logger,
     )
     {
+        parent::__construct($searchProviderHelper);
     }
 
     public function getName(): SearchProviderName
@@ -68,7 +66,7 @@ class BlackboxSearchProvider implements SearchProviderInterface
         $type = $searchTerm->getType();
         $term = $searchTerm->getNormalizedText();
 
-        $feedbacks = $this->tryCatch(fn () => $this->searchFeedbacks($type, $term), null);
+        $feedbacks = $this->searchProviderHelper->tryCatch(fn () => $this->searchFeedbacks($type, $term), null);
 
         if ($feedbacks === null) {
             return [];
@@ -83,16 +81,6 @@ class BlackboxSearchProvider implements SearchProviderInterface
         return [
             $feedbacks,
         ];
-    }
-
-    private function tryCatch(callable $job, mixed $failed): mixed
-    {
-        try {
-            return $job();
-        } catch (Throwable $exception) {
-            $this->logger->error($exception);
-            return $failed;
-        }
     }
 
     private function getToken(): ?string
@@ -146,7 +134,10 @@ class BlackboxSearchProvider implements SearchProviderInterface
             $body['last_name'] = explode(' ', $term)[0];
         }
 
-        $content = $this->tryCatch(fn () => $this->httpRequester->requestHttp('POST', $url, headers: $headers, body: $body, user: true, array: true), []);
+        $content = $this->searchProviderHelper->tryCatch(
+            fn () => $this->httpRequester->requestHttp('POST', $url, headers: $headers, body: $body, user: true, array: true),
+            []
+        );
         $rows = $content['data'] ?? [];
 
         $items = [];

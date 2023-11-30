@@ -5,58 +5,63 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.search_provider_feedbacks" class="App\Service\Search\Provider\FeedbackSearchProvider"
+        <service id="app.search_provider_helper" class="App\Service\Search\Provider\SearchProviderHelper" lazy="true">
+            <argument type="service" id="logger"/>
+        </service>
+        <service id="app.search_provider" class="App\Service\Search\Provider\SearchProvider" abstract="true"
                  lazy="true">
+            <argument type="service" id="app.search_provider_helper"/>
+        </service>
+        <service id="app.search_provider_feedbacks" class="App\Service\Search\Provider\FeedbackSearchProvider"
+                 parent="app.search_provider" lazy="true">
             <argument type="service" id="app.feedback_searcher"/>
             <tag name="app.search_provider" provider="feedbacks"/>
         </service>
         <service id="app.search_provider_searches" class="App\Service\Search\Provider\SearchRegistrySearchProvider"
-                 lazy="true">
+                 parent="app.search_provider" lazy="true">
             <argument type="service" id="app.feedback_search_searcher"/>
             <tag name="app.search_provider" provider="searches"/>
         </service>
-        <service id="app.search_provider_clarity" class="App\Service\Search\Provider\ClaritySearchProvider" lazy="true">
+        <service id="app.search_provider_clarity" class="App\Service\Search\Provider\ClaritySearchProvider"
+                 parent="app.search_provider" lazy="true">
             <argument type="service" id="app.crawler_provider"/>
-            <argument type="service" id="logger"/>
             <tag name="app.search_provider" provider="clarity"/>
         </service>
         <service id="app.search_provider_ukr_missed" class="App\Service\Search\Provider\UkrMissedSearchProvider"
-                 lazy="true">
+                 parent="app.search_provider" lazy="true">
             <argument type="service" id="app.http_requester"/>
             <tag name="app.search_provider" provider="ukr_missed"/>
         </service>
         <service id="app.search_provider_ukr_corrupts" class="App\Service\Search\Provider\UkrCorruptSearchProvider"
-                 lazy="true">
+                 parent="app.search_provider" lazy="true">
             <argument type="service" id="app.http_requester"/>
             <tag name="app.search_provider" provider="ukr_corrupts"/>
         </service>
-        <service id="app.search_provider_otzyvua" class="App\Service\Search\Provider\OtzyvuaSearchProvider" lazy="true">
+        <service id="app.search_provider_otzyvua" class="App\Service\Search\Provider\OtzyvuaSearchProvider"
+                 parent="app.search_provider" lazy="true">
             <argument type="service" id="app.crawler_provider"/>
-            <argument type="service" id="logger"/>
             <tag name="app.search_provider" provider="otzyvua"/>
         </service>
         <service id="app.search_provider_ukr_missed_cars" class="App\Service\Search\Provider\UkrMissedCarSearchProvider"
-                 lazy="true">
+                 parent="app.search_provider" lazy="true">
             <argument type="service" id="app.crawler_provider"/>
             <tag name="app.search_provider" provider="ukr_missed_cars"/>
         </service>
         <service id="app.search_provider_business_guide" class="App\Service\Search\Provider\BusinessGuideSearchProvider"
-                 lazy="true">
+                 parent="app.search_provider" lazy="true">
             <argument type="service" id="app.crawler_provider"/>
-            <argument type="service" id="logger"/>
             <tag name="app.search_provider" provider="business_guide"/>
         </service>
         <service id="app.search_provider_ukr_wanted_persons"
-                 class="App\Service\Search\Provider\UkrWantedPersonSearchProvider" lazy="true">
+                 class="App\Service\Search\Provider\UkrWantedPersonSearchProvider" parent="app.search_provider"
+                 lazy="true">
             <argument type="service" id="app.crawler_provider"/>
-            <argument type="service" id="logger"/>
             <tag name="app.search_provider" provider="ukr_wanted_persons"/>
         </service>
         <service id="app.search_provider_blackbox" class="App\Service\Search\Provider\BlackboxSearchProvider"
-                 lazy="true">
+                 parent="app.search_provider" lazy="true">
             <argument type="service" id="app.crawler_provider"/>
             <argument type="service" id="app.http_requester"/>
-            <argument type="service" id="logger"/>
             <tag name="app.search_provider" provider="blackbox"/>
         </service>
         <service id="app.search_viewer_helper_telegram" class="App\Service\Search\Viewer\SearchViewerHelper"

@@ -11,21 +11,20 @@ use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Service\CrawlerProvider;
 use DOMNode;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
-use Throwable;
 
 /**
  * @see https://business-guide.com.ua/enterprises?q=0636356979&Submit=%CF%EE%F8%F3%EA
  * @see https://8000994519.business-guide.com.ua/
  */
-class BusinessGuideSearchProvider implements SearchProviderInterface
+class BusinessGuideSearchProvider extends SearchProvider implements SearchProviderInterface
 {
     public function __construct(
+        SearchProviderHelper $searchProviderHelper,
         private readonly CrawlerProvider $crawlerProvider,
-        private readonly LoggerInterface $logger,
     )
     {
+        parent::__construct($searchProviderHelper);
     }
 
     public function getName(): SearchProviderName
@@ -82,7 +81,7 @@ class BusinessGuideSearchProvider implements SearchProviderInterface
             }
         }
 
-        $enterprises = $this->tryCatch(fn () => $this->searchEnterprises($term), null);
+        $enterprises = $this->searchProviderHelper->tryCatch(fn () => $this->searchEnterprises($term), null);
 
         if ($enterprises === null) {
             return [];
@@ -92,7 +91,7 @@ class BusinessGuideSearchProvider implements SearchProviderInterface
             sleep(2);
             $url = $enterprises->getItems()[0]->getHref();
 
-            $enterprise = $this->tryCatch(fn () => $this->searchEnterprise($url), []);
+            $enterprise = $this->searchProviderHelper->tryCatch(fn () => $this->searchEnterprise($url), []);
 
             return [
                 $enterprise,
@@ -102,16 +101,6 @@ class BusinessGuideSearchProvider implements SearchProviderInterface
         return [
             $enterprises,
         ];
-    }
-
-    private function tryCatch(callable $job, mixed $failed): mixed
-    {
-        try {
-            return $job();
-        } catch (Throwable $exception) {
-            $this->logger->error($exception);
-            return $failed;
-        }
     }
 
     private function searchEnterprises(string $term): ?BusinessGuideEnterprises

@@ -14,12 +14,14 @@ use Symfony\Component\DomCrawler\Crawler;
 /**
  * @see https://wanted.mvs.gov.ua/searchtransport/?NOM=%D0%90%D0%900601%D0%92%D0%A2&NSH=&g-recaptcha-response=
  */
-class UkrMissedCarSearchProvider implements SearchProviderInterface
+class UkrMissedCarSearchProvider extends SearchProvider implements SearchProviderInterface
 {
     public function __construct(
+        SearchProviderHelper $searchProviderHelper,
         private readonly CrawlerProvider $crawlerProvider,
     )
     {
+        parent::__construct($searchProviderHelper);
     }
 
     public function getName(): SearchProviderName

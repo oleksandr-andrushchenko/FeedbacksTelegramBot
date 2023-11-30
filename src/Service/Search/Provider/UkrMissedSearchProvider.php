@@ -18,12 +18,14 @@ use DateTimeImmutable;
  * @see https://www.npu.gov.ua/api/integration/disappeared-persons-by-constituent-data?&surname=%D0%90%D0%9D%D0%94%D0%A0%D0%A3%D0%A9%D0%95%D0%9D%D0%9A%D0%9E&apiType=0
  * @see https://www.npu.gov.ua/api/integration/wanted-persons-by-constituent-data?&surname=%D0%90%D0%BD%D0%B4%D1%80%D1%83%D1%89%D0%B5%D0%BD%D0%BA%D0%BE&apiType=1&page=1
  */
-class UkrMissedSearchProvider implements SearchProviderInterface
+class UkrMissedSearchProvider extends SearchProvider implements SearchProviderInterface
 {
     public function __construct(
+        SearchProviderHelper $searchProviderHelper,
         private readonly HttpRequester $httpRequester,
     )
     {
+        parent::__construct($searchProviderHelper);
     }
 
     public function getName(): SearchProviderName
