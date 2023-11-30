@@ -66,7 +66,7 @@ class BlackboxSearchProvider extends SearchProvider implements SearchProviderInt
         $type = $searchTerm->getType();
         $term = $searchTerm->getNormalizedText();
 
-        $feedbacks = $this->searchProviderHelper->tryCatch(fn () => $this->searchFeedbacks($type, $term), null);
+        $feedbacks = $this->searchProviderHelper->tryCatch(fn () => $this->searchFeedbacks($type, $term), null, [404]);
 
         if ($feedbacks === null) {
             return [];

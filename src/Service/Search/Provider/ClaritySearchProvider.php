@@ -113,7 +113,7 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
             if (count(explode(' ', $term)) === 3) {
                 $url = 'https://clarity-project.info/person/' . md5(mb_strtoupper($term));
                 $referer = 'https://clarity-project.info/persons?search=' . urlencode($term);
-                $records = $this->searchProviderHelper->tryCatch(fn () => $this->searchPersonRecords($url, $referer), []);
+                $records = $this->searchProviderHelper->tryCatch(fn () => $this->searchPersonRecords($url, $referer), [], [404]);
                 $records = array_values(array_filter($records));
 
                 if (!empty($records)) {
