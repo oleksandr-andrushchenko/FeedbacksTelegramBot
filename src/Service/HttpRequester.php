@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Exception\HttpRequesterException;
 use RuntimeException;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -15,6 +16,24 @@ class HttpRequester
     {
     }
 
+    /**
+     * @param string $method
+     * @param string $url
+     * @param array|null $headers
+     * @param array|null $query
+     * @param array|null $body
+     * @param array|null $json
+     * @param float $timeout
+     * @param bool $user
+     * @param bool $array
+     * @return string|array
+     * @throws HttpRequesterException
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
     public function requestHttp(
         string $method,
         string $url,
@@ -48,9 +67,7 @@ class HttpRequester
         $status = $response->getStatusCode();
 
         if ($status !== 200) {
-            throw new RuntimeException(
-                sprintf('%s status code received for "%s" url', $status, $url)
-            );
+            throw new HttpRequesterException($method, $url, $status);
         }
 
         return $array ? $response->toArray() : $response->getContent();
