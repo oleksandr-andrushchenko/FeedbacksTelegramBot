@@ -146,23 +146,24 @@ class BlackboxSearchProvider implements SearchProviderInterface
             $body['last_name'] = explode(' ', $term)[0];
         }
 
-        $data = $this->tryCatch(fn () => $this->httpRequester->requestHttp('POST', $url, headers: $headers, body: $body, user: true, array: true), []);
+        $content = $this->tryCatch(fn () => $this->httpRequester->requestHttp('POST', $url, headers: $headers, body: $body, user: true, array: true), []);
+        $rows = $content['data'];
 
         $items = [];
 
-        foreach ($data['data'] as $item) {
-            if (!isset($item['fios'], $item['phone'])) {
+        foreach ($rows as $row) {
+            if (!isset($row['fios'], $row['phone'])) {
                 continue;
             }
 
-            foreach ($item['fios'] as $index => $name) {
-                $track = $item['tracks'][$index] ?? null;
+            foreach ($row['fios'] as $index => $name) {
+                $track = $row['tracks'][$index] ?? null;
 
                 $items[] = new BlackboxFeedback(
                     name: $name,
-                    href: self::URL . '/' . $item['phone'],
-                    phone: $item['phone'],
-                    phoneFormatted: $item['phone_formatted'] ?? null,
+                    href: self::URL . '/' . $row['phone'],
+                    phone: $row['phone'],
+                    phoneFormatted: $row['phone_formatted'] ?? null,
                     comment: empty($track) || empty($track['comment']) ? null : $track['comment'],
                     date: empty($track) || empty($track['date'])
                         ? null
