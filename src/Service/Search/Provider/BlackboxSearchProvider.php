@@ -147,7 +147,7 @@ class BlackboxSearchProvider implements SearchProviderInterface
         }
 
         $content = $this->tryCatch(fn () => $this->httpRequester->requestHttp('POST', $url, headers: $headers, body: $body, user: true, array: true), []);
-        $rows = $content['data'];
+        $rows = $content['data'] ?? [];
 
         $items = [];
 
