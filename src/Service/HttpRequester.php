@@ -64,10 +64,10 @@ class HttpRequester
 
         $response = $this->httpClient->request($method, $url, $options);
 
-        $status = $response->getStatusCode();
+        $code = $response->getStatusCode();
 
-        if ($status !== 200) {
-            throw new HttpRequesterException($method, $url, $status);
+        if ($code !== 200) {
+            throw new HttpRequesterException($method, $url, $code);
         }
 
         return $array ? $response->toArray() : $response->getContent();
