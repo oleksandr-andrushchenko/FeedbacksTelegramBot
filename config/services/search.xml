@@ -25,6 +25,7 @@
         <service id="app.search_provider_clarity" class="App\Service\Search\Provider\ClaritySearchProvider"
                  parent="app.search_provider" lazy="true">
             <argument type="service" id="app.crawler_provider"/>
+            <argument type="service" id="app.intl_ukr_person_name_provider"/>
             <tag name="app.search_provider" provider="clarity"/>
         </service>
         <service id="app.search_provider_ukr_missed" class="App\Service\Search\Provider\UkrMissedSearchProvider"

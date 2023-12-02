@@ -6,6 +6,7 @@ namespace App\Tests\Functional\Service\Search\Provider;
 
 use App\Entity\Search\Clarity\ClarityEdr;
 use App\Entity\Search\Clarity\ClarityEdrsRecord;
+use App\Entity\Search\Clarity\ClarityPerson;
 use App\Entity\Search\Clarity\ClarityPersonCourt;
 use App\Entity\Search\Clarity\ClarityPersonCourtsRecord;
 use App\Entity\Search\Clarity\ClarityPersonDebtor;
@@ -18,6 +19,7 @@ use App\Entity\Search\Clarity\ClarityPersonEnforcement;
 use App\Entity\Search\Clarity\ClarityPersonEnforcementsRecord;
 use App\Entity\Search\Clarity\ClarityPersonSecurity;
 use App\Entity\Search\Clarity\ClarityPersonSecurityRecord;
+use App\Entity\Search\Clarity\ClarityPersonsRecord;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Tests\Traits\Search\SearchProviderTrait;
@@ -232,14 +234,11 @@ class ClaritySearchProviderTest extends KernelTestCase
                 'countryCode' => 'ua',
             ],
             'expected' => [
-                new ClarityPersonEdrsRecord([
-                    new ClarityPersonEdr(
-                        'СІЛЬСЬКОГОСПОДАРСЬКИЙ ВИРОБНИЧИЙ КООПЕРАТИВ "СУПІЙ"',
-                        type: 'Засновник (Історичні дані)',
-                        href: 'https://clarity-project.info/edr/03756388',
-                        number: '03756388',
-                        active: false,
-                        address: 'Положаї'
+                new ClarityPersonsRecord([
+                    new ClarityPerson(
+                        'КРОЛЕВЕЦЬ СЕРГІЙ ВІКТОРОВИЧ',
+                        href: 'https://clarity-project.info/person/daa29a8ba998791640c6414679cd0ead',
+                        count: null,
                     ),
                 ]),
             ],

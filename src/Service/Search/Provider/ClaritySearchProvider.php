@@ -24,6 +24,7 @@ use App\Entity\Search\Clarity\ClarityPersonsRecord;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Service\CrawlerProvider;
+use App\Service\Intl\Ukr\UkrPersonNameProvider;
 use DateTimeImmutable;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -40,6 +41,7 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
     public function __construct(
         SearchProviderHelper $searchProviderHelper,
         private readonly CrawlerProvider $crawlerProvider,
+        private readonly UkrPersonNameProvider $ukrPersonNameProvider,
     )
     {
         parent::__construct($searchProviderHelper);
@@ -111,16 +113,21 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
 
         if ($type === SearchTermType::person_name) {
             if (count(explode(' ', $term)) === 3) {
-                $url = 'https://clarity-project.info/person/' . md5(mb_strtoupper($term));
-                $referer = 'https://clarity-project.info/persons?search=' . urlencode($term);
-                $records = $this->searchProviderHelper->tryCatch(fn () => $this->searchPersonRecords($url, $referer), [], [404]);
-                $records = array_values(array_filter($records));
+                $personNames = $this->ukrPersonNameProvider->getPersonNames($term);
 
-                if (!empty($records)) {
-                    return $records;
+                if (count($personNames) === 1) {
+                    $name = $personNames[0]->getFormatted();
+                    $url = 'https://clarity-project.info/person/' . md5(mb_strtoupper($name));
+                    $referer = 'https://clarity-project.info/persons?search=' . urlencode($name);
+                    $records = $this->searchProviderHelper->tryCatch(fn () => $this->searchPersonRecords($url, $referer), [], [404]);
+                    $records = array_values(array_filter($records));
+
+                    if (!empty($records)) {
+                        return $records;
+                    }
+
+                    sleep(2);
                 }
-
-                sleep(2);
             }
 
             /** @var ClarityPersonsRecord $record */
