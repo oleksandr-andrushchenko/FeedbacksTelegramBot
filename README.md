@@ -83,3 +83,6 @@
 * array_unique for feedbacks & feedback searches
 * wrap all search records into object with parsed link (and show it for premium users)
 * improve secrets modifier, add brackets for secreted values (just user to know what is hidden)
+* add ru names support for blackbox search provider
+* add successfull indicators for absense in bad registries
+* implement person name for clarity (use formatted property for direct search)
