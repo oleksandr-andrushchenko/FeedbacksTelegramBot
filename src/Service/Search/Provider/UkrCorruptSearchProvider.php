@@ -97,44 +97,44 @@ class UkrCorruptSearchProvider extends SearchProvider implements SearchProviderI
             ];
         }
 
-        $records = [];
+        $items = [];
 
         foreach ($bodies as $body) {
-            $data = $this->httpRequester->requestHttp('POST', self::URL, json: $body, array: true);
+            $rows = $this->httpRequester->requestHttp('POST', self::URL, json: $body, array: true);
 
-            foreach ($data as $item) {
-                $records[] = new UkrCorruptPerson(
-                    punishmentType: isset($item['punishmentType'], $item['punishmentType']['name']) ? $item['punishmentType']['name'] : null,
-                    entityType: isset($item['entityType'], $item['entityType']['name']) ? $item['entityType']['name'] : null,
-                    lastName: $item['indLastNameOnOffenseMoment'] ?? null,
-                    firstName: $item['indFirstNameOnOffenseMoment'] ?? null,
-                    patronymic: $item['indPatronymicOnOffenseMoment'] ?? null,
-                    offenseName: $item['offenseName'] ?? null,
-                    punishment: $item['punishment'] ?? null,
-                    courtCaseNumber: $item['courtCaseNumber'] ?? null,
-                    sentenceDate: isset($item['sentenceDate']) ? DateTimeImmutable::createFromFormat('Y-m-d', $item['sentenceDate'])->setTime(0, 0) : null,
-                    punishmentStart: isset($item['punishmentStart']) ? DateTimeImmutable::createFromFormat('Y-m-d', $item['punishmentStart'])->setTime(0, 0) : null,
-                    courtName: $item['courtName'] ?? null,
-                    codexArticles: isset($item['codexArticles']) ? array_map(fn (array $article) => $article['codexArticleName'], $item['codexArticles']) : null
+            foreach ($rows as $row) {
+                $items[] = new UkrCorruptPerson(
+                    punishmentType: isset($row['punishmentType'], $row['punishmentType']['name']) ? $row['punishmentType']['name'] : null,
+                    entityType: isset($row['entityType'], $row['entityType']['name']) ? $row['entityType']['name'] : null,
+                    lastName: $row['indLastNameOnOffenseMoment'] ?? null,
+                    firstName: $row['indFirstNameOnOffenseMoment'] ?? null,
+                    patronymic: $row['indPatronymicOnOffenseMoment'] ?? null,
+                    offenseName: $row['offenseName'] ?? null,
+                    punishment: $row['punishment'] ?? null,
+                    courtCaseNumber: $row['courtCaseNumber'] ?? null,
+                    sentenceDate: isset($row['sentenceDate']) ? DateTimeImmutable::createFromFormat('Y-m-d', $row['sentenceDate'])->setTime(0, 0) : null,
+                    punishmentStart: isset($row['punishmentStart']) ? DateTimeImmutable::createFromFormat('Y-m-d', $row['punishmentStart'])->setTime(0, 0) : null,
+                    courtName: $row['courtName'] ?? null,
+                    codexArticles: isset($row['codexArticles']) ? array_map(fn (array $article) => $article['codexArticleName'], $row['codexArticles']) : null
                 );
             }
 
-            if (count($records) > 0) {
+            if (count($items) > 0) {
                 break;
             }
         }
 
-        $records = array_filter($records, static function (UkrCorruptPerson $record) use ($words): bool {
+        $items = array_filter($items, static function (UkrCorruptPerson $item) use ($words): bool {
             foreach ($words as $word) {
-                if (str_contains($record->getLastName(), $word)) {
+                if (str_contains($item->getLastName(), $word)) {
                     continue;
                 }
 
-                if (str_contains($record->getFirstName(), $word)) {
+                if (str_contains($item->getFirstName(), $word)) {
                     continue;
                 }
 
-                if (str_contains($record->getPatronymic(), $word)) {
+                if (str_contains($item->getPatronymic(), $word)) {
                     continue;
                 }
 
@@ -144,6 +144,6 @@ class UkrCorruptSearchProvider extends SearchProvider implements SearchProviderI
             return true;
         });
 
-        return count($records) === 0 ? null : new UkrCorruptPersons(array_values($records));
+        return count($items) === 0 ? null : new UkrCorruptPersons(array_values($items));
     }
 }
