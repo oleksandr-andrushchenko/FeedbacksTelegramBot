@@ -119,7 +119,6 @@
             <argument>%app.level_1_regions_file%</argument>
             <argument type="service" id="app.intl_level_1_region_normalizer"/>
         </service>
-        <service id="app.intl_ukr_last_name_by_name_finder" class="App\Service\Intl\Ukr\UkrLastNameByNameFinder"
-                 lazy="true"/>
+        <service id="app.intl_ukr_person_name_provider" class="App\Service\Intl\Ukr\UkrPersonNameProvider" lazy="true"/>
     </services>
 </container>

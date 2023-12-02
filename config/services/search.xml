@@ -62,6 +62,7 @@
                  parent="app.search_provider" lazy="true">
             <argument type="service" id="app.crawler_provider"/>
             <argument type="service" id="app.http_requester"/>
+            <argument type="service" id="app.intl_ukr_person_name_provider"/>
             <tag name="app.search_provider" provider="blackbox"/>
         </service>
         <service id="app.search_viewer_helper_telegram" class="App\Service\Search\Viewer\SearchViewerHelper"

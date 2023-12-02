@@ -41,7 +41,7 @@ class BlackboxSearchProviderTest extends KernelTestCase
 
         yield 'person name & ok' => [
             'type' => SearchTermType::person_name,
-            'term' => 'слово перше',
+            'term' => 'Олександр Петренко',
             'context' => [
                 'countryCode' => 'ua',
             ],
@@ -100,27 +100,25 @@ class BlackboxSearchProviderTest extends KernelTestCase
             ],
         ];
 
-        yield 'person name & surname and name & many matches' => [
+        yield 'person name & surname and name & single match' => [
             'type' => SearchTermType::person_name,
-            'term' => 'Андрущенко Володимир',
+            'term' => 'Андрущенко Аліна',
             'context' => [
                 'countryCode' => 'ua',
             ],
             'expected' => [
-                new BlackboxFeedbacks([
-                    new BlackboxFeedback(
-                        'Андрущенко Алексей',
-                        'https://blackbox.net.ua/0932300040',
-                        '0932300040',
-                        phoneFormatted: '+38 (093) 230-00-40',
-                        comment: 'Клиент не забрал посылку. Не отвечал на звонки и сообщения. Были понесены убытки на возврате отправления. Будьте внимательны с этим клиентом',
-                        date: new DateTimeImmutable('2021-11-13'),
-                        city: 'Бровари',
-                        warehouse: 'Відділення №14 (до 30 кг на одне місце): бульв. Незалежності, 16',
-                        cost: '46',
-                        type: 'Нова Пошта'
-                    ),
-                ]),
+                new BlackboxFeedback(
+                    'Андрущенко Аліна',
+                    'https://blackbox.net.ua/0961562339',
+                    '0961562339',
+                    phoneFormatted: '+38 (096) 156-23-39',
+                    comment: 'Клиент не забрал груз. Отправитель понес убытки за транспортировку.',
+                    date: new DateTimeImmutable('2021-10-02'),
+                    city: 'Випасне (Білгород-Дністровський р-н)',
+                    warehouse: 'Відділення №1: вул. Кишинівська, 159а',
+                    cost: '46',
+                    type: 'Нова Пошта'
+                ),
             ],
         ];
 

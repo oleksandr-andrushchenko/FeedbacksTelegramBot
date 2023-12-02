@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Service\Search\Provider;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
+use App\Entity\PersonName;
 use App\Entity\Search\Blackbox\BlackboxFeedback;
 use App\Entity\Search\Blackbox\BlackboxFeedbacks;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Service\CrawlerProvider;
 use App\Service\HttpRequester;
+use App\Service\Intl\Ukr\UkrPersonNameProvider;
 use DateTimeImmutable;
 
 /**
@@ -25,6 +27,7 @@ class BlackboxSearchProvider extends SearchProvider implements SearchProviderInt
         SearchProviderHelper $searchProviderHelper,
         private readonly CrawlerProvider $crawlerProvider,
         private readonly HttpRequester $httpRequester,
+        private readonly UkrPersonNameProvider $ukrPersonNameProvider,
     )
     {
         parent::__construct($searchProviderHelper);
@@ -55,6 +58,10 @@ class BlackboxSearchProvider extends SearchProvider implements SearchProviderInt
         }
 
         if ($type === SearchTermType::person_name) {
+            if (empty($this->getPersonNames($term))) {
+                return false;
+            }
+
             return true;
         }
 
@@ -121,58 +128,106 @@ class BlackboxSearchProvider extends SearchProvider implements SearchProviderInt
         $headers = [
             'Referer' => self::URL,
         ];
+        $bodies = [];
         $body = [
             'csrfmiddlewaretoken' => $token,
         ];
 
         if ($type === SearchTermType::phone_number) {
-            $body['type'] = 1;
             $d = str_split($term);
-            $body['phone_number'] = sprintf('+38(0%d%d)%d%d%d-%d%d-%d%d', $d[3], $d[4], $d[5], $d[6], $d[7], $d[8], $d[9], $d[10], $d[11]);
+
+            $bodies[] = array_merge($body, [
+                'type' => 1,
+                'phone_number' => sprintf('+38(0%d%d)%d%d%d-%d%d-%d%d', $d[3], $d[4], $d[5], $d[6], $d[7], $d[8], $d[9], $d[10], $d[11]),
+            ]);
         } elseif ($type === SearchTermType::person_name) {
-            $body['type'] = 2;
-            $body['last_name'] = explode(' ', $term)[0];
+            $personNames = $this->getPersonNames($term);
+
+            foreach ($personNames as $personName) {
+                $bodies[] = array_merge($body, [
+                    'type' => 2,
+                    'last_name' => $personName->getLast(),
+                ]);
+            }
         }
 
-        $content = $this->searchProviderHelper->tryCatch(
-            fn () => $this->httpRequester->requestHttp('POST', $url, headers: $headers, body: $body, user: true, array: true),
-            [],
-            [404]
+        foreach ($bodies as $index => $body) {
+            $content = $this->searchProviderHelper->tryCatch(
+                fn () => $this->httpRequester->requestHttp(
+                    'POST',
+                    $url,
+                    headers: $headers,
+                    body: $body,
+                    user: true,
+                    array: true
+                ),
+                [],
+                [404]
+            );
+            $rows = $content['data'] ?? [];
+
+            $items = [];
+
+            foreach ($rows as $row) {
+                if (!isset($row['fios'], $row['phone'])) {
+                    continue;
+                }
+
+                foreach ($row['fios'] as $index => $name) {
+                    $track = $row['tracks'][$index] ?? null;
+
+                    $items[] = new BlackboxFeedback(
+                        name: $name,
+                        href: self::URL . '/' . $row['phone'],
+                        phone: $row['phone'],
+                        phoneFormatted: $row['phone_formatted'] ?? null,
+                        comment: empty($track) || empty($track['comment']) ? null : $track['comment'],
+                        date: empty($track) || empty($track['date'])
+                            ? null
+                            : (DateTimeImmutable::createFromFormat(strlen($track['date']) === 10 ? 'Y-m-d' : 'd.m.Y H:i:s', $track['date']) ?: null)?->setTime(0, 0),
+                        city: empty($track) || empty($track['city']) ? null : $track['city'],
+                        warehouse: empty($track) || empty($track['warehouse']) ? null : $track['warehouse'],
+                        cost: empty($track) || empty($track['cost']) ? null : $track['cost'],
+                        type: empty($track) || empty($track['type']) ? null : $track['type']
+                    );
+                }
+            }
+
+            if (isset($personNames, $personNames[$index])) {
+                $personName = $personNames[$index];
+
+                $items = array_filter($items, static function (BlackboxFeedback $item) use ($personName): bool {
+                    if (!empty($personName->getFirst()) && !str_contains($item->getName(), $personName->getFirst())) {
+                        return false;
+                    }
+
+//                    if (!empty($personName->getPatronymic()) && !str_contains($item->getName(), $personName->getPatronymic())) {
+//                        return false;
+//                    }
+
+                    return true;
+                });
+
+                $items = array_values($items);
+            }
+
+            if (count($items) > 0) {
+                return new BlackboxFeedbacks($items);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $term
+     * @return PersonName[]
+     */
+    private function getPersonNames(string $term): array
+    {
+        return array_filter(
+            $this->ukrPersonNameProvider->getPersonNames($term),
+            static fn (PersonName $personName): bool => $personName->getLast() !== null
         );
-        $rows = $content['data'] ?? [];
-
-        $items = [];
-
-        foreach ($rows as $row) {
-            if (!isset($row['fios'], $row['phone'])) {
-                continue;
-            }
-
-            foreach ($row['fios'] as $index => $name) {
-                $track = $row['tracks'][$index] ?? null;
-
-                $items[] = new BlackboxFeedback(
-                    name: $name,
-                    href: self::URL . '/' . $row['phone'],
-                    phone: $row['phone'],
-                    phoneFormatted: $row['phone_formatted'] ?? null,
-                    comment: empty($track) || empty($track['comment']) ? null : $track['comment'],
-                    date: empty($track) || empty($track['date'])
-                        ? null
-                        : (DateTimeImmutable::createFromFormat(strlen($track['date']) === 10 ? 'Y-m-d' : 'd.m.Y H:i:s', $track['date']) ?: null)?->setTime(0, 0),
-                    city: empty($track) || empty($track['city']) ? null : $track['city'],
-                    warehouse: empty($track) || empty($track['warehouse']) ? null : $track['warehouse'],
-                    cost: empty($track) || empty($track['cost']) ? null : $track['cost'],
-                    type: empty($track) || empty($track['type']) ? null : $track['type']
-                );
-            }
-        }
-
-        $items = array_filter($items, static function (BlackboxFeedback $feedback): bool {
-            // todo: filter
-            return true;
-        });
-
-        return count($items) === 0 ? null : new BlackboxFeedbacks(array_values($items));
     }
 }
