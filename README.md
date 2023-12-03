@@ -87,3 +87,4 @@
 * add successfull indicators for absense in bad registries
 * add PersonName::matchFirstName method (is will check across all equal meaning names), implement instead of PersonName::getFirst() === $compare
 * if crowlings became a big problem - use real browsering like selenium server or some api based on it
+* remove self lookup (do now show those on created before the searsh)
