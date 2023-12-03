@@ -68,7 +68,7 @@
             <parameter>clarity</parameter>
             <parameter>searches</parameter>
             <parameter>ukr_corrupts</parameter>
-            <parameter>ukr_missed</parameter>
+<!--            <parameter>ukr_missed</parameter>-->
             <parameter>ukr_missed_cars</parameter>
             <parameter>business_guide</parameter>
             <parameter>ukr_wanted_persons</parameter>

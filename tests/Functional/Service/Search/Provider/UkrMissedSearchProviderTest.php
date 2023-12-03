@@ -16,7 +16,7 @@ use DateTimeImmutable;
 
 class UkrMissedSearchProviderTest extends KernelTestCase
 {
-    use SearchProviderTrait;
+//    use SearchProviderTrait;
 
     protected static SearchProviderName $searchProviderName = SearchProviderName::ukr_missed;
 
