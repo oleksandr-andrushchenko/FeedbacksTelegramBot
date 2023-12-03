@@ -131,15 +131,15 @@ class UkrCorruptSearchProvider extends SearchProvider implements SearchProviderI
 
         $items = array_filter($items, static function (UkrCorruptPerson $item) use ($words): bool {
             foreach ($words as $word) {
-                if (str_contains($item->getLastName(), $word)) {
+                if (!empty($item->getLastName()) && str_contains($item->getLastName(), $word)) {
                     continue;
                 }
 
-                if (str_contains($item->getFirstName(), $word)) {
+                if (!empty($item->getFirstName()) && str_contains($item->getFirstName(), $word)) {
                     continue;
                 }
 
-                if (str_contains($item->getPatronymic(), $word)) {
+                if (!empty($item->getPatronymic()) && str_contains($item->getPatronymic(), $word)) {
                     continue;
                 }
 
