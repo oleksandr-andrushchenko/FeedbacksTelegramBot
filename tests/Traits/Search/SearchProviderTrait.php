@@ -53,6 +53,7 @@ trait SearchProviderTrait
 
         foreach ($expected as $index => $e) {
             if (is_object($e) && method_exists($e, 'getItems')) {
+                $this->assertEquals(get_class($e), get_class($actual[$index]));
                 $this->assertArraySubset($e->getItems(), $actual[$index]->getItems());
             } elseif ($e === null) {
                 $this->assertNull($actual[$index]);
