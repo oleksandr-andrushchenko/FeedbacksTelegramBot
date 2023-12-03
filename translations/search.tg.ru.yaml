@@ -1,4 +1,5 @@
 empty_result: Ничего не найдено.
+all_good: Все хорошо.
 error_result: Не доступно.
 subscription_skipped_records: Показано %shown_count% из %total_count% записей.
 subscription_skipped_data: Часть данных засекречена знаком звездочки (*).

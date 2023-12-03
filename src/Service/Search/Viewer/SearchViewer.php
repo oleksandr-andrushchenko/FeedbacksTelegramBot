@@ -32,6 +32,11 @@ abstract class SearchViewer implements SearchViewerInterface
 
         $message .= $this->trans('empty_result', generalDomain: true);
 
+        if ($good) {
+            $message .= ' ';
+            $message .= $this->trans('all_good', generalDomain: true);
+        }
+
         return $message;
     }
 

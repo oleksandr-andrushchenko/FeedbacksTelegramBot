@@ -1,4 +1,5 @@
 empty_result: Nothing found.
+all_good: All good.
 error_result: Not available.
 subscription_skipped_records: '%shown_count% of %total_count% records shown.'
 subscription_skipped_data: Part of the data is encrypted with an asterisk (*).
