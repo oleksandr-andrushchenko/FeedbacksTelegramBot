@@ -103,6 +103,11 @@ class BusinessGuideSearchProvider extends SearchProvider implements SearchProvid
         ];
     }
 
+    public function goodOnEmptyResult(): ?bool
+    {
+        return null;
+    }
+
     private function searchEnterprises(string $term): ?BusinessGuideEnterprises
     {
         $parameters = ['q' => $term, 'Submit' => 'Пошук'];

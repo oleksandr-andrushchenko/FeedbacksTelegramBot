@@ -90,6 +90,11 @@ class BlackboxSearchProvider extends SearchProvider implements SearchProviderInt
         ];
     }
 
+    public function goodOnEmptyResult(): ?bool
+    {
+        return true;
+    }
+
     private function getToken(): ?string
     {
         static $token = null;

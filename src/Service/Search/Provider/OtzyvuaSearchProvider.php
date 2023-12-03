@@ -86,6 +86,11 @@ class OtzyvuaSearchProvider extends SearchProvider implements SearchProviderInte
         ];
     }
 
+    public function goodOnEmptyResult(): ?bool
+    {
+        return null;
+    }
+
     private function searchFeedbackSearchTerms(string $name, bool $sortByLength = false): ?OtzyvuaFeedbackSearchTerms
     {
         $crawler = $this->crawlerProvider->getCrawler('GET', 'https://www.otzyvua.net/uk/search/?q=' . urlencode($name), user: true);

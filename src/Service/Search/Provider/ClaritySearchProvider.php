@@ -168,6 +168,11 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
         ];
     }
 
+    public function goodOnEmptyResult(): ?bool
+    {
+        return true;
+    }
+
     private function searchPersons(string $name): ?ClarityPersons
     {
         $url = '/persons?search=' . urlencode($name);

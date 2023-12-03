@@ -55,7 +55,7 @@ class Searcher
                 $count = count($records);
 
                 if ($count === 0) {
-                    $render($viewer->getEmptyResultTitle($searchTerm, $context));
+                    $render($viewer->getEmptyResultTitle($searchTerm, $context, $provider->goodOnEmptyResult()));
                     continue;
                 }
 

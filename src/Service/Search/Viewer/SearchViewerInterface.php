@@ -10,7 +10,7 @@ interface SearchViewerInterface
 {
     public function getOnSearchTitle(FeedbackSearchTerm $searchTerm, array $context = []): string;
 
-    public function getEmptyResultTitle(FeedbackSearchTerm $searchTerm, array $context = []): string;
+    public function getEmptyResultTitle(FeedbackSearchTerm $searchTerm, array $context = [], bool $good = null): string;
 
     public function getErrorResultTitle(FeedbackSearchTerm $searchTerm, array $context = []): string;
 

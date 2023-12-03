@@ -71,7 +71,12 @@ class UkrMissedSearchProvider extends SearchProvider implements SearchProviderIn
         ];
     }
 
-    public function searchDisappearedPersons(string $name): ?UkrMissedDisappearedPersons
+    public function goodOnEmptyResult(): ?bool
+    {
+        return true;
+    }
+
+    private function searchDisappearedPersons(string $name): ?UkrMissedDisappearedPersons
     {
         $persons = $this->searchPersons($name, true);
 
@@ -82,7 +87,7 @@ class UkrMissedSearchProvider extends SearchProvider implements SearchProviderIn
         return new UkrMissedDisappearedPersons($persons);
     }
 
-    public function searchWantedPersons(string $name): ?UkrMissedWantedPersons
+    private function searchWantedPersons(string $name): ?UkrMissedWantedPersons
     {
         $persons = $this->searchPersons($name, false);
 
@@ -93,7 +98,7 @@ class UkrMissedSearchProvider extends SearchProvider implements SearchProviderIn
         return new UkrMissedWantedPersons($persons);
     }
 
-    public function searchPersons(string $name, bool $disappeared): ?array
+    private function searchPersons(string $name, bool $disappeared): ?array
     {
         // todo: implemented person names objects
 

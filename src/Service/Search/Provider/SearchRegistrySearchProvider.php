@@ -34,4 +34,9 @@ class SearchRegistrySearchProvider extends SearchProvider implements SearchProvi
             $this->feedbackSearchSearcher->searchFeedbackSearches($searchTerm, withUsers: $context['addTime'] ?? false),
         ];
     }
+
+    public function goodOnEmptyResult(): ?bool
+    {
+        return null;
+    }
 }

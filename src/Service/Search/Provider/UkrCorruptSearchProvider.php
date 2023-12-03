@@ -68,7 +68,12 @@ class UkrCorruptSearchProvider extends SearchProvider implements SearchProviderI
         ];
     }
 
-    public function searchPersons(string $name): ?UkrCorruptPersons
+    public function goodOnEmptyResult(): ?bool
+    {
+        return true;
+    }
+
+    private function searchPersons(string $name): ?UkrCorruptPersons
     {
         $words = array_map('trim', explode(' ', $name));
         $count = count($words);

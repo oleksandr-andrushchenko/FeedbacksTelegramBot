@@ -87,7 +87,12 @@ class UkrWantedPersonSearchProvider extends SearchProvider implements SearchProv
         ];
     }
 
-    public function searchPersons(string $term): ?UkrWantedPersons
+    public function goodOnEmptyResult(): ?bool
+    {
+        return true;
+    }
+
+    private function searchPersons(string $term): ?UkrWantedPersons
     {
         $words = array_map('trim', explode(' ', $term));
         $count = count($words);
@@ -95,6 +100,7 @@ class UkrWantedPersonSearchProvider extends SearchProvider implements SearchProv
         $queries = [];
 
         // todo: add RU names search support
+        // tood: use person name objects
 
         if ($count === 3) {
             $queries[] = [
