@@ -93,6 +93,8 @@ class UkrMissedSearchProvider extends SearchProvider implements SearchProviderIn
 
     public function searchPersons(string $name, bool $disappeared): ?array
     {
+        // todo: implemented person names objects
+
         $words = array_map('trim', explode(' ', $name));
         $count = count($words);
 
