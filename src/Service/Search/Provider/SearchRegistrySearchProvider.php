@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Provider;
 
+use App\Entity\Feedback\FeedbackSearch;
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Enum\Search\SearchProviderName;
 use App\Service\Feedback\FeedbackSearchSearcher;
@@ -30,8 +31,17 @@ class SearchRegistrySearchProvider extends SearchProvider implements SearchProvi
 
     public function search(FeedbackSearchTerm $searchTerm, array $context = []): array
     {
+        $items = $this->feedbackSearchSearcher->searchFeedbackSearches($searchTerm, withUsers: $context['addTime'] ?? false);
+
+        $skipFirstItem = $context['skipFirstItem'] ?? false;
+
+        if ($skipFirstItem) {
+//            usort($items, static fn (FeedbackSearch $fs1, FeedbackSearch $fs2): int => $fs1->getCreatedAt() <=> $fs2->getCreatedAt());
+            array_pop($items);
+        }
+
         return [
-            $this->feedbackSearchSearcher->searchFeedbackSearches($searchTerm, withUsers: $context['addTime'] ?? false),
+            $items,
         ];
     }
 

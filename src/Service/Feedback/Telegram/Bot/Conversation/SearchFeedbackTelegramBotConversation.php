@@ -454,6 +454,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
                 'bot' => $tg->getBot()->getEntity(),
                 'countryCode' => $tg->getBot()->getEntity()->getCountryCode(),
                 'full' => $tg->getBot()->getMessengerUser()?->getUser()?->getSubscriptionExpireAt() > new DateTimeImmutable(),
+                'skipFirstItem' => true,
             ];
             $providers = array_map(static fn (string $name): SearchProviderName => SearchProviderName::fromName($name), $this->searchProviders);
             array_unshift($providers, SearchProviderName::feedbacks);
