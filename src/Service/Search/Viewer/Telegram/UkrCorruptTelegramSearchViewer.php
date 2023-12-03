@@ -8,17 +8,18 @@ use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\UkrCorrupt\UkrCorruptPerson;
 use App\Entity\Search\UkrCorrupt\UkrCorruptPersons;
 use App\Service\Search\Viewer\SearchViewer;
-use App\Service\Search\Viewer\SearchViewerHelper;
+use App\Service\Search\Viewer\SearchViewerCompose;
 use App\Service\Search\Viewer\SearchViewerInterface;
+use App\Service\Modifier;
 
 class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
 {
-    public function __construct(SearchViewerHelper $searchViewerHelper)
+    public function __construct(SearchViewerCompose $searchViewerCompose, Modifier $modifier)
     {
-        parent::__construct($searchViewerHelper->withTransDomain('ukr_corrupt'));
+        parent::__construct($searchViewerCompose->withTransDomain('ukr_corrupt'), $modifier);
     }
 
-    public function getResultRecord($record, FeedbackSearchTerm $searchTerm, array $context = []): string
+    public function getResultMessage($record, FeedbackSearchTerm $searchTerm, array $context = []): string
     {
         if (is_string($record)) {
             return $record;
@@ -33,60 +34,60 @@ class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewe
 
     public function getPersonsResultRecord(UkrCorruptPersons $record, bool $full): string
     {
-        $h = $this->searchViewerHelper;
+        $m = $this->modifier;
         $message = '‼️ ';
-        $message .= $h->wrapResultRecord(
-            $h->trans('persons_title'),
+        $message .= $this->implodeResult(
+            $this->trans('persons_title'),
             $record->getItems(),
-            static fn (UkrCorruptPerson $item): array => [
-                $h->modifier()
-                    ->add($h->conditionalModifier($item->getFirstName() || $item->getPatronymic()))
-                    ->add($h->slashesModifier())
-                    ->add($h->appendModifier($item->getFirstName()))
-                    ->add($h->appendModifier($item->getPatronymic()))
+            fn (UkrCorruptPerson $item): array => [
+                $m->create()
+                    ->add($m->conditionalModifier($item->getFirstName() || $item->getPatronymic()))
+                    ->add($m->slashesModifier())
+                    ->add($m->appendModifier($item->getFirstName()))
+                    ->add($m->appendModifier($item->getPatronymic()))
                     ->apply($item->getLastName()),
-                $h->modifier()
-                    ->add($h->slashesModifier())
+                $m->create()
+                    ->add($m->slashesModifier())
                     ->apply($item->getEntityType()),
-                $h->modifier()
-                    ->add($h->redModifier())
+                $m->create()
+                    ->add($m->redModifier())
                     ->add(
-                        $h->appendModifier(
-                            $h->modifier()
-                                ->add($h->slashesModifier())
+                        $m->appendModifier(
+                            $m->create()
+                                ->add($m->slashesModifier())
                                 ->apply($item->getOffenseName())
                         )
                     )
                     ->apply(true),
-                $h->modifier()
-                    ->add($h->conditionalModifier($item->getPunishment()))
-                    ->add($h->slashesModifier())
+                $m->create()
+                    ->add($m->conditionalModifier($item->getPunishment()))
+                    ->add($m->slashesModifier())
                     ->add(
-                        $h->appendModifier(
-                            $h->modifier()
-                                ->add($h->bracketsModifier($item->getPunishmentType()))
-                                ->add($h->trimModifier())
+                        $m->appendModifier(
+                            $m->create()
+                                ->add($m->bracketsModifier($item->getPunishmentType()))
+                                ->add($m->trimModifier())
                                 ->apply(' ')
                         )
                     )
                     ->apply($item->getPunishment()),
-                $h->modifier()
-                    ->add($h->transBracketsModifier('court_case_number'))
-                    ->add($h->slashesModifier())
+                $m->create()
+                    ->add($m->bracketsModifier($this->trans('court_case_number')))
+                    ->add($m->slashesModifier())
                     ->apply($item->getCourtCaseNumber()),
-                $h->modifier()
-                    ->add($h->implodeModifier('; '))
-                    ->add($h->slashesModifier())
-                    ->add($h->transBracketsModifier('codex_articles'))
+                $m->create()
+                    ->add($m->implodeModifier('; '))
+                    ->add($m->slashesModifier())
+                    ->add($m->bracketsModifier($this->trans('codex_articles')))
                     ->apply($item->getCodexArticles()),
                 $item->getCourtName(),
-                $h->modifier()
-                    ->add($h->datetimeModifier('d.m.Y'))
-                    ->add($h->transBracketsModifier('sentence_date'))
+                $m->create()
+                    ->add($m->datetimeModifier('d.m.Y'))
+                    ->add($m->bracketsModifier($this->trans('sentence_date')))
                     ->apply($item->getSentenceDate()),
-                $h->modifier()
-                    ->add($h->datetimeModifier('d.m.Y'))
-                    ->add($h->transBracketsModifier('punishment_start'))
+                $m->create()
+                    ->add($m->datetimeModifier('d.m.Y'))
+                    ->add($m->bracketsModifier($this->trans('punishment_start')))
                     ->apply($item->getPunishmentStart()),
             ],
             $full

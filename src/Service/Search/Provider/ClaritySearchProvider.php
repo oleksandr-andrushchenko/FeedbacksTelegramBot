@@ -39,12 +39,12 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
     public const URL = 'https://clarity-project.info';
 
     public function __construct(
-        SearchProviderHelper $searchProviderHelper,
+        SearchProviderCompose $searchProviderCompose,
         private readonly CrawlerProvider $crawlerProvider,
         private readonly UkrPersonNameProvider $ukrPersonNameProvider,
     )
     {
-        parent::__construct($searchProviderHelper);
+        parent::__construct($searchProviderCompose);
     }
 
     public function getName(): SearchProviderName
@@ -119,7 +119,7 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
                     $name = $personNames[0]->getFormatted();
                     $url = 'https://clarity-project.info/person/' . md5(mb_strtoupper($name));
                     $referer = 'https://clarity-project.info/persons?search=' . urlencode($name);
-                    $records = $this->searchProviderHelper->tryCatch(fn () => $this->searchPersonRecords($url, $referer), [], [404]);
+                    $records = $this->searchProviderCompose->tryCatch(fn () => $this->searchPersonRecords($url, $referer), [], [404]);
                     $records = array_values(array_filter($records));
 
                     if (!empty($records)) {
@@ -131,7 +131,7 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
             }
 
             /** @var ClarityPersons $record */
-            $record = $this->searchProviderHelper->tryCatch(fn () => $this->searchPersons($term), null);
+            $record = $this->searchProviderCompose->tryCatch(fn () => $this->searchPersons($term), null);
 
             if ($record === null) {
                 return [];
@@ -142,7 +142,7 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
                 $url = $record->getItems()[0]->getHref();
                 $referer = 'https://clarity-project.info/persons?search=' . urlencode($term);
 
-                return $this->searchProviderHelper->tryCatch(fn () => $this->searchPersonRecords($url, $referer), []);
+                return $this->searchProviderCompose->tryCatch(fn () => $this->searchPersonRecords($url, $referer), []);
             }
 
             return [
@@ -152,7 +152,7 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
 
         // todo parse edr page if single result (implemente the same as for persons made)
         return [
-            $this->searchProviderHelper->tryCatch(fn () => $this->searchEdrs($term), null),
+            $this->searchProviderCompose->tryCatch(fn () => $this->searchEdrs($term), null),
         ];
     }
 

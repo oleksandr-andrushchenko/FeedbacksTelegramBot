@@ -5,12 +5,12 @@
         https://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.search_provider_helper" class="App\Service\Search\Provider\SearchProviderHelper" lazy="true">
+        <service id="app.search_provider_compose" class="App\Service\Search\Provider\SearchProviderCompose" lazy="true">
             <argument type="service" id="logger"/>
         </service>
         <service id="app.search_provider" class="App\Service\Search\Provider\SearchProvider" abstract="true"
                  lazy="true">
-            <argument type="service" id="app.search_provider_helper"/>
+            <argument type="service" id="app.search_provider_compose"/>
         </service>
         <service id="app.search_provider_feedbacks" class="App\Service\Search\Provider\FeedbackSearchProvider"
                  parent="app.search_provider" lazy="true">
@@ -66,15 +66,15 @@
             <argument type="service" id="app.intl_ukr_person_name_provider"/>
             <tag name="app.search_provider" provider="blackbox"/>
         </service>
-        <service id="app.search_viewer_helper_telegram" class="App\Service\Search\Viewer\SearchViewerHelper"
+        <service id="app.search_viewer_compose_telegram" class="App\Service\Search\Viewer\SearchViewerCompose"
                  lazy="true">
             <argument type="service" id="app.translator"/>
-            <argument type="service" id="app.string_secrets_adder"/>
             <argument>search.tg</argument>
         </service>
         <service id="app.search_viewer_telegram" class="App\Service\Search\Viewer\SearchViewer" abstract="true"
                  lazy="true">
-            <argument type="service" id="app.search_viewer_helper_telegram"/>
+            <argument type="service" id="app.search_viewer_compose_telegram"/>
+            <argument type="service" id="app.modifier"/>
         </service>
         <service id="app.search_viewer_telegram_feedbacks"
                  class="App\Service\Search\Viewer\Telegram\FeedbackTelegramSearchViewer"

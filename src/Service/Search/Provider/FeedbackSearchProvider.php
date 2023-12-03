@@ -11,11 +11,11 @@ use App\Service\Feedback\FeedbackSearcher;
 class FeedbackSearchProvider extends SearchProvider implements SearchProviderInterface
 {
     public function __construct(
-        SearchProviderHelper $searchProviderHelper,
+        SearchProviderCompose $searchProviderCompose,
         private readonly FeedbackSearcher $feedbackSearcher,
     )
     {
-        parent::__construct($searchProviderHelper);
+        parent::__construct($searchProviderCompose);
     }
 
     public function getName(): SearchProviderName

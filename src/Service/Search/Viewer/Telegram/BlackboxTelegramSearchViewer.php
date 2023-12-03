@@ -9,17 +9,18 @@ use App\Entity\Search\Blackbox\BlackboxFeedback;
 use App\Entity\Search\Blackbox\BlackboxFeedbacks;
 use App\Enum\Feedback\SearchTermType;
 use App\Service\Search\Viewer\SearchViewer;
-use App\Service\Search\Viewer\SearchViewerHelper;
+use App\Service\Search\Viewer\SearchViewerCompose;
 use App\Service\Search\Viewer\SearchViewerInterface;
+use App\Service\Modifier;
 
 class BlackboxTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
 {
-    public function __construct(SearchViewerHelper $searchViewerHelper)
+    public function __construct(SearchViewerCompose $searchViewerCompose, Modifier $modifier)
     {
-        parent::__construct($searchViewerHelper->withTransDomain('blackbox'));
+        parent::__construct($searchViewerCompose->withTransDomain('blackbox'), $modifier);
     }
 
-    public function getResultRecord($record, FeedbackSearchTerm $searchTerm, array $context = []): string
+    public function getResultMessage($record, FeedbackSearchTerm $searchTerm, array $context = []): string
     {
         if (is_string($record)) {
             return $record;
@@ -33,41 +34,41 @@ class BlackboxTelegramSearchViewer extends SearchViewer implements SearchViewerI
             $surname = null;
         }
 
-        $h = $this->searchViewerHelper;
+        $m = $this->modifier;
 
         $message = '‼️ ';
-        $message .= $h->wrapResultRecord(
+        $message .= $this->implodeResult(
             $surname === null
-                ? $h->trans('feedbacks_title')
-                : $h->trans('feedbacks_title_by_surname', ['surname' => $surname]),
+                ? $this->trans('feedbacks_title')
+                : $this->trans('feedbacks_title_by_surname', ['surname' => $surname]),
             $record instanceof BlackboxFeedbacks ? $record->getItems() : [$record],
-            static fn (BlackboxFeedback $item): array => [
-                $h->modifier()
-                    ->add($h->slashesModifier())
-                    ->add($full ? $h->nullModifier() : $h->secretsModifier())
-                    ->add($full ? $h->linkModifier($item->getHref()) : $h->nullModifier())
-                    ->add($h->boldModifier())
+            fn (BlackboxFeedback $item): array => [
+                $m->create()
+                    ->add($m->slashesModifier())
+                    ->add($full ? $m->nullModifier() : $m->secretsModifier())
+                    ->add($full ? $m->linkModifier($item->getHref()) : $m->nullModifier())
+                    ->add($m->boldModifier())
                     ->apply($item->getName()),
-                $h->modifier()
-                    ->add($h->redModifier())
-                    ->add($h->appendModifier($item->getPhoneFormatted()))
-                    ->add($h->slashesModifier())
-                    ->add($full ? $h->nullModifier() : $h->secretsModifier())
-                    ->add($h->transBracketsModifier('phone'))
+                $m->create()
+                    ->add($m->redModifier())
+                    ->add($m->appendModifier($item->getPhoneFormatted()))
+                    ->add($m->slashesModifier())
+                    ->add($full ? $m->nullModifier() : $m->secretsModifier())
+                    ->add($m->bracketsModifier($this->trans('phone')))
                     ->apply(true),
-                $h->modifier()
-                    ->add($h->slashesModifier())
-                    ->add($h->italicModifier())
+                $m->create()
+                    ->add($m->slashesModifier())
+                    ->add($m->italicModifier())
                     ->apply($item->getComment()),
-                $h->modifier()
-                    ->add($h->filterModifier())
-                    ->add($h->implodeModifier(', '))
-                    ->add($h->bracketsModifier($item->getType()))
-                    ->add($h->slashesModifier())
+                $m->create()
+                    ->add($m->filterModifier())
+                    ->add($m->implodeModifier(', '))
+                    ->add($m->bracketsModifier($item->getType()))
+                    ->add($m->slashesModifier())
                     ->apply([$item->getCity(), $item->getWarehouse()]),
-                $h->modifier()
-                    ->add($h->datetimeModifier('d.m.Y'))
-                    ->add($h->transBracketsModifier('date'))
+                $m->create()
+                    ->add($m->datetimeModifier('d.m.Y'))
+                    ->add($m->bracketsModifier($this->trans('date')))
                     ->apply($item->getDate()),
             ],
             $full

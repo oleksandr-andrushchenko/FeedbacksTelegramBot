@@ -24,13 +24,13 @@ class BlackboxSearchProvider extends SearchProvider implements SearchProviderInt
     private const URL = 'https://blackbox.net.ua';
 
     public function __construct(
-        SearchProviderHelper $searchProviderHelper,
+        SearchProviderCompose $searchProviderCompose,
         private readonly CrawlerProvider $crawlerProvider,
         private readonly HttpRequester $httpRequester,
         private readonly UkrPersonNameProvider $ukrPersonNameProvider,
     )
     {
-        parent::__construct($searchProviderHelper);
+        parent::__construct($searchProviderCompose);
     }
 
     public function getName(): SearchProviderName
@@ -73,7 +73,7 @@ class BlackboxSearchProvider extends SearchProvider implements SearchProviderInt
         $type = $searchTerm->getType();
         $term = $searchTerm->getNormalizedText();
 
-        $feedbacks = $this->searchProviderHelper->tryCatch(fn () => $this->searchFeedbacks($type, $term), null);
+        $feedbacks = $this->searchProviderCompose->tryCatch(fn () => $this->searchFeedbacks($type, $term), null);
 
         if ($feedbacks === null) {
             return [];
@@ -157,7 +157,7 @@ class BlackboxSearchProvider extends SearchProvider implements SearchProviderInt
         }
 
         foreach ($bodies as $index => $body) {
-            $content = $this->searchProviderHelper->tryCatch(
+            $content = $this->searchProviderCompose->tryCatch(
                 fn () => $this->httpRequester->requestHttp(
                     'POST',
                     $url,

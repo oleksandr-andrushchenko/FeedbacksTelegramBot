@@ -7,7 +7,7 @@ namespace App\Service\Search\Provider;
 abstract class SearchProvider implements SearchProviderInterface
 {
     public function __construct(
-        protected readonly SearchProviderHelper $searchProviderHelper,
+        protected readonly SearchProviderCompose $searchProviderCompose,
     )
     {
     }

@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace App\Entity\Search\Viewer;
 
-class Modifier
+class Modifiers
 {
     public function __construct(
-        private array $modifiers = [],
+        private array $items = [],
     )
     {
     }
 
-    public function add(callable $modifier): self
+    public function add(callable $item): self
     {
-        $this->modifiers[] = $modifier;
+        $this->items[] = $item;
 
         return $this;
     }
 
     public function apply($target): ?string
     {
-        foreach ($this->modifiers as $modifier) {
-            $target = $modifier($target);
+        foreach ($this->items as $item) {
+            $target = $item($target);
         }
 
         return $target;

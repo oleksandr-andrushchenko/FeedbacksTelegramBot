@@ -6,21 +6,22 @@ namespace App\Service\Search\Viewer\Telegram;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\Otzyvua\OtzyvuaFeedback;
+use App\Entity\Search\Otzyvua\OtzyvuaFeedbacks;
 use App\Entity\Search\Otzyvua\OtzyvuaFeedbackSearchTerm;
 use App\Entity\Search\Otzyvua\OtzyvuaFeedbackSearchTerms;
-use App\Entity\Search\Otzyvua\OtzyvuaFeedbacks;
 use App\Service\Search\Viewer\SearchViewer;
-use App\Service\Search\Viewer\SearchViewerHelper;
+use App\Service\Search\Viewer\SearchViewerCompose;
 use App\Service\Search\Viewer\SearchViewerInterface;
+use App\Service\Modifier;
 
 class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
 {
-    public function __construct(SearchViewerHelper $searchViewerHelper)
+    public function __construct(SearchViewerCompose $searchViewerCompose, Modifier $modifier)
     {
-        parent::__construct($searchViewerHelper->withTransDomain('otzyvua'));
+        parent::__construct($searchViewerCompose->withTransDomain('otzyvua'), $modifier);
     }
 
-    public function getResultRecord($record, FeedbackSearchTerm $searchTerm, array $context = []): string
+    public function getResultMessage($record, FeedbackSearchTerm $searchTerm, array $context = []): string
     {
         if (is_string($record)) {
             return $record;
@@ -36,29 +37,29 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
 
     private function getFeedbackSearchTermsResultRecord(OtzyvuaFeedbackSearchTerms $record, bool $full): string
     {
-        $h = $this->searchViewerHelper;
+        $m = $this->modifier;
         $message = '🤔 ';
-        $message .= $h->wrapResultRecord(
-            $h->trans('feedback_search_terms_title'),
+        $message .= $this->implodeResult(
+            $this->trans('feedback_search_terms_title'),
             $record->getItems(),
-            static fn (OtzyvuaFeedbackSearchTerm $item): array => [
-                $h->modifier()
-                    ->add($h->slashesModifier())
-                    ->add($full ? $h->linkModifier($item->getHref()) : $h->nullModifier())
-                    ->add($h->boldModifier())
+            fn (OtzyvuaFeedbackSearchTerm $item): array => [
+                $m->create()
+                    ->add($m->slashesModifier())
+                    ->add($full ? $m->linkModifier($item->getHref()) : $m->nullModifier())
+                    ->add($m->boldModifier())
                     ->apply($item->getName()),
-                $h->modifier()
-                    ->add($h->slashesModifier())
-                    ->add($h->transBracketsModifier('category'))
-                    ->add($h->underlineModifier())
+                $m->create()
+                    ->add($m->slashesModifier())
+                    ->add($m->bracketsModifier($this->trans('category')))
+                    ->add($m->underlineModifier())
                     ->apply($item->getCategory()),
-                $h->modifier()
-                    ->add($h->ratingModifier())
-                    ->add($h->transBracketsModifier('rating', ['value' => $item->getRating(), 'total' => 5]))
+                $m->create()
+                    ->add($m->ratingModifier())
+                    ->add($m->bracketsModifier($this->trans('rating', ['value' => $item->getRating(), 'total' => 5])))
                     ->apply((string) $item->getRating()),
-                $h->modifier()
-                    ->add($h->numberFormatModifier(thousandsSeparator: ' '))
-                    ->add($h->transBracketsModifier('feedback_count'))
+                $m->create()
+                    ->add($m->numberFormatModifier(thousandsSeparator: ' '))
+                    ->add($m->bracketsModifier($this->trans('feedback_count')))
                     ->apply((string) $item->getCount()),
             ],
             $full
@@ -69,34 +70,34 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
 
     private function getFeedbackResultRecord(OtzyvuaFeedbacks $record, bool $full): string
     {
-        $h = $this->searchViewerHelper;
+        $m = $this->modifier;
         $message = '💫 ';
-        $message .= $h->wrapResultRecord(
-            $h->trans('feedbacks_title', ['count' => count($record->getItems())]),
+        $message .= $this->implodeResult(
+            $this->trans('feedbacks_title', ['count' => count($record->getItems())]),
             $record->getItems(),
-            static fn (OtzyvuaFeedback $item): array => [
-                $h->modifier()
-                    ->add($h->slashesModifier())
-                    ->add($full ? $h->linkModifier($item->getHref()) : $h->nullModifier())
-                    ->add($h->boldModifier())
+            fn (OtzyvuaFeedback $item): array => [
+                $m->create()
+                    ->add($m->slashesModifier())
+                    ->add($full ? $m->linkModifier($item->getHref()) : $m->nullModifier())
+                    ->add($m->boldModifier())
                     ->apply($item->getTitle()),
-                $h->modifier()
-                    ->add($h->ratingModifier())
-                    ->add($h->transBracketsModifier('rating', ['value' => $item->getRating(), 'total' => 5]))
+                $m->create()
+                    ->add($m->ratingModifier())
+                    ->add($m->bracketsModifier($this->trans('rating', ['value' => $item->getRating(), 'total' => 5])))
                     ->apply((string) $item->getRating()),
-                $h->modifier()
-                    ->add($h->slashesModifier())
-                    ->add($h->italicModifier())
+                $m->create()
+                    ->add($m->slashesModifier())
+                    ->add($m->italicModifier())
                     ->apply($item->getDescription()),
-                $h->modifier()
-                    ->add($h->conditionalModifier($full))
-                    ->add($h->slashesModifier())
-                    ->add($full ? $h->linkModifier($item->getAuthorHref()) : $h->nullModifier())
-                    ->add($h->transBracketsModifier('author'))
+                $m->create()
+                    ->add($m->conditionalModifier($full))
+                    ->add($m->slashesModifier())
+                    ->add($full ? $m->linkModifier($item->getAuthorHref()) : $m->nullModifier())
+                    ->add($m->bracketsModifier($this->trans('author')))
                     ->apply($item->getAuthorName()),
-                $h->modifier()
-                    ->add($h->datetimeModifier('d.m.Y'))
-                    ->add($h->transBracketsModifier('created_at'))
+                $m->create()
+                    ->add($m->datetimeModifier('d.m.Y'))
+                    ->add($m->bracketsModifier($this->trans('created_at')))
                     ->apply($item->getCreatedAt()),
             ],
             $full

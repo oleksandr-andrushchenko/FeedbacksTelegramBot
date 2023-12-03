@@ -82,5 +82,8 @@
         <service id="app.crawler_provider" class="App\Service\CrawlerProvider" lazy="true">
             <argument type="service" id="app.http_requester"/>
         </service>
+        <service id="app.modifier" class="App\Service\Modifier" lazy="true">
+            <argument type="service" id="app.string_secrets_adder"/>
+        </service>
     </services>
 </container>

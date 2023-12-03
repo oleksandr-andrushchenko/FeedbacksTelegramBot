@@ -20,11 +20,11 @@ use Symfony\Component\DomCrawler\Crawler;
 class BusinessGuideSearchProvider extends SearchProvider implements SearchProviderInterface
 {
     public function __construct(
-        SearchProviderHelper $searchProviderHelper,
+        SearchProviderCompose $searchProviderCompose,
         private readonly CrawlerProvider $crawlerProvider,
     )
     {
-        parent::__construct($searchProviderHelper);
+        parent::__construct($searchProviderCompose);
     }
 
     public function getName(): SearchProviderName
@@ -81,7 +81,7 @@ class BusinessGuideSearchProvider extends SearchProvider implements SearchProvid
             }
         }
 
-        $enterprises = $this->searchProviderHelper->tryCatch(fn () => $this->searchEnterprises($term), null);
+        $enterprises = $this->searchProviderCompose->tryCatch(fn () => $this->searchEnterprises($term), null);
 
         if ($enterprises === null) {
             return [];
@@ -91,7 +91,7 @@ class BusinessGuideSearchProvider extends SearchProvider implements SearchProvid
             sleep(2);
             $url = $enterprises->getItems()[0]->getHref();
 
-            $enterprise = $this->searchProviderHelper->tryCatch(fn () => $this->searchEnterprise($url), []);
+            $enterprise = $this->searchProviderCompose->tryCatch(fn () => $this->searchEnterprise($url), []);
 
             return [
                 $enterprise,

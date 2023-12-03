@@ -11,11 +11,11 @@ use App\Service\Feedback\FeedbackSearchSearcher;
 class SearchRegistrySearchProvider extends SearchProvider implements SearchProviderInterface
 {
     public function __construct(
-        SearchProviderHelper $searchProviderHelper,
+        SearchProviderCompose $searchProviderCompose,
         private readonly FeedbackSearchSearcher $feedbackSearchSearcher,
     )
     {
-        parent::__construct($searchProviderHelper);
+        parent::__construct($searchProviderCompose);
     }
 
     public function getName(): SearchProviderName

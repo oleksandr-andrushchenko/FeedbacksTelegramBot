@@ -39,7 +39,7 @@ class Searcher
 
                 $viewer = $this->getViewer($provider);
 
-                $render($viewer->getOnSearchTitle($searchTerm));
+                $render($viewer->getOnSearchMessage($searchTerm));
 
                 $records = [];
 
@@ -48,20 +48,20 @@ class Searcher
                 } catch (Throwable $exception) {
                     $this->logger->error($exception);
 
-                    $render($viewer->getErrorResultTitle($searchTerm, $context));
+                    $render($viewer->getErrorMessage($searchTerm, $context));
                 }
 
                 $records = array_filter($records);
                 $count = count($records);
 
                 if ($count === 0) {
-                    $render($viewer->getEmptyResultTitle($searchTerm, $context, $provider->goodOnEmptyResult()));
+                    $render($viewer->getEmptyMessage($searchTerm, $context, $provider->goodOnEmptyResult()));
                     continue;
                 }
 
                 foreach ($records as $index => $record) {
                     try {
-                        $render($viewer->getResultRecord($record, $searchTerm, $context + ['index' => $index]));
+                        $render($viewer->getResultMessage($record, $searchTerm, $context + ['index' => $index]));
                     } catch (Throwable $exception) {
                         $this->logger->error($exception);
                     }

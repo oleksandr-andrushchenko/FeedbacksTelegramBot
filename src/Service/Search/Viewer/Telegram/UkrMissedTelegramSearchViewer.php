@@ -9,17 +9,18 @@ use App\Entity\Search\UkrMissed\UkrMissedDisappearedPersons;
 use App\Entity\Search\UkrMissed\UkrMissedPerson;
 use App\Entity\Search\UkrMissed\UkrMissedWantedPersons;
 use App\Service\Search\Viewer\SearchViewer;
-use App\Service\Search\Viewer\SearchViewerHelper;
+use App\Service\Search\Viewer\SearchViewerCompose;
 use App\Service\Search\Viewer\SearchViewerInterface;
+use App\Service\Modifier;
 
 class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
 {
-    public function __construct(SearchViewerHelper $searchViewerHelper)
+    public function __construct(SearchViewerCompose $searchViewerCompose, Modifier $modifier)
     {
-        parent::__construct($searchViewerHelper->withTransDomain('ukr_missed'));
+        parent::__construct($searchViewerCompose->withTransDomain('ukr_missed'), $modifier);
     }
 
-    public function getResultRecord($record, FeedbackSearchTerm $searchTerm, array $context = []): string
+    public function getResultMessage($record, FeedbackSearchTerm $searchTerm, array $context = []): string
     {
         if (is_string($record)) {
             return $record;
@@ -36,8 +37,8 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
     private function getDisappearedPersonsResultRecord(UkrMissedDisappearedPersons $record, bool $full): string
     {
         $message = '😐 ';
-        $message .= $this->searchViewerHelper->wrapResultRecord(
-            $this->searchViewerHelper->trans('disappeared_persons_title'),
+        $message .= $this->implodeResult(
+            $this->trans('disappeared_persons_title'),
             $record->getItems(),
             $this->getWrapResultRecordCallback($full),
             $full
@@ -49,8 +50,8 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
     private function getWantedPersonsResultRecord(UkrMissedWantedPersons $record, bool $full): string
     {
         $message = '🚨 ';
-        $message .= $this->searchViewerHelper->wrapResultRecord(
-            $this->searchViewerHelper->trans('wanted_persons_title'),
+        $message .= $this->implodeResult(
+            $this->trans('wanted_persons_title'),
             $record->getItems(),
             $this->getWrapResultRecordCallback($full),
             $full
@@ -61,48 +62,48 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
 
     public function getWrapResultRecordCallback(bool $full): callable
     {
-        $h = $this->searchViewerHelper;
+        $m = $this->modifier;
 
-        return static fn (UkrMissedPerson $item): array => [
-            $h->modifier()
-                ->add($h->appendModifier($item->getName()))
-                ->add($h->appendModifier($item->getMiddleName()))
-                ->add($h->slashesModifier())
-                ->add($h->boldModifier())
+        return fn (UkrMissedPerson $item): array => [
+            $m->create()
+                ->add($m->appendModifier($item->getName()))
+                ->add($m->appendModifier($item->getMiddleName()))
+                ->add($m->slashesModifier())
+                ->add($m->boldModifier())
                 ->apply($item->getSurname()),
             $item->getSex(),
-            $h->modifier()
-                ->add($h->datetimeModifier('d.m.Y'))
-                ->add($full ? $h->nullModifier() : $h->secretsModifier())
-                ->add($h->transBracketsModifier('born_at'))
+            $m->create()
+                ->add($m->datetimeModifier('d.m.Y'))
+                ->add($full ? $m->nullModifier() : $m->secretsModifier())
+                ->add($m->bracketsModifier($this->trans('born_at')))
                 ->apply($item->getBirthday()),
-            $h->modifier()
-                ->add($h->slashesModifier())
+            $m->create()
+                ->add($m->slashesModifier())
                 ->apply($item->getPrecaution()),
-            $h->modifier()
-                ->add($h->redWhiteModifier())
+            $m->create()
+                ->add($m->redWhiteModifier())
                 ->add(
-                    $h->appendModifier(
-                        $h->modifier()
-                            ->add($h->slashesModifier())
+                    $m->appendModifier(
+                        $m->create()
+                            ->add($m->slashesModifier())
                             ->apply($item->getCategory())
                     )
                 )
                 ->add(
-                    $h->appendModifier(
-                        $h->modifier()
-                            ->add($h->implodeModifier('; '))
-                            ->add($h->slashesModifier())
+                    $m->appendModifier(
+                        $m->create()
+                            ->add($m->implodeModifier('; '))
+                            ->add($m->slashesModifier())
                             ->apply($item->getArticles())
                     )
                 )
                 ->apply($item->getDisappeared() === false),
-            $h->modifier()
-                ->add($h->slashesModifier())
+            $m->create()
+                ->add($m->slashesModifier())
                 ->apply($item->getOrgan()),
-            $h->modifier()
-                ->add($h->datetimeModifier('d.m.Y'))
-                ->add($h->transBracketsModifier('absent_at'))
+            $m->create()
+                ->add($m->datetimeModifier('d.m.Y'))
+                ->add($m->bracketsModifier($this->trans('absent_at')))
                 ->apply($item->getDate()),
         ];
     }

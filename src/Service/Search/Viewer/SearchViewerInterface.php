@@ -8,11 +8,11 @@ use App\Entity\Feedback\FeedbackSearchTerm;
 
 interface SearchViewerInterface
 {
-    public function getOnSearchTitle(FeedbackSearchTerm $searchTerm, array $context = []): string;
+    public function getOnSearchMessage(FeedbackSearchTerm $searchTerm, array $context = []): string;
 
-    public function getEmptyResultTitle(FeedbackSearchTerm $searchTerm, array $context = [], bool $good = null): string;
+    public function getEmptyMessage(FeedbackSearchTerm $searchTerm, array $context = [], bool $good = null): string;
 
-    public function getErrorResultTitle(FeedbackSearchTerm $searchTerm, array $context = []): string;
+    public function getErrorMessage(FeedbackSearchTerm $searchTerm, array $context = []): string;
 
-    public function getResultRecord($record, FeedbackSearchTerm $searchTerm, array $context = []): string;
+    public function getResultMessage($record, FeedbackSearchTerm $searchTerm, array $context = []): string;
 }

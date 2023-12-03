@@ -23,11 +23,11 @@ class UkrWantedPersonSearchProvider extends SearchProvider implements SearchProv
     public const URL = 'https://wanted.mvs.gov.ua';
 
     public function __construct(
-        SearchProviderHelper $searchProviderHelper,
+        SearchProviderCompose $searchProviderCompose,
         private readonly CrawlerProvider $crawlerProvider,
     )
     {
-        parent::__construct($searchProviderHelper);
+        parent::__construct($searchProviderCompose);
     }
 
     public function getName(): SearchProviderName
@@ -65,7 +65,7 @@ class UkrWantedPersonSearchProvider extends SearchProvider implements SearchProv
     {
         $term = $searchTerm->getNormalizedText();
 
-        $persons = $this->searchProviderHelper->tryCatch(fn () => $this->searchPersons($term), null);
+        $persons = $this->searchProviderCompose->tryCatch(fn () => $this->searchPersons($term), null);
 
         if ($persons === null) {
             return [];
@@ -75,7 +75,7 @@ class UkrWantedPersonSearchProvider extends SearchProvider implements SearchProv
             sleep(2);
             $url = $persons->getItems()[0]->getHref();
 
-            $person = $this->searchProviderHelper->tryCatch(fn () => $this->searchPerson($url), []);
+            $person = $this->searchProviderCompose->tryCatch(fn () => $this->searchPerson($url), []);
 
             return [
                 $person,

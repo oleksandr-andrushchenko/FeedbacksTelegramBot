@@ -23,11 +23,11 @@ use Symfony\Component\DomCrawler\Crawler;
 class OtzyvuaSearchProvider extends SearchProvider implements SearchProviderInterface
 {
     public function __construct(
-        SearchProviderHelper $searchProviderHelper,
+        SearchProviderCompose $searchProviderCompose,
         private readonly CrawlerProvider $crawlerProvider,
     )
     {
-        parent::__construct($searchProviderHelper);
+        parent::__construct($searchProviderCompose);
     }
 
     public function getName(): SearchProviderName
@@ -74,7 +74,7 @@ class OtzyvuaSearchProvider extends SearchProvider implements SearchProviderInte
 
         if (isset($url)) {
             sleep(1);
-            $feedbacksRecord = $this->searchProviderHelper->tryCatch(fn () => $this->searchFeedbacks($url), null);
+            $feedbacksRecord = $this->searchProviderCompose->tryCatch(fn () => $this->searchFeedbacks($url), null);
 
             return [
                 $feedbacksRecord,

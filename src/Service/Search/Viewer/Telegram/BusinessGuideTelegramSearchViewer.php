@@ -8,17 +8,18 @@ use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\BusinessGuide\BusinessGuideEnterprise;
 use App\Entity\Search\BusinessGuide\BusinessGuideEnterprises;
 use App\Service\Search\Viewer\SearchViewer;
-use App\Service\Search\Viewer\SearchViewerHelper;
+use App\Service\Search\Viewer\SearchViewerCompose;
 use App\Service\Search\Viewer\SearchViewerInterface;
+use App\Service\Modifier;
 
 class BusinessGuideTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
 {
-    public function __construct(SearchViewerHelper $searchViewerHelper)
+    public function __construct(SearchViewerCompose $searchViewerCompose, Modifier $modifier)
     {
-        parent::__construct($searchViewerHelper->withTransDomain('business_guide'));
+        parent::__construct($searchViewerCompose->withTransDomain('business_guide'), $modifier);
     }
 
-    public function getResultRecord($record, FeedbackSearchTerm $searchTerm, array $context = []): string
+    public function getResultMessage($record, FeedbackSearchTerm $searchTerm, array $context = []): string
     {
         if (is_string($record)) {
             return $record;
@@ -34,44 +35,44 @@ class BusinessGuideTelegramSearchViewer extends SearchViewer implements SearchVi
 
     public function getEnterpriseWrapResultRecordCallback(bool $full): callable
     {
-        $h = $this->searchViewerHelper;
+        $m = $this->modifier;
 
-        return static fn (BusinessGuideEnterprise $item): array => [
-            $h->modifier()
-                ->add($h->slashesModifier())
-                ->add($full ? $h->nullModifier() : $h->secretsModifier())
-                ->add($full ? $h->linkModifier($item->getHref()) : $h->nullModifier())
-                ->add($h->boldModifier())
+        return fn (BusinessGuideEnterprise $item): array => [
+            $m->create()
+                ->add($m->slashesModifier())
+                ->add($full ? $m->nullModifier() : $m->secretsModifier())
+                ->add($full ? $m->linkModifier($item->getHref()) : $m->nullModifier())
+                ->add($m->boldModifier())
                 ->apply($item->getName()),
-            $h->modifier()
-                ->add($h->slashesModifier())
-                ->add($h->appendModifier($item->getAddress()))
-                ->add($full ? $h->nullModifier() : $h->secretsModifier())
+            $m->create()
+                ->add($m->slashesModifier())
+                ->add($m->appendModifier($item->getAddress()))
+                ->add($full ? $m->nullModifier() : $m->secretsModifier())
                 ->apply($item->getCountry()),
-            $h->modifier()
-                ->add($h->slashesModifier())
-                ->add($full ? $h->nullModifier() : $h->secretsModifier())
+            $m->create()
+                ->add($m->slashesModifier())
+                ->add($full ? $m->nullModifier() : $m->secretsModifier())
                 ->apply($item->getPhone()),
-            $h->modifier()
-                ->add($h->conditionalModifier($full))
-                ->add($h->slashesModifier())
-                ->add($h->transBracketsModifier('ceo'))
+            $m->create()
+                ->add($m->conditionalModifier($full))
+                ->add($m->slashesModifier())
+                ->add($m->bracketsModifier($this->trans('ceo')))
                 ->apply($item->getCeo()),
-            $h->modifier()
-                ->add($h->conditionalModifier($full))
-                ->add($h->slashesModifier())
-                ->add($h->transBracketsModifier('number'))
+            $m->create()
+                ->add($m->conditionalModifier($full))
+                ->add($m->slashesModifier())
+                ->add($m->bracketsModifier($this->trans('number')))
                 ->apply($item->getNumber()),
-            $h->modifier()
-                ->add($h->conditionalModifier($full))
-                ->add($h->slashesModifier())
-                ->add($h->transBracketsModifier('desc'))
+            $m->create()
+                ->add($m->conditionalModifier($full))
+                ->add($m->slashesModifier())
+                ->add($m->bracketsModifier($this->trans('desc')))
                 ->apply($item->getDesc()),
-            $h->modifier()
-                ->add($h->conditionalModifier($full))
-                ->add($h->implodeModifier('; '))
-                ->add($h->slashesModifier())
-                ->add($h->transBracketsModifier('sectors'))
+            $m->create()
+                ->add($m->conditionalModifier($full))
+                ->add($m->implodeModifier('; '))
+                ->add($m->slashesModifier())
+                ->add($m->bracketsModifier($this->trans('sectors')))
                 ->apply($item->getSectors()),
         ];
     }
@@ -79,8 +80,8 @@ class BusinessGuideTelegramSearchViewer extends SearchViewer implements SearchVi
     private function getEnterprisesResultRecord(BusinessGuideEnterprises $record, bool $full): string
     {
         $message = '💫 ';
-        $message .= $this->searchViewerHelper->wrapResultRecord(
-            $this->searchViewerHelper->trans('enterprises_title'),
+        $message .= $this->implodeResult(
+            $this->trans('enterprises_title'),
             $record->getItems(),
             $this->getEnterpriseWrapResultRecordCallback($full),
             $full
@@ -92,8 +93,8 @@ class BusinessGuideTelegramSearchViewer extends SearchViewer implements SearchVi
     private function getEnterpriseResultRecord(BusinessGuideEnterprise $record, bool $full): string
     {
         $message = '🤔 ';
-        $message .= $this->searchViewerHelper->wrapResultRecord(
-            $this->searchViewerHelper->trans('enterprise_title'),
+        $message .= $this->implodeResult(
+            $this->trans('enterprise_title'),
             [$record],
             $this->getEnterpriseWrapResultRecordCallback($full),
             $full

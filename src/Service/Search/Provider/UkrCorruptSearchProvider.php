@@ -21,11 +21,11 @@ class UkrCorruptSearchProvider extends SearchProvider implements SearchProviderI
     private const URL = 'https://corruptinfo.nazk.gov.ua/ep/1.0/corrupt/findData';
 
     public function __construct(
-        SearchProviderHelper $searchProviderHelper,
+        SearchProviderCompose $searchProviderCompose,
         private readonly HttpRequester $httpRequester,
     )
     {
-        parent::__construct($searchProviderHelper);
+        parent::__construct($searchProviderCompose);
     }
 
     public function getName(): SearchProviderName

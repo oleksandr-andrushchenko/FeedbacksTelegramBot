@@ -8,26 +8,28 @@ use App\Entity\Feedback\Feedback;
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Service\Feedback\Telegram\Bot\View\FeedbackTelegramViewProvider;
 use App\Service\Search\Viewer\SearchViewer;
-use App\Service\Search\Viewer\SearchViewerHelper;
+use App\Service\Search\Viewer\SearchViewerCompose;
 use App\Service\Search\Viewer\SearchViewerInterface;
+use App\Service\Modifier;
 
 class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
 {
     public function __construct(
-        SearchViewerHelper $searchViewerHelper,
+        SearchViewerCompose $searchViewerCompose,
+        Modifier $modifier,
         private readonly FeedbackTelegramViewProvider $feedbackTelegramViewProvider,
     )
     {
-        parent::__construct($searchViewerHelper->withTransDomain('feedback'));
+        parent::__construct($searchViewerCompose->withTransDomain('feedback'), $modifier);
     }
 
-    public function getResultRecord($record, FeedbackSearchTerm $searchTerm, array $context = []): string
+    public function getResultMessage($record, FeedbackSearchTerm $searchTerm, array $context = []): string
     {
         $full = $context['full'] ?? false;
 
         $message = '💫 ';
-        $message .= $this->searchViewerHelper->wrapResultRecord(
-            $this->searchViewerHelper->trans('feedbacks_title'),
+        $message .= $this->implodeResult(
+            $this->trans('feedbacks_title'),
             $record,
             fn (Feedback $feedback): array => [
                 $this->feedbackTelegramViewProvider->getFeedbackTelegramView(

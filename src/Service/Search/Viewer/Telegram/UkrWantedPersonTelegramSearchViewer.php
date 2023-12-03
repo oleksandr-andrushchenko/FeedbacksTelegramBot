@@ -8,17 +8,18 @@ use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\UkrWantedPerson\UkrWantedPerson;
 use App\Entity\Search\UkrWantedPerson\UkrWantedPersons;
 use App\Service\Search\Viewer\SearchViewer;
-use App\Service\Search\Viewer\SearchViewerHelper;
+use App\Service\Search\Viewer\SearchViewerCompose;
 use App\Service\Search\Viewer\SearchViewerInterface;
+use App\Service\Modifier;
 
 class UkrWantedPersonTelegramSearchViewer extends SearchViewer implements SearchViewerInterface
 {
-    public function __construct(SearchViewerHelper $searchViewerHelper)
+    public function __construct(SearchViewerCompose $searchViewerCompose, Modifier $modifier)
     {
-        parent::__construct($searchViewerHelper->withTransDomain('ukr_wanted_persons'));
+        parent::__construct($searchViewerCompose->withTransDomain('ukr_wanted_persons'), $modifier);
     }
 
-    public function getResultRecord($record, FeedbackSearchTerm $searchTerm, array $context = []): string
+    public function getResultMessage($record, FeedbackSearchTerm $searchTerm, array $context = []): string
     {
         if (is_string($record)) {
             return $record;
@@ -34,64 +35,64 @@ class UkrWantedPersonTelegramSearchViewer extends SearchViewer implements Search
 
     public function getPersonWrapResultRecordCallback(bool $full): callable
     {
-        $h = $this->searchViewerHelper;
+        $m = $this->modifier;
 
-        return static fn (UkrWantedPerson $item): array => [
-            $h->modifier()
-                ->add($h->appendModifier($item->getUkrName()))
-                ->add($h->appendModifier($item->getUkrPatronymic()))
+        return fn (UkrWantedPerson $item): array => [
+            $m->create()
+                ->add($m->appendModifier($item->getUkrName()))
+                ->add($m->appendModifier($item->getUkrPatronymic()))
                 ->add(
-                    $h->bracketsModifier(
-                        $h->modifier()
-                            ->add($h->appendModifier($item->getRusSurname()))
-                            ->add($h->appendModifier($item->getRusName()))
-                            ->add($h->appendModifier($item->getRusPatronymic()))
-                            ->apply($h->trans('rus_name') . ':')
+                    $m->bracketsModifier(
+                        $m->create()
+                            ->add($m->appendModifier($item->getRusSurname()))
+                            ->add($m->appendModifier($item->getRusName()))
+                            ->add($m->appendModifier($item->getRusPatronymic()))
+                            ->apply($this->trans('rus_name') . ':')
                     )
                 )
-                ->add($h->slashesModifier())
-                ->add($full ? $h->nullModifier() : $h->secretsModifier())
-                ->add($full ? $h->linkModifier($item->getHref()) : $h->nullModifier())
-                ->add($h->boldModifier())
+                ->add($m->slashesModifier())
+                ->add($full ? $m->nullModifier() : $m->secretsModifier())
+                ->add($full ? $m->linkModifier($item->getHref()) : $m->nullModifier())
+                ->add($m->boldModifier())
                 ->apply($item->getUkrSurname()),
-            $h->modifier()
-                ->add($h->slashesModifier())
-                ->add($h->transBracketsModifier('gender'))
+            $m->create()
+                ->add($m->slashesModifier())
+                ->add($m->bracketsModifier($this->trans('gender')))
                 ->apply($item->getGender()),
-            $h->modifier()
-                ->add($h->datetimeModifier('d.m.Y'))
-                ->add($h->transBracketsModifier('born_at'))
+            $m->create()
+                ->add($m->datetimeModifier('d.m.Y'))
+                ->add($m->bracketsModifier($this->trans('born_at')))
                 ->apply($item->getBornAt()),
-            $h->modifier()
-                ->add($h->redModifier())
+            $m->create()
+                ->add($m->redModifier())
                 ->add(
-                    $h->appendModifier(
-                        $h->modifier()
-                            ->add($h->slashesModifier())
+                    $m->appendModifier(
+                        $m->create()
+                            ->add($m->slashesModifier())
                             ->apply($item->getCategory())
                     )
                 )
-                ->add($h->bracketsModifier($item->getCodexArticle()))
+                ->add($m->bracketsModifier($item->getCodexArticle()))
                 ->apply(true),
-            $h->modifier()
-                ->add($h->datetimeModifier('d.m.Y'))
-                ->add($h->transBracketsModifier('absent_at'))
+            $m->create()
+                ->add($m->datetimeModifier('d.m.Y'))
+                ->add($m->bracketsModifier($this->trans('absent_at')))
                 ->apply($item->getAbsentAt()),
-            $h->modifier()
-                ->add($h->slashesModifier())
-                ->add($h->transBracketsModifier('absent_place'))
+            $m->create()
+                ->add($m->slashesModifier())
+                ->add($m->bracketsModifier($this->trans('absent_place')))
                 ->apply($item->getAbsentPlace()),
-            $h->modifier()
-                ->add($h->slashesModifier())
-                ->add($h->transBracketsModifier('precaution'))
+            $m->create()
+                ->add($m->slashesModifier())
+                ->add($m->bracketsModifier($this->trans('precaution')))
                 ->apply($item->getPrecaution()),
-            $h->modifier()
-                ->add($h->slashesModifier())
-                ->add($h->transBracketsModifier('region'))
+            $m->create()
+                ->add($m->slashesModifier())
+                ->add($m->bracketsModifier($this->trans('region')))
                 ->apply($item->getRegion()),
-            $h->modifier()
-                ->add($h->slashesModifier())
-                ->add($h->transBracketsModifier('call_to'))
+            $m->create()
+                ->add($m->slashesModifier())
+                ->add($m->bracketsModifier($this->trans('call_to')))
                 ->apply($item->getCallTo()),
         ];
     }
@@ -99,8 +100,8 @@ class UkrWantedPersonTelegramSearchViewer extends SearchViewer implements Search
     private function getPersonsResultRecord(UkrWantedPersons $record, bool $full): string
     {
         $message = '🚨 ';
-        $message .= $this->searchViewerHelper->wrapResultRecord(
-            $this->searchViewerHelper->trans('persons_title'),
+        $message .= $this->implodeResult(
+            $this->trans('persons_title'),
             $record->getItems(),
             $this->getPersonWrapResultRecordCallback($full),
             $full
@@ -112,8 +113,8 @@ class UkrWantedPersonTelegramSearchViewer extends SearchViewer implements Search
     private function getPersonResultRecord(UkrWantedPerson $record, bool $full): string
     {
         $message = '🤔 ';
-        $message .= $this->searchViewerHelper->wrapResultRecord(
-            $this->searchViewerHelper->trans('person_title'),
+        $message .= $this->implodeResult(
+            $this->trans('person_title'),
             [$record],
             $this->getPersonWrapResultRecordCallback($full),
             $full

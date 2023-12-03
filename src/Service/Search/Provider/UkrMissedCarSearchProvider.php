@@ -17,11 +17,11 @@ use Symfony\Component\DomCrawler\Crawler;
 class UkrMissedCarSearchProvider extends SearchProvider implements SearchProviderInterface
 {
     public function __construct(
-        SearchProviderHelper $searchProviderHelper,
+        SearchProviderCompose $searchProviderCompose,
         private readonly CrawlerProvider $crawlerProvider,
     )
     {
-        parent::__construct($searchProviderHelper);
+        parent::__construct($searchProviderCompose);
     }
 
     public function getName(): SearchProviderName

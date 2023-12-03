@@ -8,7 +8,7 @@ use App\Exception\HttpRequesterException;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-class SearchProviderHelper
+class SearchProviderCompose
 {
     public function __construct(
         private readonly LoggerInterface $logger,
