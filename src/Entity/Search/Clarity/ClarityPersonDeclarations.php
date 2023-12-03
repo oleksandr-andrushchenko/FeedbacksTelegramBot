@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Entity\Search\Otzyvua;
+namespace App\Entity\Search\Clarity;
 
-readonly class OtzyvuaFeedbackSearchTermsRecord
+readonly class ClarityPersonDeclarations
 {
     public function __construct(
         private array $items

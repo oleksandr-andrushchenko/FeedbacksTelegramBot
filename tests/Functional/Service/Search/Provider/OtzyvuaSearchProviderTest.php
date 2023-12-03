@@ -6,8 +6,8 @@ namespace App\Tests\Functional\Service\Search\Provider;
 
 use App\Entity\Search\Otzyvua\OtzyvuaFeedback;
 use App\Entity\Search\Otzyvua\OtzyvuaFeedbackSearchTerm;
-use App\Entity\Search\Otzyvua\OtzyvuaFeedbackSearchTermsRecord;
-use App\Entity\Search\Otzyvua\OtzyvuaFeedbacksRecord;
+use App\Entity\Search\Otzyvua\OtzyvuaFeedbackSearchTerms;
+use App\Entity\Search\Otzyvua\OtzyvuaFeedbacks;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Tests\Traits\Search\SearchProviderTrait;
@@ -88,7 +88,7 @@ class OtzyvuaSearchProviderTest extends KernelTestCase
                 'sortByLength' => false,
             ],
             'expected' => [
-                new OtzyvuaFeedbackSearchTermsRecord([
+                new OtzyvuaFeedbackSearchTerms([
                     new OtzyvuaFeedbackSearchTerm(
                         'Розовый носорог',
                         href: 'https://www.otzyvua.net/uk/rozoviy-nosorog.html',
@@ -107,7 +107,7 @@ class OtzyvuaSearchProviderTest extends KernelTestCase
                 'countryCode' => 'ua',
             ],
             'expected' => [
-                new OtzyvuaFeedbacksRecord([
+                new OtzyvuaFeedbacks([
                     new OtzyvuaFeedback(
                         'Чи потрібно бути членом Gold клубу.',
                         href: 'https://www.otzyvua.net/uk/privat-bank/review-1937020',

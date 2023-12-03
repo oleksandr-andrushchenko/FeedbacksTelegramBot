@@ -5,21 +5,21 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Service\Search\Provider;
 
 use App\Entity\Search\Clarity\ClarityEdr;
-use App\Entity\Search\Clarity\ClarityEdrsRecord;
+use App\Entity\Search\Clarity\ClarityEdrs;
 use App\Entity\Search\Clarity\ClarityPerson;
 use App\Entity\Search\Clarity\ClarityPersonCourt;
-use App\Entity\Search\Clarity\ClarityPersonCourtsRecord;
+use App\Entity\Search\Clarity\ClarityPersonCourts;
 use App\Entity\Search\Clarity\ClarityPersonDebtor;
-use App\Entity\Search\Clarity\ClarityPersonDebtorsRecord;
+use App\Entity\Search\Clarity\ClarityPersonDebtors;
 use App\Entity\Search\Clarity\ClarityPersonDeclaration;
-use App\Entity\Search\Clarity\ClarityPersonDeclarationsRecord;
+use App\Entity\Search\Clarity\ClarityPersonDeclarations;
 use App\Entity\Search\Clarity\ClarityPersonEdr;
-use App\Entity\Search\Clarity\ClarityPersonEdrsRecord;
+use App\Entity\Search\Clarity\ClarityPersonEdrs;
 use App\Entity\Search\Clarity\ClarityPersonEnforcement;
-use App\Entity\Search\Clarity\ClarityPersonEnforcementsRecord;
+use App\Entity\Search\Clarity\ClarityPersonEnforcements;
 use App\Entity\Search\Clarity\ClarityPersonSecurity;
-use App\Entity\Search\Clarity\ClarityPersonSecurityRecord;
-use App\Entity\Search\Clarity\ClarityPersonsRecord;
+use App\Entity\Search\Clarity\ClarityPersonSecurities;
+use App\Entity\Search\Clarity\ClarityPersons;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Tests\Traits\Search\SearchProviderTrait;
@@ -167,7 +167,7 @@ class ClaritySearchProviderTest extends KernelTestCase
                 'countryCode' => 'ua',
             ],
             'expected' => [
-                new ClarityPersonSecurityRecord([
+                new ClarityPersonSecurities([
                     new ClarityPersonSecurity(
                         'АНДРУЩЕНКО СЕРГІЙ МИКОЛАЙОВИЧ',
                         bornAt: new DateTimeImmutable('1974-06-10'),
@@ -179,7 +179,7 @@ class ClaritySearchProviderTest extends KernelTestCase
                         precaution: null
                     ),
                 ]),
-                new ClarityPersonCourtsRecord([
+                new ClarityPersonCourts([
                     new ClarityPersonCourt(
                         '635/4369/21',
                         state: null,
@@ -188,7 +188,7 @@ class ClaritySearchProviderTest extends KernelTestCase
                         place: 'Харківський районний суд Харківської області'
                     ),
                 ]),
-                new ClarityPersonDebtorsRecord([
+                new ClarityPersonDebtors([
                     new ClarityPersonDebtor(
                         'АНДРУЩЕНКО СЕРГІЙ МИКОЛАЙОВИЧ',
                         bornAt: new DateTimeImmutable('1983-03-02'),
@@ -196,7 +196,7 @@ class ClaritySearchProviderTest extends KernelTestCase
                         actualAt: new DateTimeImmutable('2023-08-31')
                     ),
                 ]),
-                new ClarityPersonEnforcementsRecord([
+                new ClarityPersonEnforcements([
                     new ClarityPersonEnforcement(
                         '71732548',
                         openedAt: new DateTimeImmutable('2023-05-04'),
@@ -206,7 +206,7 @@ class ClaritySearchProviderTest extends KernelTestCase
                         state: 'Відкрито'
                     ),
                 ]),
-                new ClarityPersonEdrsRecord([
+                new ClarityPersonEdrs([
                     new ClarityPersonEdr(
                         'РЕЛІГІЙНА ГРОМАДА ХРИСТИЯН ВІРИ ЄВАНГЕЛЬСЬКОЇ СМТ.ЧОРНУХИ',
                         type: '(Історичні дані)',
@@ -216,7 +216,7 @@ class ClaritySearchProviderTest extends KernelTestCase
                         address: null
                     ),
                 ]),
-                new ClarityPersonDeclarationsRecord([
+                new ClarityPersonDeclarations([
                     new ClarityPersonDeclaration(
                         'АНДРУЩЕНКО СЕРГІЙ МИКОЛАЙОВИЧ',
                         href: 'https://clarity-project.infohttps://declarations.com.ua/declaration/nacp_124708ff-618b-4b46-8c96-89bf811c0e7a',
@@ -234,7 +234,7 @@ class ClaritySearchProviderTest extends KernelTestCase
                 'countryCode' => 'ua',
             ],
             'expected' => [
-                new ClarityPersonsRecord([
+                new ClarityPersons([
                     new ClarityPerson(
                         'КРОЛЕВЕЦЬ СЕРГІЙ ВІКТОРОВИЧ',
                         href: 'https://clarity-project.info/person/daa29a8ba998791640c6414679cd0ead',
@@ -251,7 +251,7 @@ class ClaritySearchProviderTest extends KernelTestCase
                 'countryCode' => 'ua',
             ],
             'expected' => [
-                new ClarityPersonCourtsRecord([
+                new ClarityPersonCourts([
                     new ClarityPersonCourt(
                         '752/2460/20',
                         state: null,
@@ -260,7 +260,7 @@ class ClaritySearchProviderTest extends KernelTestCase
                         place: 'Голосіївський районний суд міста Києва'
                     ),
                 ]),
-                new ClarityPersonEnforcementsRecord([
+                new ClarityPersonEnforcements([
                     new ClarityPersonEnforcement(
                         '67242704',
                         openedAt: new DateTimeImmutable('2021-10-25'),
@@ -278,7 +278,7 @@ class ClaritySearchProviderTest extends KernelTestCase
                         state: 'Завершено'
                     ),
                 ]),
-                new ClarityPersonEdrsRecord([
+                new ClarityPersonEdrs([
                     new ClarityPersonEdr(
                         'СОЛТИС ДЕНИС МИКОЛАЙОВИЧ',
                         type: 'ФОП',
@@ -307,7 +307,7 @@ class ClaritySearchProviderTest extends KernelTestCase
                 'countryCode' => 'ua',
             ],
             'expected' => [
-                new ClarityEdrsRecord([
+                new ClarityEdrs([
                     new ClarityEdr(
                         'Мале приватне підприємство фірма "ЕРІДОН"',
                         type: null,
@@ -335,7 +335,7 @@ class ClaritySearchProviderTest extends KernelTestCase
                 'countryCode' => 'ua',
             ],
             'expected' => [
-                new ClarityEdrsRecord([
+                new ClarityEdrs([
                     new ClarityEdr(
                         'Мале приватне підприємство фірма "ЕРІДОН"',
                         type: null,

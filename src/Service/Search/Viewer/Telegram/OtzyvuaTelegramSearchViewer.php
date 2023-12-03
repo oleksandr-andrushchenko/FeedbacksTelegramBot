@@ -7,8 +7,8 @@ namespace App\Service\Search\Viewer\Telegram;
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\Otzyvua\OtzyvuaFeedback;
 use App\Entity\Search\Otzyvua\OtzyvuaFeedbackSearchTerm;
-use App\Entity\Search\Otzyvua\OtzyvuaFeedbackSearchTermsRecord;
-use App\Entity\Search\Otzyvua\OtzyvuaFeedbacksRecord;
+use App\Entity\Search\Otzyvua\OtzyvuaFeedbackSearchTerms;
+use App\Entity\Search\Otzyvua\OtzyvuaFeedbacks;
 use App\Service\Search\Viewer\SearchViewer;
 use App\Service\Search\Viewer\SearchViewerHelper;
 use App\Service\Search\Viewer\SearchViewerInterface;
@@ -29,12 +29,12 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $full = $context['full'] ?? false;
 
         return match (get_class($record)) {
-            OtzyvuaFeedbackSearchTermsRecord::class => $this->getFeedbackSearchTermsResultRecord($record, $full),
-            OtzyvuaFeedbacksRecord::class => $this->getFeedbackResultRecord($record, $full),
+            OtzyvuaFeedbackSearchTerms::class => $this->getFeedbackSearchTermsResultRecord($record, $full),
+            OtzyvuaFeedbacks::class => $this->getFeedbackResultRecord($record, $full),
         };
     }
 
-    private function getFeedbackSearchTermsResultRecord(OtzyvuaFeedbackSearchTermsRecord $record, bool $full): string
+    private function getFeedbackSearchTermsResultRecord(OtzyvuaFeedbackSearchTerms $record, bool $full): string
     {
         $h = $this->searchViewerHelper;
         $message = '🤔 ';
@@ -67,7 +67,7 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         return $message;
     }
 
-    private function getFeedbackResultRecord(OtzyvuaFeedbacksRecord $record, bool $full): string
+    private function getFeedbackResultRecord(OtzyvuaFeedbacks $record, bool $full): string
     {
         $h = $this->searchViewerHelper;
         $message = '💫 ';

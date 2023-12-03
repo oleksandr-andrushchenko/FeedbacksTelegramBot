@@ -7,8 +7,8 @@ namespace App\Service\Search\Provider;
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\Otzyvua\OtzyvuaFeedback;
 use App\Entity\Search\Otzyvua\OtzyvuaFeedbackSearchTerm;
-use App\Entity\Search\Otzyvua\OtzyvuaFeedbackSearchTermsRecord;
-use App\Entity\Search\Otzyvua\OtzyvuaFeedbacksRecord;
+use App\Entity\Search\Otzyvua\OtzyvuaFeedbackSearchTerms;
+use App\Entity\Search\Otzyvua\OtzyvuaFeedbacks;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Service\CrawlerProvider;
@@ -60,7 +60,7 @@ class OtzyvuaSearchProvider extends SearchProvider implements SearchProviderInte
     public function search(FeedbackSearchTerm $searchTerm, array $context = []): array
     {
         $term = $searchTerm->getNormalizedText();
-        $record = $this->searchFeedbackSearchTermsRecord($term, sortByLength: $context['sortByLength'] ?? true);
+        $record = $this->searchFeedbackSearchTerms($term, sortByLength: $context['sortByLength'] ?? true);
 
         if ($record === null) {
             return [];
@@ -74,7 +74,7 @@ class OtzyvuaSearchProvider extends SearchProvider implements SearchProviderInte
 
         if (isset($url)) {
             sleep(1);
-            $feedbacksRecord = $this->searchProviderHelper->tryCatch(fn () => $this->searchFeedbacksRecord($url), null);
+            $feedbacksRecord = $this->searchProviderHelper->tryCatch(fn () => $this->searchFeedbacks($url), null);
 
             return [
                 $feedbacksRecord,
@@ -86,7 +86,7 @@ class OtzyvuaSearchProvider extends SearchProvider implements SearchProviderInte
         ];
     }
 
-    private function searchFeedbackSearchTermsRecord(string $name, bool $sortByLength = false): ?OtzyvuaFeedbackSearchTermsRecord
+    private function searchFeedbackSearchTerms(string $name, bool $sortByLength = false): ?OtzyvuaFeedbackSearchTerms
     {
         $crawler = $this->crawlerProvider->getCrawler('GET', 'https://www.otzyvua.net/uk/search/?q=' . urlencode($name), user: true);
 
@@ -140,10 +140,10 @@ class OtzyvuaSearchProvider extends SearchProvider implements SearchProviderInte
             usort($items, static fn (OtzyvuaFeedbackSearchTerm $a, OtzyvuaFeedbackSearchTerm $b): int => mb_strlen($a->getName()) <=> mb_strlen($b->getName()));
         }
 
-        return count($items) === 0 ? null : new OtzyvuaFeedbackSearchTermsRecord($items);
+        return count($items) === 0 ? null : new OtzyvuaFeedbackSearchTerms($items);
     }
 
-    private function searchFeedbacksRecord(string $url): ?OtzyvuaFeedbacksRecord
+    private function searchFeedbacks(string $url): ?OtzyvuaFeedbacks
     {
         $crawler = $this->crawlerProvider->getCrawler('GET', $url);
 
@@ -211,6 +211,6 @@ class OtzyvuaSearchProvider extends SearchProvider implements SearchProviderInte
 
         $items = array_values(array_filter($items));
 
-        return count($items) === 0 ? null : new OtzyvuaFeedbacksRecord($items);
+        return count($items) === 0 ? null : new OtzyvuaFeedbacks($items);
     }
 }

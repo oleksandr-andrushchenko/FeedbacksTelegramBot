@@ -6,21 +6,21 @@ namespace App\Service\Search\Provider;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\Clarity\ClarityEdr;
-use App\Entity\Search\Clarity\ClarityEdrsRecord;
+use App\Entity\Search\Clarity\ClarityEdrs;
 use App\Entity\Search\Clarity\ClarityPerson;
 use App\Entity\Search\Clarity\ClarityPersonCourt;
-use App\Entity\Search\Clarity\ClarityPersonCourtsRecord;
+use App\Entity\Search\Clarity\ClarityPersonCourts;
 use App\Entity\Search\Clarity\ClarityPersonDebtor;
-use App\Entity\Search\Clarity\ClarityPersonDebtorsRecord;
+use App\Entity\Search\Clarity\ClarityPersonDebtors;
 use App\Entity\Search\Clarity\ClarityPersonDeclaration;
-use App\Entity\Search\Clarity\ClarityPersonDeclarationsRecord;
+use App\Entity\Search\Clarity\ClarityPersonDeclarations;
 use App\Entity\Search\Clarity\ClarityPersonEdr;
-use App\Entity\Search\Clarity\ClarityPersonEdrsRecord;
+use App\Entity\Search\Clarity\ClarityPersonEdrs;
 use App\Entity\Search\Clarity\ClarityPersonEnforcement;
-use App\Entity\Search\Clarity\ClarityPersonEnforcementsRecord;
+use App\Entity\Search\Clarity\ClarityPersonEnforcements;
 use App\Entity\Search\Clarity\ClarityPersonSecurity;
-use App\Entity\Search\Clarity\ClarityPersonSecurityRecord;
-use App\Entity\Search\Clarity\ClarityPersonsRecord;
+use App\Entity\Search\Clarity\ClarityPersonSecurities;
+use App\Entity\Search\Clarity\ClarityPersons;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Service\CrawlerProvider;
@@ -130,8 +130,8 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
                 }
             }
 
-            /** @var ClarityPersonsRecord $record */
-            $record = $this->searchProviderHelper->tryCatch(fn () => $this->searchPersonsRecord($term), null);
+            /** @var ClarityPersons $record */
+            $record = $this->searchProviderHelper->tryCatch(fn () => $this->searchPersons($term), null);
 
             if ($record === null) {
                 return [];
@@ -152,23 +152,23 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
 
         // todo parse edr page if single result (implemente the same as for persons made)
         return [
-            $this->searchProviderHelper->tryCatch(fn () => $this->searchEdrsRecord($term), null),
+            $this->searchProviderHelper->tryCatch(fn () => $this->searchEdrs($term), null),
         ];
     }
 
     private function searchPersonRecords(string $url, string $referer = null): array
     {
         return [
-            $this->searchPersonSecurityRecord($url, $referer),
-            $this->searchPersonCourtsRecord($url, $referer),
-            $this->searchPersonDebtorsRecord($url, $referer),
-            $this->searchPersonEnforcementsRecord($url, $referer),
-            $this->searchPersonEdrsRecord($url, $referer),
-            $this->searchPersonDeclarationsRecord($url, $referer),
+            $this->searchPersonSecurity($url, $referer),
+            $this->searchPersonCourts($url, $referer),
+            $this->searchPersonDebtors($url, $referer),
+            $this->searchPersonEnforcements($url, $referer),
+            $this->searchPersonEdrs($url, $referer),
+            $this->searchPersonDeclarations($url, $referer),
         ];
     }
 
-    private function searchPersonsRecord(string $name): ?ClarityPersonsRecord
+    private function searchPersons(string $name): ?ClarityPersons
     {
         $url = '/persons?search=' . urlencode($name);
         $headers = [
@@ -201,10 +201,10 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
 
         $items = array_values(array_filter($items));
 
-        return count($items) === 0 ? null : new ClarityPersonsRecord($items);
+        return count($items) === 0 ? null : new ClarityPersons($items);
     }
 
-    private function searchPersonEdrsRecord(string $url, string $referer = null): ?ClarityPersonEdrsRecord
+    private function searchPersonEdrs(string $url, string $referer = null): ?ClarityPersonEdrs
     {
         $crawler = $this->getPersonCrawler($url, $referer);
 
@@ -283,10 +283,10 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
 
         $items = array_values(array_filter($items));
 
-        return count($items) === 0 ? null : new ClarityPersonEdrsRecord($items);
+        return count($items) === 0 ? null : new ClarityPersonEdrs($items);
     }
 
-    private function searchPersonCourtsRecord(string $url, string $referer = null): ?ClarityPersonCourtsRecord
+    private function searchPersonCourts(string $url, string $referer = null): ?ClarityPersonCourts
     {
         $crawler = $this->getPersonCrawler($url, $referer);
 
@@ -340,10 +340,10 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
 
         $items = array_values(array_filter($items));
 
-        return count($items) === 0 ? null : new ClarityPersonCourtsRecord($items);
+        return count($items) === 0 ? null : new ClarityPersonCourts($items);
     }
 
-    private function searchPersonDebtorsRecord(string $url, string $referer = null): ?ClarityPersonDebtorsRecord
+    private function searchPersonDebtors(string $url, string $referer = null): ?ClarityPersonDebtors
     {
         $crawler = $this->getPersonCrawler($url, $referer);
 
@@ -396,10 +396,10 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
 
         $items = array_values(array_filter($items));
 
-        return count($items) === 0 ? null : new ClarityPersonDebtorsRecord($items);
+        return count($items) === 0 ? null : new ClarityPersonDebtors($items);
     }
 
-    private function searchPersonSecurityRecord(string $url, string $referer = null): ?ClarityPersonSecurityRecord
+    private function searchPersonSecurity(string $url, string $referer = null): ?ClarityPersonSecurities
     {
         $crawler = $this->getPersonCrawler($url, $referer);
 
@@ -482,10 +482,10 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
 
         $items = array_values(array_filter($items));
 
-        return count($items) === 0 ? null : new ClarityPersonSecurityRecord($items);
+        return count($items) === 0 ? null : new ClarityPersonSecurities($items);
     }
 
-    private function searchPersonEnforcementsRecord(string $url, string $referer = null): ?ClarityPersonEnforcementsRecord
+    private function searchPersonEnforcements(string $url, string $referer = null): ?ClarityPersonEnforcements
     {
         $crawler = $this->getPersonCrawler($url, $referer);
 
@@ -552,10 +552,10 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
 
         $items = array_values(array_filter($items));
 
-        return count($items) === 0 ? null : new ClarityPersonEnforcementsRecord($items);
+        return count($items) === 0 ? null : new ClarityPersonEnforcements($items);
     }
 
-    private function searchPersonDeclarationsRecord(string $url, string $referer = null): ?ClarityPersonDeclarationsRecord
+    private function searchPersonDeclarations(string $url, string $referer = null): ?ClarityPersonDeclarations
     {
         $crawler = $this->getPersonCrawler($url, $referer);
 
@@ -614,10 +614,10 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
 
         $items = array_values(array_filter($items));
 
-        return count($items) === 0 ? null : new ClarityPersonDeclarationsRecord($items);
+        return count($items) === 0 ? null : new ClarityPersonDeclarations($items);
     }
 
-    private function searchEdrsRecord(string $name): ?ClarityEdrsRecord
+    private function searchEdrs(string $name): ?ClarityEdrs
     {
         $url = '/edrs?search=' . urlencode($name);
         $headers = [
@@ -670,7 +670,7 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
 
         $items = array_values(array_filter($items));
 
-        return count($items) === 0 ? null : new ClarityEdrsRecord($items);
+        return count($items) === 0 ? null : new ClarityEdrs($items);
     }
 
     private function getPersonCrawler(string $url, string $referer = null): Crawler

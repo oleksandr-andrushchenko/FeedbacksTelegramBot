@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\Search\Clarity;
 
-readonly class ClarityPersonEnforcementsRecord
+readonly class ClarityPersonEdrs
 {
     public function __construct(
         private array $items
