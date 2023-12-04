@@ -65,6 +65,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             fn (ClarityPerson $item): array => [
                 $m->create()
                     ->add($m->slashesModifier())
+                    ->add($full ? $m->nullModifier() : $m->secretsModifier())
                     ->add($full ? $m->linkModifier($item->getHref()) : $m->nullModifier())
                     ->add($m->boldModifier())
                     ->apply($item->getName()),
