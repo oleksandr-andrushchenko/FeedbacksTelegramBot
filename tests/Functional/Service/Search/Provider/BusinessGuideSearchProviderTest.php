@@ -38,18 +38,36 @@ class BusinessGuideSearchProviderTest extends KernelTestCase
             'expected' => false,
         ];
 
-        yield 'person name & one word' => [
+        yield 'person name & first name only' => [
             'type' => SearchTermType::person_name,
-            'term' => 'слово',
+            'term' => 'Степан',
             'context' => [
                 'countryCode' => 'ua',
             ],
             'expected' => false,
         ];
 
-        yield 'person name & ok' => [
+        yield 'person name & middle name only' => [
             'type' => SearchTermType::person_name,
-            'term' => 'слово перше',
+            'term' => 'Сергійович',
+            'context' => [
+                'countryCode' => 'ua',
+            ],
+            'expected' => false,
+        ];
+
+        yield 'person name & last name only & ok' => [
+            'type' => SearchTermType::person_name,
+            'term' => 'Власюк',
+            'context' => [
+                'countryCode' => 'ua',
+            ],
+            'expected' => true,
+        ];
+
+        yield 'person name & first and middle names & ok' => [
+            'type' => SearchTermType::person_name,
+            'term' => 'Степан Сергійович',
             'context' => [
                 'countryCode' => 'ua',
             ],

@@ -139,13 +139,17 @@ class OtzyvuaSearchProvider extends SearchProvider implements SearchProviderInte
             );
         });
 
-        $items = array_values(array_filter($items));
+        $items = array_filter($items);
 
         if ($sortByLength) {
             usort($items, static fn (OtzyvuaFeedbackSearchTerm $a, OtzyvuaFeedbackSearchTerm $b): int => mb_strlen($a->getName()) <=> mb_strlen($b->getName()));
         }
 
-        return count($items) === 0 ? null : new OtzyvuaFeedbackSearchTerms($items);
+        if (count($items) > 0) {
+            return new OtzyvuaFeedbackSearchTerms(array_values($items));
+        }
+
+        return null;
     }
 
     private function searchFeedbacks(string $url): ?OtzyvuaFeedbacks
@@ -214,8 +218,12 @@ class OtzyvuaSearchProvider extends SearchProvider implements SearchProviderInte
             );
         });
 
-        $items = array_values(array_filter($items));
+        $items = array_filter($items);
 
-        return count($items) === 0 ? null : new OtzyvuaFeedbacks($items);
+        if (count($items) > 0) {
+            return new OtzyvuaFeedbacks(array_values($items));
+        }
+
+        return null;
     }
 }

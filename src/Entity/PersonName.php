@@ -58,4 +58,9 @@ readonly class PersonName
     {
         return $this->locale;
     }
+
+    public function getComponentsCount(): int
+    {
+        return count(array_filter([$this->first, $this->last, $this->middle, $this->patronymic]));
+    }
 }

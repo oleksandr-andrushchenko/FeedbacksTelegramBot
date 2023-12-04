@@ -10,6 +10,7 @@ use App\Entity\Search\UkrCorrupt\UkrCorruptPersons;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Service\HttpRequester;
+use App\Service\Intl\Ukr\UkrPersonNameProvider;
 use DateTimeImmutable;
 
 /**
@@ -23,6 +24,7 @@ class UkrCorruptSearchProvider extends SearchProvider implements SearchProviderI
     public function __construct(
         SearchProviderCompose $searchProviderCompose,
         private readonly HttpRequester $httpRequester,
+        private readonly UkrPersonNameProvider $ukrPersonNameProvider,
     )
     {
         parent::__construct($searchProviderCompose);
@@ -48,7 +50,10 @@ class UkrCorruptSearchProvider extends SearchProvider implements SearchProviderI
             return false;
         }
 
-        if (count(explode(' ', $term)) === 1) {
+        if (
+            empty($this->ukrPersonNameProvider->getPersonNames($term, withLast: true))
+            && empty($this->ukrPersonNameProvider->getPersonNames($term, withMinComponents: 2))
+        ) {
             return false;
         }
 
@@ -75,37 +80,15 @@ class UkrCorruptSearchProvider extends SearchProvider implements SearchProviderI
 
     private function searchPersons(string $name): ?UkrCorruptPersons
     {
-        $words = array_map('trim', explode(' ', $name));
-        $count = count($words);
-
-        $bodies = [];
-
-        if ($count === 3) {
-            $bodies[] = [
-                'indLastNameOnOffenseMoment' => $words[0],
-                'indFirstNameOnOffenseMoment' => $words[1],
-                'indPatronymicOnOffenseMoment' => $words[2],
-            ];
-            $bodies[] = [
-                'indLastNameOnOffenseMoment' => $words[1],
-                'indFirstNameOnOffenseMoment' => $words[0],
-                'indPatronymicOnOffenseMoment' => $words[2],
-            ];
-        } elseif ($count == 2) {
-            $bodies[] = [
-                'indLastNameOnOffenseMoment' => $words[0],
-                'indFirstNameOnOffenseMoment' => $words[1],
-            ];
-            $bodies[] = [
-                'indLastNameOnOffenseMoment' => $words[1],
-                'indFirstNameOnOffenseMoment' => $words[0],
-            ];
-        }
-
-        $items = [];
-
-        foreach ($bodies as $body) {
+        foreach ($this->ukrPersonNameProvider->getPersonNames($name) as $personName) {
+            $body = array_filter([
+                'indLastNameOnOffenseMoment' => $personName->getLast(),
+                'indFirstNameOnOffenseMoment' => $personName->getFirst(),
+                'indPatronymicOnOffenseMoment' => $personName->getPatronymic(),
+            ]);
             $rows = $this->httpRequester->requestHttp('POST', self::URL, json: $body, array: true);
+
+            $items = [];
 
             foreach ($rows as $row) {
                 $items[] = new UkrCorruptPerson(
@@ -124,31 +107,27 @@ class UkrCorruptSearchProvider extends SearchProvider implements SearchProviderI
                 );
             }
 
+            $items = array_filter($items, static function (UkrCorruptPerson $item) use ($personName): bool {
+                if (!empty($personName->getFirst()) && !str_contains($item->getFirstName(), $personName->getFirst())) {
+                    return false;
+                }
+
+                if (!empty($personName->getLast()) && !str_contains($item->getLastName(), $personName->getLast())) {
+                    return false;
+                }
+
+                if (!empty($personName->getPatronymic()) && !str_contains($item->getPatronymic(), $personName->getPatronymic())) {
+                    return false;
+                }
+
+                return true;
+            });
+
             if (count($items) > 0) {
-                break;
+                return new UkrCorruptPersons(array_values($items));
             }
         }
 
-        $items = array_filter($items, static function (UkrCorruptPerson $item) use ($words): bool {
-            foreach ($words as $word) {
-                if (!empty($item->getLastName()) && str_contains($item->getLastName(), $word)) {
-                    continue;
-                }
-
-                if (!empty($item->getFirstName()) && str_contains($item->getFirstName(), $word)) {
-                    continue;
-                }
-
-                if (!empty($item->getPatronymic()) && str_contains($item->getPatronymic(), $word)) {
-                    continue;
-                }
-
-                return false;
-            }
-
-            return true;
-        });
-
-        return count($items) === 0 ? null : new UkrCorruptPersons(array_values($items));
+        return null;
     }
 }

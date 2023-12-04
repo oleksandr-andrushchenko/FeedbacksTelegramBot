@@ -116,8 +116,12 @@ class UkrMissedCarSearchProvider extends SearchProvider implements SearchProvide
             );
         });
 
-        $items = array_values(array_filter($items));
+        $items = array_filter($items);
 
-        return count($items) === 0 ? null : $items;
+        if (count($items) > 0) {
+            return array_values($items);
+        }
+
+        return null;
     }
 }

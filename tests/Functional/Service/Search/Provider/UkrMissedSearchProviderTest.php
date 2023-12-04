@@ -40,15 +40,6 @@ class UkrMissedSearchProviderTest extends KernelTestCase
             'expected' => false,
         ];
 
-        yield 'person name & one word' => [
-            'type' => SearchTermType::person_name,
-            'term' => 'слово',
-            'context' => [
-                'countryCode' => 'ua',
-            ],
-            'expected' => false,
-        ];
-
         yield 'person name & not cyrillic' => [
             'type' => SearchTermType::person_name,
             'term' => 'any word',
@@ -58,9 +49,36 @@ class UkrMissedSearchProviderTest extends KernelTestCase
             'expected' => false,
         ];
 
-        yield 'person name & ok' => [
+        yield 'person name & first name only' => [
             'type' => SearchTermType::person_name,
-            'term' => 'слово перше',
+            'term' => 'Степан',
+            'context' => [
+                'countryCode' => 'ua',
+            ],
+            'expected' => false,
+        ];
+
+        yield 'person name & middle name only' => [
+            'type' => SearchTermType::person_name,
+            'term' => 'Сергійович',
+            'context' => [
+                'countryCode' => 'ua',
+            ],
+            'expected' => false,
+        ];
+
+        yield 'person name & last name only & ok' => [
+            'type' => SearchTermType::person_name,
+            'term' => 'Власюк',
+            'context' => [
+                'countryCode' => 'ua',
+            ],
+            'expected' => true,
+        ];
+
+        yield 'person name & first and middle names & ok' => [
+            'type' => SearchTermType::person_name,
+            'term' => 'Степан Сергійович',
             'context' => [
                 'countryCode' => 'ua',
             ],

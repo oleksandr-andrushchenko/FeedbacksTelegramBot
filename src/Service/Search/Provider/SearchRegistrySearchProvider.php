@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service\Search\Provider;
 
-use App\Entity\Feedback\FeedbackSearch;
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Enum\Search\SearchProviderName;
 use App\Service\Feedback\FeedbackSearchSearcher;

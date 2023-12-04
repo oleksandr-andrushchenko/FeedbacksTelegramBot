@@ -10,6 +10,7 @@ use App\Entity\Search\UkrWantedPerson\UkrWantedPersons;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Service\CrawlerProvider;
+use App\Service\Intl\Ukr\UkrPersonNameProvider;
 use DateTimeImmutable;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -25,6 +26,7 @@ class UkrWantedPersonSearchProvider extends SearchProvider implements SearchProv
     public function __construct(
         SearchProviderCompose $searchProviderCompose,
         private readonly CrawlerProvider $crawlerProvider,
+        private readonly UkrPersonNameProvider $ukrPersonNameProvider,
     )
     {
         parent::__construct($searchProviderCompose);
@@ -50,7 +52,10 @@ class UkrWantedPersonSearchProvider extends SearchProvider implements SearchProv
             return false;
         }
 
-        if (count(explode(' ', $term)) === 1) {
+        if (
+            empty($this->ukrPersonNameProvider->getPersonNames($term, withLast: true))
+            && empty($this->ukrPersonNameProvider->getPersonNames($term, withMinComponents: 2))
+        ) {
             return false;
         }
 
@@ -92,39 +97,16 @@ class UkrWantedPersonSearchProvider extends SearchProvider implements SearchProv
         return true;
     }
 
-    private function searchPersons(string $term): ?UkrWantedPersons
+    private function searchPersons(string $name): ?UkrWantedPersons
     {
-        $words = array_map('trim', explode(' ', $term));
-        $count = count($words);
-
-        $queries = [];
-
         // todo: add RU names search support
-        // tood: use person name objects
 
-        if ($count === 3) {
-            $queries[] = [
-                'PRUFM' => $words[0],
-                'PRUIM' => $words[1],
-                'PRUOT' => $words[2],
-            ];
-            $queries[] = [
-                'PRUFM' => $words[1],
-                'PRUIM' => $words[0],
-                'PRUOT' => $words[2],
-            ];
-        } elseif ($count == 2) {
-            $queries[] = [
-                'PRUFM' => $words[0],
-                'PRUIM' => $words[1],
-            ];
-            $queries[] = [
-                'PRUFM' => $words[1],
-                'PRUIM' => $words[0],
-            ];
-        }
-
-        foreach ($queries as $query) {
+        foreach ($this->ukrPersonNameProvider->getPersonNames($name) as $personName) {
+            $query = array_filter([
+                'PRUFM' => $personName->getLast(),
+                'PRUIM' => $personName->getFirst(),
+                'PRUOT' => $personName->getPatronymic(),
+            ]);
             $url = '/searchperson?' . http_build_query($query);
             $crawler = $this->crawlerProvider->getCrawler('GET', $url, base: self::URL, user: true);
 
@@ -190,10 +172,10 @@ class UkrWantedPersonSearchProvider extends SearchProvider implements SearchProv
                 );
             });
 
-            $items = array_values(array_filter($items));
+            $items = array_filter($items);
 
             if (count($items) > 0) {
-                return new UkrWantedPersons($items);
+                return new UkrWantedPersons(array_values($items));
             }
         }
 

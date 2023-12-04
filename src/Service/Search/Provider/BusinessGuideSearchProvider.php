@@ -10,6 +10,7 @@ use App\Entity\Search\BusinessGuide\BusinessGuideEnterprises;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Service\CrawlerProvider;
+use App\Service\Intl\Ukr\UkrPersonNameProvider;
 use DOMNode;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -22,6 +23,7 @@ class BusinessGuideSearchProvider extends SearchProvider implements SearchProvid
     public function __construct(
         SearchProviderCompose $searchProviderCompose,
         private readonly CrawlerProvider $crawlerProvider,
+        private readonly UkrPersonNameProvider $ukrPersonNameProvider,
     )
     {
         parent::__construct($searchProviderCompose);
@@ -52,7 +54,10 @@ class BusinessGuideSearchProvider extends SearchProvider implements SearchProvid
         }
 
         if ($type === SearchTermType::person_name) {
-            if (count(explode(' ', $term)) === 1) {
+            if (
+                empty($this->ukrPersonNameProvider->getPersonNames($term, withLast: true))
+                && empty($this->ukrPersonNameProvider->getPersonNames($term, withMinComponents: 2))
+            ) {
                 return false;
             }
 
@@ -155,7 +160,11 @@ class BusinessGuideSearchProvider extends SearchProvider implements SearchProvid
 
         $items = array_filter($items);
 
-        return count($items) === 0 ? null : new BusinessGuideEnterprises($items);
+        if (count($items) > 0) {
+            return new BusinessGuideEnterprises(array_values($items));
+        }
+
+        return null;
     }
 
     private function searchEnterprise(string $url): ?BusinessGuideEnterprise

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service\Search\Provider;
 
 use App\Entity\Feedback\FeedbackSearchTerm;
-use App\Entity\PersonName;
 use App\Entity\Search\Blackbox\BlackboxFeedback;
 use App\Entity\Search\Blackbox\BlackboxFeedbacks;
 use App\Enum\Feedback\SearchTermType;
@@ -58,7 +57,7 @@ class BlackboxSearchProvider extends SearchProvider implements SearchProviderInt
         }
 
         if ($type === SearchTermType::person_name) {
-            if (empty($this->getPersonNames($term))) {
+            if (empty($this->ukrPersonNameProvider->getPersonNames($term, withLast: true))) {
                 return false;
             }
 
@@ -146,7 +145,7 @@ class BlackboxSearchProvider extends SearchProvider implements SearchProviderInt
                 'phone_number' => sprintf('+38(0%d%d)%d%d%d-%d%d-%d%d', $d[3], $d[4], $d[5], $d[6], $d[7], $d[8], $d[9], $d[10], $d[11]),
             ]);
         } elseif ($type === SearchTermType::person_name) {
-            $personNames = $this->getPersonNames($term);
+            $personNames = $this->ukrPersonNameProvider->getPersonNames($term, withLast: true);
 
             foreach ($personNames as $personName) {
                 $bodies[] = array_merge($body, [
@@ -222,17 +221,5 @@ class BlackboxSearchProvider extends SearchProvider implements SearchProviderInt
         }
 
         return null;
-    }
-
-    /**
-     * @param string $term
-     * @return PersonName[]
-     */
-    private function getPersonNames(string $term): array
-    {
-        return array_filter(
-            $this->ukrPersonNameProvider->getPersonNames($term),
-            static fn (PersonName $personName): bool => $personName->getLast() !== null
-        );
     }
 }

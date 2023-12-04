@@ -64,7 +64,10 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
         }
 
         if ($type === SearchTermType::person_name) {
-            if (count(explode(' ', $term)) === 1) {
+            if (
+                empty($this->ukrPersonNameProvider->getPersonNames($term, withLast: true))
+                && empty($this->ukrPersonNameProvider->getPersonNames($term, withMinComponents: 2))
+            ) {
                 return false;
             }
 
@@ -112,22 +115,20 @@ class ClaritySearchProvider extends SearchProvider implements SearchProviderInte
         $term = $searchTerm->getNormalizedText();
 
         if ($type === SearchTermType::person_name) {
-            if (count(explode(' ', $term)) === 3) {
-                $personNames = $this->ukrPersonNameProvider->getPersonNames($term);
+            $personNames = $this->ukrPersonNameProvider->getPersonNames($term, withMinComponents: 3);
 
-                if (count($personNames) === 1) {
-                    $name = $personNames[0]->getFormatted();
-                    $url = 'https://clarity-project.info/person/' . md5(mb_strtoupper($name));
-                    $referer = 'https://clarity-project.info/persons?search=' . urlencode($name);
-                    $records = $this->searchProviderCompose->tryCatch(fn () => $this->searchPersonRecords($url, $referer), [], [404]);
-                    $records = array_values(array_filter($records));
+            if (count($personNames) === 1) {
+                $name = $personNames[0]->getFormatted();
+                $url = 'https://clarity-project.info/person/' . md5(mb_strtoupper($name));
+                $referer = 'https://clarity-project.info/persons?search=' . urlencode($name);
+                $records = $this->searchProviderCompose->tryCatch(fn () => $this->searchPersonRecords($url, $referer), [], [404]);
+                $records = array_values(array_filter($records));
 
-                    if (!empty($records)) {
-                        return $records;
-                    }
-
-                    sleep(2);
+                if (!empty($records)) {
+                    return $records;
                 }
+
+                sleep(2);
             }
 
             /** @var ClarityPersons $record */

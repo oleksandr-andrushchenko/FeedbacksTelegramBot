@@ -11,6 +11,7 @@ use App\Entity\Search\UkrMissed\UkrMissedWantedPersons;
 use App\Enum\Feedback\SearchTermType;
 use App\Enum\Search\SearchProviderName;
 use App\Service\HttpRequester;
+use App\Service\Intl\Ukr\UkrPersonNameProvider;
 use DateTimeImmutable;
 
 /**
@@ -25,6 +26,7 @@ class UkrMissedSearchProvider extends SearchProvider implements SearchProviderIn
     public function __construct(
         SearchProviderCompose $searchProviderCompose,
         private readonly HttpRequester $httpRequester,
+        private readonly UkrPersonNameProvider $ukrPersonNameProvider,
     )
     {
         parent::__construct($searchProviderCompose);
@@ -50,7 +52,10 @@ class UkrMissedSearchProvider extends SearchProvider implements SearchProviderIn
             return false;
         }
 
-        if (count(explode(' ', $term)) === 1) {
+        if (
+            empty($this->ukrPersonNameProvider->getPersonNames($term, withLast: true))
+            && empty($this->ukrPersonNameProvider->getPersonNames($term, withMinComponents: 2))
+        ) {
             return false;
         }
 
@@ -100,39 +105,11 @@ class UkrMissedSearchProvider extends SearchProvider implements SearchProviderIn
 
     private function searchPersons(string $name, bool $disappeared): ?array
     {
-        // todo: implemented person names objects
-
-        $words = array_map('trim', explode(' ', $name));
-        $count = count($words);
-
-        $queries = [];
-
-        if ($count === 3) {
-            $queries[] = [
-                'surname' => $words[0],
-                'name' => $words[1],
-                'middlename' => $words[2],
-            ];
-            $queries[] = [
-                'surname' => $words[1],
-                'name' => $words[0],
-                'middlename' => $words[2],
-            ];
-        } elseif ($count == 2) {
-            $queries[] = [
-                'surname' => $words[0],
-                'name' => $words[1],
-            ];
-            $queries[] = [
-                'surname' => $words[1],
-                'name' => $words[0],
-            ];
-        }
-
-        $items = [];
-
-        foreach ($queries as $query) {
-            $query = array_merge($query, [
+        foreach ($this->ukrPersonNameProvider->getPersonNames($name) as $personName) {
+            $query = array_merge([
+                'surname' => $personName->getLast(),
+                'name' => $personName->getFirst(),
+                'middlename' => $personName->getPatronymic(),
                 'apiType' => '0',
                 'page' => '1',
             ]);
@@ -146,6 +123,8 @@ class UkrMissedSearchProvider extends SearchProvider implements SearchProviderIn
             $url .= '?' . http_build_query($query);
 
             $data = $this->httpRequester->requestHttp('GET', $url, user: true, array: true);
+
+            $items = [];
 
             foreach ($data['items'] as $item) {
                 $items[] = new UkrMissedPerson(

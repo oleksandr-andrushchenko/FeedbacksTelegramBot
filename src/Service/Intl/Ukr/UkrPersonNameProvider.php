@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Intl\Ukr;
 
 use App\Entity\PersonName;
+use App\Service\Util\String\MbUcFirster;
 
 /**
  * @see https://uk.wikipedia.org/wiki/%D0%A3%D0%BA%D1%80%D0%B0%D1%97%D0%BD%D1%81%D1%8C%D0%BA%D1%96_%D0%BF%D1%80%D1%96%D0%B7%D0%B2%D0%B8%D1%89%D0%B0
@@ -1136,14 +1137,23 @@ class UkrPersonNameProvider
         'ївна',
     ];
 
+    public function __construct(
+        private readonly MbUcFirster $mbUcFirster,
+    )
+    {
+    }
+
     /**
      * @param string $name
-     * @param bool $withLastOnly
+     * @param bool|null $withLast
+     * @param int|null $withMinComponents
      * @return PersonName[]
      */
-    public function getPersonNames(string $name, bool $withLastOnly = false): array
+    public function getPersonNames(string $name, bool $withLast = null, int $withMinComponents = null): array
     {
         static $cache = [];
+
+        $name = $this->normalizeName($name);
 
         if (!isset($cache[$name])) {
             $output = [];
@@ -1240,11 +1250,36 @@ class UkrPersonNameProvider
             $cache[$name] = $output;
         }
 
-        if ($withLastOnly) {
-            return array_filter($cache[$name], static fn (PersonName $personName): bool => $personName->getLast() !== null);
+        $output = $cache[$name];
+
+        if ($withLast !== null) {
+            $output = array_filter($output, static fn (PersonName $personName): bool => ($withLast && $personName->getLast() !== null) || (!$withLast && $personName->getLast() === null));
         }
 
-        return $cache[$name];
+        if ($withMinComponents !== null) {
+            $output = array_filter($output, static fn (PersonName $personName): bool => $personName->getComponentsCount() >= $withMinComponents);
+        }
+
+        return $output;
+    }
+
+    private function normalizeName(string $name): string
+    {
+        return implode(
+            ' ',
+            array_map(
+                fn (string $peace): string => $this->mbUcFirster->mbUcFirst($peace),
+                array_filter(
+                    array_map(
+                        'trim',
+                        explode(
+                            ' ',
+                            mb_strtolower($name)
+                        )
+                    )
+                )
+            )
+        );
     }
 
     private function checkLastName(string $name): bool

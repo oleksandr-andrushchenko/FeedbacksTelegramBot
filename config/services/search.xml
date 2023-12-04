@@ -31,11 +31,13 @@
         <service id="app.search_provider_ukr_missed" class="App\Service\Search\Provider\UkrMissedSearchProvider"
                  parent="app.search_provider" lazy="true">
             <argument type="service" id="app.http_requester"/>
+            <argument type="service" id="app.intl_ukr_person_name_provider"/>
             <tag name="app.search_provider" provider="ukr_missed"/>
         </service>
         <service id="app.search_provider_ukr_corrupts" class="App\Service\Search\Provider\UkrCorruptSearchProvider"
                  parent="app.search_provider" lazy="true">
             <argument type="service" id="app.http_requester"/>
+            <argument type="service" id="app.intl_ukr_person_name_provider"/>
             <tag name="app.search_provider" provider="ukr_corrupts"/>
         </service>
         <service id="app.search_provider_otzyvua" class="App\Service\Search\Provider\OtzyvuaSearchProvider"
@@ -51,12 +53,14 @@
         <service id="app.search_provider_business_guide" class="App\Service\Search\Provider\BusinessGuideSearchProvider"
                  parent="app.search_provider" lazy="true">
             <argument type="service" id="app.crawler_provider"/>
+            <argument type="service" id="app.intl_ukr_person_name_provider"/>
             <tag name="app.search_provider" provider="business_guide"/>
         </service>
         <service id="app.search_provider_ukr_wanted_persons"
                  class="App\Service\Search\Provider\UkrWantedPersonSearchProvider" parent="app.search_provider"
                  lazy="true">
             <argument type="service" id="app.crawler_provider"/>
+            <argument type="service" id="app.intl_ukr_person_name_provider"/>
             <tag name="app.search_provider" provider="ukr_wanted_persons"/>
         </service>
         <service id="app.search_provider_blackbox" class="App\Service\Search\Provider\BlackboxSearchProvider"
