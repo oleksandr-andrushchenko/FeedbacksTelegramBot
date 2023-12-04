@@ -7,7 +7,6 @@ namespace App\Service\Search\Viewer\Telegram;
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\Blackbox\BlackboxFeedback;
 use App\Entity\Search\Blackbox\BlackboxFeedbacks;
-use App\Enum\Feedback\SearchTermType;
 use App\Service\Search\Viewer\SearchViewer;
 use App\Service\Search\Viewer\SearchViewerCompose;
 use App\Service\Search\Viewer\SearchViewerInterface;
@@ -28,19 +27,11 @@ class BlackboxTelegramSearchViewer extends SearchViewer implements SearchViewerI
 
         $full = $context['full'] ?? false;
 
-        if ($searchTerm->getType() === SearchTermType::person_name) {
-            $surname = explode(' ', $searchTerm->getNormalizedText())[0];
-        } else {
-            $surname = null;
-        }
-
         $m = $this->modifier;
 
         $message = '‼️ ';
         $message .= $this->implodeResult(
-            $surname === null
-                ? $this->trans('feedbacks_title')
-                : $this->trans('feedbacks_title_by_surname', ['surname' => $surname]),
+            $this->trans('feedbacks_title'),
             $record instanceof BlackboxFeedbacks ? $record->getItems() : [$record],
             fn (BlackboxFeedback $item): array => [
                 $m->create()
