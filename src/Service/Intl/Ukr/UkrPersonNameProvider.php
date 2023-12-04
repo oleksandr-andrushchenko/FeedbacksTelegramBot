@@ -1138,108 +1138,111 @@ class UkrPersonNameProvider
 
     /**
      * @param string $name
+     * @param bool $withLastOnly
      * @return PersonName[]
      */
-    public function getPersonNames(string $name): array
+    public function getPersonNames(string $name, bool $withLastOnly = false): array
     {
         static $cache = [];
 
-        if (isset($cache[$name])) {
-            return $cache[$name];
-        }
+        if (!isset($cache[$name])) {
+            $output = [];
 
-        $output = [];
+            $parts = array_filter(array_map('trim', explode(' ', $name)));
+            $partsCount = count($parts);
 
-        $parts = array_filter(array_map('trim', explode(' ', $name)));
-        $partsCount = count($parts);
+            $lastNames = [];
 
-        $lastNames = [];
+            $maleFirstNames = [];
+            $malePatronymics = [];
 
-        $maleFirstNames = [];
-        $malePatronymics = [];
+            $femaleFirstNames = [];
+            $femalePatronymics = [];
 
-        $femaleFirstNames = [];
-        $femalePatronymics = [];
+            foreach ($parts as $part) {
+                if ($this->checkLastName($part)) {
+                    $lastNames[] = $part;
+                }
 
-        foreach ($parts as $part) {
-            if ($this->checkLastName($part)) {
-                $lastNames[] = $part;
-            }
+                if ($this->checkMaleFirstName($part)) {
+                    $maleFirstNames[] = $part;
+                }
 
-            if ($this->checkMaleFirstName($part)) {
-                $maleFirstNames[] = $part;
-            }
+                if ($this->checkMalePatronymic($part)) {
+                    $malePatronymics[] = $part;
+                }
 
-            if ($this->checkMalePatronymic($part)) {
-                $malePatronymics[] = $part;
-            }
+                if ($this->checkFemaleFirstName($part)) {
+                    $femaleFirstNames[] = $part;
+                }
 
-            if ($this->checkFemaleFirstName($part)) {
-                $femaleFirstNames[] = $part;
-            }
-
-            if ($this->checkFemalePatronymic($part)) {
-                $femalePatronymics[] = $part;
-            }
-        }
-
-        $lastNames = array_diff($lastNames, $maleFirstNames, $malePatronymics, $femaleFirstNames, $femalePatronymics);
-
-        foreach ($lastNames ?: [null] as $lastName) {
-            foreach ($femaleFirstNames ?: [null] as $femaleFirstName) {
-                foreach ($femalePatronymics ?: [null] as $femalePatronymic) {
-                    $names = array_filter([$lastName, $femaleFirstName, $femalePatronymic]);
-
-                    if (count($names) !== $partsCount) {
-                        continue;
-                    }
-
-                    $formatted = trim(implode(' ', $names));
-
-                    if (empty($formatted)) {
-                        continue;
-                    }
-
-                    $output[] = new PersonName(
-                        $name,
-                        first: $femaleFirstName,
-                        last: $lastName,
-                        patronymic: $femalePatronymic,
-                        formatted: $formatted,
-                        gender: 'f',
-                        locale: 'ua'
-                    );
+                if ($this->checkFemalePatronymic($part)) {
+                    $femalePatronymics[] = $part;
                 }
             }
 
-            foreach ($maleFirstNames ?: [null] as $maleFirstName) {
-                foreach ($malePatronymics ?: [null] as $malePatronymic) {
-                    $names = array_filter([$lastName, $maleFirstName, $malePatronymic]);
+            $lastNames = array_diff($lastNames, $maleFirstNames, $malePatronymics, $femaleFirstNames, $femalePatronymics);
 
-                    if (count($names) !== $partsCount) {
-                        continue;
+            foreach ($lastNames ?: [null] as $lastName) {
+                foreach ($femaleFirstNames ?: [null] as $femaleFirstName) {
+                    foreach ($femalePatronymics ?: [null] as $femalePatronymic) {
+                        $names = array_filter([$lastName, $femaleFirstName, $femalePatronymic]);
+
+                        if (count($names) !== $partsCount) {
+                            continue;
+                        }
+
+                        $formatted = trim(implode(' ', $names));
+
+                        if (empty($formatted)) {
+                            continue;
+                        }
+
+                        $output[] = new PersonName(
+                            $name,
+                            first: $femaleFirstName,
+                            last: $lastName,
+                            patronymic: $femalePatronymic,
+                            formatted: $formatted,
+                            gender: 'f',
+                            locale: 'ua'
+                        );
                     }
+                }
 
-                    $formatted = trim(implode(' ', $names));
+                foreach ($maleFirstNames ?: [null] as $maleFirstName) {
+                    foreach ($malePatronymics ?: [null] as $malePatronymic) {
+                        $names = array_filter([$lastName, $maleFirstName, $malePatronymic]);
 
-                    if (empty($formatted)) {
-                        continue;
+                        if (count($names) !== $partsCount) {
+                            continue;
+                        }
+
+                        $formatted = trim(implode(' ', $names));
+
+                        if (empty($formatted)) {
+                            continue;
+                        }
+
+                        $output[] = new PersonName(
+                            $name,
+                            first: $maleFirstName,
+                            last: $lastName,
+                            patronymic: $malePatronymic,
+                            formatted: $formatted,
+                            gender: 'm',
+                            locale: 'ua'
+                        );
                     }
-
-                    $output[] = new PersonName(
-                        $name,
-                        first: $maleFirstName,
-                        last: $lastName,
-                        patronymic: $malePatronymic,
-                        formatted: $formatted,
-                        gender: 'm',
-                        locale: 'ua'
-                    );
                 }
             }
+
+            $cache[$name] = $output;
         }
 
-        $cache[$name] = $output;
+        if ($withLastOnly) {
+            return array_filter($cache[$name], static fn (PersonName $personName): bool => $personName->getLast() !== null);
+        }
 
         return $cache[$name];
     }
