@@ -1,5 +1,5 @@
 on_search: 'Search on the database of reviews #2...'
-feedback_search_terms_title: What specifically are you interested in? [ Repeat the search using the name from the list ]
+feedback_search_terms_title: Many matches found, refine your search
 category: Category
 rating: Rating %value% from %total%
 feedback_count: Number of feedbacks

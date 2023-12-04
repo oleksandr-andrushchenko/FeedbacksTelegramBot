@@ -29,6 +29,6 @@ debtors_title: Bankruptcy
 person_declarations_title: Declarations
 year: Year
 position: Position
-persons_title: Who exactly interests you? [ Repeat the search using the name of the person from the list ]
+persons_title: Many matches found, refine your search
 person_count: 'Persons with this name: %count%'
-edrs_title: What exactly interests you? [ Repeat the search using the name from the list ]
+edrs_title: Many matches found, refine your search

@@ -58,7 +58,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
     private function getPersonsResultRecord(ClarityPersons $record, bool $full): string
     {
         $m = $this->modifier;
-        $message = '🤔 ';
+        $message = '💫 ';
         $message .= $this->implodeResult(
             $this->trans('persons_title'),
             $record->getItems(),
@@ -297,7 +297,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
     private function getEdrsResultRecord(ClarityEdrs $record, SearchTermType $searchType, bool $full): string
     {
         $m = $this->modifier;
-        $message = '🤔 ';
+        $message = '💫 ';
         $message .= $this->implodeResult(
             $this->trans('edrs_title'),
             $record->getItems(),

@@ -38,7 +38,7 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
     private function getFeedbackSearchTermsResultRecord(OtzyvuaFeedbackSearchTerms $record, bool $full): string
     {
         $m = $this->modifier;
-        $message = '🤔 ';
+        $message = '💫 ';
         $message .= $this->implodeResult(
             $this->trans('feedback_search_terms_title'),
             $record->getItems(),

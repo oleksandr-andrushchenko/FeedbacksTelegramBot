@@ -23,17 +23,12 @@ abstract class SearchViewer implements SearchViewerInterface
 
     public function getEmptyMessage(FeedbackSearchTerm $searchTerm, array $context = [], bool $good = null): string
     {
-        $message = '';
+        // ✅☑️☀️👍🟢✔️
+
+        $message = $this->trans('empty_result', generalDomain: true);
 
         if ($good) {
-            // ✅☑️☀️👍🟢✔️
-            $message .= '☑️ ';
-        }
-
-        $message .= $this->trans('empty_result', generalDomain: true);
-
-        if ($good) {
-            $message .= ' ';
+            $message .= ' ☑️ ';
             $message .= $this->trans('all_good', generalDomain: true);
         }
 
@@ -47,9 +42,7 @@ abstract class SearchViewer implements SearchViewerInterface
 
     protected function implodeResult(string $title, array $items, callable $record, bool $full): string
     {
-        // 🔴🟡🟢⚪️🚨‼️
-        // ⬜️⬛️◻️◼️◽️◾️▫️▪️
-        // 💥🔥✨⚡️💫🥳🤩
+        // 🔴🟡🟢⚪️🚨‼️⬜️⬛️◻️◼️◽️◾️▫️▪️💥🔥✨⚡️💫🥳🤩
 
         $messages = [];
 

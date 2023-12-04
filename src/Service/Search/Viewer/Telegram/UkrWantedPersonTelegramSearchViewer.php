@@ -112,7 +112,7 @@ class UkrWantedPersonTelegramSearchViewer extends SearchViewer implements Search
 
     private function getPersonResultRecord(UkrWantedPerson $record, bool $full): string
     {
-        $message = '🤔 ';
+        $message = '💫 ';
         $message .= $this->implodeResult(
             $this->trans('person_title'),
             [$record],

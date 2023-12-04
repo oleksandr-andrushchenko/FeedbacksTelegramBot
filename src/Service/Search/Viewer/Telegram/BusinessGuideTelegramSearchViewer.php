@@ -92,7 +92,7 @@ class BusinessGuideTelegramSearchViewer extends SearchViewer implements SearchVi
 
     private function getEnterpriseResultRecord(BusinessGuideEnterprise $record, bool $full): string
     {
-        $message = '🤔 ';
+        $message = '💫 ';
         $message .= $this->implodeResult(
             $this->trans('enterprise_title'),
             [$record],
