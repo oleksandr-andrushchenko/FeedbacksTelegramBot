@@ -72,9 +72,7 @@
 * improve all types of searching
 * fix bug with empty keyboard when error occurs in message handlers
 * ask user to leave a phone number or email for future notifications (is anybody gonna search him)
-* add context to search parsers and improve parsing
 * add results couns field to feeedbacK-search
-* add icons for search result lists
 * implement the same logic for clarity orgs (as for persons was mada)
 * implement search by tax_number for orgs
 * add lookup processors test coverage
@@ -84,7 +82,5 @@
 * wrap all search records into object with parsed link (and show it for premium users)
 * improve secrets modifier, add brackets for secreted values (just user to know what is hidden)
 * add ru names support for blackbox search provider
-* add successfull indicators for absense in bad registries
 * add PersonName::matchFirstName method (is will check across all equal meaning names), implement instead of PersonName::getFirst() === $compare
 * if crowlings became a big problem - use real browsering like selenium server or some api based on it
-* remove self lookup (do now show those on created before the searsh)
