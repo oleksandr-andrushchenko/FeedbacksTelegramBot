@@ -12,6 +12,7 @@ abstract class SearchViewer implements SearchViewerInterface
     public function __construct(
         protected readonly SearchViewerCompose $searchViewerCompose,
         protected readonly Modifier $modifier,
+        private ?bool $showLimits = null
     )
     {
     }
@@ -19,6 +20,46 @@ abstract class SearchViewer implements SearchViewerInterface
     public function getOnSearchMessage(FeedbackSearchTerm $searchTerm, array $context = []): string
     {
         return '🔍 ' . $this->trans('on_search');
+    }
+
+    public function showLimits(): bool
+    {
+        return $this->showLimits === true;
+    }
+
+    public function getLimitsMessage(): string
+    {
+        $message = '🔒 ';
+        $message .= $this->modifier->create()
+//            ->add($this->modifier->italicModifier())
+            ->apply($this->trans('subscription_skipped_data', generalDomain: true))
+        ;
+        $message .= ' ';
+        $message .= $this->modifier->create()
+//            ->add($this->modifier->italicModifier())
+            ->apply($this->trans('subscription_skipped_links', generalDomain: true))
+        ;
+        $message .= ' ';
+        $parameters = [
+            'all_records' => $this->modifier->create()
+                ->add($this->modifier->boldModifier())
+                ->apply($this->trans('subscription_all_records', generalDomain: true)),
+            'all_links' => $this->modifier->create()
+                ->add($this->modifier->boldModifier())
+                ->apply($this->trans('subscription_all_links', generalDomain: true)),
+            'all_data' => $this->modifier->create()
+                ->add($this->modifier->boldModifier())
+                ->apply($this->trans('subscription_all_data', generalDomain: true)),
+            'subscribe_command' => $this->modifier->create()
+                ->add($this->modifier->boldModifier())
+                ->apply('/subscribe'),
+        ];
+        $message .= $this->modifier->create()
+//            ->add($this->modifier->italicModifier())
+            ->apply($this->trans('subscription_benefits', $parameters, generalDomain: true))
+        ;
+
+        return $message;
     }
 
     public function getEmptyMessage(FeedbackSearchTerm $searchTerm, array $context = [], bool $good = null): string
@@ -73,79 +114,29 @@ abstract class SearchViewer implements SearchViewerInterface
         }
 
         if (!$full) {
-            $message = '🔒 ';
-
             if ($maxResults !== $count) {
+                $messages[] = '...';
+                $message = '🔒 ';
+                $parameters = [
+                    'hidden_count' => $this->modifier->create()
+                        ->add($this->modifier->boldModifier())
+                        ->apply($count - $maxResults),
+                    'total_count' => $this->modifier->create()
+                        ->add($this->modifier->boldModifier())
+                        ->apply($count),
+                ];
                 $message .= $this->modifier->create()
-                    ->add($this->modifier->italicModifier())
-                    ->apply($this->transSubscriptionSkippedRecords($maxResults, $count))
+//                    ->add($this->modifier->italicModifier())
+                    ->apply($this->trans('subscription_skipped_records', $parameters, generalDomain: true))
                 ;
+
+                $messages[] = $message;
             }
 
-            $message .= ' ';
-            $message .= $this->modifier->create()
-                ->add($this->modifier->italicModifier())
-                ->apply($this->transSubscriptionSkippedData())
-            ;
-            $message .= ' ';
-            $message .= $this->modifier->create()
-                ->add($this->modifier->italicModifier())
-                ->apply($this->transSubscriptionSkippedLinks())
-            ;
-            $message .= ' ';
-            $message .= $this->modifier->create()
-                ->add($this->modifier->italicModifier())
-                ->apply($this->transSubscriptionBenefits())
-            ;
-
-            $messages[] = $message;
+            $this->showLimits = true;
         }
 
         return implode("\n\n", $messages);
-    }
-
-    protected function transSubscriptionSkippedRecords(int $maxResults, int $count): string
-    {
-        $parameters = [
-            'shown_count' => $this->modifier->create()
-                ->add($this->modifier->boldModifier())
-                ->apply($maxResults),
-            'total_count' => $this->modifier->create()
-                ->add($this->modifier->boldModifier())
-                ->apply($count),
-        ];
-
-        return $this->trans('subscription_skipped_records', $parameters, generalDomain: true);
-    }
-
-    protected function transSubscriptionSkippedData(): string
-    {
-        return $this->trans('subscription_skipped_data', generalDomain: true);
-    }
-
-    protected function transSubscriptionSkippedLinks(): string
-    {
-        return $this->trans('subscription_skipped_links', generalDomain: true);
-    }
-
-    protected function transSubscriptionBenefits(): string
-    {
-        $parameters = [
-            'all_records' => $this->modifier->create()
-                ->add($this->modifier->boldModifier())
-                ->apply($this->trans('subscription_all_records', generalDomain: true)),
-            'all_links' => $this->modifier->create()
-                ->add($this->modifier->boldModifier())
-                ->apply($this->trans('subscription_all_links', generalDomain: true)),
-            'all_data' => $this->modifier->create()
-                ->add($this->modifier->boldModifier())
-                ->apply($this->trans('subscription_all_data', generalDomain: true)),
-            'subscribe_command' => $this->modifier->create()
-                ->add($this->modifier->boldModifier())
-                ->apply('/subscribe'),
-        ];
-
-        return $this->trans('subscription_benefits', $parameters, generalDomain: true);
     }
 
     protected function normalizeAndFilterEmptyStrings(array $input): array

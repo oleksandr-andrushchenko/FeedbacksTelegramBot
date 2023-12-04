@@ -31,6 +31,8 @@ class Searcher
      */
     public function search(FeedbackSearchTerm $searchTerm, callable $render, array $context = [], array $providers = null): void
     {
+        $showLimits = false;
+
         foreach ($this->getProviders($providers) as $provider) {
             try {
                 if (!$provider->supports($searchTerm, $context)) {
@@ -66,9 +68,17 @@ class Searcher
                         $this->logger->error($exception);
                     }
                 }
+
+                if ($viewer->showLimits()) {
+                    $showLimits = true;
+                }
             } catch (Throwable $exception) {
                 $this->logger->error($exception);
             }
+        }
+
+        if ($showLimits) {
+            $render($viewer->getLimitsMessage());
         }
     }
 

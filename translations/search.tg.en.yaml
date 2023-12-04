@@ -1,7 +1,7 @@
 empty_result: Nothing found.
 all_good: All good.
 error_result: Not available.
-subscription_skipped_records: '%shown_count% of %total_count% records shown.'
+subscription_skipped_records: '%shown_count% of %total_count% records are hidden.'
 subscription_skipped_data: Part of the data is encrypted with an asterisk (*).
 subscription_skipped_links: Links are hidden.
 subscription_benefits: Premium users see %all_records%, %all_links% and %all_data% - %subscribe_command%.

@@ -1,7 +1,7 @@
 empty_result: Ничего не найдено.
 all_good: Все хорошо.
 error_result: Не доступно.
-subscription_skipped_records: Показано %shown_count% из %total_count% записей.
+subscription_skipped_records: Скрыто %shown_count% из %total_count% записей.
 subscription_skipped_data: Часть данных засекречена знаком звездочки (*).
 subscription_skipped_links: Ссылки скрыты.
 subscription_benefits: Премим-пользователи видят %all_records%, %all_links% и %all_data% - %subscribe_command%.

@@ -10,6 +10,10 @@ interface SearchViewerInterface
 {
     public function getOnSearchMessage(FeedbackSearchTerm $searchTerm, array $context = []): string;
 
+    public function showLimits(): bool;
+
+    public function getLimitsMessage(): string;
+
     public function getEmptyMessage(FeedbackSearchTerm $searchTerm, array $context = [], bool $good = null): string;
 
     public function getErrorMessage(FeedbackSearchTerm $searchTerm, array $context = []): string;
