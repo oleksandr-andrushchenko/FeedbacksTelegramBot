@@ -56,7 +56,7 @@ class FeedbackSearchTelegramViewProvider
         $message2 = '';
 
         if ($addTime) {
-            $message2 .= $this->timeProvider->getDate($feedbackSearch->getCreatedAt(), timezone: $feedbackSearch->getUser()->getTimezone(), localeCode: $localeCode);
+            $message2 .= $this->timeProvider->formatAsDate($feedbackSearch->getCreatedAt(), timezone: $feedbackSearch->getUser()->getTimezone(), locale: $localeCode);
             $message2 .= ', ';
         }
 

@@ -41,11 +41,11 @@ class SubscriptionTelegramViewProvider
             'currency' => $this->currencyProvider->getCurrencyComposeName($currency),
             'price' => $this->moneyFormatter->formatMoney($price, native: true),
             'is_subscription_active' => $this->feedbackSubscriptionManager->isSubscriptionActive($subscription),
-            'period' => $this->timeProvider->getShortDateInterval(
+            'period' => $this->timeProvider->formatIntervalAsShortDate(
                 $subscription->getCreatedAt(),
                 $subscription->getExpireAt(),
                 timezone: $tg->getTimezone(),
-                localeCode: $tg->getLocaleCode()
+                locale: $tg->getLocaleCode()
             ),
         ];
 

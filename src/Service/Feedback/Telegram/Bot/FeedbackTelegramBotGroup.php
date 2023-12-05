@@ -236,7 +236,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
         $subscription = $this->feedbackSubscriptionManager->createFeedbackUserSubscriptionByTelegramPayment($payment);
 
         $plan = $this->feedbackSubscriptionPlanProvider->getSubscriptionPlanName($subscription->getSubscriptionPlan());
-        $expireAt = $this->timeProvider->getDatetime($subscription->getExpireAt());
+        $expireAt = $this->timeProvider->formatAsDatetime($subscription->getExpireAt());
         $parameters = [
             'plan' => $plan,
             'expire_at' => $expireAt,
