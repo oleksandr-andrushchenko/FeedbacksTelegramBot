@@ -41,24 +41,24 @@ class TelegramBotDescriptionsSyncer
         return $bot->getName();
     }
 
-    private function getMyDescription(TelegramBot $botEntity): string
+    private function getMyDescription(TelegramBot $bot): string
     {
         $myDescription = "\n";
         $myDescription .= 'ℹ️ ';
-        $myDescription .= $this->getMyShortDescription($botEntity);
+        $myDescription .= $this->getMyShortDescription($bot);
 
         return $myDescription;
     }
 
-    private function getMyShortDescription(TelegramBot $botEntity): string
+    private function getMyShortDescription(TelegramBot $bot): string
     {
-        $group = $botEntity->getGroup();
-        $localeCode = $botEntity->getLocaleCode();
+        $group = $bot->getGroup();
+        $locale = $bot->getLocaleCode();
 
         return $this->translator->trans(
             'short',
             domain: sprintf('%s.tg.descriptions', $group->name),
-            locale: $localeCode
+            locale: $locale
         );
     }
 }
