@@ -85,3 +85,6 @@
 * add PersonName::matchFirstName method (is will check across all equal meaning names), implement instead of PersonName::getFirst() === $compare
 * if crowlings became a big problem - use real browsering like selenium server or some api based on it
 * halt searching if bot was deleted by user
+* add description of supported databases for bot and group
+* add blurs for feedbacks tests everywhere
+* add green/red bullets for feedbacks marks (instead of hearts and down hands)
