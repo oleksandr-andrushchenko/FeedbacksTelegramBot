@@ -88,3 +88,6 @@
 * add description of supported databases for bot and group
 * add blurs for feedbacks tests everywhere
 * add green/red bullets for feedbacks marks (instead of hearts and down hands)
+* add tips during search - in case if provider not supported, e.g. add surname, use ukrainian language etc.
+* fill facebook group with feedbacks (take from other sources)
+* create and fill instagram group with feedbacks (take from other sources)
