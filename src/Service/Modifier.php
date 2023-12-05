@@ -116,9 +116,9 @@ class Modifier
     {
         if ($mixed) {
             return static fn ($any): ?string => match (true) {
-                $any < 0 => '👎',
-                $any === 0 => '🤔',
-                $any > 0 => '❤️',
+                $any < 0 => '🔴',
+                $any === 0 => '⚪️',
+                $any > 0 => '🟢',
                 default => null,
             };
         }
