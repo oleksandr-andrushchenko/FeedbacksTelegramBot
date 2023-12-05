@@ -28,11 +28,11 @@ class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewe
         $full = $context['full'] ?? false;
 
         return match (get_class($record)) {
-            UkrCorruptPersons::class => $this->getPersonsResultRecord($record, $full),
+            UkrCorruptPersons::class => $this->getPersonsMessage($record, $full),
         };
     }
 
-    public function getPersonsResultRecord(UkrCorruptPersons $record, bool $full): string
+    public function getPersonsMessage(UkrCorruptPersons $record, bool $full): string
     {
         $m = $this->modifier;
         $message = '‼️ ';
