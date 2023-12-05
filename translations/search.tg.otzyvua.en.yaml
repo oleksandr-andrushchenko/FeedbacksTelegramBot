@@ -1,8 +1,8 @@
-on_search: 'Search on the database of reviews #2...'
+on_search: 'Search in the database of reviews #2...'
 feedback_search_terms_title: Many matches found, refine your search
 category: Category
 rating: Rating %value% from %total%
 feedback_count: Number of feedbacks
-feedbacks_title: Found the following feedback
+feedbacks_title: Found the following reviews
 author: Author
 created_at: Date created
