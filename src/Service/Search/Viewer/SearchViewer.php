@@ -98,7 +98,7 @@ abstract class SearchViewer implements SearchViewerInterface
         if ($full) {
             $maxResults = $count;
         } else {
-            $maxResults = intval($count * .1);
+            $maxResults = intval($count * .4);
             $maxResults = max($maxResults, 1);
         }
 
