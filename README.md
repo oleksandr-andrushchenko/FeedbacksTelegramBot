@@ -84,3 +84,4 @@
 * add ru names support for blackbox search provider
 * add PersonName::matchFirstName method (is will check across all equal meaning names), implement instead of PersonName::getFirst() === $compare
 * if crowlings became a big problem - use real browsering like selenium server or some api based on it
+* halt searching if bot was deleted by user
