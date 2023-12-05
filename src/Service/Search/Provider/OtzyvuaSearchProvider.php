@@ -60,29 +60,38 @@ class OtzyvuaSearchProvider extends SearchProvider implements SearchProviderInte
     public function search(FeedbackSearchTerm $searchTerm, array $context = []): array
     {
         $term = $searchTerm->getNormalizedText();
-        $record = $this->searchFeedbackSearchTerms($term, sortByLength: $context['sortByLength'] ?? true);
+        $searchTerms = $this->searchFeedbackSearchTerms($term);
 
-        if ($record === null) {
+        if ($searchTerms === null) {
             return [];
         }
 
-        if (count($record->getItems()) === 1) {
-            $url = $record->getItems()[0]->getHref();
-        } elseif (strcmp(mb_strtolower($term), mb_strtolower($record->getItems()[0]->getName())) === 0) {
-            $url = $record->getItems()[0]->getHref();
+        if (count($searchTerms->getItems()) === 1) {
+            $url = $searchTerms->getItems()[0]->getHref();
+        } else {
+            $equals = array_filter(
+                $searchTerms->getItems(),
+                static fn (OtzyvuaFeedbackSearchTerm $searchTerm): bool => strcmp(mb_strtolower($term), mb_strtolower($searchTerm->getName())) === 0
+            );
+
+            if (!empty($equals)) {
+                /** @var OtzyvuaFeedbackSearchTerm $searchTerm */
+                $searchTerm = array_shift($equals);
+                $url = $searchTerm->getHref();
+            }
         }
 
         if (isset($url)) {
             sleep(1);
-            $feedbacksRecord = $this->searchProviderCompose->tryCatch(fn () => $this->searchFeedbacks($url), null);
+            $feedbacks = $this->searchProviderCompose->tryCatch(fn () => $this->searchFeedbacks($url), null);
 
             return [
-                $feedbacksRecord,
+                $feedbacks,
             ];
         }
 
         return [
-            $record,
+            $searchTerms,
         ];
     }
 
@@ -91,7 +100,7 @@ class OtzyvuaSearchProvider extends SearchProvider implements SearchProviderInte
         return null;
     }
 
-    private function searchFeedbackSearchTerms(string $name, bool $sortByLength = false): ?OtzyvuaFeedbackSearchTerms
+    private function searchFeedbackSearchTerms(string $name): ?OtzyvuaFeedbackSearchTerms
     {
         $crawler = $this->crawlerProvider->getCrawler('GET', 'https://www.otzyvua.net/uk/search/?q=' . urlencode($name), user: true);
 
@@ -140,10 +149,6 @@ class OtzyvuaSearchProvider extends SearchProvider implements SearchProviderInte
         });
 
         $items = array_filter($items);
-
-        if ($sortByLength) {
-            usort($items, static fn (OtzyvuaFeedbackSearchTerm $a, OtzyvuaFeedbackSearchTerm $b): int => mb_strlen($a->getName()) <=> mb_strlen($b->getName()));
-        }
 
         if (count($items) > 0) {
             return new OtzyvuaFeedbackSearchTerms(array_values($items));
