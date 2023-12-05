@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Service\Intl\TimeProvider;
 use App\Service\Util\String\SecretsAdder;
 use DateTimeInterface;
 use App\Entity\Search\Viewer\Modifiers;
@@ -12,6 +13,7 @@ class Modifier
 {
     public function __construct(
         private readonly SecretsAdder $secretsAdder,
+        private readonly TimeProvider $timeProvider,
     )
     {
     }
@@ -91,9 +93,13 @@ class Modifier
         return static fn ($any): ?string => empty($any) ? null : (empty($append) ? $any : ($any . ' ' . $append));
     }
 
-    public function datetimeModifier(string $format): callable
+    public function datetimeModifier(string|int $format, string $timezone = null, string $locale = null): callable
     {
-        return static fn (?DateTimeInterface $dateTime): ?string => $dateTime?->format($format);
+        if (is_string($format)) {
+            return static fn (?DateTimeInterface $any): ?string => empty($any) ? null : $any->format($format);
+        }
+
+        return fn (?DateTimeInterface $any): ?string => empty($any) ? null : $this->timeProvider->format($format, $any, $timezone, $locale);
     }
 
     public function trimModifier(): callable
@@ -106,8 +112,17 @@ class Modifier
         return static fn ($any): ?string => empty($any) ? null : number_format((float) $any, $decimals, $decimalSeparator, $thousandsSeparator);
     }
 
-    public function ratingModifier(): callable
+    public function ratingModifier(bool $mixed = false): callable
     {
+        if ($mixed) {
+            return static fn ($any): ?string => match (true) {
+                $any < 0 => '👎',
+                $any === 0 => '🤔',
+                $any > 0 => '❤️',
+                default => null,
+            };
+        }
+
         return static fn ($any): ?string => empty($any) ? null : str_repeat('⭐️', (int) round((float) $any));
     }
 

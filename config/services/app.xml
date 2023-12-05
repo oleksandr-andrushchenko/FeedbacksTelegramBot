@@ -84,6 +84,7 @@
         </service>
         <service id="app.modifier" class="App\Service\Modifier" lazy="true">
             <argument type="service" id="app.string_secrets_adder"/>
+            <argument type="service" id="app.intl_time_provider"/>
         </service>
     </services>
 </container>
