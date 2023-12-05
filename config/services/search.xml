@@ -70,6 +70,13 @@
             <argument type="service" id="app.intl_ukr_person_name_provider"/>
             <tag name="app.search_provider" provider="blackbox"/>
         </service>
+        <service id="app.search_provider_twenty_second_floor"
+                 class="App\Service\Search\Provider\TwentySecondFloorSearchProvider" parent="app.search_provider"
+                 lazy="true">
+            <argument type="service" id="app.crawler_provider"/>
+            <argument type="service" id="app.intl_time_provider"/>
+            <tag name="app.search_provider" provider="twenty_second_floor"/>
+        </service>
         <service id="app.search_viewer_compose_telegram" class="App\Service\Search\Viewer\SearchViewerCompose"
                  lazy="true">
             <argument type="service" id="app.translator"/>
@@ -131,6 +138,12 @@
                  class="App\Service\Search\Viewer\Telegram\BlackboxTelegramSearchViewer"
                  parent="app.search_viewer_telegram" lazy="true">
             <tag name="app.search_viewer_telegram" provider="blackbox"/>
+        </service>
+        <service id="app.search_viewer_telegram_twenty_second_floor"
+                 class="App\Service\Search\Viewer\Telegram\TwentySecondFloorTelegramSearchViewer"
+                 parent="app.search_viewer_telegram" lazy="true">
+            <argument type="service" id="app.intl_time_provider"/>
+            <tag name="app.search_viewer_telegram" provider="twenty_second_floor"/>
         </service>
         <service id="app.search_searcher_telegram" class="App\Service\Search\Searcher" lazy="true">
             <argument type="tagged_locator" tag="app.search_provider" index-by="provider"/>
