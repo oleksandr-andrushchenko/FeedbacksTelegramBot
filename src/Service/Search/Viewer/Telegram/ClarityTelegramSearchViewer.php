@@ -44,18 +44,18 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $full = $context['full'] ?? false;
 
         return match (get_class($record)) {
-            ClarityPersons::class => $this->getPersonsResultRecord($record, $full),
-            ClarityPersonEdrs::class => $this->getPersonEdrsResultRecord($record, $full),
-            ClarityPersonSecurities::class => $this->getPersonSecurityResultRecord($record, $full),
-            ClarityPersonCourts::class => $this->getPersonCourtsResultRecord($record, $full),
-            ClarityPersonEnforcements::class => $this->getPersonEnforcementsResultRecord($record, $full),
-            ClarityPersonDebtors::class => $this->getPersonDebtorsResultRecord($record, $full),
-            ClarityPersonDeclarations::class => $this->getPersonDeclarationsResultRecord($record, $full),
-            ClarityEdrs::class => $this->getEdrsResultRecord($record, $searchTerm->getType(), $full),
+            ClarityPersons::class => $this->getPersonsMessage($record, $full),
+            ClarityPersonEdrs::class => $this->getPersonEdrsMessage($record, $full),
+            ClarityPersonSecurities::class => $this->getPersonSecurityMessage($record, $full),
+            ClarityPersonCourts::class => $this->getPersonCourtsMessage($record, $full),
+            ClarityPersonEnforcements::class => $this->getPersonEnforcementsMessage($record, $full),
+            ClarityPersonDebtors::class => $this->getPersonDebtorsMessage($record, $full),
+            ClarityPersonDeclarations::class => $this->getPersonDeclarationsMessage($record, $full),
+            ClarityEdrs::class => $this->getEdrsMessage($record, $searchTerm->getType(), $full),
         };
     }
 
-    private function getPersonsResultRecord(ClarityPersons $record, bool $full): string
+    private function getPersonsMessage(ClarityPersons $record, bool $full): string
     {
         $m = $this->modifier;
         $message = '💫 ';
@@ -80,7 +80,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         return $message;
     }
 
-    private function getPersonEdrsResultRecord(ClarityPersonEdrs $record, bool $full): string
+    private function getPersonEdrsMessage(ClarityPersonEdrs $record, bool $full): string
     {
         $m = $this->modifier;
         $message = '💫 ';
@@ -112,7 +112,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         return $message;
     }
 
-    private function getPersonSecurityResultRecord(ClarityPersonSecurities $record, bool $full): string
+    private function getPersonSecurityMessage(ClarityPersonSecurities $record, bool $full): string
     {
         $m = $this->modifier;
         $message = '🚨 ';
@@ -149,7 +149,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         return $message;
     }
 
-    private function getPersonCourtsResultRecord(ClarityPersonCourts $record, bool $full): string
+    private function getPersonCourtsMessage(ClarityPersonCourts $record, bool $full): string
     {
         $m = $this->modifier;
         $message = '‼️ ';
@@ -190,7 +190,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         return $message;
     }
 
-    private function getPersonEnforcementsResultRecord(ClarityPersonEnforcements $record, bool $full): string
+    private function getPersonEnforcementsMessage(ClarityPersonEnforcements $record, bool $full): string
     {
         $m = $this->modifier;
         $message = '‼️ ';
@@ -235,7 +235,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         return $message;
     }
 
-    private function getPersonDebtorsResultRecord(ClarityPersonDebtors $record, bool $full): string
+    private function getPersonDebtorsMessage(ClarityPersonDebtors $record, bool $full): string
     {
         $m = $this->modifier;
         $message = '‼️ ';
@@ -266,7 +266,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         return $message;
     }
 
-    private function getPersonDeclarationsResultRecord(ClarityPersonDeclarations $record, bool $full): string
+    private function getPersonDeclarationsMessage(ClarityPersonDeclarations $record, bool $full): string
     {
         $m = $this->modifier;
         $message = '💫 ';
@@ -295,7 +295,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         return $message;
     }
 
-    private function getEdrsResultRecord(ClarityEdrs $record, SearchTermType $searchType, bool $full): string
+    private function getEdrsMessage(ClarityEdrs $record, SearchTermType $searchType, bool $full): string
     {
         $m = $this->modifier;
         $message = '💫 ';

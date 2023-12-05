@@ -30,12 +30,12 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $full = $context['full'] ?? false;
 
         return match (get_class($record)) {
-            OtzyvuaFeedbackSearchTerms::class => $this->getFeedbackSearchTermsResultRecord($record, $full),
-            OtzyvuaFeedbacks::class => $this->getFeedbackResultRecord($record, $full),
+            OtzyvuaFeedbackSearchTerms::class => $this->getFeedbackSearchTermsMessage($record, $full),
+            OtzyvuaFeedbacks::class => $this->getFeedbacksMessage($record, $full),
         };
     }
 
-    private function getFeedbackSearchTermsResultRecord(OtzyvuaFeedbackSearchTerms $record, bool $full): string
+    private function getFeedbackSearchTermsMessage(OtzyvuaFeedbackSearchTerms $record, bool $full): string
     {
         $m = $this->modifier;
         $message = '💫 ';
@@ -68,12 +68,12 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         return $message;
     }
 
-    private function getFeedbackResultRecord(OtzyvuaFeedbacks $record, bool $full): string
+    private function getFeedbacksMessage(OtzyvuaFeedbacks $record, bool $full): string
     {
         $m = $this->modifier;
         $message = '💫 ';
         $message .= $this->implodeResult(
-            $this->trans('feedbacks_title', ['count' => count($record->getItems())]),
+            $this->trans('feedbacks_title'),
             $record->getItems(),
             fn (OtzyvuaFeedback $item): array => [
                 $m->create()

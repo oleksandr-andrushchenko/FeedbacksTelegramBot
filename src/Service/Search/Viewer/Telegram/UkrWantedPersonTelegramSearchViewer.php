@@ -28,12 +28,12 @@ class UkrWantedPersonTelegramSearchViewer extends SearchViewer implements Search
         $full = $context['full'] ?? false;
 
         return match (get_class($record)) {
-            UkrWantedPersons::class => $this->getPersonsResultRecord($record, $full),
-            UkrWantedPerson::class => $this->getPersonResultRecord($record, $full),
+            UkrWantedPersons::class => $this->getPersonsMessage($record, $full),
+            UkrWantedPerson::class => $this->getPersonMessage($record, $full),
         };
     }
 
-    public function getPersonWrapResultRecordCallback(bool $full): callable
+    public function getPersonWrapMessageCallback(bool $full): callable
     {
         $m = $this->modifier;
 
@@ -97,26 +97,26 @@ class UkrWantedPersonTelegramSearchViewer extends SearchViewer implements Search
         ];
     }
 
-    private function getPersonsResultRecord(UkrWantedPersons $record, bool $full): string
+    private function getPersonsMessage(UkrWantedPersons $record, bool $full): string
     {
         $message = '🚨 ';
         $message .= $this->implodeResult(
             $this->trans('persons_title'),
             $record->getItems(),
-            $this->getPersonWrapResultRecordCallback($full),
+            $this->getPersonWrapMessageCallback($full),
             $full
         );
 
         return $message;
     }
 
-    private function getPersonResultRecord(UkrWantedPerson $record, bool $full): string
+    private function getPersonMessage(UkrWantedPerson $record, bool $full): string
     {
         $message = '💫 ';
         $message .= $this->implodeResult(
             $this->trans('person_title'),
             [$record],
-            $this->getPersonWrapResultRecordCallback($full),
+            $this->getPersonWrapMessageCallback($full),
             $full
         );
 

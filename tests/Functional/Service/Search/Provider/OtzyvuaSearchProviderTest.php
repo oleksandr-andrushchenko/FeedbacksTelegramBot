@@ -85,7 +85,6 @@ class OtzyvuaSearchProviderTest extends KernelTestCase
             'term' => 'приват',
             'context' => [
                 'countryCode' => 'ua',
-                'sortByLength' => false,
             ],
             'expected' => [
                 new OtzyvuaFeedbackSearchTerms([
@@ -100,7 +99,7 @@ class OtzyvuaSearchProviderTest extends KernelTestCase
             ],
         ];
 
-        yield 'org name & many matches & sorted with full match' => [
+        yield 'org name & many matches & full match found' => [
             'type' => SearchTermType::organization_name,
             'term' => 'приватбанк',
             'context' => [

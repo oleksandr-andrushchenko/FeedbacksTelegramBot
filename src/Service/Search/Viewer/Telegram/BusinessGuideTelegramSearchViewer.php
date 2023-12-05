@@ -28,12 +28,12 @@ class BusinessGuideTelegramSearchViewer extends SearchViewer implements SearchVi
         $full = $context['full'] ?? false;
 
         return match (get_class($record)) {
-            BusinessGuideEnterprises::class => $this->getEnterprisesResultRecord($record, $full),
-            BusinessGuideEnterprise::class => $this->getEnterpriseResultRecord($record, $full),
+            BusinessGuideEnterprises::class => $this->getEnterprisesMessage($record, $full),
+            BusinessGuideEnterprise::class => $this->getEnterpriseMessage($record, $full),
         };
     }
 
-    public function getEnterpriseWrapResultRecordCallback(bool $full): callable
+    public function getEnterpriseWrapMessageCallback(bool $full): callable
     {
         $m = $this->modifier;
 
@@ -77,26 +77,26 @@ class BusinessGuideTelegramSearchViewer extends SearchViewer implements SearchVi
         ];
     }
 
-    private function getEnterprisesResultRecord(BusinessGuideEnterprises $record, bool $full): string
+    private function getEnterprisesMessage(BusinessGuideEnterprises $record, bool $full): string
     {
         $message = '💫 ';
         $message .= $this->implodeResult(
             $this->trans('enterprises_title'),
             $record->getItems(),
-            $this->getEnterpriseWrapResultRecordCallback($full),
+            $this->getEnterpriseWrapMessageCallback($full),
             $full
         );
 
         return $message;
     }
 
-    private function getEnterpriseResultRecord(BusinessGuideEnterprise $record, bool $full): string
+    private function getEnterpriseMessage(BusinessGuideEnterprise $record, bool $full): string
     {
         $message = '💫 ';
         $message .= $this->implodeResult(
             $this->trans('enterprise_title'),
             [$record],
-            $this->getEnterpriseWrapResultRecordCallback($full),
+            $this->getEnterpriseWrapMessageCallback($full),
             $full
         );
 
