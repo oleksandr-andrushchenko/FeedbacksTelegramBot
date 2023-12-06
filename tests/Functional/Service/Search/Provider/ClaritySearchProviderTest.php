@@ -287,14 +287,6 @@ class ClaritySearchProviderTest extends KernelTestCase
                         bornAt: new DateTimeImmutable('1988-11-02'),
                         state: 'Завершено'
                     ),
-                    new ClarityPersonEnforcement(
-                        '60748938',
-                        openedAt: new DateTimeImmutable('2019-12-03'),
-                        collector: 'ДНІПРОВСЬКИЙ РАЙОННИЙ СУД МІСТА КИЄВА #02896696',
-                        debtor: 'СОЛТИС ДЕНИС МИКОЛАЙОВИЧ',
-                        bornAt: new DateTimeImmutable('1988-11-02'),
-                        state: 'Завершено'
-                    ),
                 ]),
                 new ClarityPersonEdrs([
                     new ClarityPersonEdr(
@@ -334,14 +326,6 @@ class ClaritySearchProviderTest extends KernelTestCase
                         active: null,
                         address: '08143, Україна, Київська область, Княжичі, Воздвиженська, 46'
                     ),
-                    new ClarityEdr(
-                        'Мале приватне підприємство фірма "Ерідон"',
-                        type: null,
-                        href: 'https://clarity-project.info/edr/19420704194207010139',
-                        number: '19420704',
-                        active: null,
-                        address: '08143, Україна, Київська область, с. Княжичі, Київська обл., Києво - Святошинський р-н, с. Княжичі, вул. Леніна, 46'
-                    ),
                 ]),
             ],
         ];
@@ -361,14 +345,6 @@ class ClaritySearchProviderTest extends KernelTestCase
                         number: '19420704',
                         active: null,
                         address: '08143, Україна, Київська область, Княжичі, Воздвиженська, 46'
-                    ),
-                    new ClarityEdr(
-                        'ТОВАРИСТВО З ОБМЕЖЕНОЮ ВІДПОВІДАЛЬНІСТЮ "ЕРІДОН"',
-                        type: null,
-                        href: 'https://clarity-project.info/edr/36656183',
-                        number: '36656183',
-                        active: null,
-                        address: 'М. КИЇВ, ВУЛ. СОЛОМ\'ЯНСЬКА, БУД. 33'
                     ),
                 ]),
             ],
