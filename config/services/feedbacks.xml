@@ -74,6 +74,7 @@
             <parameter>ukr_wanted_persons</parameter>
             <parameter>blackbox</parameter>
             <parameter>twenty_second_floor</parameter>
+            <parameter>clean_talk</parameter>
         </parameter>
 
         <parameter key="app.lookup.search_term_type_step">true</parameter>

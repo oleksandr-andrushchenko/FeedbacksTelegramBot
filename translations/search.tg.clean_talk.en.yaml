@@ -1,0 +1,10 @@
+on_search: Checking...
+emails_title: Verification results
+attacked_sites: Number of attacked sites
+blacklisted: Blacklisted
+not_blacklisted: Not blacklisted
+real: Real email
+not_real: Not a real email
+disposable: Disposable e-mail
+not_disposable: Not disposable email
+last_update: Last update
