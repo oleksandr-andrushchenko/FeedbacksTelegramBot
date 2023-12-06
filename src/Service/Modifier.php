@@ -63,6 +63,11 @@ class Modifier
         return fn ($any): ?string => $any === null ? null : rtrim($any ? ('🔴 ' . $active) : ('⚪️ ' . $inactive));
     }
 
+    public function redGreenModifier(string $red = null, string $green = null): callable
+    {
+        return fn ($any): ?string => $any === null ? null : rtrim($any ? ('🔴 ' . $red) : ('🟢 ' . $green));
+    }
+
     public function slashesModifier(): callable
     {
         return static fn ($any): ?string => empty($any) ? null : addslashes($any);
