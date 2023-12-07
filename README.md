@@ -85,3 +85,4 @@
 * fill facebook group with feedbacks (take from other sources)
 * create and fill instagram group with feedbacks (take from other sources)
 * add more info to feedbacks/searches results (bot etc.)
+* resolve cases like: Бажана Катерина (investigate)
