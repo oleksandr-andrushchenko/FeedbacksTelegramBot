@@ -117,17 +117,18 @@ class Modifier
         return static fn ($any): ?string => empty($any) ? null : number_format((float) $any, $decimals, $decimalSeparator, $thousandsSeparator);
     }
 
-    public function ratingModifier(bool $mixed = false): callable
+    public function markModifier(): callable
     {
-        if ($mixed) {
-            return static fn ($any): ?string => match (true) {
-                $any < 0 => '🔴',
-                $any === 0 => '⚪️',
-                $any > 0 => '🟢',
-                default => null,
-            };
-        }
+        return static fn ($any): ?string => match (true) {
+            $any < 0 => '🔴',
+            $any === 0 => '⚪️',
+            $any > 0 => '🟢',
+            default => null,
+        };
+    }
 
+    public function ratingModifier(): callable
+    {
         return static fn ($any): ?string => empty($any) ? null : str_repeat('⭐️', (int) round((float) $any));
     }
 
