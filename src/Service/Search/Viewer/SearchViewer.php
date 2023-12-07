@@ -162,8 +162,13 @@ abstract class SearchViewer implements SearchViewerInterface
         return '◻️ ' . implode("\n▫️ ", $output);
     }
 
-    protected function trans($id, array $parameters = [], bool $generalDomain = false): string
+    protected function trans($id, array $parameters = [], bool $generalDomain = false, string $locale = null): string
     {
-        return $this->searchViewerCompose->trans($id, $parameters, $generalDomain);
+        return $this->searchViewerCompose->trans(
+            $id,
+            parameters: $parameters,
+            generalDomain: $generalDomain,
+            locale: $locale
+        );
     }
 }

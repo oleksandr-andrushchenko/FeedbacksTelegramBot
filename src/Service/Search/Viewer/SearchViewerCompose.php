@@ -24,8 +24,13 @@ class SearchViewerCompose
         return $new;
     }
 
-    public function trans($id, array $parameters = [], bool $generalDomain = false): string
+    public function trans($id, array $parameters = [], bool $generalDomain = false, string $locale = null): string
     {
-        return $this->translator->trans($id, $parameters, $this->transDomainPrefix . ($generalDomain ? '' : ('.' . $this->transDomain)));
+        return $this->translator->trans(
+            $id,
+            parameters: $parameters,
+            domain: $this->transDomainPrefix . ($generalDomain ? '' : ('.' . $this->transDomain)),
+            locale: $locale
+        );
     }
 }
