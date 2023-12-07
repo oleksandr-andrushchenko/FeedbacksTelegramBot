@@ -100,6 +100,11 @@ class Modifier
         return static fn ($any): ?string => empty($any) ? null : (empty($append) ? $any : ($any . ' ' . $append));
     }
 
+    public function newLineModifier(int $times = 1): callable
+    {
+        return static fn ($any): ?string => empty($any) ? null : ($any . str_repeat("\n", $times));
+    }
+
     public function datetimeModifier(string|int $format, string $timezone = null, string $locale = null): callable
     {
         if (is_string($format)) {
