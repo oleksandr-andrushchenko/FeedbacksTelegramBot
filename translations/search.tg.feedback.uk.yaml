@@ -4,6 +4,6 @@ mark_-1: Негативно
 mark_0: Нейтрально
 mark_+1: Позитивно
 mark: Оцінка автора
-description: Опис від автора
+description: Коментарій автора
 country: Звідки автор
 created_at: Дата створення

@@ -4,6 +4,6 @@ mark_-1: Negative
 mark_0: Neutral
 mark_+1: Positive
 mark: Author's rating
-description: Description from the author
-country: Where the author is from
-created_at: Created date
+description: Author's comment
+country: Author's location
+created_at: Creation date
