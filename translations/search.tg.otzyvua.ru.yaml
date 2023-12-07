@@ -2,6 +2,8 @@ on_search: Поиск по базе отзывов №2...
 feedback_search_terms_title: Найдено много совпадений, уточните поиск
 категории: Категория
 rating: Рейтинг %value% из %total%
+description: Описание от автора
+country: Откуда автор
 feedback_count: Количество отзывов
 feedbacks_title: Найдено следующие отзывы
 author: Автор

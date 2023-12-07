@@ -9,6 +9,7 @@ use App\Entity\Search\Otzyvua\OtzyvuaFeedback;
 use App\Entity\Search\Otzyvua\OtzyvuaFeedbacks;
 use App\Entity\Search\Otzyvua\OtzyvuaFeedbackSearchTerm;
 use App\Entity\Search\Otzyvua\OtzyvuaFeedbackSearchTerms;
+use App\Service\Intl\TimeProvider;
 use App\Service\Search\Viewer\SearchViewer;
 use App\Service\Search\Viewer\SearchViewerCompose;
 use App\Service\Search\Viewer\SearchViewerInterface;
@@ -87,7 +88,8 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->apply((string) $item->getRating()),
                 $m->create()
                     ->add($m->slashesModifier())
-                    ->add($m->italicModifier())
+                    ->add($m->spoilerModifier())
+                    ->add($m->bracketsModifier($this->trans('description')))
                     ->apply($item->getDescription()),
                 $m->create()
                     ->add($m->conditionalModifier($full))
@@ -96,7 +98,12 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($m->bracketsModifier($this->trans('author')))
                     ->apply($item->getAuthorName()),
                 $m->create()
-                    ->add($m->datetimeModifier('d.m.Y'))
+                    ->add($m->slashesModifier())
+                    ->add($m->countryModifier())
+                    ->add($m->bracketsModifier($this->trans('country')))
+                    ->apply('ua'),
+                $m->create()
+                    ->add($m->datetimeModifier(TimeProvider::DATE))
                     ->add($m->bracketsModifier($this->trans('created_at')))
                     ->apply($item->getCreatedAt()),
             ],

@@ -2,6 +2,8 @@ on_search: 'Search in the database of reviews #2...'
 feedback_search_terms_title: Many matches found, refine your search
 category: Category
 rating: Rating %value% from %total%
+description: Description from the author
+country: Where the author is from
 feedback_count: Number of feedbacks
 feedbacks_title: Found the following reviews
 author: Author

@@ -81,7 +81,7 @@ class TwentySecondFloorTelegramSearchViewer extends SearchViewer implements Sear
                 $m->create()
                     ->add($m->slashesModifier())
                     ->add($m->boldModifier())
-                    ->add($m->italicModifier())
+                    ->add($m->spoilerModifier())
                     ->apply($item->getText()),
                 $m->create()
                     ->add($m->markModifier())
@@ -92,6 +92,11 @@ class TwentySecondFloorTelegramSearchViewer extends SearchViewer implements Sear
                     ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('author')))
                     ->apply($item->getAuthor()),
+                $m->create()
+                    ->add($m->slashesModifier())
+                    ->add($m->countryModifier())
+                    ->add($m->bracketsModifier($this->trans('country')))
+                    ->apply('ua'),
                 $m->create()
                     ->add($m->datetimeModifier(TimeProvider::MONTH_YEAR))
                     ->add($m->bracketsModifier($this->trans('date')))

@@ -7,6 +7,7 @@ namespace App\Service\Search\Viewer\Telegram;
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\Blackbox\BlackboxFeedback;
 use App\Entity\Search\Blackbox\BlackboxFeedbacks;
+use App\Service\Intl\TimeProvider;
 use App\Service\Search\Viewer\SearchViewer;
 use App\Service\Search\Viewer\SearchViewerCompose;
 use App\Service\Search\Viewer\SearchViewerInterface;
@@ -42,14 +43,15 @@ class BlackboxTelegramSearchViewer extends SearchViewer implements SearchViewerI
                     ->apply($item->getName()),
                 $m->create()
                     ->add($m->redModifier())
-                    ->add($m->appendModifier($item->getPhoneFormatted()))
+                    ->add($m->appendModifier($item->getPhone()))
                     ->add($m->slashesModifier())
                     ->add($full ? $m->nullModifier() : $m->secretsModifier())
                     ->add($m->bracketsModifier($this->trans('phone')))
                     ->apply(true),
                 $m->create()
                     ->add($m->slashesModifier())
-                    ->add($m->italicModifier())
+                    ->add($m->spoilerModifier())
+                    ->add($m->appendModifier($this->trans('comment')))
                     ->apply($item->getComment()),
                 $m->create()
                     ->add($m->filterModifier())
@@ -58,7 +60,12 @@ class BlackboxTelegramSearchViewer extends SearchViewer implements SearchViewerI
                     ->add($m->slashesModifier())
                     ->apply([$item->getCity(), $item->getWarehouse()]),
                 $m->create()
-                    ->add($m->datetimeModifier('d.m.Y'))
+                    ->add($m->slashesModifier())
+                    ->add($m->countryModifier())
+                    ->add($m->bracketsModifier($this->trans('country')))
+                    ->apply('ua'),
+                $m->create()
+                    ->add($m->datetimeModifier(TimeProvider::DATE))
                     ->add($m->bracketsModifier($this->trans('date')))
                     ->apply($item->getDate()),
             ],
