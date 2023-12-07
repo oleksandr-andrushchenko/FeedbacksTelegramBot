@@ -1,4 +1,5 @@
 on_search: Search in the request database...
+search_title: Someone created the following request
 searches_title: The following search requests were found
 country: Request from
 created_at: Creation date

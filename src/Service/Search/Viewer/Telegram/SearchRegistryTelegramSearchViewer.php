@@ -64,21 +64,27 @@ class SearchRegistryTelegramSearchViewer extends SearchViewer implements SearchV
         $m = $this->modifier;
 
         return $m->create()
-            ->add($addQuotes ? $m->italicModifier() : $m->nullModifier())
-            ->add($addSign ? $m->appendModifier("\n\n" . $this->feedbackTelegramReplySignViewProvider->getFeedbackTelegramReplySignView($bot, channel: $channel, localeCode: $locale)) : $m->nullModifier())
-            ->apply(
-                $this->makeResultMessage(
-                    call_user_func(
-                        $this->getFeedbackSearchWrapMessageCallback(
-                            full: !$addSecrets,
-                            addCountry: $addCountry,
-                            addTime: $addTime,
-                            locale: $locale
-                        ),
-                        $feedbackSearch
-                    )
+            ->add($m->newLineModifier(2))
+            ->add(
+                $m->appendModifier(
+                    $this->makeResultMessage(
+                        call_user_func(
+                            $this->getFeedbackSearchWrapMessageCallback(
+                                full: !$addSecrets,
+                                addCountry: $addCountry,
+                                addTime: $addTime,
+                                locale: $locale
+                            ),
+                            $feedbackSearch
+                        )
+                    ),
+                    space: false
                 )
             )
+            ->add($addQuotes ? $m->italicModifier() : $m->nullModifier())
+            ->add($addSign ? $m->newLineModifier(2) : $m->nullModifier())
+            ->add($addSign ? $m->appendModifier($this->feedbackTelegramReplySignViewProvider->getFeedbackTelegramReplySignView($bot, channel: $channel, localeCode: $locale)) : $m->nullModifier())
+            ->apply($this->trans('search_title', locale: $locale))
         ;
     }
 
