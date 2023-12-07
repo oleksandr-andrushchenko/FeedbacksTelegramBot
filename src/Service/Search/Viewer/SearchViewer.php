@@ -81,7 +81,7 @@ abstract class SearchViewer implements SearchViewerInterface
         return $this->trans('error_result', generalDomain: true);
     }
 
-    protected function implodeResult(string $title, array $items, callable $record, bool $full): string
+    protected function implodeResult(string $title, array $items, callable $lines, bool $full): string
     {
         // 🔴🟡🟢⚪️🚨‼️⬜️⬛️◻️◼️◽️◾️▫️▪️💥🔥✨⚡️💫🥳🤩
 
@@ -105,7 +105,7 @@ abstract class SearchViewer implements SearchViewerInterface
         $added = 0;
 
         foreach ($items as $item) {
-            $messages[] = '◻️ ' . implode("\n▫️ ", $this->normalizeAndFilterEmptyStrings($record($item)));
+            $messages[] = $this->makeResultMessage($lines($item));
             $added++;
 
             if ($added === $maxResults) {
@@ -139,11 +139,11 @@ abstract class SearchViewer implements SearchViewerInterface
         return implode("\n\n", $messages);
     }
 
-    protected function normalizeAndFilterEmptyStrings(array $input): array
+    protected function makeResultMessage(array $lines): string
     {
         $output = [];
 
-        foreach ($input as $item) {
+        foreach ($lines as $item) {
             if (empty($item)) {
                 continue;
             }
@@ -159,7 +159,7 @@ abstract class SearchViewer implements SearchViewerInterface
             }
         }
 
-        return $output;
+        return '◻️ ' . implode("\n▫️ ", $output);
     }
 
     protected function trans($id, array $parameters = [], bool $generalDomain = false): string
