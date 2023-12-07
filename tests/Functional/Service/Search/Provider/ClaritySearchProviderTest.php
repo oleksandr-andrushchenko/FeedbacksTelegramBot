@@ -221,7 +221,7 @@ class ClaritySearchProviderTest extends KernelTestCase
                         collector: 'ДЕРЖАВА',
                         debtor: 'АНДРУЩЕНКО СЕРГІЙ МИКОЛАЙОВИЧ',
                         bornAt: new DateTimeImmutable('1992-08-04'),
-                        state: 'Відкрито'
+                        state: 'Завершено'
                     ),
                 ]),
                 new ClarityPersonEdrs([

@@ -56,6 +56,7 @@ class FeedbackSendToTelegramChannelConfirmReceivedEventHandler
                 $feedback,
                 addSecrets: true,
                 addSign: true,
+                addCountry: true,
                 addTime: $addTime,
                 channel: $channel,
                 locale: $channel->getLocaleCode(),

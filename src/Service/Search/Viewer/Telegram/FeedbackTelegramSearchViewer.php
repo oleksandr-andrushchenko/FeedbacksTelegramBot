@@ -34,11 +34,13 @@ class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerI
 
         $full = $context['full'] ?? false;
         $locale = $context['locale'] ?? null;
+        $addCountry = $context['addCountry'] ?? false;
+        $addTime = $context['addTime'] ?? false;
 
         $message .= $this->implodeResult(
             $this->trans('feedbacks_title'),
             $record,
-            $this->getFeedbackWrapMessageCallback(full: $full, locale: $locale),
+            $this->getFeedbackWrapMessageCallback(full: $full, addCountry: $addCountry, addTime: $addTime, locale: $locale),
             $full
         );
 
@@ -50,8 +52,8 @@ class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerI
         Feedback $feedback,
         bool $addSecrets = false,
         bool $addSign = false,
-        bool $addTime = false,
         bool $addCountry = false,
+        bool $addTime = false,
         bool $addQuotes = false,
         TelegramChannel $channel = null,
         string $locale = null,
@@ -67,8 +69,8 @@ class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerI
                     call_user_func(
                         $this->getFeedbackWrapMessageCallback(
                             full: !$addSecrets,
-                            addTime: $addTime,
                             addCountry: $addCountry,
+                            addTime: $addTime,
                             locale: $locale
                         ),
                         $feedback
@@ -80,8 +82,8 @@ class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerI
 
     private function getFeedbackWrapMessageCallback(
         bool $full = false,
-        bool $addTime = false,
         bool $addCountry = false,
+        bool $addTime = false,
         string $locale = null
     ): callable
     {

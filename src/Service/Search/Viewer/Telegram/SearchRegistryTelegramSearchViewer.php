@@ -36,11 +36,13 @@ class SearchRegistryTelegramSearchViewer extends SearchViewer implements SearchV
 
         $full = $context['full'] ?? false;
         $locale = $context['locale'] ?? null;
+        $addCountry = $context['addCountry'] ?? false;
+        $addTime = $context['addTime'] ?? false;
 
         $message .= $this->implodeResult(
             $this->trans('searches_title'),
             $record,
-            $this->getFeedbackSearchWrapMessageCallback(full: $full, locale: $locale),
+            $this->getFeedbackSearchWrapMessageCallback(full: $full, addCountry: $addCountry, addTime: $addTime, locale: $locale),
             $full
         );
 
@@ -52,8 +54,8 @@ class SearchRegistryTelegramSearchViewer extends SearchViewer implements SearchV
         FeedbackSearch $feedbackSearch,
         bool $addSecrets = false,
         bool $addSign = false,
-        bool $addTime = false,
         bool $addCountry = false,
+        bool $addTime = false,
         bool $addQuotes = false,
         string $locale = null,
         TelegramChannel $channel = null,
@@ -69,8 +71,8 @@ class SearchRegistryTelegramSearchViewer extends SearchViewer implements SearchV
                     call_user_func(
                         $this->getFeedbackSearchWrapMessageCallback(
                             full: !$addSecrets,
-                            addTime: $addTime,
                             addCountry: $addCountry,
+                            addTime: $addTime,
                             locale: $locale
                         ),
                         $feedbackSearch
@@ -82,8 +84,8 @@ class SearchRegistryTelegramSearchViewer extends SearchViewer implements SearchV
 
     private function getFeedbackSearchWrapMessageCallback(
         bool $full = false,
-        bool $addTime = false,
         bool $addCountry = false,
+        bool $addTime = false,
         string $locale = null
     ): callable
     {

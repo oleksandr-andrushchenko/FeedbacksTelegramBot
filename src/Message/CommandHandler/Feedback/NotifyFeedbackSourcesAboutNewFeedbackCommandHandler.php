@@ -119,6 +119,8 @@ class NotifyFeedbackSourcesAboutNewFeedbackCommandHandler
             $bot,
             $feedback,
             addSecrets: $messengerUser->getUser()?->getSubscriptionExpireAt() < new DateTimeImmutable(),
+            addCountry: true,
+            addTime: true,
             addQuotes: true,
             locale: $localeCode
         );
