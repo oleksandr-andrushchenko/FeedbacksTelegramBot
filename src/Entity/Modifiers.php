@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Entity\Search\Viewer;
+namespace App\Entity;
 
 class Modifiers
 {

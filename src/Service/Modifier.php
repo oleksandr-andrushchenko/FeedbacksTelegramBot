@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Modifiers;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\TimeProvider;
 use App\Service\Util\String\SecretsAdder;
 use DateTimeInterface;
-use App\Entity\Search\Viewer\Modifiers;
 
 class Modifier
 {
