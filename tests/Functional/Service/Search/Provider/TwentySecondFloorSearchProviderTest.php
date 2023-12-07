@@ -106,11 +106,11 @@ class TwentySecondFloorSearchProviderTest extends KernelTestCase
             'expected' => [
                 new TwentySecondFloorBloggers([
                     new TwentySecondFloorBlogger(
-                        'lastanislavska',
-                        'https://22flr.com/account/lastanislavska/',
-                        photo: null,
-                        desc: 'Київ, Україна знімаю відео, мотивую, люблю Україну Щодо співпраці @stanislavska.cooperation Мій телеграм канал',
-                        followers: 42
+                        'stanfit.ua',
+                        'https://22flr.com/account/stanfit.ua/',
+                        photo: 'https://scontent.xx.fbcdn.net/v/t51.2885-15/262428038_638693257330360_4182780822403962580_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=86c713&_nc_ohc=r9_AO9eR_x0AX-UAfKk&_nc_ht=scontent.xx&edm=AL-3X8kEAAAA&oh=00_AT-5Zt0wOnHOrQWZPVj9won8_zvWTrYeNcN-SksgNmx7hQ&oe=632ABE90',
+                        desc: 'Марафон Улі Станіславської, @lastanislavska @ksenia__fit ⠀ 6.12 — Старт 2 потоку ⠀ ▫️Інтенсивні тренування ▫️Смачне харчування',
+                        followers: 2729
                     ),
                 ]),
             ],
