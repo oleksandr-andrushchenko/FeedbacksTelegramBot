@@ -9,7 +9,7 @@ use App\Enum\Messenger\Messenger;
 use App\Service\Feedback\SearchTerm\SearchTermMessengerProvider;
 use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Service\Messenger\MessengerUserProfileUrlProvider;
-use App\Service\Util\String\SecretsAdder;
+use App\Service\Modifier;
 use App\Transfer\Feedback\SearchTermTransfer;
 
 class SearchTermTelegramViewProvider
@@ -18,24 +18,29 @@ class SearchTermTelegramViewProvider
         private readonly SearchTermTypeProvider $searchTermTypeProvider,
         private readonly MessengerUserProfileUrlProvider $messengerUserProfileUrlProvider,
         private readonly SearchTermMessengerProvider $searchTermMessengerProvider,
-        private readonly SecretsAdder $secretsAdder,
+        private readonly Modifier $modifier,
     )
     {
     }
 
     public function getSearchTermTelegramMainView(SearchTermTransfer $searchTerm, bool $addSecrets = false): string
     {
-        $message = '<b>';
+        $m = $this->modifier;
 
         $messenger = $this->searchTermMessengerProvider->getSearchTermMessenger($searchTerm->getType());
         // todo: add search term formatter & implement it here and everywhere
         $text = $searchTerm->getNormalizedText() ?? $searchTerm->getText();
 
         if (!in_array($messenger, [null, Messenger::unknown])) {
-            $url = $this->messengerUserProfileUrlProvider->getMessengerUserProfileUrl($messenger, $text);
-            $message .= sprintf('<a href="%s">%s</a>', $url, $text);
+            $message = $m->create()
+                ->add($m->linkModifier($this->messengerUserProfileUrlProvider->getMessengerUserProfileUrl($messenger, $text)))
+                ->apply($text)
+            ;
         } elseif (in_array($searchTerm->getType(), [SearchTermType::url, SearchTermType::messenger_profile_url], true)) {
-            $message .= sprintf('<a href="%s">%s</a>', $searchTerm->getText(), $text);
+            $message = $m->create()
+                ->add($m->linkModifier($searchTerm->getText()))
+                ->apply($text)
+            ;
         } else {
             $secretTypes = [
                 SearchTermType::phone_number,
@@ -50,15 +55,19 @@ class SearchTermTelegramViewProvider
                     $position = 2;
                 }
 
-                $message .= $this->secretsAdder->addSecrets($text, position: $position);
+                $message = $m->create()
+                    ->add($m->secretsModifier(position: $position))
+                    ->apply($text)
+                ;
             } else {
-                $message .= $text;
+                $message = $text;
             }
         }
 
-        $message .= '</b>';
-
-        return $message;
+        return $m->create()
+            ->add($m->boldModifier())
+            ->apply($message)
+        ;
     }
 
     public function getSearchTermTelegramView(
@@ -68,7 +77,8 @@ class SearchTermTelegramViewProvider
         string $localeCode = null
     ): string
     {
-        $message = $this->getSearchTermTelegramMainView($searchTerm, addSecrets: $addSecrets);
+        $m = $this->modifier;
+        $modifier = $m->create();
 
         $skipTypes = [
             SearchTermType::person_name,
@@ -78,12 +88,10 @@ class SearchTermTelegramViewProvider
         ];
 
         if ($searchTerm->getType() !== null && ($forceType || !in_array($searchTerm->getType(), $skipTypes, true))) {
-            $message .= ' [ ';
-            $message .= $this->searchTermTypeProvider->getSearchTermTypeName($searchTerm->getType(), $localeCode);
-            $message .= ' ]';
+            $modifier->add($m->bracketsModifier($this->searchTermTypeProvider->getSearchTermTypeName($searchTerm->getType(), $localeCode)));
         }
 
-        return $message;
+        return $modifier->apply($this->getSearchTermTelegramMainView($searchTerm, addSecrets: $addSecrets));
     }
 
     public function getSearchTermTelegramReverseView(
@@ -92,11 +100,11 @@ class SearchTermTelegramViewProvider
         string $localeCode = null
     ): string
     {
-        $message = $this->searchTermTypeProvider->getSearchTermTypeComposeName($searchTerm->getType(), localeCode: $localeCode);
-        $message .= ' [ ';
-        $message .= $this->getSearchTermTelegramMainView($searchTerm, addSecrets: $addSecrets);
-        $message .= ' ] ';
+        $m = $this->modifier;
 
-        return $message;
+        return $m->create()
+            ->add($m->bracketsModifier($this->getSearchTermTelegramMainView($searchTerm, addSecrets: $addSecrets)))
+            ->apply($this->searchTermTypeProvider->getSearchTermTypeComposeName($searchTerm->getType(), localeCode: $localeCode))
+        ;
     }
 }
