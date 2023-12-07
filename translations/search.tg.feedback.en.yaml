@@ -1,4 +1,5 @@
 on_search: 'Search in the database of reviews #1...'
+feedback_title: Someone added the following review
 feedbacks_title: Found the following feedbacks
 mark_-1: Negative
 mark_0: Neutral

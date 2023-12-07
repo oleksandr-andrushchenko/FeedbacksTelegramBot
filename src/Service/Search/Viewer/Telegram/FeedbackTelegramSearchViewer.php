@@ -62,21 +62,27 @@ class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerI
         $m = $this->modifier;
 
         return $m->create()
-            ->add($addQuotes ? $m->italicModifier() : $m->nullModifier())
-            ->add($addSign ? $m->appendModifier("\n\n" . $this->feedbackTelegramReplySignViewProvider->getFeedbackTelegramReplySignView($bot, channel: $channel, localeCode: $locale)) : $m->nullModifier())
-            ->apply(
-                $this->makeResultMessage(
-                    call_user_func(
-                        $this->getFeedbackWrapMessageCallback(
-                            full: !$addSecrets,
-                            addCountry: $addCountry,
-                            addTime: $addTime,
-                            locale: $locale
-                        ),
-                        $feedback
-                    )
+            ->add($m->newLineModifier(2))
+            ->add(
+                $m->appendModifier(
+                    $this->makeResultMessage(
+                        call_user_func(
+                            $this->getFeedbackWrapMessageCallback(
+                                full: !$addSecrets,
+                                addCountry: $addCountry,
+                                addTime: $addTime,
+                                locale: $locale
+                            ),
+                            $feedback
+                        )
+                    ),
+                    space: false
                 )
             )
+            ->add($addQuotes ? $m->italicModifier() : $m->nullModifier())
+            ->add($addSign ? $m->newLineModifier(2) : $m->nullModifier())
+            ->add($addSign ? $m->appendModifier($this->feedbackTelegramReplySignViewProvider->getFeedbackTelegramReplySignView($bot, channel: $channel, localeCode: $locale)) : $m->nullModifier())
+            ->apply($this->trans('feedback_title', locale: $locale))
         ;
     }
 
