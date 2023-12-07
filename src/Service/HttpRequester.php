@@ -41,7 +41,7 @@ class HttpRequester
         array $query = null,
         array $body = null,
         array $json = null,
-        float $timeout = 5.0,
+        float $timeout = 10.0,
         bool $user = false,
         bool $array = false
     ): string|array
@@ -51,7 +51,7 @@ class HttpRequester
             'query' => $query,
             'body' => $body,
             'json' => $json,
-//            'timeout' => $timeout,
+            'timeout' => $timeout,
         ]);
 
         if (!isset($options['headers'])) {
