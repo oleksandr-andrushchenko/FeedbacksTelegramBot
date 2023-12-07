@@ -45,9 +45,9 @@ class Modifier
         return static fn ($any): ?string => empty($any) ? null : (empty($href) ? $any : ('<a href="' . $href . '">' . $any . '</a>'));
     }
 
-    public function secretsModifier(): callable
+    public function secretsModifier(int $position = 2, string $char = '*', int $count = 3): callable
     {
-        return fn ($any): ?string => empty($any) ? null : $this->secretsAdder->addSecrets($any);
+        return fn ($any): ?string => empty($any) ? null : $this->secretsAdder->addSecrets($any, position: $position, char: $char, count: $count);
     }
 
     public function greenWhiteModifier(string $active = null, string $inactive = null): callable
