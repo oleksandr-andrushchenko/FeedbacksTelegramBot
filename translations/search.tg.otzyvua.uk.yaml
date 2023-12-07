@@ -2,7 +2,7 @@ on_search: Пошук по базі відгуків №2...
 feedback_search_terms_title: Знайдено багато співпадінь, уточніть пошук
 category: Категорія
 rating: Рейтинг %value% із %total%
-description: Коментарій автора
+description: Коментар автора
 country: Звідки автор
 feedback_count: Кількість відгуків
 feedbacks_title: Знайдено наступні відгуки

@@ -1,10 +1,11 @@
 on_search: Пошук по базі відгуків №1...
 feedback_title: Хтось додав наступний відгук
 feedbacks_title: Знайдено наступні відгуки
+search_terms: Про кого
 mark_-1: Негативна
 mark_0: Нейтральна
 mark_+1: Позитивна
 mark: Оцінка автора
-description: Коментарій автора
+description: Коментар автора
 country: Звідки автор
 created_at: Дата створення

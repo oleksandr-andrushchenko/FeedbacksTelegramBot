@@ -99,6 +99,7 @@ class SearchRegistryTelegramSearchViewer extends SearchViewer implements SearchV
 
         return fn (FeedbackSearch $item): array => [
             $m->create()
+                ->add($m->bracketsModifier($this->trans('search_term', locale: $locale)))
                 ->apply(
                     $this->searchTermTelegramViewProvider->getSearchTermTelegramView(
                         $this->searchTermProvider->getFeedbackSearchTermTransfer($item->getSearchTerm()),
@@ -110,12 +111,12 @@ class SearchRegistryTelegramSearchViewer extends SearchViewer implements SearchV
                 ->add($m->conditionalModifier($addCountry))
                 ->add($m->slashesModifier())
                 ->add($m->countryModifier(locale: $locale))
-                ->add($m->bracketsModifier($this->trans('country')))
+                ->add($m->bracketsModifier($this->trans('country', locale: $locale)))
                 ->apply($item->getCountryCode()),
             $m->create()
                 ->add($m->conditionalModifier($addTime))
                 ->add($m->datetimeModifier(TimeProvider::DATE, timezone: $item->getUser()->getTimezone(), locale: $locale))
-                ->add($m->bracketsModifier($this->trans('created_at')))
+                ->add($m->bracketsModifier($this->trans('created_at', locale: $locale)))
                 ->apply($item->getCreatedAt()),
         ];
     }

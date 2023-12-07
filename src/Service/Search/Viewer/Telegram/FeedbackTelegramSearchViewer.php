@@ -97,6 +97,7 @@ class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerI
 
         return fn (Feedback $item): array => [
             $m->create()
+                ->add($m->bracketsModifier($this->trans('search_terms', locale: $locale)))
                 ->apply(
                     $this->multipleSearchTermTelegramViewProvider->getFeedbackSearchTermsTelegramView(
                         $item->getSearchTerms()->toArray(),
@@ -106,24 +107,24 @@ class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerI
                 ),
             $m->create()
                 ->add($m->markModifier())
-                ->add($m->appendModifier($this->trans('mark_' . ($item->getRating()->value > 0 ? '+1' : $item->getRating()->value))))
-                ->add($m->bracketsModifier($this->trans('mark')))
+                ->add($m->appendModifier($this->trans('mark_' . ($item->getRating()->value > 0 ? '+1' : $item->getRating()->value), locale: $locale)))
+                ->add($m->bracketsModifier($this->trans('mark', locale: $locale)))
                 ->apply($item->getRating()->value),
             $m->create()
                 ->add($m->slashesModifier())
                 ->add($m->spoilerModifier())
-                ->add($m->bracketsModifier($this->trans('description')))
+                ->add($m->bracketsModifier($this->trans('description', locale: $locale)))
                 ->apply($item->getDescription()),
             $m->create()
                 ->add($m->conditionalModifier($addCountry))
                 ->add($m->slashesModifier())
                 ->add($m->countryModifier(locale: $locale))
-                ->add($m->bracketsModifier($this->trans('country')))
+                ->add($m->bracketsModifier($this->trans('country', locale: $locale)))
                 ->apply($item->getCountryCode()),
             $m->create()
                 ->add($m->conditionalModifier($addTime))
                 ->add($m->datetimeModifier(TimeProvider::DATE, timezone: $item->getUser()->getTimezone(), locale: $locale))
-                ->add($m->bracketsModifier($this->trans('created_at')))
+                ->add($m->bracketsModifier($this->trans('created_at', locale: $locale)))
                 ->apply($item->getCreatedAt()),
         ];
     }
