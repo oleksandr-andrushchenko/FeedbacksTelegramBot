@@ -1,2 +1,9 @@
 on_search: 'Search in the database of reviews #1...'
 feedbacks_title: Found the following feedbacks
+mark_-1: Negative
+mark_0: Neutral
+mark_+1: Positive
+mark: Author's rating
+description: Description from the author
+country: Where the author is from
+created_at: Created date
