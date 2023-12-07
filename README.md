@@ -54,7 +54,6 @@
 * Cache db requests
 * Media uploads (S3)
 * Validation for search terms: min/max length, emojis, tags etc.
-* Re-factor: remove dots from questions, searchTerms: duplicates validation
 * Make validators configurable via settings (options)
 * More money: lock feedbacks and ask money for it
 * Apply optimization tricks/tips for symfony prod application
@@ -67,15 +66,12 @@
 
 
 * create all possible search terms (for each type) in case of unknown selected????
-* integrate more databases
 * add overal term rating to feedback
 * improve all types of searching
 * fix bug with empty keyboard when error occurs in message handlers
 * ask user to leave a phone number or email for future notifications (is anybody gonna search him)
 * add results couns field to feeedbacK-search
 * implement the same logic for clarity orgs (as for persons was mada)
-* implement search by tax_number for orgs
-* add lookup processors test coverage
 * implement rpvoder search term variants as keyboard buttons
 * improve secrets for phone searching (add more)
 * array_unique for feedbacks & feedback searches
@@ -85,9 +81,6 @@
 * add PersonName::matchFirstName method (is will check across all equal meaning names), implement instead of PersonName::getFirst() === $compare
 * if crowlings became a big problem - use real browsering like selenium server or some api based on it
 * halt searching if bot was deleted by user
-* add description of supported databases for bot and group
-* add blurs for feedbacks tests everywhere
-* add green/red bullets for feedbacks marks (instead of hearts and down hands)
 * add tips during search - in case if provider not supported, e.g. add surname, use ukrainian language etc.
 * fill facebook group with feedbacks (take from other sources)
 * create and fill instagram group with feedbacks (take from other sources)
