@@ -899,7 +899,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
             $tg->stopConversation($entity);
 
             if (!empty($this->state->getDescription())) {
-                $this->eventBus->dispatch(new FeedbackSendToTelegramChannelConfirmReceivedEvent($this->state->getCreatedId()));
+                $this->eventBus->dispatch(new FeedbackSendToTelegramChannelConfirmReceivedEvent($this->state->getCreatedId(), addTime: true));
             }
 
             return $this->chooseActionTelegramChatSender->sendActions($tg);
@@ -997,7 +997,7 @@ class CreateFeedbackTelegramBotConversation extends TelegramBotConversation impl
 
         $this->chooseActionTelegramChatSender->sendActions($tg, $message, appendDefault: true);
 
-        $this->eventBus->dispatch(new FeedbackSendToTelegramChannelConfirmReceivedEvent($this->state->getCreatedId(), notifyUser: true));
+        $this->eventBus->dispatch(new FeedbackSendToTelegramChannelConfirmReceivedEvent($this->state->getCreatedId(), addTime: true, notifyUser: true));
 
         return null;
     }
