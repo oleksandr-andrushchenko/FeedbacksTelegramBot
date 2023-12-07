@@ -86,3 +86,5 @@
 * create and fill instagram group with feedbacks (take from other sources)
 * add more info to feedbacks/searches results (bot etc.)
 * resolve cases like: Бажана Катерина (investigate)
+* groups same results by days (for search requests for example)
+* do not duplicate notifications for each search request or feedback (10 times were searching and when somebody else search it - user receives the same message 10 times)
