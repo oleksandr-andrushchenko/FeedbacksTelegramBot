@@ -13,7 +13,6 @@ use App\Enum\Search\SearchProviderName;
 use App\Tests\Traits\Search\SearchProviderTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Generator;
-use DateTimeImmutable;
 
 class TwentySecondFloorSearchProviderTest extends KernelTestCase
 {
