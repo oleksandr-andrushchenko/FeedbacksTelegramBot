@@ -141,7 +141,7 @@ class Modifier
 
     public function countryModifier(string $locale = null): callable
     {
-        return fn ($any): string => empty($any) ? null : $this->countryProvider->getCountryComposeName($any, localeCode: $locale);
+        return fn ($any): ?string => empty($any) ? null : $this->countryProvider->getCountryComposeName($any, localeCode: $locale);
     }
 
     public function nullModifier(): callable
