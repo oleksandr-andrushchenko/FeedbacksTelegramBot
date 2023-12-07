@@ -6,7 +6,9 @@ namespace App\Service\Search\Viewer\Telegram;
 
 use App\Entity\Feedback\FeedbackSearch;
 use App\Entity\Feedback\FeedbackSearchTerm;
-use App\Service\Feedback\Telegram\Bot\View\FeedbackSearchTelegramViewProvider;
+use App\Service\Feedback\SearchTerm\SearchTermProvider;
+use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
+use App\Service\Intl\TimeProvider;
 use App\Service\Search\Viewer\SearchViewer;
 use App\Service\Search\Viewer\SearchViewerCompose;
 use App\Service\Search\Viewer\SearchViewerInterface;
@@ -17,7 +19,8 @@ class SearchRegistryTelegramSearchViewer extends SearchViewer implements SearchV
     public function __construct(
         SearchViewerCompose $searchViewerCompose,
         Modifier $modifier,
-        private readonly FeedbackSearchTelegramViewProvider $feedbackSearchTelegramViewProvider,
+        private readonly SearchTermProvider $searchTermProvider,
+        private readonly SearchTermTelegramViewProvider $searchTermTelegramViewProvider,
     )
     {
         parent::__construct($searchViewerCompose->withTransDomain('search'), $modifier);
@@ -25,20 +28,36 @@ class SearchRegistryTelegramSearchViewer extends SearchViewer implements SearchV
 
     public function getResultMessage($record, FeedbackSearchTerm $searchTerm, array $context = []): string
     {
-        $full = $context['full'] ?? false;
-
         $message = '💫 ';
+
+        $full = $context['full'] ?? false;
+        $locale = $context['locale'] ?? null;
+
+        $m = $this->modifier;
+
         $message .= $this->implodeResult(
             $this->trans('searches_title'),
             $record,
-            fn (FeedbackSearch $search): array => [
-                $this->feedbackSearchTelegramViewProvider->getFeedbackSearchTelegramView(
-                    $context['bot'] ?? $search->getTelegramBot(),
-                    $search,
-                    addSecrets: !$full,
-                    addTime: true,
-                    addCountry: true,
-                ),
+            fn (FeedbackSearch $item): array => [
+                $m->create()
+//                    ->add($m->slashesModifier())
+//                    ->add($m->boldModifier())
+                    ->apply(
+                        $this->searchTermTelegramViewProvider->getSearchTermTelegramView(
+                            $this->searchTermProvider->getFeedbackSearchTermTransfer($item->getSearchTerm()),
+                            addSecrets: !$full,
+                            localeCode: $locale
+                        )
+                    ),
+                $m->create()
+                    ->add($m->slashesModifier())
+                    ->add($m->countryModifier(locale: $locale))
+                    ->add($m->bracketsModifier($this->trans('country')))
+                    ->apply($item->getCountryCode()),
+                $m->create()
+                    ->add($m->datetimeModifier(TimeProvider::DATE, timezone: $item->getUser()->getTimezone(), locale: $locale))
+                    ->add($m->bracketsModifier($this->trans('created_at')))
+                    ->apply($item->getCreatedAt()),
             ],
             $full
         );
