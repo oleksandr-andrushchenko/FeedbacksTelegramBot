@@ -6,5 +6,9 @@
 
     <parameters>
         <parameter key="app.check_feedbacks_limits">false</parameter>
+
+        <parameter key="app.search.search_providers" type="collection">
+            <parameter>searches</parameter>
+        </parameter>
     </parameters>
 </container>
