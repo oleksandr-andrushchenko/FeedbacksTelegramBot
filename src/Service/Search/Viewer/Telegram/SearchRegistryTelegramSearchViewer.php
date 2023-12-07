@@ -6,7 +6,10 @@ namespace App\Service\Search\Viewer\Telegram;
 
 use App\Entity\Feedback\FeedbackSearch;
 use App\Entity\Feedback\FeedbackSearchTerm;
+use App\Entity\Telegram\TelegramBot;
+use App\Entity\Telegram\TelegramChannel;
 use App\Service\Feedback\SearchTerm\SearchTermProvider;
+use App\Service\Feedback\Telegram\Bot\View\FeedbackTelegramReplySignViewProvider;
 use App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider;
 use App\Service\Intl\TimeProvider;
 use App\Service\Search\Viewer\SearchViewer;
@@ -21,6 +24,7 @@ class SearchRegistryTelegramSearchViewer extends SearchViewer implements SearchV
         Modifier $modifier,
         private readonly SearchTermProvider $searchTermProvider,
         private readonly SearchTermTelegramViewProvider $searchTermTelegramViewProvider,
+        private readonly FeedbackTelegramReplySignViewProvider $feedbackTelegramReplySignViewProvider,
     )
     {
         parent::__construct($searchViewerCompose->withTransDomain('search'), $modifier);
@@ -33,35 +37,78 @@ class SearchRegistryTelegramSearchViewer extends SearchViewer implements SearchV
         $full = $context['full'] ?? false;
         $locale = $context['locale'] ?? null;
 
-        $m = $this->modifier;
-
         $message .= $this->implodeResult(
             $this->trans('searches_title'),
             $record,
-            fn (FeedbackSearch $item): array => [
-                $m->create()
-//                    ->add($m->slashesModifier())
-//                    ->add($m->boldModifier())
-                    ->apply(
-                        $this->searchTermTelegramViewProvider->getSearchTermTelegramView(
-                            $this->searchTermProvider->getFeedbackSearchTermTransfer($item->getSearchTerm()),
-                            addSecrets: !$full,
-                            localeCode: $locale
-                        )
-                    ),
-                $m->create()
-                    ->add($m->slashesModifier())
-                    ->add($m->countryModifier(locale: $locale))
-                    ->add($m->bracketsModifier($this->trans('country')))
-                    ->apply($item->getCountryCode()),
-                $m->create()
-                    ->add($m->datetimeModifier(TimeProvider::DATE, timezone: $item->getUser()->getTimezone(), locale: $locale))
-                    ->add($m->bracketsModifier($this->trans('created_at')))
-                    ->apply($item->getCreatedAt()),
-            ],
+            $this->getFeedbackSearchWrapMessageCallback(full: $full, locale: $locale),
             $full
         );
 
         return $message;
+    }
+
+    public function getFeedbackSearchTelegramView(
+        TelegramBot $bot,
+        FeedbackSearch $feedbackSearch,
+        bool $addSecrets = false,
+        bool $addSign = false,
+        bool $addTime = false,
+        bool $addCountry = false,
+        bool $addQuotes = false,
+        string $locale = null,
+        TelegramChannel $channel = null,
+    ): string
+    {
+        $m = $this->modifier;
+
+        return $m->create()
+            ->add($addQuotes ? $m->italicModifier() : $m->nullModifier())
+            ->add($addSign ? $m->appendModifier("\n\n" . $this->feedbackTelegramReplySignViewProvider->getFeedbackTelegramReplySignView($bot, channel: $channel, localeCode: $locale)) : $m->nullModifier())
+            ->apply(
+                $this->makeResultMessage(
+                    call_user_func(
+                        $this->getFeedbackSearchWrapMessageCallback(
+                            full: !$addSecrets,
+                            addTime: $addTime,
+                            addCountry: $addCountry,
+                            locale: $locale
+                        ),
+                        $feedbackSearch
+                    )
+                )
+            )
+        ;
+    }
+
+    private function getFeedbackSearchWrapMessageCallback(
+        bool $full = false,
+        bool $addTime = false,
+        bool $addCountry = false,
+        string $locale = null
+    ): callable
+    {
+        $m = $this->modifier;
+
+        return fn (FeedbackSearch $item): array => [
+            $m->create()
+                ->apply(
+                    $this->searchTermTelegramViewProvider->getSearchTermTelegramView(
+                        $this->searchTermProvider->getFeedbackSearchTermTransfer($item->getSearchTerm()),
+                        addSecrets: !$full,
+                        localeCode: $locale
+                    )
+                ),
+            $m->create()
+                ->add($m->conditionalModifier($addCountry))
+                ->add($m->slashesModifier())
+                ->add($m->countryModifier(locale: $locale))
+                ->add($m->bracketsModifier($this->trans('country')))
+                ->apply($item->getCountryCode()),
+            $m->create()
+                ->add($m->conditionalModifier($addTime))
+                ->add($m->datetimeModifier(TimeProvider::DATE, timezone: $item->getUser()->getTimezone(), locale: $locale))
+                ->add($m->bracketsModifier($this->trans('created_at')))
+                ->apply($item->getCreatedAt()),
+        ];
     }
 }

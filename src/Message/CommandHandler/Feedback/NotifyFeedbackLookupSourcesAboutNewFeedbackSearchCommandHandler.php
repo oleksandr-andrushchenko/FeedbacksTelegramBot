@@ -17,8 +17,8 @@ use App\Message\Command\Feedback\NotifyFeedbackLookupSourcesAboutNewFeedbackSear
 use App\Message\Event\ActivityEvent;
 use App\Repository\Feedback\FeedbackSearchRepository;
 use App\Service\Feedback\FeedbackLookupSearcher;
-use App\Service\Feedback\Telegram\Bot\View\FeedbackSearchTelegramViewProvider;
 use App\Service\IdGenerator;
+use App\Service\Search\Viewer\Telegram\SearchRegistryTelegramSearchViewer;
 use App\Service\Telegram\Bot\Api\TelegramBotMessageSenderInterface;
 use App\Service\Telegram\Bot\TelegramBotProvider;
 use DateTimeImmutable;
@@ -35,7 +35,7 @@ class NotifyFeedbackLookupSourcesAboutNewFeedbackSearchCommandHandler
         private readonly FeedbackLookupSearcher $feedbackLookupSearcher,
         private readonly TelegramBotProvider $telegramBotProvider,
         private readonly TranslatorInterface $translator,
-        private readonly FeedbackSearchTelegramViewProvider $feedbackSearchTelegramViewProvider,
+        private readonly SearchRegistryTelegramSearchViewer $searchRegistryTelegramSearchViewer,
         private readonly TelegramBotMessageSenderInterface $telegramBotMessageSender,
         private readonly IdGenerator $idGenerator,
         private readonly EntityManagerInterface $entityManager,
@@ -115,12 +115,12 @@ class NotifyFeedbackLookupSourcesAboutNewFeedbackSearchCommandHandler
         $message = '<b>' . $message . '</b>';
         $message .= ':';
         $message .= "\n\n";
-        $message .= $this->feedbackSearchTelegramViewProvider->getFeedbackSearchTelegramView(
+        $message .= $this->searchRegistryTelegramSearchViewer->getFeedbackSearchTelegramView(
             $bot,
             $feedbackSearch,
             addSecrets: $messengerUser->getUser()?->getSubscriptionExpireAt() < new DateTimeImmutable(),
             addQuotes: true,
-            localeCode: $localeCode
+            locale: $localeCode
         );
 
         return $message;
