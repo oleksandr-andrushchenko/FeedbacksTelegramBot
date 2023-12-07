@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\Feedback\Telegram\View;
 
+use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Enum\Feedback\SearchTermType;
+use App\Service\Feedback\SearchTerm\SearchTermProvider;
 use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
 use App\Transfer\Feedback\SearchTermTransfer;
 
@@ -13,27 +15,27 @@ class MultipleSearchTermTelegramViewProvider
     public function __construct(
         private readonly SearchTermTelegramViewProvider $searchTermTelegramViewProvider,
         private readonly SearchTermTypeProvider $searchTermTypeProvider,
+        private readonly SearchTermProvider $searchTermProvider,
     )
     {
     }
 
-    public function getSearchTermTelegramReverseView(SearchTermTransfer $searchTerm): string
-    {
-        return $this->searchTermTelegramViewProvider->getSearchTermTelegramReverseView($searchTerm);
-    }
-
     /**
-     * @param SearchTermTransfer[] $searchTerms
+     * @param FeedbackSearchTerm[] $feedbackSearchTerms
      * @param bool $addSecrets
-     * @param string|null $localeCode
+     * @param string|null $locale
      * @return string
      */
-    public function getMultipleSearchTermTelegramView(
-        array $searchTerms,
+    public function getFeedbackSearchTermsTelegramView(
+        array $feedbackSearchTerms,
         bool $addSecrets = false,
-        string $localeCode = null
+        string $locale = null,
     ): string
     {
+        $searchTerms = array_map(
+            fn (FeedbackSearchTerm $searchTerm): SearchTermTransfer => $this->searchTermProvider->getFeedbackSearchTermTransfer($searchTerm),
+            $feedbackSearchTerms
+        );
         $count = count($searchTerms);
 
         if ($count === 0) {
@@ -44,7 +46,7 @@ class MultipleSearchTermTelegramViewProvider
             return $this->searchTermTelegramViewProvider->getSearchTermTelegramView(
                 $searchTerms[0],
                 addSecrets: $addSecrets,
-                localeCode: $localeCode
+                localeCode: $locale
             );
         }
 
@@ -56,11 +58,11 @@ class MultipleSearchTermTelegramViewProvider
         $message = $this->searchTermTelegramViewProvider->getSearchTermTelegramMainView($searchTerm, addSecrets: $addSecrets);
         $message .= ' [ ';
 
-        $message .= $this->searchTermTypeProvider->getSearchTermTypeName($searchTerm->getType(), localeCode: $localeCode);
+        $message .= $this->searchTermTypeProvider->getSearchTermTypeName($searchTerm->getType(), localeCode: $locale);
 
         foreach ($sortedSearchTerms as $searchTerm) {
             $message .= ', ';
-            $message .= $this->searchTermTypeProvider->getSearchTermTypeName($searchTerm->getType(), localeCode: $localeCode);
+            $message .= $this->searchTermTypeProvider->getSearchTermTypeName($searchTerm->getType(), localeCode: $locale);
             $message .= ': ';
             $message .= $this->searchTermTelegramViewProvider->getSearchTermTelegramMainView($searchTerm, addSecrets: $addSecrets);
         }
@@ -74,14 +76,14 @@ class MultipleSearchTermTelegramViewProvider
      * @param SearchTermTransfer[] $searchTerms
      * @param bool $addSecrets
      * @param bool $forceType
-     * @param string|null $localeCode
+     * @param string|null $locale
      * @return string
      */
     public function getPrimarySearchTermTelegramView(
         array $searchTerms,
         bool $addSecrets = false,
         bool $forceType = true,
-        string $localeCode = null
+        string $locale = null
     ): string
     {
         $count = count($searchTerms);
@@ -100,7 +102,7 @@ class MultipleSearchTermTelegramViewProvider
             $searchTerm,
             addSecrets: $addSecrets,
             forceType: $forceType,
-            localeCode: $localeCode
+            localeCode: $locale
         );
     }
 

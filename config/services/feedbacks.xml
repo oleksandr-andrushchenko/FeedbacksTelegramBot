@@ -369,17 +369,6 @@
             <argument type="service" id="app.feedback_telegram_reply_sign_view_provider"/>
             <argument type="service" id="app.string_mb_uc_firster"/>
         </service>
-        <service id="app.feedback_telegram_view_provider"
-                 class="App\Service\Feedback\Telegram\Bot\View\FeedbackTelegramViewProvider" lazy="true">
-            <argument type="service" id="app.feedback_search_term_provider"/>
-            <argument type="service" id="app.feedback_multiple_search_term_telegram_view_provider"/>
-            <argument type="service" id="app.intl_country_provider"/>
-            <argument type="service" id="app.intl_time_provider"/>
-            <argument type="service" id="app.feedback_rating_provider"/>
-            <argument type="service" id="translator"/>
-            <argument type="service" id="app.feedback_telegram_reply_sign_view_provider"/>
-            <argument type="service" id="app.string_mb_uc_firster"/>
-        </service>
         <service id="app.feedback_search_term_telegram_view_provider"
                  class="App\Service\Feedback\Telegram\View\SearchTermTelegramViewProvider" lazy="true">
             <argument type="service" id="app.feedback_search_term_type_provider"/>
@@ -391,6 +380,7 @@
                  class="App\Service\Feedback\Telegram\View\MultipleSearchTermTelegramViewProvider" lazy="true">
             <argument type="service" id="app.feedback_search_term_telegram_view_provider"/>
             <argument type="service" id="app.feedback_search_term_type_provider"/>
+            <argument type="service" id="app.feedback_search_term_provider"/>
         </service>
         <service id="app.subscription_telegram_view_provider"
                  class="App\Service\Feedback\Telegram\Bot\View\SubscriptionTelegramViewProvider" lazy="true">
@@ -485,12 +475,13 @@
             <argument type="service" id="app.feedback_search_term_parser"/>
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
             <argument type="service" id="app.feedback_multiple_search_term_telegram_view_provider"/>
+            <argument type="service" id="app.feedback_search_term_telegram_view_provider"/>
             <argument type="service" id="app.feedback_search_term_type_provider"/>
             <argument type="service" id="app.feedback_creator"/>
             <argument type="service" id="app.feedback_rating_provider"/>
             <argument type="service" id="app.event_bus"/>
             <argument type="service" id="app.feedback_repository"/>
-            <argument type="service" id="app.feedback_telegram_view_provider"/>
+            <argument type="service" id="app.search_viewer_telegram_feedbacks"/>
             <argument type="service" id="app.telegram_channel_matches_provider"/>
             <argument type="service" id="app.telegram_channel_link_view_provider"/>
             <argument>%app.create.search_term_type_step%</argument>
@@ -592,7 +583,8 @@
             <argument type="service" id="app.feedback_repository"/>
             <argument type="service" id="app.telegram_channel_matches_provider"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>
-            <argument type="service" id="app.feedback_telegram_view_provider"/>
+            <argument type="service" id="app.feedback_multiple_search_term_telegram_view_provider"/>
+            <argument type="service" id="app.search_viewer_telegram_feedbacks"/>
             <argument type="service" id="app.telegram_channel_link_view_provider"/>
             <argument type="service" id="app.translator"/>
             <argument type="service" id="logger"/>
@@ -650,7 +642,7 @@
             <argument type="service" id="app.messenger_user_repository"/>
             <argument type="service" id="app.telegram_bot_provider"/>
             <argument type="service" id="translator"/>
-            <argument type="service" id="app.feedback_telegram_view_provider"/>
+            <argument type="service" id="app.search_viewer_telegram_feedbacks"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>
             <argument type="service" id="app.id_generator"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
@@ -667,7 +659,7 @@
             <argument type="service" id="app.feedback_search_searcher"/>
             <argument type="service" id="app.telegram_bot_provider"/>
             <argument type="service" id="translator"/>
-            <argument type="service" id="app.feedback_telegram_view_provider"/>
+            <argument type="service" id="app.search_viewer_telegram_feedbacks"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>
             <argument type="service" id="app.id_generator"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
@@ -722,7 +714,7 @@
             <argument type="service" id="app.feedback_searcher"/>
             <argument type="service" id="app.telegram_bot_provider"/>
             <argument type="service" id="translator"/>
-            <argument type="service" id="app.feedback_telegram_view_provider"/>
+            <argument type="service" id="app.search_viewer_telegram_feedbacks"/>
             <argument type="service" id="app.telegram_bot_message_sender"/>
             <argument type="service" id="app.id_generator"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
