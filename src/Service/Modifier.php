@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Service\Intl\CountryProvider;
 use App\Service\Intl\TimeProvider;
 use App\Service\Util\String\SecretsAdder;
 use DateTimeInterface;
@@ -14,6 +15,7 @@ class Modifier
     public function __construct(
         private readonly SecretsAdder $secretsAdder,
         private readonly TimeProvider $timeProvider,
+        private readonly CountryProvider $countryProvider,
     )
     {
     }
@@ -130,6 +132,11 @@ class Modifier
     public function ratingModifier(): callable
     {
         return static fn ($any): ?string => empty($any) ? null : str_repeat('⭐️', (int) round((float) $any));
+    }
+
+    public function countryModifier(string $locale = null): callable
+    {
+        return fn ($any): string => empty($any) ? null : $this->countryProvider->getCountryComposeName($any, localeCode: $locale);
     }
 
     public function nullModifier(): callable
