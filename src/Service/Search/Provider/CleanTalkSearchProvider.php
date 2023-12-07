@@ -168,9 +168,10 @@ class CleanTalkSearchProvider extends SearchProvider implements SearchProviderIn
                 return null;
             }
 
-            $lastUpdate = trim($lastUpdateEl->text());
-            $lastUpdate = empty($lastUpdate) ? null : DateTimeImmutable::createFromFormat('M d, Y H:i:s', $lastUpdate)->setTime(0, 0);
-            $lastUpdate = $lastUpdate === false ? null : $lastUpdate;
+//            $lastUpdate = trim($lastUpdateEl->text());
+//            $lastUpdate = empty($lastUpdate) ? null : DateTimeImmutable::createFromFormat('M d, Y H:i:s', $lastUpdate)->setTime(0, 0);
+//            $lastUpdate = $lastUpdate === false ? null : $lastUpdate;
+            $lastUpdate = (new DateTimeImmutable())->setTime(0, 0);
 
             return new CleanTalkEmail(
                 $address,

@@ -51,7 +51,7 @@ class CleanTalkSearchProviderTest extends KernelTestCase
                         blacklisted: false,
                         real: false,
                         disposable: false,
-                        lastUpdate: new DateTimeImmutable('2023-12-06')
+                        lastUpdate: (new DateTimeImmutable())->setTime(0, 0)
                     ),
                 ]),
             ],
@@ -70,7 +70,7 @@ class CleanTalkSearchProviderTest extends KernelTestCase
                         blacklisted: false,
                         real: true,
                         disposable: false,
-                        lastUpdate: new DateTimeImmutable('2023-12-01')
+                        lastUpdate: (new DateTimeImmutable())->setTime(0, 0)
                     ),
                 ]),
             ],
