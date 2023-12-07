@@ -134,6 +134,11 @@ class Modifier
         return static fn ($any): ?string => empty($any) ? null : str_repeat('⭐️', (int) round((float) $any));
     }
 
+    public function spoilerModifier(): callable
+    {
+        return static fn ($any): string => empty($any) ? null : ('<tg-spoiler>' . $any . '</tg-spoiler>');
+    }
+
     public function countryModifier(string $locale = null): callable
     {
         return fn ($any): string => empty($any) ? null : $this->countryProvider->getCountryComposeName($any, localeCode: $locale);
