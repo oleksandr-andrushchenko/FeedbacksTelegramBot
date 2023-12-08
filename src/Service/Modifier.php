@@ -27,32 +27,32 @@ class Modifier
 
     public function boldModifier(): callable
     {
-        return static fn ($any): ?string => empty($any) ? null : ('<b>' . $any . '</b>');
+        return static fn ($any): ?string => $any === null ? null : ('<b>' . $any . '</b>');
     }
 
     public function italicModifier(): callable
     {
-        return static fn ($any): ?string => empty($any) ? null : ('<i>' . $any . '</i>');
+        return static fn ($any): ?string => $any === null ? null : ('<i>' . $any . '</i>');
     }
 
     public function underlineModifier(): callable
     {
-        return static fn ($any): ?string => empty($any) ? null : ('<u>' . $any . '</u>');
+        return static fn ($any): ?string => $any === null ? null : ('<u>' . $any . '</u>');
     }
 
     public function linkModifier(?string $href): callable
     {
-        return static fn ($any): ?string => empty($any) ? null : (empty($href) ? $any : ('<a href="' . $href . '">' . $any . '</a>'));
+        return static fn ($any): ?string => $any === null ? null : (empty($href) ? $any : ('<a href="' . $href . '">' . $any . '</a>'));
     }
 
     public function secretsModifier(int $position = 2, string $char = '*', int $count = 3): callable
     {
-        return fn ($any): ?string => empty($any) ? null : $this->secretsAdder->addSecrets($any, position: $position, char: $char, count: $count);
+        return fn ($any): ?string => $any === null ? null : $this->secretsAdder->addSecrets($any, position: $position, char: $char, count: $count);
     }
 
     public function wordSecretsModifier(string|array $excepts = null, string $char = '*'): callable
     {
-        return fn ($any): ?string => empty($any) ? null : $this->secretsAdder->addWordSecrets($any, excepts: $excepts, char: $char);
+        return fn ($any): ?string => $any === null ? null : $this->secretsAdder->addWordSecrets($any, excepts: $excepts, char: $char);
     }
 
     public function greenWhiteModifier(string $active = null, string $inactive = null): callable
@@ -77,7 +77,7 @@ class Modifier
 
     public function slashesModifier(): callable
     {
-        return static fn ($any): ?string => empty($any) ? null : addslashes($any);
+        return static fn ($any): ?string => $any === null ? null : addslashes($any);
     }
 
     public function conditionalModifier($condition): callable
@@ -87,51 +87,56 @@ class Modifier
 
     public function bracketsModifier(?string $add): callable
     {
-        return fn ($any): ?string => empty($any) ? null : (empty($add) ? $any : ($any . ' [ ' . $add . ' ]'));
+        return fn ($any): ?string => $any === null ? null : (empty($add) ? $any : ($any . ' [ ' . $add . ' ]'));
     }
 
     public function filterModifier(): callable
     {
-        return static fn (?array $array): ?array => empty($array) ? null : array_filter($array);
+        return static fn (?array $any): ?array => empty($any) ? null : array_filter($any);
     }
 
     public function implodeModifier(string $separator): callable
     {
-        return static fn (?array $array): ?string => empty($array) ? null : implode($separator, $array);
+        return static fn (?array $any): ?string => empty($any) ? null : implode($separator, $any);
     }
 
-    public function prependModifier(?string $prepend): callable
+    public function emptyNullModifier(): callable
     {
-        return static fn ($any): ?string => empty($any) ? null : (empty($prepend) ? $any : ($prepend . $any));
+        return static fn ($any) => empty($any) ? null : $any;
     }
 
-    public function appendModifier(?string $append): callable
+    public function prependModifier($prepend): callable
     {
-        return static fn ($any): ?string => empty($any) ? null : (empty($append) ? $any : ($any . $append));
+        return static fn ($any) => $any === null ? null : ($prepend === null ? $any : ($prepend . $any));
+    }
+
+    public function appendModifier($append): callable
+    {
+        return static fn ($any) => $any === null ? null : ($append === null ? $any : ($any . $append));
     }
 
     public function newLineModifier(int $times = 1): callable
     {
-        return static fn ($any): ?string => empty($any) ? null : ($any . str_repeat("\n", $times));
+        return static fn ($any): ?string => $any === null ? null : ($any . str_repeat("\n", $times));
     }
 
     public function datetimeModifier(string|int $format, string $timezone = null, string $locale = null): callable
     {
         if (is_string($format)) {
-            return static fn (?DateTimeInterface $any): ?string => empty($any) ? null : $any->format($format);
+            return static fn (?DateTimeInterface $any): ?string => $any === null ? null : $any->format($format);
         }
 
-        return fn (?DateTimeInterface $any): ?string => empty($any) ? null : $this->timeProvider->format($format, $any, $timezone, $locale);
+        return fn (?DateTimeInterface $any): ?string => $any === null ? null : $this->timeProvider->format($format, $any, $timezone, $locale);
     }
 
     public function trimModifier(): callable
     {
-        return static fn ($any): ?string => empty($any) ? null : trim($any);
+        return static fn ($any): ?string => $any === null ? null : trim($any);
     }
 
     public function numberFormatModifier(int $decimals = 0, ?string $decimalSeparator = '.', ?string $thousandsSeparator = ','): callable
     {
-        return static fn ($any): ?string => empty($any) ? null : number_format((float) $any, $decimals, $decimalSeparator, $thousandsSeparator);
+        return static fn ($any): ?string => $any === null ? null : number_format((float) $any, $decimals, $decimalSeparator, $thousandsSeparator);
     }
 
     public function markModifier(): callable
@@ -146,17 +151,17 @@ class Modifier
 
     public function ratingModifier(): callable
     {
-        return static fn ($any): ?string => empty($any) ? null : str_repeat('⭐️', (int) round((float) $any));
+        return static fn ($any): ?string => $any === null ? null : str_repeat('⭐️', (int) round((float) $any));
     }
 
     public function spoilerModifier(): callable
     {
-        return static fn ($any): string => empty($any) ? null : ('<tg-spoiler>' . $any . '</tg-spoiler>');
+        return static fn ($any): ?string => $any === null ? null : ('<tg-spoiler>' . $any . '</tg-spoiler>');
     }
 
     public function countryModifier(string $locale = null): callable
     {
-        return fn ($any): ?string => empty($any) ? null : $this->countryProvider->getCountryComposeName($any, localeCode: $locale);
+        return fn ($any): ?string => $any === null ? null : $this->countryProvider->getCountryComposeName($any, localeCode: $locale);
     }
 
     public function nullModifier(): callable
