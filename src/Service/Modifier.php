@@ -50,6 +50,11 @@ class Modifier
         return fn ($any): ?string => empty($any) ? null : $this->secretsAdder->addSecrets($any, position: $position, char: $char, count: $count);
     }
 
+    public function wordSecretsModifier(string|array $excepts = null, string $char = '*'): callable
+    {
+        return fn ($any): ?string => empty($any) ? null : $this->secretsAdder->addWordSecrets($any, excepts: $excepts, char: $char);
+    }
+
     public function greenWhiteModifier(string $active = null, string $inactive = null): callable
     {
         return fn ($any): ?string => $any === null ? null : rtrim($any ? ('🟢 ' . $active) : ('⚪️ ' . $inactive));
