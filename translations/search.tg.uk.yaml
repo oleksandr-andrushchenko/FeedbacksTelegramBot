@@ -1,10 +1,8 @@
 empty_result: Нічого не знайдено.
 all_good: Все добре.
 error_result: Не доступно.
-subscription_skipped_records: Приховано %hidden_count% із %total_count% записів.
 subscription_skipped_data: Частина даних засекречена знаком зірочки (*).
 subscription_skipped_links: Посилання приховані.
-subscription_benefits: Премім-користувачі бачать %all_records%, %all_links% та %all_data% - %subscribe_command%.
-subscription_all_records: всі записи
+subscription_benefits: Премім-користувачі бачать %all_links% та %all_data% - %subscribe_command%.
 subscription_all_links: всі посилання
 subscription_all_data: без зірочок

@@ -31,19 +31,14 @@ abstract class SearchViewer implements SearchViewerInterface
     {
         $message = '🔒 ';
         $message .= $this->modifier->create()
-//            ->add($this->modifier->italicModifier())
             ->apply($this->trans('subscription_skipped_data', generalDomain: true))
         ;
         $message .= ' ';
         $message .= $this->modifier->create()
-//            ->add($this->modifier->italicModifier())
             ->apply($this->trans('subscription_skipped_links', generalDomain: true))
         ;
         $message .= ' ';
         $parameters = [
-            'all_records' => $this->modifier->create()
-                ->add($this->modifier->boldModifier())
-                ->apply($this->trans('subscription_all_records', generalDomain: true)),
             'all_links' => $this->modifier->create()
                 ->add($this->modifier->boldModifier())
                 ->apply($this->trans('subscription_all_links', generalDomain: true)),
@@ -55,7 +50,6 @@ abstract class SearchViewer implements SearchViewerInterface
                 ->apply('/subscribe'),
         ];
         $message .= $this->modifier->create()
-//            ->add($this->modifier->italicModifier())
             ->apply($this->trans('subscription_benefits', $parameters, generalDomain: true))
         ;
 
@@ -93,46 +87,11 @@ abstract class SearchViewer implements SearchViewerInterface
             ->apply($title)
         ;
 
-        $count = count($items);
-
-        if ($full) {
-            $maxResults = $count;
-        } else {
-            $maxResults = intval($count * .4);
-            $maxResults = max($maxResults, 1);
-        }
-
-        $added = 0;
-
         foreach ($items as $item) {
             $messages[] = $this->makeResultMessage($lines($item));
-            $added++;
-
-            if ($added === $maxResults) {
-                break;
-            }
         }
 
         if (!$full) {
-            if ($maxResults !== $count) {
-                $messages[] = '...';
-                $message = '🔒 ';
-                $parameters = [
-                    'hidden_count' => $this->modifier->create()
-                        ->add($this->modifier->boldModifier())
-                        ->apply($count - $maxResults),
-                    'total_count' => $this->modifier->create()
-                        ->add($this->modifier->boldModifier())
-                        ->apply($count),
-                ];
-                $message .= $this->modifier->create()
-//                    ->add($this->modifier->italicModifier())
-                    ->apply($this->trans('subscription_skipped_records', $parameters, generalDomain: true))
-                ;
-
-                $messages[] = $message;
-            }
-
             $this->showLimits = true;
         }
 
