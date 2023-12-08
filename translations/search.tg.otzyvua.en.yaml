@@ -1,5 +1,7 @@
 on_search: 'Search in the database of reviews #2...'
 feedback_search_terms_title: Many matches found, refine your search
+title: Author's title
+phone: Phone number
 category: Category
 rating: Rating %value% from %total%
 description: Author's comment

@@ -1,5 +1,7 @@
 on_search: Пошук по базі відгуків №2...
 feedback_search_terms_title: Знайдено багато співпадінь, уточніть пошук
+title: Заголовок автора
+phone: Номер телефону
 category: Категорія
 rating: Рейтинг %value% із %total%
 description: Коментар автора
