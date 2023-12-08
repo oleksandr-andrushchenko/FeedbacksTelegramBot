@@ -1,5 +1,9 @@
 on_search: Поиск по базе НАПК...
 persons_title: Совершили коррупционные или связанные с коррупцией правонарушения
+name: Имя
+type: Тип
+offense: Преступление
+court_name: Суд
 court_case_number: Номер судебного дела
 codex_articles: Статья
 sentence_date: Дата судебного решения

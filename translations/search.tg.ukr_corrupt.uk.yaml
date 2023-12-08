@@ -1,5 +1,9 @@
 on_search: Пошук по базі НАЗК...
 persons_title: Вчинили корупційні або пов’язані з корупцією правопорушення
+name: Ім'я
+type: Тип
+offense: Правопорушення
+court_name: Суд
 court_case_number: Номер судової справи
 codex_articles: Стаття
 sentence_date: Дата судового рішення
