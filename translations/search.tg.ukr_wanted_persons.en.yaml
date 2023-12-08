@@ -2,7 +2,10 @@ on_search: Search in the MIA database...
 persons_title: Persons hiding from authorities
 person_title: A person who is hiding from authorities
 rus_name: RUS
-gender: Sex
+name: Name
+category: Category
+codex_article: Codex article
+gender: Gender
 born_at: Date of birth
 absent_at: Date of absence
 absent_place: Place of disappearance

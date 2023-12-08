@@ -2,6 +2,9 @@ on_search: Поиск по базе МВД...
 persons_title: Лица, скрывающиеся от органов власти
 person_title: Лицо скрывающееся от органов власти
 rus_name: РОС
+name: Имя
+category: Категория
+codex_article: Статья
 gender: Пол
 born_at: Дата рождения
 absent_at: Дата исчезновения

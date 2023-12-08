@@ -2,6 +2,9 @@ on_search: Пошук по базі МВС...
 persons_title: Особи які переховуються від органів влади
 person_title: Особа яка переховується від органів влади
 rus_name: РОС
+name: Ім'я
+category: Категорія
+codex_article: Стаття
 gender: Стать
 born_at: Дата народження
 absent_at: Дата зникнення
