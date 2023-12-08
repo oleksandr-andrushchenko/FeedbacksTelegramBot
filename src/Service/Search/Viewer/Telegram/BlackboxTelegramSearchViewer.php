@@ -67,7 +67,9 @@ class BlackboxTelegramSearchViewer extends SearchViewer implements SearchViewerI
                     ->add($m->implodeModifier(', '))
                     ->add($m->emptyNullModifier())
                     ->add($m->bracketsModifier($item->getType()))
+                    ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
                     ->add($m->slashesModifier())
+                    ->add($m->bracketsModifier($this->trans('warehouse')))
                     ->apply([$item->getCity(), $item->getWarehouse()]),
                 $m->create()
                     ->add($m->slashesModifier())
@@ -76,6 +78,7 @@ class BlackboxTelegramSearchViewer extends SearchViewer implements SearchViewerI
                     ->apply('ua'),
                 $m->create()
                     ->add($m->datetimeModifier(TimeProvider::DATE))
+                    ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
                     ->add($m->bracketsModifier($this->trans('date')))
                     ->apply($item->getDate()),
             ],
