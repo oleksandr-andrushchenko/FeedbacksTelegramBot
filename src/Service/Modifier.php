@@ -7,6 +7,7 @@ namespace App\Service;
 use App\Entity\Modifiers;
 use App\Service\Intl\CountryProvider;
 use App\Service\Intl\TimeProvider;
+use App\Service\Util\String\MbUcFirster;
 use App\Service\Util\String\SecretsAdder;
 use DateTimeInterface;
 
@@ -16,6 +17,7 @@ class Modifier
         private readonly SecretsAdder $secretsAdder,
         private readonly TimeProvider $timeProvider,
         private readonly CountryProvider $countryProvider,
+        private readonly MbUcFirster $mbUcFirster,
     )
     {
     }
@@ -162,6 +164,11 @@ class Modifier
     public function countryModifier(string $locale = null): callable
     {
         return fn ($any): ?string => $any === null ? null : $this->countryProvider->getCountryComposeName($any, localeCode: $locale);
+    }
+
+    public function ucFirstModifier(): callable
+    {
+        return fn ($any): ?string => $any === null ? null : $this->mbUcFirster->mbUcFirst($any);
     }
 
     public function nullModifier(): callable

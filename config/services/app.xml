@@ -86,6 +86,7 @@
             <argument type="service" id="app.string_secrets_adder"/>
             <argument type="service" id="app.intl_time_provider"/>
             <argument type="service" id="app.intl_country_provider"/>
+            <argument type="service" id="app.string_mb_uc_firster"/>
         </service>
     </services>
 </container>
