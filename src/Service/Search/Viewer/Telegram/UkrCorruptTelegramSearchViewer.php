@@ -7,6 +7,7 @@ namespace App\Service\Search\Viewer\Telegram;
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\UkrCorrupt\UkrCorruptPerson;
 use App\Entity\Search\UkrCorrupt\UkrCorruptPersons;
+use App\Service\Intl\TimeProvider;
 use App\Service\Search\Viewer\SearchViewer;
 use App\Service\Search\Viewer\SearchViewerCompose;
 use App\Service\Search\Viewer\SearchViewerInterface;
@@ -28,69 +29,81 @@ class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewe
         $full = $context['full'] ?? false;
 
         return match (get_class($record)) {
-            UkrCorruptPersons::class => $this->getPersonsMessage($record, $full),
+            UkrCorruptPersons::class => $this->getPersonsMessage($record, $searchTerm, $full),
         };
     }
 
-    public function getPersonsMessage(UkrCorruptPersons $record, bool $full): string
+    public function getPersonsMessage(UkrCorruptPersons $record, FeedbackSearchTerm $searchTerm, bool $full): string
     {
         $m = $this->modifier;
+
+        $term = $searchTerm->getNormalizedText();
+
         $message = '‼️ ';
         $message .= $this->implodeResult(
             $this->trans('persons_title'),
             $record->getItems(),
             fn (UkrCorruptPerson $item): array => [
                 $m->create()
-                    ->add($m->conditionalModifier($item->getFirstName() || $item->getPatronymic()))
+                    ->add($m->filterModifier())
+                    ->add($m->implodeModifier(' '))
+                    ->add($m->trimModifier())
+                    ->add($m->emptyNullModifier())
+                    ->add($full ? $m->nullModifier() : $m->wordSecretsModifier(excepts: $term))
                     ->add($m->slashesModifier())
-                    ->add($m->appendModifier(' '))
-                    ->add($m->appendModifier($item->getFirstName()))
-                    ->add($m->appendModifier(' '))
-                    ->add($m->appendModifier($item->getPatronymic()))
-                    ->apply($item->getLastName()),
+                    ->add($m->boldModifier())
+                    ->add($m->bracketsModifier($this->trans('name')))
+                    ->apply([$item->getLastName(), $item->getFirstName(), $item->getPatronymic()]),
                 $m->create()
+                    ->add($m->emptyNullModifier())
+                    ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
                     ->add($m->slashesModifier())
+                    ->add($m->bracketsModifier($this->trans('type')))
                     ->apply($item->getEntityType()),
                 $m->create()
-                    ->add($m->redModifier())
-                    ->add($m->appendModifier(' '))
-                    ->add(
-                        $m->appendModifier(
-                            $m->create()
-                                ->add($m->slashesModifier())
-                                ->apply($item->getOffenseName())
-                        )
-                    )
-                    ->apply(true),
+                    ->add($m->emptyNullModifier())
+                    ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                    ->add($m->prependModifier(' '))
+                    ->add($m->prependModifier($m->redModifier()(true)))
+                    ->add($m->bracketsModifier($this->trans('offense')))
+                    ->apply($item->getOffenseName()),
                 $m->create()
-                    ->add($m->conditionalModifier($item->getPunishment()))
+                    ->add($m->emptyNullModifier())
+                    ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
                     ->add($m->slashesModifier())
-                    ->add($m->appendModifier(' '))
-                    ->add(
-                        $m->appendModifier(
-                            $m->create()
-                                ->add($m->bracketsModifier($item->getPunishmentType()))
-                                ->add($m->trimModifier())
-                                ->apply(' ')
-                        )
-                    )
+                    ->add($m->bracketsModifier($item->getPunishmentType()))
                     ->apply($item->getPunishment()),
                 $m->create()
-                    ->add($m->bracketsModifier($this->trans('court_case_number')))
+                    ->add($m->emptyNullModifier())
+                    ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
                     ->add($m->slashesModifier())
+                    ->add($m->bracketsModifier($this->trans('court_case_number')))
                     ->apply($item->getCourtCaseNumber()),
                 $m->create()
+                    ->add($m->filterModifier())
                     ->add($m->implodeModifier('; '))
+                    ->add($m->trimModifier())
+                    ->add($m->emptyNullModifier())
+                    ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
                     ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('codex_articles')))
                     ->apply($item->getCodexArticles()),
-                $item->getCourtName(),
                 $m->create()
-                    ->add($m->datetimeModifier('d.m.Y'))
+                    ->add($m->emptyNullModifier())
+                    ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                    ->add($m->slashesModifier())
+                    ->add($m->bracketsModifier($this->trans('court_name')))
+                    ->apply($item->getCourtName()),
+                $m->create()
+                    ->add($m->datetimeModifier(TimeProvider::DATE))
+                    ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                    ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('sentence_date')))
                     ->apply($item->getSentenceDate()),
                 $m->create()
-                    ->add($m->datetimeModifier('d.m.Y'))
+                    ->add($m->datetimeModifier(TimeProvider::DATE))
+                    ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                    ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('punishment_start')))
                     ->apply($item->getPunishmentStart()),
             ],
