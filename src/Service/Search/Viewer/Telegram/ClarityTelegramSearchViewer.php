@@ -406,13 +406,13 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($m->slashesModifier())
                     ->add($full ? $m->linkModifier($item->getHref()) : $m->nullModifier())
                     ->add($m->boldModifier())
-                    ->add($this->trans('edr_name'))
+                    ->add($m->bracketsModifier($this->trans('edr_name')))
                     ->apply($item->getName()),
                 $m->create()
                     ->add($m->emptyNullModifier())
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
                     ->add($m->slashesModifier())
-                    ->add($this->trans('edr_type'))
+                    ->add($m->bracketsModifier($this->trans('edr_type')))
                     ->apply($item->getType()),
                 $m->create()
                     ->add($m->greenWhiteModifier($this->trans('active'), $this->trans('not_active')))
