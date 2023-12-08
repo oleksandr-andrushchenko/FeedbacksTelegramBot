@@ -100,6 +100,11 @@ class Modifier
         return static fn (?array $array): ?string => empty($array) ? null : implode($separator, $array);
     }
 
+    public function prependModifier(?string $prepend): callable
+    {
+        return static fn ($any): ?string => empty($any) ? null : (empty($prepend) ? $any : ($prepend . $any));
+    }
+
     public function appendModifier(?string $append): callable
     {
         return static fn ($any): ?string => empty($any) ? null : (empty($append) ? $any : ($any . $append));
