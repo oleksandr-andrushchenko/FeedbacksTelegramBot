@@ -1,5 +1,8 @@
 on_search: Поиск по сводной базе...
 person_edrs_title: Связанные компании
+person_name: Имя
+person_edr_type: Тип
+category: Категория
 edr_type: Степень отношения
 edr_number: ЕГРПОУ
 address: Адрес

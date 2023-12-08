@@ -1,5 +1,8 @@
 on_search: Search in the consolidated database...
 person_edrs_title: Related companies
+person_name: Name
+person_edr_type: Type
+category: Category
 edr_type: Degree of relation
 edr_number: EDRPOU
 address: Address

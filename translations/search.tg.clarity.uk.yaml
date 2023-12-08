@@ -1,5 +1,8 @@
 on_search: Пошук по зведеній базі...
 person_edrs_title: "Пов'язані компанії"
+person_name: Ім'я
+person_edr_type: Тип
+category: Категорія
 edr_type: Степінь відношення
 edr_number: ЄДРПОУ
 address: Адреса
