@@ -2,6 +2,10 @@ on_search: 'Search in the database of reviews #3...'
 bloggers_title: Many matches found, refine your search
 follower_count: Number of followers
 feedbacks_title: Found the following reviews
+name: Nickname
+desc: Bio
+header: Title
+text: Author's comment
 mark_-1: Negative
 mark_0: Neutral
 mark_+1: Positive
