@@ -167,7 +167,7 @@ class BusinessGuideSearchProviderTest extends KernelTestCase
                     'АНДРУЩЕНКО ОЛЕКСАНДР СЕРГІЙОВИЧ, ФОП',
                     'https://8000994519.business-guide.com.ua',
                     country: 'Українa',
-                    phone: '+38 (063) 6356979',
+                    phone: '+380636356979',
                     ceo: 'Андрущенко Олександр Сергійович',
                     sectors: ['Розроблення стандартного програмного забезпечення'],
                     address: '02140, м. Київ, вул. Бориса Гмирі, 9в кв. 55',
