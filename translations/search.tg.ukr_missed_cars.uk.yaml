@@ -1,6 +1,7 @@
 on_search: Пошук по базі МВС...
 missed_cars_title: Транспортні засоби у розшуку
-region: Орган внутрішніх справ
+color_and_model: Колір та модель
+region: Регіон
 car_number: Державний знак
 chassis_number: Номер шасі
 body_number: Номер кузова

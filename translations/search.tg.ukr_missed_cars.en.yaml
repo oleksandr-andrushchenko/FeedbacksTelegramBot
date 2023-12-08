@@ -1,6 +1,7 @@
 on_search: Search in the MIA database...
 missed_cars_title: Missing vehicles
-region: Internal affairs body
+color_and_model: Color and model
+region: Region
 car_number: State mark
 chassis_number: Chassis number
 body_number: Body number

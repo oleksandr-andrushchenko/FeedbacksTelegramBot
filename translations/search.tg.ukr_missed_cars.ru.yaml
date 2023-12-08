@@ -1,6 +1,7 @@
 on_search: Поиск по базе МВД...
 missed_cars_title: Транспортные средства в розыске
-region: Орган внутренних дел
+color_and_model: Цвет и модель
+region: Регион
 car_number: Государственный знак
 chassis_number: Номер шасси
 body_number: Номер кузова
