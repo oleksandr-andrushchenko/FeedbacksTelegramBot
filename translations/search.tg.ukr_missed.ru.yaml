@@ -1,5 +1,11 @@
 on_search: Поиск по базе НПУ...
 disappeared_persons_title: Пропавшие граждане
+name: Имя
+gender: Пол
+precaution: Мера пресечения
+category: Категория
+organ: Орган
+address: Адрес
 born_at: Дата рождения
 absent_at: Дата исчезновения
 wanted_persons_title: Лица, скрывающиеся от органов власти

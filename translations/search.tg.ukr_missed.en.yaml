@@ -1,5 +1,11 @@
 on_search: Search in the NPU database...
 disappeared_persons_title: Disappeared citizens
+name: Name
+gender: Gender
+precaution: Precaution
+category: Category
+organ: Authority
+address: Address
 born_at: Date of birth
 absent_at: Date of absence
 wanted_persons_title: Persons hiding from authorities

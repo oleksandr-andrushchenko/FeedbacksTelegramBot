@@ -1,5 +1,11 @@
 on_search: Пошук по базі НПУ...
 disappeared_persons_title: Зниклі громадяни
+name: Ім'я
+gender: Стать
+precaution: Запобіжний захід
+category: Категорія
+organ: Орган
+address: Адреса
 born_at: Дата народження
 absent_at: Дата зникнення
 wanted_persons_title: Особи, що переховуються від органів влади
