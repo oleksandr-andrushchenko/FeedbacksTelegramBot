@@ -76,6 +76,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($m->bracketsModifier($this->trans('person_name')))
                     ->apply($item->getName()),
                 $m->create()
+                    ->add($m->conditionalModifier($item->getCount() > 0))
                     ->add($m->emptyNullModifier())
                     ->add($m->slashesModifier())
                     ->apply($this->trans('person_count', ['count' => $item->getCount()])),
@@ -155,6 +156,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($m->emptyNullModifier())
                     ->add($m->datetimeModifier(TimeProvider::DATE))
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                    ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('born_at')))
                     ->apply($item->getBornAt()),
                 $m->create()
@@ -169,6 +171,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($m->emptyNullModifier())
                     ->add($m->datetimeModifier(TimeProvider::DATE))
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                    ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('absent_at')))
                     ->apply($item->getAbsentAt()),
                 $m->create()
@@ -265,6 +268,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                 $m->create()
                     ->add($m->datetimeModifier(TimeProvider::DATE))
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                    ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('opened_at')))
                     ->apply($item->getOpenedAt()),
                 $m->create()
@@ -276,6 +280,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                 $m->create()
                     ->add($m->datetimeModifier(TimeProvider::DATE))
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                    ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('born_at')))
                     ->apply($item->getBornAt()),
                 $m->create()
@@ -326,6 +331,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                 $m->create()
                     ->add($m->datetimeModifier(TimeProvider::DATE))
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                    ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('born_at')))
                     ->apply($item->getBornAt()),
                 $m->create()
