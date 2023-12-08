@@ -6,9 +6,9 @@ namespace App\Service\Util\String;
 
 class SecretsAdder
 {
-    public function addSecrets(string $input, int $position = 2, string $char = '*', int $count = 3): string
+    public function addSecrets(string $text, int $position = 2, string $char = '*', int $count = 3): string
     {
-        $length = mb_strlen($input);
+        $length = mb_strlen($text);
 
         if ($length <= $count) {
             return str_repeat($char, $length);
@@ -18,7 +18,7 @@ class SecretsAdder
             $position = $length - $count;
         }
 
-        return mb_substr($input, 0, $position) . str_repeat($char, $count) . mb_substr($input, $position + $count);
+        return mb_substr($text, 0, $position) . str_repeat($char, $count) . mb_substr($text, $position + $count);
     }
 
     public function addWordSecrets(string $text, string|array $excepts = null, string $char = '*'): string
