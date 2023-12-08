@@ -48,16 +48,20 @@ class TwentySecondFloorTelegramSearchViewer extends SearchViewer implements Sear
             $record->getItems(),
             fn (TwentySecondFloorBlogger $item): array => [
                 $m->create()
+                    ->add($m->emptyNullModifier())
                     ->add($m->slashesModifier())
                     ->add($full ? $m->linkModifier($item->getHref()) : $m->nullModifier())
                     ->add($m->boldModifier())
+                    ->add($m->bracketsModifier($this->trans('name')))
                     ->apply($item->getName()),
                 $m->create()
                     ->add($m->numberFormatModifier(thousandsSeparator: ' '))
                     ->add($m->bracketsModifier($this->trans('follower_count')))
                     ->apply($item->getFollowers()),
                 $m->create()
+                    ->add($m->emptyNullModifier())
                     ->add($m->slashesModifier())
+                    ->add($m->bracketsModifier($this->trans('desc')))
                     ->apply($item->getDesc()),
             ],
             $full
@@ -75,13 +79,17 @@ class TwentySecondFloorTelegramSearchViewer extends SearchViewer implements Sear
             $record->getItems(),
             fn (TwentySecondFloorFeedback $item): array => [
                 $m->create()
+                    ->add($m->emptyNullModifier())
                     ->add($m->slashesModifier())
                     ->add($m->boldModifier())
+                    ->add($m->bracketsModifier($this->trans('header')))
                     ->apply($item->getHeader()),
                 $m->create()
+                    ->add($m->emptyNullModifier())
                     ->add($m->slashesModifier())
                     ->add($m->boldModifier())
                     ->add($m->spoilerModifier())
+                    ->add($m->bracketsModifier($this->trans('text')))
                     ->apply($item->getText()),
                 $m->create()
                     ->add($m->markModifier())
@@ -90,6 +98,7 @@ class TwentySecondFloorTelegramSearchViewer extends SearchViewer implements Sear
                     ->add($m->bracketsModifier($this->trans('mark')))
                     ->apply($item->getMark()),
                 $m->create()
+                    ->add($m->emptyNullModifier())
                     ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('author')))
                     ->apply($item->getAuthor()),
@@ -100,6 +109,7 @@ class TwentySecondFloorTelegramSearchViewer extends SearchViewer implements Sear
                     ->apply('ua'),
                 $m->create()
                     ->add($m->datetimeModifier(TimeProvider::MONTH_YEAR))
+                    ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('date')))
                     ->apply($item->getDate()),
             ],
