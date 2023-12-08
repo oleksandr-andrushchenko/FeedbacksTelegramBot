@@ -71,6 +71,7 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
 
     private function getFeedbacksMessage(OtzyvuaFeedbacks $record, bool $full): string
     {
+        // todo: add secrets for phones
         $m = $this->modifier;
         $message = '💫 ';
         $message .= $this->implodeResult(
@@ -104,6 +105,7 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->apply('ua'),
                 $m->create()
                     ->add($m->datetimeModifier(TimeProvider::DATE))
+                    ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('created_at')))
                     ->apply($item->getCreatedAt()),
             ],
