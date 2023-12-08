@@ -8,6 +8,7 @@ use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\UkrMissed\UkrMissedDisappearedPersons;
 use App\Entity\Search\UkrMissed\UkrMissedPerson;
 use App\Entity\Search\UkrMissed\UkrMissedWantedPersons;
+use App\Service\Intl\TimeProvider;
 use App\Service\Search\Viewer\SearchViewer;
 use App\Service\Search\Viewer\SearchViewerCompose;
 use App\Service\Search\Viewer\SearchViewerInterface;
@@ -29,84 +30,107 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
         $full = $context['full'] ?? false;
 
         return match (get_class($record)) {
-            UkrMissedDisappearedPersons::class => $this->getDisappearedPersonsMessage($record, $full),
-            UkrMissedWantedPersons::class => $this->getWantedPersonsMessage($record, $full),
+            UkrMissedDisappearedPersons::class => $this->getDisappearedPersonsMessage($record, $searchTerm, $full),
+            UkrMissedWantedPersons::class => $this->getWantedPersonsMessage($record, $searchTerm, $full),
         };
     }
 
-    private function getDisappearedPersonsMessage(UkrMissedDisappearedPersons $record, bool $full): string
+    private function getDisappearedPersonsMessage(UkrMissedDisappearedPersons $record, FeedbackSearchTerm $searchTerm, bool $full): string
     {
         $message = '😐 ';
         $message .= $this->implodeResult(
             $this->trans('disappeared_persons_title'),
             $record->getItems(),
-            $this->getWrapMessageCallback($full),
+            $this->getWrapMessageCallback($searchTerm, $full),
             $full
         );
 
         return $message;
     }
 
-    private function getWantedPersonsMessage(UkrMissedWantedPersons $record, bool $full): string
+    private function getWantedPersonsMessage(UkrMissedWantedPersons $record, FeedbackSearchTerm $searchTerm, bool $full): string
     {
         $message = '🚨 ';
         $message .= $this->implodeResult(
             $this->trans('wanted_persons_title'),
             $record->getItems(),
-            $this->getWrapMessageCallback($full),
+            $this->getWrapMessageCallback($searchTerm, $full),
             $full
         );
 
         return $message;
     }
 
-    public function getWrapMessageCallback(bool $full): callable
+    public function getWrapMessageCallback(FeedbackSearchTerm $searchTerm, bool $full): callable
     {
         $m = $this->modifier;
 
+        $term = $searchTerm->getNormalizedText();
+
         return fn (UkrMissedPerson $item): array => [
             $m->create()
-                ->add($m->appendModifier(' '))
-                ->add($m->appendModifier($item->getName()))
-                ->add($m->appendModifier(' '))
-                ->add($m->appendModifier($item->getMiddleName()))
+                ->add($m->filterModifier())
+                ->add($m->implodeModifier(' '))
+                ->add($m->trimModifier())
+                ->add($m->emptyNullModifier())
+                ->add($full ? $m->nullModifier() : $m->wordSecretsModifier(excepts: $term))
                 ->add($m->slashesModifier())
                 ->add($m->boldModifier())
-                ->apply($item->getSurname()),
-            $item->getSex(),
+                ->add($m->bracketsModifier($this->trans('name')))
+                ->apply([$item->getSurname(), $item->getName(), $item->getMiddleName()]),
             $m->create()
-                ->add($m->datetimeModifier('d.m.Y'))
-                ->add($full ? $m->nullModifier() : $m->secretsModifier())
+                ->add($m->emptyNullModifier())
+                ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                ->add($m->slashesModifier())
+                ->add($m->bracketsModifier($this->trans('gender')))
+                ->apply($item->getSex()),
+            $m->create()
+                ->add($m->datetimeModifier(TimeProvider::DATE))
+                ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                ->add($m->slashesModifier())
                 ->add($m->bracketsModifier($this->trans('born_at')))
                 ->apply($item->getBirthday()),
             $m->create()
+                ->add($m->emptyNullModifier())
+                ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
                 ->add($m->slashesModifier())
+                ->add($m->bracketsModifier($this->trans('precaution')))
                 ->apply($item->getPrecaution()),
             $m->create()
-                ->add($m->redWhiteModifier())
-                ->add($m->appendModifier(' '))
+                ->add($m->emptyNullModifier())
                 ->add(
-                    $m->appendModifier(
+                    $m->bracketsModifier(
                         $m->create()
-                            ->add($m->slashesModifier())
-                            ->apply($item->getCategory())
-                    )
-                )
-                ->add($m->appendModifier(' '))
-                ->add(
-                    $m->appendModifier(
-                        $m->create()
+                            ->add($m->filterModifier())
                             ->add($m->implodeModifier('; '))
+                            ->add($m->trimModifier())
+                            ->add($m->emptyNullModifier())
                             ->add($m->slashesModifier())
                             ->apply($item->getArticles())
                     )
                 )
-                ->apply($item->getDisappeared() === false),
-            $m->create()
+                ->add($m->prependModifier(' '))
+                ->add($m->prependModifier($m->redWhiteModifier()($item->getDisappeared() === false)))
+                ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                ->add($m->bracketsModifier($this->trans('category')))
                 ->add($m->slashesModifier())
+                ->apply($item->getCategory()),
+            $m->create()
+                ->add($m->emptyNullModifier())
+                ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                ->add($m->slashesModifier())
+                ->add($m->bracketsModifier($this->trans('address')))
+                ->apply($item->getAddress()),
+            $m->create()
+                ->add($m->emptyNullModifier())
+                ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                ->add($m->slashesModifier())
+                ->add($m->bracketsModifier($this->trans('organ')))
                 ->apply($item->getOrgan()),
             $m->create()
-                ->add($m->datetimeModifier('d.m.Y'))
+                ->add($m->datetimeModifier(TimeProvider::DATE))
+                ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                ->add($m->slashesModifier())
                 ->add($m->bracketsModifier($this->trans('absent_at')))
                 ->apply($item->getDate()),
         ];
