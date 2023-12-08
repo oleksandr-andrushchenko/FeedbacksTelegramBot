@@ -1,5 +1,6 @@
 on_search: Search by blacklists of buyers...
 feedbacks_title: Found the following feedbacks
+name: Name
 phone: Phone number
 comment: Author's comment
 country: Author's location
