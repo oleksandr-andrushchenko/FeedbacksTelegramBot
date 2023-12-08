@@ -204,7 +204,7 @@ class BusinessGuideSearchProvider extends SearchProvider implements SearchProvid
         $phoneEl = $leftBlockEls->eq(4);
 
         if ($phoneLabelEl->count() !== 0 && str_contains($phoneLabelEl->text(), 'Телефон') && $phoneEl->count() !== 0) {
-            $phone = $phoneEl->text();
+            $phone = trim(preg_replace('/[^0-9]/', '', $phoneEl->text()));
         }
 
         $ceoLabelEl = $leftBlockEls->eq(5);
