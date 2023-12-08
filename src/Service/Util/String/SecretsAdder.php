@@ -24,19 +24,11 @@ class SecretsAdder
     public function addWordSecrets(string $text, string|array $excepts = null, string $char = '*'): string
     {
         $excepts = $excepts === null ? [] : (is_string($excepts) ? [$excepts] : $excepts);
+        $keep = array_merge(...array_map(static fn (string $except): array => preg_split('/[^0-9\p{L}]+/iu', $except), $excepts));
 
-        $keep = [];
+        $checker = static fn (string $a): bool => array_filter($keep, static fn (string $b): bool => strcmp(mb_strtolower($a), mb_strtolower($b)) === 0) != [];
+        $replacer = static fn (array $m): string => $checker($m[0]) ? $m[0] : str_repeat($char, mb_strlen($m[0]));
 
-        foreach ($excepts as $except) {
-            $keep = array_merge($keep, array_filter(array_map('trim', explode(' ', $except))));
-        }
-
-        $all = array_filter(array_map('trim', explode(' ', $text)));
-        $search = array_diff($all, $keep);
-
-        $replace = array_map(static fn (string $occurrence): string => str_repeat($char, mb_strlen($occurrence)), $search);
-
-
-        return str_ireplace($search, $replace, $text);
+        return preg_replace_callback('/[0-9\p{L}]+/iu', $replacer, $text);
     }
 }
