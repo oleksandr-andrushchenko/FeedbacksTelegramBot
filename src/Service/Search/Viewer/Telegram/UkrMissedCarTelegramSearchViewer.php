@@ -34,6 +34,7 @@ class UkrMissedCarTelegramSearchViewer extends SearchViewer implements SearchVie
                     ->add($m->bracketsModifier($this->trans('car_number')))
                     ->apply($item->getCarNumber()),
                 $m->create()
+                    ->add($m->appendModifier(' '))
                     ->add($m->appendModifier($item->getModel()))
                     ->add($m->slashesModifier())
                     ->apply($item->getColor()),

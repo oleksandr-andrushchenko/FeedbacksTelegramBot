@@ -46,6 +46,7 @@ class BusinessGuideTelegramSearchViewer extends SearchViewer implements SearchVi
                 ->apply($item->getName()),
             $m->create()
                 ->add($m->slashesModifier())
+                ->add($m->appendModifier(' '))
                 ->add($m->appendModifier($item->getAddress()))
                 ->add($full ? $m->nullModifier() : $m->secretsModifier())
                 ->apply($item->getCountry()),

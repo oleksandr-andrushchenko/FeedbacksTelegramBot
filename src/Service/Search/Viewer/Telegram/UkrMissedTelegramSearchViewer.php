@@ -66,7 +66,9 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
 
         return fn (UkrMissedPerson $item): array => [
             $m->create()
+                ->add($m->appendModifier(' '))
                 ->add($m->appendModifier($item->getName()))
+                ->add($m->appendModifier(' '))
                 ->add($m->appendModifier($item->getMiddleName()))
                 ->add($m->slashesModifier())
                 ->add($m->boldModifier())
@@ -82,6 +84,7 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
                 ->apply($item->getPrecaution()),
             $m->create()
                 ->add($m->redWhiteModifier())
+                ->add($m->appendModifier(' '))
                 ->add(
                     $m->appendModifier(
                         $m->create()
@@ -89,6 +92,7 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
                             ->apply($item->getCategory())
                     )
                 )
+                ->add($m->appendModifier(' '))
                 ->add(
                     $m->appendModifier(
                         $m->create()

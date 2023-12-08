@@ -43,6 +43,7 @@ class BlackboxTelegramSearchViewer extends SearchViewer implements SearchViewerI
                     ->apply($item->getName()),
                 $m->create()
                     ->add($m->redModifier())
+                    ->add($m->appendModifier(' '))
                     ->add($m->appendModifier($item->getPhone()))
                     ->add($m->slashesModifier())
                     ->add($full ? $m->nullModifier() : $m->secretsModifier())
@@ -51,6 +52,7 @@ class BlackboxTelegramSearchViewer extends SearchViewer implements SearchViewerI
                 $m->create()
                     ->add($m->slashesModifier())
                     ->add($m->spoilerModifier())
+                    ->add($m->appendModifier(' '))
                     ->add($m->appendModifier($this->trans('comment')))
                     ->apply($item->getComment()),
                 $m->create()

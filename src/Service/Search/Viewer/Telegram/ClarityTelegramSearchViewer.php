@@ -167,6 +167,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->apply($item->getState()),
                 $m->create()
                     ->add($m->redWhiteModifier())
+                    ->add($m->appendModifier(' '))
                     ->add(
                         $m->appendModifier(
                             $m->create()
@@ -216,6 +217,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->apply($item->getBornAt()),
                 $m->create()
                     ->add($m->redWhiteModifier())
+                    ->add($m->appendModifier(' '))
                     ->add(
                         $m->appendModifier(
                             $m->create()

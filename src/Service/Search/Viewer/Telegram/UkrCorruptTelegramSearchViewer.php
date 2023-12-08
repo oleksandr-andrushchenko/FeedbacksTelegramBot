@@ -43,7 +43,9 @@ class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewe
                 $m->create()
                     ->add($m->conditionalModifier($item->getFirstName() || $item->getPatronymic()))
                     ->add($m->slashesModifier())
+                    ->add($m->appendModifier(' '))
                     ->add($m->appendModifier($item->getFirstName()))
+                    ->add($m->appendModifier(' '))
                     ->add($m->appendModifier($item->getPatronymic()))
                     ->apply($item->getLastName()),
                 $m->create()
@@ -51,6 +53,7 @@ class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewe
                     ->apply($item->getEntityType()),
                 $m->create()
                     ->add($m->redModifier())
+                    ->add($m->appendModifier(' '))
                     ->add(
                         $m->appendModifier(
                             $m->create()
@@ -62,6 +65,7 @@ class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewe
                 $m->create()
                     ->add($m->conditionalModifier($item->getPunishment()))
                     ->add($m->slashesModifier())
+                    ->add($m->appendModifier(' '))
                     ->add(
                         $m->appendModifier(
                             $m->create()

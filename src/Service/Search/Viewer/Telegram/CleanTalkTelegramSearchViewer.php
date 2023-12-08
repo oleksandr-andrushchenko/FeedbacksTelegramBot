@@ -47,6 +47,7 @@ class CleanTalkTelegramSearchViewer extends SearchViewer implements SearchViewer
                     ->apply($item->getAddress()),
                 $m->create()
                     ->add($m->redGreenModifier())
+                    ->add($m->appendModifier(' '))
                     ->add($m->appendModifier($this->trans('attacked_sites') . ': ' . $item->getAttackedSites()))
                     ->apply($item->getAttackedSites() > 0),
                 $m->create()

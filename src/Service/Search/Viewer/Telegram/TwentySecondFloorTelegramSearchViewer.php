@@ -85,6 +85,7 @@ class TwentySecondFloorTelegramSearchViewer extends SearchViewer implements Sear
                     ->apply($item->getText()),
                 $m->create()
                     ->add($m->markModifier())
+                    ->add($m->appendModifier(' '))
                     ->add($m->appendModifier($this->trans('mark_' . ($item->getMark() > 0 ? '+1' : $item->getMark()))))
                     ->add($m->bracketsModifier($this->trans('mark')))
                     ->apply($item->getMark()),

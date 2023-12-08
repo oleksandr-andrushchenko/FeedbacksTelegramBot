@@ -75,8 +75,7 @@ class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerI
                             ),
                             $feedback
                         )
-                    ),
-                    space: false
+                    )
                 )
             )
             ->add($addQuotes ? $m->italicModifier() : $m->nullModifier())
@@ -107,6 +106,7 @@ class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerI
                 ),
             $m->create()
                 ->add($m->markModifier())
+                ->add($m->appendModifier(' '))
                 ->add($m->appendModifier($this->trans('mark_' . ($item->getRating()->value > 0 ? '+1' : $item->getRating()->value), locale: $locale)))
                 ->add($m->bracketsModifier($this->trans('mark', locale: $locale)))
                 ->apply($item->getRating()->value),

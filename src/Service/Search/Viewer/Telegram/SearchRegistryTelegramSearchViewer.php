@@ -77,8 +77,7 @@ class SearchRegistryTelegramSearchViewer extends SearchViewer implements SearchV
                             ),
                             $feedbackSearch
                         )
-                    ),
-                    space: false
+                    )
                 )
             )
             ->add($addQuotes ? $m->italicModifier() : $m->nullModifier())

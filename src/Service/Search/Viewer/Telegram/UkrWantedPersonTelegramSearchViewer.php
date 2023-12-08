@@ -39,13 +39,18 @@ class UkrWantedPersonTelegramSearchViewer extends SearchViewer implements Search
 
         return fn (UkrWantedPerson $item): array => [
             $m->create()
+                ->add($m->appendModifier(' '))
                 ->add($m->appendModifier($item->getUkrName()))
+                ->add($m->appendModifier(' '))
                 ->add($m->appendModifier($item->getUkrPatronymic()))
                 ->add(
                     $m->bracketsModifier(
                         $m->create()
+                            ->add($m->appendModifier(' '))
                             ->add($m->appendModifier($item->getRusSurname()))
+                            ->add($m->appendModifier(' '))
                             ->add($m->appendModifier($item->getRusName()))
+                            ->add($m->appendModifier(' '))
                             ->add($m->appendModifier($item->getRusPatronymic()))
                             ->apply($this->trans('rus_name') . ':')
                     )
@@ -65,6 +70,7 @@ class UkrWantedPersonTelegramSearchViewer extends SearchViewer implements Search
                 ->apply($item->getBornAt()),
             $m->create()
                 ->add($m->redModifier())
+                ->add($m->appendModifier(' '))
                 ->add(
                     $m->appendModifier(
                         $m->create()

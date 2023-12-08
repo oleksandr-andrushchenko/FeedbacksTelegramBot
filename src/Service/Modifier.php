@@ -100,9 +100,9 @@ class Modifier
         return static fn (?array $array): ?string => empty($array) ? null : implode($separator, $array);
     }
 
-    public function appendModifier(?string $append, bool $space = true): callable
+    public function appendModifier(?string $append): callable
     {
-        return static fn ($any): ?string => empty($any) ? null : (empty($append) ? $any : ($any . ($space ? ' ' : '') . $append));
+        return static fn ($any): ?string => empty($any) ? null : (empty($append) ? $any : ($any . $append));
     }
 
     public function newLineModifier(int $times = 1): callable
