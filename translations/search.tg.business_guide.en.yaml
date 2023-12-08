@@ -1,7 +1,9 @@
 on_search: Search in the USR database...
 enterprises_title: Many matches found, refine your search
 enterprise_title: Found some information
+name: Name or title
 address: Address
+phone: Phone number
 ceo: Head
 number: Registration number
 desc: Description
