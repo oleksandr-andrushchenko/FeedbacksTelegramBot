@@ -3,5 +3,6 @@ feedbacks_title: Found the following feedbacks
 name: Name
 phone: Phone number
 comment: Author's comment
+warehouse: Place
 country: Author's location
 date: Creation date
