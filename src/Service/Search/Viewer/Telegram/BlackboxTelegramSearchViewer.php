@@ -41,6 +41,7 @@ class BlackboxTelegramSearchViewer extends SearchViewer implements SearchViewerI
             $record instanceof BlackboxFeedbacks ? $record->getItems() : [$record],
             fn (BlackboxFeedback $item): array => [
                 $m->create()
+                    ->add($m->emptyNullModifier())
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier(excepts: $personSearch ? $term : null))
                     ->add($m->slashesModifier())
                     ->add($full ? $m->linkModifier($item->getHref()) : $m->nullModifier())
@@ -53,14 +54,12 @@ class BlackboxTelegramSearchViewer extends SearchViewer implements SearchViewerI
                     ->add($m->slashesModifier())
                     ->add($m->prependModifier(' '))
                     ->add($m->prependModifier($m->redModifier()(true)))
-                    ->add($m->appendModifier(' '))
                     ->add($m->bracketsModifier($this->trans('phone')))
                     ->apply($item->getPhone()),
                 $m->create()
                     ->add($m->emptyNullModifier())
                     ->add($m->slashesModifier())
                     ->add($m->spoilerModifier())
-                    ->add($m->appendModifier(' '))
                     ->add($m->bracketsModifier($this->trans('comment')))
                     ->apply($item->getComment()),
                 $m->create()
@@ -80,7 +79,7 @@ class BlackboxTelegramSearchViewer extends SearchViewer implements SearchViewerI
                     ->add($m->bracketsModifier($this->trans('date')))
                     ->apply($item->getDate()),
             ],
-            true
+            $full
         );
 
         return $message;
