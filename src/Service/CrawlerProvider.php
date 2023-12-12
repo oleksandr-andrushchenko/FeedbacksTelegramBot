@@ -22,7 +22,7 @@ class CrawlerProvider
         array $body = null,
         array $json = null,
         callable $contentModifier = null,
-        float $timeout = 3.0,
+        float $timeout = 15.0,
         bool $user = false
     ): Crawler
     {
