@@ -12,7 +12,7 @@ abstract class SearchViewer implements SearchViewerInterface
     public function __construct(
         protected readonly SearchViewerCompose $searchViewerCompose,
         protected readonly Modifier $modifier,
-        private ?bool $showLimits = null
+        protected ?bool $showLimits = null
     )
     {
     }
