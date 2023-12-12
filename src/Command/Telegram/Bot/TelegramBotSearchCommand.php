@@ -53,7 +53,11 @@ class TelegramBotSearchCommand extends Command
             'full' => $input->getOption('full'),
         ];
         $locale = $input->getOption('locale');
-        $this->localeSwitcher->setLocale($locale);
+
+        if ($locale !== null) {
+            $this->localeSwitcher->setLocale($locale);
+        }
+
         $providers = array_map(
             static fn (string $provider): SearchProviderName => SearchProviderName::fromName($provider),
             $input->getOption('provider')
