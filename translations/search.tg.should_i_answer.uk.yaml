@@ -1,0 +1,12 @@
+on_search: Пошук по базі відгуків №4...
+reviews_title: Знайдено наступні відгуки
+name: Хто це є на думку автора
+description: Коментар автора
+rating: Рейтинг %value% із %total%
+author: Автор
+mark_-1: Негативна
+mark_0: Нейтральна
+mark_+1: Позитивна
+mark: Оцінка автора
+country: Звідки автор
+date_published: Дата створення

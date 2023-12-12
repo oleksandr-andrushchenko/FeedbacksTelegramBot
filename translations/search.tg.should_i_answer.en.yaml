@@ -1,0 +1,12 @@
+on_search: 'Search in the database of reviews #4...'
+reviews_title: Found the following reviews
+name: Who is this according to the author’s thought
+description: Author's comment
+rating: Rating %value% from %total%
+author: Author
+mark_-1: Negative
+mark_0: Neutral
+mark_+1: Positive
+mark: Author's rating
+country: Author's location
+date_published: Date published

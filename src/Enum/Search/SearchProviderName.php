@@ -18,6 +18,7 @@ enum SearchProviderName: int
     case blackbox = 9;
     case twenty_second_floor = 10;
     case clean_talk = 11;
+    case should_i_answer = 12;
 
     public static function fromName(string $name): ?self
     {

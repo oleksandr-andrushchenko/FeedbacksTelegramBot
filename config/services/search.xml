@@ -82,6 +82,12 @@
             <argument type="service" id="app.crawler_provider"/>
             <tag name="app.search_provider" provider="clean_talk"/>
         </service>
+        <service id="app.search_provider_should_i_answer"
+                 class="App\Service\Search\Provider\ShouldIAnswerSearchProvider" parent="app.search_provider"
+                 lazy="true">
+            <argument type="service" id="app.crawler_provider"/>
+            <tag name="app.search_provider" provider="should_i_answer"/>
+        </service>
         <service id="app.search_viewer_compose_telegram" class="App\Service\Search\Viewer\SearchViewerCompose"
                  lazy="true">
             <argument type="service" id="app.translator"/>
@@ -157,6 +163,11 @@
                  class="App\Service\Search\Viewer\Telegram\CleanTalkTelegramSearchViewer"
                  parent="app.search_viewer_telegram" lazy="true">
             <tag name="app.search_viewer_telegram" provider="clean_talk"/>
+        </service>
+        <service id="app.search_viewer_telegram_should_i_answer"
+                 class="App\Service\Search\Viewer\Telegram\ShouldIAnswerTelegramSearchViewer"
+                 parent="app.search_viewer_telegram" lazy="true">
+            <tag name="app.search_viewer_telegram" provider="should_i_answer"/>
         </service>
         <service id="app.search_searcher_telegram" class="App\Service\Search\Searcher" lazy="true">
             <argument type="tagged_locator" tag="app.search_provider" index-by="provider"/>
