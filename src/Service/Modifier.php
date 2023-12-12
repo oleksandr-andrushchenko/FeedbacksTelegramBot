@@ -102,6 +102,11 @@ class Modifier
         return static fn (?array $any): ?string => empty($any) ? null : implode($separator, $any);
     }
 
+    public function mapModifier(callable $callback): callable
+    {
+        return static fn (?array $any): ?array => empty($any) ? null : array_map($callback, $any);
+    }
+
     public function emptyNullModifier(): callable
     {
         return static fn ($any) => empty($any) ? null : $any;
