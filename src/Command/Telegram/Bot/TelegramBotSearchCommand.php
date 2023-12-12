@@ -14,11 +14,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Translation\LocaleSwitcher;
 
 class TelegramBotSearchCommand extends Command
 {
     public function __construct(
         private readonly Searcher $searcher,
+        private readonly LocaleSwitcher $localeSwitcher
     )
     {
         parent::__construct();
@@ -31,6 +33,7 @@ class TelegramBotSearchCommand extends Command
             ->addArgument('type', InputArgument::REQUIRED, 'Search term type')
             ->addOption('provider', mode: InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, description: 'Provider (-s)')
             ->addOption('country', mode: InputOption::VALUE_REQUIRED, description: 'Context country')
+            ->addOption('locale', mode: InputOption::VALUE_REQUIRED, description: 'Locale')
             ->addOption('full', mode: InputOption::VALUE_NONE, description: 'Context country')
             ->setDescription('Search with Telegram viewer')
         ;
@@ -49,6 +52,8 @@ class TelegramBotSearchCommand extends Command
             'countryCode' => $input->getOption('country'),
             'full' => $input->getOption('full'),
         ];
+        $locale = $input->getOption('locale');
+        $this->localeSwitcher->setLocale($locale);
         $providers = array_map(
             static fn (string $provider): SearchProviderName => SearchProviderName::fromName($provider),
             $input->getOption('provider')

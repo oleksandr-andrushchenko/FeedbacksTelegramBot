@@ -192,6 +192,7 @@
         <service id="app.telegram_bot_search_console_command" class="App\Command\Telegram\Bot\TelegramBotSearchCommand"
                  lazy="true">
             <argument type="service" id="app.search_searcher_telegram"/>
+            <argument type="service" id="translation.locale_switcher"/>
             <tag name="console.command" command="telegram:bot:search"/>
         </service>
         <service id="app.telegram_bot_conversation_state_normalizer"
