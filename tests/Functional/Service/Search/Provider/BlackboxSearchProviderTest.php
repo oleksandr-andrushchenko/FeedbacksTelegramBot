@@ -78,22 +78,22 @@ class BlackboxSearchProviderTest extends KernelTestCase
     {
         yield 'person name & surname only & many matches' => [
             'type' => SearchTermType::person_name,
-            'term' => 'Черненко',
+            'term' => 'Солтис',
             'context' => [
                 'countryCode' => 'ua',
             ],
             'expected' => [
                 new BlackboxFeedbacks([
                     new BlackboxFeedback(
-                        'Черненко Олена',
-                        'https://blackbox.net.ua/0671402141',
-                        '0671402141',
-                        phoneFormatted: '+38 (067) 140-21-41',
+                        'Солтис Василій',
+                        'https://blackbox.net.ua/0636357466',
+                        '0636357466',
+                        phoneFormatted: '+38 (063) 635-74-66',
                         comment: 'Клиент не забрал груз. Отправитель понес убытки за транспортировку.',
-                        date: new DateTimeImmutable('2020-09-18'),
-                        city: 'Ірпінь',
-                        warehouse: 'Відділення №5 (до 30 кг): вул. Ново-Оскольська, 6-а, прим. №1001',
-                        cost: '41',
+                        date: new DateTimeImmutable('2019-09-04'),
+                        city: 'Київ',
+                        warehouse: 'Відділення №30 (до 30 кг): вул. Привокзальна, 12',
+                        cost: '2',
                         type: 'Нова Пошта'
                     ),
                 ]),
