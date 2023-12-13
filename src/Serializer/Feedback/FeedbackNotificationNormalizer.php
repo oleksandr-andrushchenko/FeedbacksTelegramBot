@@ -30,7 +30,9 @@ class FeedbackNotificationNormalizer implements NormalizerInterface
 
             $searchTerm = $object->getFeedbackSearchTerm();
 
-            $data[$searchTerm->getType()->name] = $searchTerm->getText();
+            if ($searchTerm !== null) {
+                $data[$searchTerm->getType()->name] = $searchTerm->getText();
+            }
 
             $data['bot'] = sprintf('@%s', $object->getTelegramBot()->getUsername());
 
