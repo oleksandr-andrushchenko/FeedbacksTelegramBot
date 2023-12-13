@@ -184,7 +184,7 @@ class TelegramBotPaymentManager
         }
 
         if ($user->getPhoneNumber() === null && $orderInfo->getPhoneNumber() !== null) {
-            $user->setPhoneNumber($orderInfo->getPhoneNumber());
+            $user->setPhoneNumber(preg_replace('/[^0-9]/', '', $orderInfo->getPhoneNumber()));
         }
 
         if ($user->getEmail() === null && $orderInfo->getEmail() !== null) {
