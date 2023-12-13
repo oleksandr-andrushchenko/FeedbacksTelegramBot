@@ -19,8 +19,8 @@ class SubscriptionsTelegramChatSender
 
     public function sendFeedbackSubscriptions(TelegramBotAwareHelper $tg): null
     {
-        $messangerUser = $tg->getBot()->getMessengerUser();
-        $subscriptions = $this->feedbackSubscriptionManager->getSubscriptions($messangerUser);
+        $messengerUser = $tg->getBot()->getMessengerUser();
+        $subscriptions = $this->feedbackSubscriptionManager->getSubscriptions($messengerUser);
 
         $count = count($subscriptions);
 
