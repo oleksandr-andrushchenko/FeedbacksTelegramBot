@@ -92,3 +92,5 @@
 * filter negative comments only for some search providers
 * parse content and hide phone numbers for non-premium users for some search providers
 * reduce premium price
+* use the same list format for subscriptions as for search providers
+* send notification about subscription to the user
