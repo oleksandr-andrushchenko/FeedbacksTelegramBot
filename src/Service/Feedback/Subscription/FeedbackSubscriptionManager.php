@@ -9,7 +9,7 @@ use App\Entity\Messenger\MessengerUser;
 use App\Entity\Telegram\TelegramBotPayment;
 use App\Entity\User\User;
 use App\Enum\Feedback\FeedbackSubscriptionPlanName;
-use App\Message\Event\ActivityEvent;
+use App\Message\Event\Feedback\FeedbackUserSubscriptionCreatedEvent;
 use App\Repository\Feedback\FeedbackUserSubscriptionRepository;
 use App\Service\IdGenerator;
 use DateTimeImmutable;
@@ -59,7 +59,7 @@ class FeedbackSubscriptionManager
         );
         $this->entityManager->persist($subscription);
 
-        $this->eventBus->dispatch(new ActivityEvent(entity: $subscription, action: 'created'));
+        $this->eventBus->dispatch(new FeedbackUserSubscriptionCreatedEvent(subscription: $subscription));
 
         $user->setSubscriptionExpireAt($subscription->getExpireAt());
 

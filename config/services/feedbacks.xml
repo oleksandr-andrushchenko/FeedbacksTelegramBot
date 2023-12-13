@@ -607,6 +607,14 @@
             <tag name="messenger.message_handler" handles="App\Message\Event\Feedback\FeedbackSearchCreatedEvent"
                  bus="app.event_bus"/>
         </service>
+        <service id="app.feedback_user_subscription_created_event_handler"
+                 class="App\Message\EventHandler\Feedback\FeedbackUserSubscriptionCreatedEventHandler" lazy="true">
+            <argument type="service" id="app.feedback_user_subscription_repository"/>
+            <argument type="service" id="logger"/>
+            <argument type="service" id="app.event_bus"/>
+            <tag name="messenger.message_handler" handles="App\Message\Event\Feedback\FeedbackUserSubscriptionCreatedEvent"
+                 bus="app.event_bus"/>
+        </service>
         <service id="app.feedback_search_term_messenger_provider"
                  class="App\Service\Feedback\SearchTerm\SearchTermMessengerProvider" lazy="true"/>
         <service id="app.feedbacks_publish_unpublished_console_command"

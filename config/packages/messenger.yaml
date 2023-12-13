@@ -46,6 +46,7 @@ framework:
       App\Message\Event\Feedback\FeedbackLookupCreatedEvent: sync
       App\Message\Event\Feedback\FeedbackSearchCreatedEvent: sync
       App\Message\Event\Feedback\FeedbackSendToTelegramChannelConfirmReceivedEvent: sync
+      App\Message\Event\Feedback\FeedbackUserSubscriptionCreatedEvent: sync
 
       App\Message\Command\Feedback\NotifyFeedbackSourcesAboutNewFeedbackCommand: sync
       App\Message\Command\Feedback\NotifyFeedbackTargetAboutNewFeedbackCommand: sync
