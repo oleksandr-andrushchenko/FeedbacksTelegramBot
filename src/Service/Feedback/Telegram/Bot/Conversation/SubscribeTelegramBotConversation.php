@@ -432,7 +432,7 @@ class SubscribeTelegramBotConversation extends TelegramBotConversation implement
         $usdPrice = $subscriptionPlan->getPrice($tg->getCountryCode());
 
         if ($this->state->getCurrency() === null) {
-            $currencyCode = $tg->getBot()->getMessengerUser()?->getUser()->getCurrencyCode();
+            $currencyCode = $tg->getBot()->getMessengerUser()?->getUser()?->getCurrencyCode() ?? 'USD';
             $currency = $this->currencyProvider->getCurrency($currencyCode);
         } else {
             $currency = $this->state->getCurrency();
