@@ -72,7 +72,13 @@ class FeedbackSubscriptionManager
      */
     public function getSubscriptions(MessengerUser $messengerUser): array
     {
-        return $this->feedbackUserSubscriptionRepository->findByMessengerUser($messengerUser);
+        $user = $messengerUser->getUser();
+
+        if ($user === null) {
+            return $this->feedbackUserSubscriptionRepository->findByMessengerUser($messengerUser);
+        }
+
+        return $this->feedbackUserSubscriptionRepository->findByUser($user);
     }
 
     public function getActiveSubscription(MessengerUser $messengerUser): ?FeedbackUserSubscription
