@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Message\EventHandler\Feedback;
 
+use App\Message\Command\Feedback\NotifyFeedbackUserSubscriptionOwnerCommand;
 use App\Message\Event\ActivityEvent;
 use App\Message\Event\Feedback\FeedbackUserSubscriptionCreatedEvent;
 use App\Repository\Feedback\FeedbackUserSubscriptionRepository;
@@ -16,6 +17,7 @@ class FeedbackUserSubscriptionCreatedEventHandler
         private readonly FeedbackUserSubscriptionRepository $feedbackUserSubscriptionRepository,
         private readonly LoggerInterface $logger,
         private readonly MessageBusInterface $eventBus,
+        private readonly MessageBusInterface $commandBus,
     )
     {
     }
@@ -30,5 +32,6 @@ class FeedbackUserSubscriptionCreatedEventHandler
         }
 
         $this->eventBus->dispatch(new ActivityEvent(entity: $subscription, action: 'created'));
+        $this->commandBus->dispatch(new NotifyFeedbackUserSubscriptionOwnerCommand(subscription: $subscription));
     }
 }

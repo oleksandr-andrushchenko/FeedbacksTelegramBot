@@ -1,2 +1,6 @@
 might_be_interesting: Hey! Maybe it will be interesting to you
 feedback_published: Your review of %search_term% has been successfully published on %channels%.
+greetings: Congratulations!
+subscription_created: Your payment for the premium subscription "%plan%" has been received.
+subscription_expire: Premium subscription is valid until %expire_at%.
+regards: Pleasant use.

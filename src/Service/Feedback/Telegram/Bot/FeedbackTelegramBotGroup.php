@@ -13,11 +13,9 @@ use App\Entity\Telegram\TelegramBotPayment;
 use App\Message\Event\ActivityEvent;
 use App\Service\ContactOptionsFactory;
 use App\Service\Feedback\Subscription\FeedbackSubscriptionManager;
-use App\Service\Feedback\Subscription\FeedbackSubscriptionPlanProvider;
 use App\Service\Feedback\Telegram\Bot\Chat\ChooseActionTelegramChatSender;
 use App\Service\Feedback\Telegram\Bot\Chat\StartTelegramCommandHandler;
 use App\Service\Feedback\Telegram\Bot\Chat\SubscriptionsTelegramChatSender;
-use App\Service\Feedback\Telegram\Bot\Conversation\ContactTelegramBotConversation;
 use App\Service\Feedback\Telegram\Bot\Conversation\CountryTelegramBotConversation;
 use App\Service\Feedback\Telegram\Bot\Conversation\CreateFeedbackTelegramBotConversation;
 use App\Service\Feedback\Telegram\Bot\Conversation\LocaleTelegramBotConversation;
@@ -27,7 +25,6 @@ use App\Service\Feedback\Telegram\Bot\Conversation\RestartConversationTelegramBo
 use App\Service\Feedback\Telegram\Bot\Conversation\SearchFeedbackTelegramBotConversation;
 use App\Service\Feedback\Telegram\Bot\Conversation\SubscribeTelegramBotConversation;
 use App\Service\Feedback\Telegram\Bot\View\SubscriptionTelegramViewProvider;
-use App\Service\Intl\TimeProvider;
 use App\Service\Telegram\Bot\Conversation\TelegramBotConversationFactory;
 use App\Service\Telegram\Bot\Group\TelegramBotGroup;
 use App\Service\Telegram\Bot\Group\TelegramBotGroupInterface;
@@ -76,8 +73,6 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
         private readonly ChooseActionTelegramChatSender $chooseActionTelegramChatSender,
         private readonly StartTelegramCommandHandler $startTelegramCommandHandler,
         private readonly SubscriptionTelegramViewProvider $subscriptionTelegramViewProvider,
-        private readonly TimeProvider $timeProvider,
-        private readonly FeedbackSubscriptionPlanProvider $feedbackSubscriptionPlanProvider,
         private readonly FeedbackCommandOptions $feedbackCreateCommandOptions,
         private readonly FeedbackCommandOptions $feedbackSearchCommandOptions,
         private readonly FeedbackCommandOptions $feedbackLookupCommandOptions,
@@ -233,18 +228,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
 
     public function acceptPayment(TelegramBotPayment $payment, TelegramBotAwareHelper $tg): void
     {
-        $subscription = $this->feedbackSubscriptionManager->createFeedbackUserSubscriptionByTelegramPayment($payment);
-
-        $plan = $this->feedbackSubscriptionPlanProvider->getSubscriptionPlanName($subscription->getSubscriptionPlan());
-        $expireAt = $this->timeProvider->formatAsDatetime($subscription->getExpireAt());
-        $parameters = [
-            'plan' => $plan,
-            'expire_at' => $expireAt,
-        ];
-        $message = $tg->trans('reply.payment_ok', $parameters, domain: 'subscribe');
-        $message = $tg->okText($message);
-
-        $tg->reply($message);
+        $this->feedbackSubscriptionManager->createFeedbackUserSubscriptionByTelegramPayment($payment);
 
         $tg->stopCurrentConversation();
 

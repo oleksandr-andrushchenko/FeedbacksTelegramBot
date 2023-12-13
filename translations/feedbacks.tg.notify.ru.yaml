@@ -1,2 +1,6 @@
 might_be_interesting: Приветствуем! Возможно Вам это будет интересно
 feedback_published: Ваш отзыв о %search_term% был успешно опубликован на каналах %channels%.
+greetings: Поздравляем!
+subscription_created: Ваш платеж за премиум-подписку "%plan%" получен.
+subscription_expire: Премиум-подписка действительна до %expire_at%.
+regards: Приятного использования.

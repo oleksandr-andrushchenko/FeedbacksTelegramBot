@@ -14,4 +14,5 @@ enum FeedbackNotificationType: int
     case feedback_search_target_about_new_feedback_search = 5;
     case feedback_source_about_new_feedback = 6;
     case feedback_target_about_new_feedback = 7;
+    case feedback_user_subscription_owner = 8;
 }

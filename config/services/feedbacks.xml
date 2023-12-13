@@ -441,8 +441,6 @@
             <argument type="service" id="app.choose_action_telegram_chat_sender"/>
             <argument type="service" id="app.start_telegram_command_handler"/>
             <argument type="service" id="app.subscription_telegram_view_provider"/>
-            <argument type="service" id="app.intl_time_provider"/>
-            <argument type="service" id="app.feedback_subscription_plan_provider"/>
             <argument type="service" id="app.feedback_create_command_options"/>
             <argument type="service" id="app.feedback_search_command_options"/>
             <argument type="service" id="app.feedback_lookup_command_options"/>
@@ -612,6 +610,7 @@
             <argument type="service" id="app.feedback_user_subscription_repository"/>
             <argument type="service" id="logger"/>
             <argument type="service" id="app.event_bus"/>
+            <argument type="service" id="app.command_bus"/>
             <tag name="messenger.message_handler" handles="App\Message\Event\Feedback\FeedbackUserSubscriptionCreatedEvent"
                  bus="app.event_bus"/>
         </service>
@@ -790,6 +789,25 @@
             <argument type="service" id="app.event_bus"/>
             <tag name="messenger.message_handler"
                  handles="App\Message\Command\Feedback\NotifyFeedbackLookupSourcesAboutNewFeedbackLookupCommand"
+                 bus="app.command_bus"/>
+        </service>
+        <service id="app.notify_feedback_user_subscription_owner_command_handler"
+                 class="App\Message\CommandHandler\Feedback\NotifyFeedbackUserSubscriptionOwnerCommandHandler"
+                 lazy="true">
+            <argument type="service" id="app.feedback_user_subscription_repository"/>
+            <argument type="service" id="logger"/>
+            <argument type="service" id="app.telegram_bot_provider"/>
+            <argument type="service" id="app.translator"/>
+            <argument type="service" id="app.telegram_bot_message_sender"/>
+            <argument type="service" id="app.id_generator"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="app.event_bus"/>
+            <argument type="service" id="app.intl_time_provider"/>
+            <argument type="service" id="app.feedback_subscription_plan_provider"/>
+            <argument type="service" id="app.messenger_user_repository"/>
+            <argument type="service" id="app.modifier"/>
+            <tag name="messenger.message_handler"
+                 handles="App\Message\Command\Feedback\NotifyFeedbackUserSubscriptionOwnerCommand"
                  bus="app.command_bus"/>
         </service>
     </services>

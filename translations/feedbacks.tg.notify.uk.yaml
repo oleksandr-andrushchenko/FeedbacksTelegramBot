@@ -1,2 +1,6 @@
 might_be_interesting: Вітаємо! Можливо Вам це буде цікаво
 feedback_published: Ваш відгук про %search_term% було успішно опубліковано на каналах %channels%.
+greetings: Вітаємо!
+subscription_created: Ваш платіж за преміум-підписку "%plan%" отримано.
+subscription_expire: Преміум-підписка дійсна до %expire_at%.
+regards: Приємного користування.
