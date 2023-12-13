@@ -94,3 +94,4 @@
 * reduce premium price
 * use the same list format for subscriptions as for search providers
 * send notification about subscription to the user
+* mode FeedbackNotification to NoSQL engine
