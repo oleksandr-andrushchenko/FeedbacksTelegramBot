@@ -23,6 +23,7 @@
         <many-to-one field="targetFeedbackSearch" target-entity="App\Entity\Feedback\FeedbackSearch"/>
         <many-to-one field="feedbackLookup" target-entity="App\Entity\Feedback\FeedbackLookup"/>
         <many-to-one field="targetFeedbackLookup" target-entity="App\Entity\Feedback\FeedbackLookup"/>
+        <many-to-one field="feedbackUserSubscription" target-entity="App\Entity\Feedback\FeedbackUserSubscription"/>
         <many-to-one field="telegramBot" target-entity="App\Entity\Telegram\TelegramBot"/>
 
         <field name="createdAt" column="created_at" type="datetime_immutable"/>

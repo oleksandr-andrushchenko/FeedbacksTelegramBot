@@ -23,6 +23,7 @@ class FeedbackNotification implements Stringable
         private readonly ?FeedbackSearch $targetFeedbackSearch = null,
         private readonly ?FeedbackLookup $feedbackLookup = null,
         private readonly ?FeedbackLookup $targetFeedbackLookup = null,
+        private readonly ?FeedbackUserSubscription $feedbackUserSubscription = null,
         private readonly ?TelegramBot $telegramBot = null,
         private ?DateTimeInterface $createdAt = null,
     )
@@ -77,6 +78,11 @@ class FeedbackNotification implements Stringable
     public function getTargetFeedbackLookup(): ?FeedbackLookup
     {
         return $this->targetFeedbackLookup;
+    }
+
+    public function getFeedbackUserSubscription(): ?FeedbackUserSubscription
+    {
+        return $this->feedbackUserSubscription;
     }
 
     public function getTelegramBot(): ?TelegramBot
