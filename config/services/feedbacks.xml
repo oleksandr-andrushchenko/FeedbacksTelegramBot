@@ -43,14 +43,23 @@
             <parameter key="one_month" type="collection">
                 <parameter key="duration">+1 month</parameter>
                 <parameter key="default_price">9.99</parameter>
+                <parameter key="prices" type="collection">
+                    <parameter key="ua">3</parameter>
+                </parameter>
             </parameter>
             <parameter key="six_months" type="collection">
                 <parameter key="duration">+6 months</parameter>
                 <parameter key="default_price">29.99</parameter>
+                <parameter key="prices" type="collection">
+                    <parameter key="ua">10</parameter>
+                </parameter>
             </parameter>
             <parameter key="one_year" type="collection">
                 <parameter key="duration">+1 year</parameter>
                 <parameter key="default_price">39.99</parameter>
+                <parameter key="prices" type="collection">
+                    <parameter key="ua">15</parameter>
+                </parameter>
             </parameter>
         </parameter>
 
