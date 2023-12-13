@@ -3,4 +3,4 @@
 {{ 'icon.number'|trans({}, 'feedbacks.tg') ~ number }}:
 {% endif %}
 {{ period }} {{ is_subscription_active ? '🟢' : '⚪️' }} {{ (is_subscription_active ? 'active' : 'inactive')|trans|lower }}
-{{ subscription_plan ~ ' - ' ~ price }}
+{{ subscription_plan }}{% if price is defined %}{{ ' - ' ~ price }}{% endif %}
