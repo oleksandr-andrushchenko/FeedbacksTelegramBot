@@ -6,6 +6,7 @@ namespace App\Repository\Feedback;
 
 use App\Entity\Feedback\FeedbackUserSubscription;
 use App\Entity\Messenger\MessengerUser;
+use App\Entity\User\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -28,6 +29,13 @@ class FeedbackUserSubscriptionRepository extends ServiceEntityRepository
     {
         return $this->findBy([
             'messengerUser' => $messengerUser,
+        ]);
+    }
+
+    public function findByUser(User $user): array
+    {
+        return $this->findBy([
+            'user' => $user,
         ]);
     }
 }
