@@ -107,6 +107,50 @@ class Modifier
         return static fn (?array $any): ?array => empty($any) ? null : array_map($callback, $any);
     }
 
+    public function linesModifier(): callable
+    {
+        return static function (?array $any): ?string {
+            if (empty($any)) {
+                return null;
+            }
+
+            foreach ($any as $item) {
+                if (empty($item)) {
+                    continue;
+                }
+
+                $item = trim($item);
+                $item = preg_replace('/\s+/', ' ', $item);
+
+                $noTagsItem = strip_tags($item);
+                $noTagsItem = trim($noTagsItem);
+
+                if (!empty($item) && !empty($noTagsItem)) {
+                    $items[] = $item;
+                }
+            }
+
+            return '◻️ ' . implode("\n▫️ ", $items);
+        };
+    }
+
+    public function implodeLinesModifier(callable $callback): callable
+    {
+        return function (?array $any) use ($callback): ?string {
+            if (empty($any)) {
+                return null;
+            }
+
+            $items = [];
+
+            foreach ($any as $item) {
+                $items[] = $this->linesModifier()($callback($item));
+            }
+
+            return implode("\n\n", $items);
+        };
+    }
+
     public function emptyNullModifier(): callable
     {
         return static fn ($any) => empty($any) ? null : $any;
