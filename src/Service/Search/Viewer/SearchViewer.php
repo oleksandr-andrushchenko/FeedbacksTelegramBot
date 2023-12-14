@@ -58,8 +58,6 @@ abstract class SearchViewer implements SearchViewerInterface
 
     public function getEmptyMessage(FeedbackSearchTerm $searchTerm, array $context = [], bool $good = null): string
     {
-        // ✅☑️☀️👍🟢✔️
-
         $message = $this->trans('empty_result', generalDomain: true);
 
         if ($good) {
@@ -73,52 +71,6 @@ abstract class SearchViewer implements SearchViewerInterface
     public function getErrorMessage(FeedbackSearchTerm $searchTerm, array $context = []): string
     {
         return $this->trans('error_result', generalDomain: true);
-    }
-
-    protected function implodeResult(string $title, array $items, callable $lines, bool $full): string
-    {
-        // 🔴🟡🟢⚪️🚨‼️⬜️⬛️◻️◼️◽️◾️▫️▪️💥🔥✨⚡️💫🥳🤩
-
-        $messages = [];
-
-        $messages[] = $this->modifier->create()
-            ->add($this->modifier->boldModifier())
-            ->add($this->modifier->underlineModifier())
-            ->apply($title)
-        ;
-
-        foreach ($items as $item) {
-            $messages[] = $this->makeResultMessage($lines($item));
-        }
-
-        if (!$full) {
-            $this->showLimits = true;
-        }
-
-        return implode("\n\n", $messages);
-    }
-
-    protected function makeResultMessage(array $lines): string
-    {
-        $output = [];
-
-        foreach ($lines as $item) {
-            if (empty($item)) {
-                continue;
-            }
-
-            $item = trim($item);
-            $item = preg_replace('/\s+/', ' ', $item);
-
-            $noTagsItem = strip_tags($item);
-            $noTagsItem = trim($noTagsItem);
-
-            if (!empty($item) && !empty($noTagsItem)) {
-                $output[] = $item;
-            }
-        }
-
-        return '◻️ ' . implode("\n▫️ ", $output);
     }
 
     protected function trans($id, array $parameters = [], bool $generalDomain = false, string $locale = null): string
