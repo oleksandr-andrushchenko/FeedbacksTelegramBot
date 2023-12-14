@@ -27,6 +27,7 @@ class BusinessGuideTelegramSearchViewer extends SearchViewer implements SearchVi
         }
 
         $full = $context['full'] ?? false;
+        $this->showLimits = !$full;
 
         return match (get_class($record)) {
             BusinessGuideEnterprises::class => $this->getEnterprisesMessage($record, $searchTerm, $full),
@@ -98,27 +99,29 @@ class BusinessGuideTelegramSearchViewer extends SearchViewer implements SearchVi
 
     private function getEnterprisesMessage(BusinessGuideEnterprises $record, FeedbackSearchTerm $searchTerm, bool $full): string
     {
-        $message = '💫 ';
-        $message .= $this->implodeResult(
-            $this->trans('enterprises_title'),
-            $record->getItems(),
-            $this->getEnterpriseWrapMessageCallback($searchTerm, $full),
-            $full
-        );
+        $m = $this->modifier;
 
-        return $message;
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('💫 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier($this->getEnterpriseWrapMessageCallback($searchTerm, $full))($record->getItems())))
+            ->apply($this->trans('enterprises_title'))
+        ;
     }
 
     private function getEnterpriseMessage(BusinessGuideEnterprise $record, FeedbackSearchTerm $searchTerm, bool $full): string
     {
-        $message = '💫 ';
-        $message .= $this->implodeResult(
-            $this->trans('enterprise_title'),
-            [$record],
-            $this->getEnterpriseWrapMessageCallback($searchTerm, $full),
-            $full
-        );
+        $m = $this->modifier;
 
-        return $message;
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('💫 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier($this->getEnterpriseWrapMessageCallback($searchTerm, $full))([$record])))
+            ->apply($this->trans('enterprise_title'))
+        ;
     }
 }

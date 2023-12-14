@@ -7,6 +7,7 @@ namespace App\Service\Search\Viewer\Telegram;
 use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Entity\Search\CleanTalk\CleanTalkEmail;
 use App\Entity\Search\CleanTalk\CleanTalkEmails;
+use App\Service\Intl\TimeProvider;
 use App\Service\Search\Viewer\SearchViewer;
 use App\Service\Search\Viewer\SearchViewerCompose;
 use App\Service\Search\Viewer\SearchViewerInterface;
@@ -26,6 +27,7 @@ class CleanTalkTelegramSearchViewer extends SearchViewer implements SearchViewer
         }
 
         $full = $context['full'] ?? false;
+        $this->showLimits = !$full;
 
         return match (get_class($record)) {
             CleanTalkEmails::class => $this->getEmailsMessage($record, $full),
@@ -35,11 +37,13 @@ class CleanTalkTelegramSearchViewer extends SearchViewer implements SearchViewer
     private function getEmailsMessage(CleanTalkEmails $record, bool $full): string
     {
         $m = $this->modifier;
-        $message = '💫 ';
-        $message .= $this->implodeResult(
-            $this->trans('emails_title'),
-            $record->getItems(),
-            fn (CleanTalkEmail $item): array => [
+
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('💫 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier(fn (CleanTalkEmail $item): array => [
                 $m->create()
                     ->add($m->slashesModifier())
                     ->add($full ? $m->linkModifier($item->getHref()) : $m->nullModifier())
@@ -60,13 +64,11 @@ class CleanTalkTelegramSearchViewer extends SearchViewer implements SearchViewer
                     ->add($m->redGreenModifier(red: $this->trans('disposable'), green: $this->trans('not_disposable')))
                     ->apply($item->isDisposable()),
                 $m->create()
-                    ->add($m->datetimeModifier('d.m.Y'))
+                    ->add($m->datetimeModifier(TimeProvider::DATE))
                     ->add($m->bracketsModifier($this->trans('last_update')))
                     ->apply($item->getLastUpdate()),
-            ],
-            $full
-        );
-
-        return $message;
+            ])($record->getItems())))
+            ->apply($this->trans('emails_title'))
+        ;
     }
 }

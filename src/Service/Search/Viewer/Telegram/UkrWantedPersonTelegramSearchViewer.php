@@ -27,6 +27,7 @@ class UkrWantedPersonTelegramSearchViewer extends SearchViewer implements Search
         }
 
         $full = $context['full'] ?? false;
+        $this->showLimits = !$full;
 
         return match (get_class($record)) {
             UkrWantedPersons::class => $this->getPersonsMessage($record, $searchTerm, $full),
@@ -37,7 +38,6 @@ class UkrWantedPersonTelegramSearchViewer extends SearchViewer implements Search
     public function getPersonWrapMessageCallback(FeedbackSearchTerm $searchTerm, bool $full): callable
     {
         $m = $this->modifier;
-
         $term = $searchTerm->getNormalizedText();
 
         return fn (UkrWantedPerson $item): array => [
@@ -124,27 +124,29 @@ class UkrWantedPersonTelegramSearchViewer extends SearchViewer implements Search
 
     private function getPersonsMessage(UkrWantedPersons $record, FeedbackSearchTerm $searchTerm, bool $full): string
     {
-        $message = '🚨 ';
-        $message .= $this->implodeResult(
-            $this->trans('persons_title'),
-            $record->getItems(),
-            $this->getPersonWrapMessageCallback($searchTerm, $full),
-            $full
-        );
+        $m = $this->modifier;
 
-        return $message;
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('🚨 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier($this->getPersonWrapMessageCallback($searchTerm, $full))($record->getItems())))
+            ->apply($this->trans('persons_title'))
+        ;
     }
 
     private function getPersonMessage(UkrWantedPerson $record, FeedbackSearchTerm $searchTerm, bool $full): string
     {
-        $message = '💫 ';
-        $message .= $this->implodeResult(
-            $this->trans('person_title'),
-            [$record],
-            $this->getPersonWrapMessageCallback($searchTerm, $full),
-            $full
-        );
+        $m = $this->modifier;
 
-        return $message;
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('💫 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier($this->getPersonWrapMessageCallback($searchTerm, $full))([$record])))
+            ->apply($this->trans('person_title'))
+        ;
     }
 }

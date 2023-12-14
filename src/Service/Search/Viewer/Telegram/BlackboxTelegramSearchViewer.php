@@ -28,6 +28,7 @@ class BlackboxTelegramSearchViewer extends SearchViewer implements SearchViewerI
         }
 
         $full = $context['full'] ?? false;
+        $this->showLimits = !$full;
 
         $m = $this->modifier;
 
@@ -35,11 +36,12 @@ class BlackboxTelegramSearchViewer extends SearchViewer implements SearchViewerI
         $personSearch = $searchTerm->getType() === SearchTermType::person_name;
         $phoneSearch = $searchTerm->getType() === SearchTermType::phone_number;
 
-        $message = '‼️ ';
-        $message .= $this->implodeResult(
-            $this->trans('feedbacks_title'),
-            $record instanceof BlackboxFeedbacks ? $record->getItems() : [$record],
-            fn (BlackboxFeedback $item): array => [
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('‼️ '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier(fn (BlackboxFeedback $item): array => [
                 $m->create()
                     ->add($m->emptyNullModifier())
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier(excepts: $personSearch ? $term : null))
@@ -82,10 +84,8 @@ class BlackboxTelegramSearchViewer extends SearchViewer implements SearchViewerI
                     ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('date')))
                     ->apply($item->getDate()),
-            ],
-            $full
-        );
-
-        return $message;
+            ])($record instanceof BlackboxFeedbacks ? $record->getItems() : [$record])))
+            ->apply($this->trans('feedbacks_title'))
+        ;
     }
 }

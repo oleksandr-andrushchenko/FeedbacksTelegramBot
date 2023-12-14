@@ -32,6 +32,7 @@ class TwentySecondFloorTelegramSearchViewer extends SearchViewer implements Sear
         }
 
         $full = $context['full'] ?? false;
+        $this->showLimits = !$full;
 
         return match (get_class($record)) {
             TwentySecondFloorBloggers::class => $this->getBloggersMessage($record, $full),
@@ -42,11 +43,13 @@ class TwentySecondFloorTelegramSearchViewer extends SearchViewer implements Sear
     private function getBloggersMessage(TwentySecondFloorBloggers $record, bool $full): string
     {
         $m = $this->modifier;
-        $message = '💫 ';
-        $message .= $this->implodeResult(
-            $this->trans('bloggers_title'),
-            $record->getItems(),
-            fn (TwentySecondFloorBlogger $item): array => [
+
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('💫 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier(fn (TwentySecondFloorBlogger $item): array => [
                 $m->create()
                     ->add($m->emptyNullModifier())
                     ->add($m->slashesModifier())
@@ -63,21 +66,21 @@ class TwentySecondFloorTelegramSearchViewer extends SearchViewer implements Sear
                     ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('desc')))
                     ->apply($item->getDesc()),
-            ],
-            $full
-        );
-
-        return $message;
+            ])($record->getItems())))
+            ->apply($this->trans('bloggers_title'))
+        ;
     }
 
     private function getFeedbacksMessage(TwentySecondFloorFeedbacks $record, bool $full): string
     {
         $m = $this->modifier;
-        $message = '💫 ';
-        $message .= $this->implodeResult(
-            $this->trans('feedbacks_title'),
-            $record->getItems(),
-            fn (TwentySecondFloorFeedback $item): array => [
+
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('💫 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier(fn (TwentySecondFloorFeedback $item): array => [
                 $m->create()
                     ->add($m->emptyNullModifier())
                     ->add($m->slashesModifier())
@@ -112,10 +115,8 @@ class TwentySecondFloorTelegramSearchViewer extends SearchViewer implements Sear
                     ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('date')))
                     ->apply($item->getDate()),
-            ],
-            $full
-        );
-
-        return $message;
+            ])($record->getItems())))
+            ->apply($this->trans('feedbacks_title'))
+        ;
     }
 }

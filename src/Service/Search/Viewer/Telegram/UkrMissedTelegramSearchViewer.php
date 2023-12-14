@@ -28,6 +28,7 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
         }
 
         $full = $context['full'] ?? false;
+        $this->showLimits = !$full;
 
         return match (get_class($record)) {
             UkrMissedDisappearedPersons::class => $this->getDisappearedPersonsMessage($record, $searchTerm, $full),
@@ -37,28 +38,30 @@ class UkrMissedTelegramSearchViewer extends SearchViewer implements SearchViewer
 
     private function getDisappearedPersonsMessage(UkrMissedDisappearedPersons $record, FeedbackSearchTerm $searchTerm, bool $full): string
     {
-        $message = '😐 ';
-        $message .= $this->implodeResult(
-            $this->trans('disappeared_persons_title'),
-            $record->getItems(),
-            $this->getWrapMessageCallback($searchTerm, $full),
-            $full
-        );
+        $m = $this->modifier;
 
-        return $message;
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('😐 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier($this->getWrapMessageCallback($searchTerm, $full))($record->getItems())))
+            ->apply($this->trans('disappeared_persons_title'))
+        ;
     }
 
     private function getWantedPersonsMessage(UkrMissedWantedPersons $record, FeedbackSearchTerm $searchTerm, bool $full): string
     {
-        $message = '🚨 ';
-        $message .= $this->implodeResult(
-            $this->trans('wanted_persons_title'),
-            $record->getItems(),
-            $this->getWrapMessageCallback($searchTerm, $full),
-            $full
-        );
+        $m = $this->modifier;
 
-        return $message;
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('🚨 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier($this->getWrapMessageCallback($searchTerm, $full))($record->getItems())))
+            ->apply($this->trans('wanted_persons_title'))
+        ;
     }
 
     public function getWrapMessageCallback(FeedbackSearchTerm $searchTerm, bool $full): callable

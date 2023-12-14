@@ -27,6 +27,7 @@ class ShouldIAnswerTelegramSearchViewer extends SearchViewer implements SearchVi
         }
 
         $full = $context['full'] ?? false;
+        $this->showLimits = !$full;
 
         return match (get_class($record)) {
             ShouldIAnswerReviews::class => $this->getReviewsMessage($record, $full),
@@ -59,50 +60,39 @@ class ShouldIAnswerTelegramSearchViewer extends SearchViewer implements SearchVi
                 )
             )
             ->add($m->newLineModifier(2))
-            ->add(
-                $m->appendModifier(
-                    $m->create()
-                        ->add(
-                            $m->mapModifier(
-                                fn (ShouldIAnswerReview $item): string => $this->makeResultMessage([
-                                    $m->create()
-                                        ->add($m->emptyNullModifier())
-                                        ->add($m->slashesModifier())
-                                        ->add($m->boldModifier())
-                                        ->add($m->bracketsModifier($this->trans('name')))
-                                        ->apply($item->getName()),
-                                    $m->create()
-                                        ->add($m->emptyNullModifier())
-                                        ->add($m->slashesModifier())
-                                        ->add($m->spoilerModifier())
-                                        ->add($m->bracketsModifier($this->trans('description')))
-                                        ->apply($item->getDescription()),
-                                    $m->create()
-                                        ->add($m->ratingModifier())
-                                        ->add($m->bracketsModifier($this->trans('rating', ['value' => $item->getRating(), 'total' => 5])))
-                                        ->apply((string) $item->getRating()),
-                                    $m->create()
-                                        ->add($m->emptyNullModifier())
-                                        ->add($m->slashesModifier())
-                                        ->add($m->bracketsModifier($this->trans('author')))
-                                        ->apply($item->getAuthor()),
-                                    $m->create()
-                                        ->add($m->slashesModifier())
-                                        ->add($m->countryModifier())
-                                        ->add($m->bracketsModifier($this->trans('country')))
-                                        ->apply('us'),
-                                    $m->create()
-                                        ->add($m->datetimeModifier(TimeProvider::DATE))
-                                        ->add($m->slashesModifier())
-                                        ->add($m->bracketsModifier($this->trans('date_published')))
-                                        ->apply($item->getDatePublished()),
-                                ])
-                            )
-                        )
-                        ->add($m->implodeModifier("\n\n"))
-                        ->apply($record->getItems())
-                )
-            )
+            ->add($m->appendModifier($m->implodeLinesModifier(fn (ShouldIAnswerReview $item): array => [
+                $m->create()
+                    ->add($m->emptyNullModifier())
+                    ->add($m->slashesModifier())
+                    ->add($m->boldModifier())
+                    ->add($m->bracketsModifier($this->trans('name')))
+                    ->apply($item->getName()),
+                $m->create()
+                    ->add($m->emptyNullModifier())
+                    ->add($m->slashesModifier())
+                    ->add($m->spoilerModifier())
+                    ->add($m->bracketsModifier($this->trans('description')))
+                    ->apply($item->getDescription()),
+                $m->create()
+                    ->add($m->ratingModifier())
+                    ->add($m->bracketsModifier($this->trans('rating', ['value' => $item->getRating(), 'total' => 5])))
+                    ->apply((string) $item->getRating()),
+                $m->create()
+                    ->add($m->emptyNullModifier())
+                    ->add($m->slashesModifier())
+                    ->add($m->bracketsModifier($this->trans('author')))
+                    ->apply($item->getAuthor()),
+                $m->create()
+                    ->add($m->slashesModifier())
+                    ->add($m->countryModifier())
+                    ->add($m->bracketsModifier($this->trans('country')))
+                    ->apply('us'),
+                $m->create()
+                    ->add($m->datetimeModifier(TimeProvider::DATE))
+                    ->add($m->slashesModifier())
+                    ->add($m->bracketsModifier($this->trans('date_published')))
+                    ->apply($item->getDatePublished()),
+            ])($record->getItems())))
             ->apply($this->trans('reviews_title'))
         ;
     }

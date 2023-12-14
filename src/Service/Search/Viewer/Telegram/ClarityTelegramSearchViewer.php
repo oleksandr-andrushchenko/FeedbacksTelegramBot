@@ -21,7 +21,6 @@ use App\Entity\Search\Clarity\ClarityPersonEnforcements;
 use App\Entity\Search\Clarity\ClarityPersons;
 use App\Entity\Search\Clarity\ClarityPersonSecurities;
 use App\Entity\Search\Clarity\ClarityPersonSecurity;
-use App\Enum\Feedback\SearchTermType;
 use App\Service\Intl\TimeProvider;
 use App\Service\Search\Viewer\SearchViewer;
 use App\Service\Search\Viewer\SearchViewerCompose;
@@ -43,6 +42,7 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         }
 
         $full = $context['full'] ?? false;
+        $this->showLimits = !$full;
 
         return match (get_class($record)) {
             ClarityPersons::class => $this->getPersonsMessage($record, $searchTerm, $full),
@@ -59,14 +59,14 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
     private function getPersonsMessage(ClarityPersons $record, FeedbackSearchTerm $searchTerm, bool $full): string
     {
         $m = $this->modifier;
-
         $term = $searchTerm->getNormalizedText();
 
-        $message = '💫 ';
-        $message .= $this->implodeResult(
-            $this->trans('persons_title'),
-            $record->getItems(),
-            fn (ClarityPerson $item): array => [
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('💫 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier(fn (ClarityPerson $item): array => [
                 $m->create()
                     ->add($m->emptyNullModifier())
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier(excepts: $term))
@@ -80,24 +80,22 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($m->emptyNullModifier())
                     ->add($m->slashesModifier())
                     ->apply($this->trans('person_count', ['count' => $item->getCount()])),
-            ],
-            $full
-        );
-
-        return $message;
+            ])($record->getItems())))
+            ->apply($this->trans('persons_title'))
+        ;
     }
 
     private function getPersonEdrsMessage(ClarityPersonEdrs $record, FeedbackSearchTerm $searchTerm, bool $full): string
     {
+        $term = $searchTerm->getNormalizedText();
         $m = $this->modifier;
 
-        $term = $searchTerm->getNormalizedText();
-
-        $message = '💫 ';
-        $message .= $this->implodeResult(
-            $this->trans('person_edrs_title'),
-            $record->getItems(),
-            fn (ClarityPersonEdr $item): array => [
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('💫 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier(fn (ClarityPersonEdr $item): array => [
                 $m->create()
                     ->add($m->emptyNullModifier())
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier(excepts: $term))
@@ -127,24 +125,22 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('address')))
                     ->apply($item->getAddress()),
-            ],
-            $full
-        );
-
-        return $message;
+            ])($record->getItems())))
+            ->apply($this->trans('person_edrs_title'))
+        ;
     }
 
     private function getPersonSecurityMessage(ClarityPersonSecurities $record, FeedbackSearchTerm $searchTerm, bool $full): string
     {
         $m = $this->modifier;
-
         $term = $searchTerm->getNormalizedText();
 
-        $message = '🚨 ';
-        $message .= $this->implodeResult(
-            $this->trans('security_title'),
-            $record->getItems(),
-            fn (ClarityPersonSecurity $item): array => [
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('🚨 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier(fn (ClarityPersonSecurity $item): array => [
                 $m->create()
                     ->add($m->emptyNullModifier())
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier(excepts: $term))
@@ -185,22 +181,21 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
                     ->add($m->bracketsModifier($this->trans('precaution')))
                     ->apply($item->getPrecaution()),
-            ],
-            $full
-        );
-
-        return $message;
+            ])($record->getItems())))
+            ->apply($this->trans('security_title'))
+        ;
     }
 
     private function getPersonCourtsMessage(ClarityPersonCourts $record, bool $full): string
     {
         $m = $this->modifier;
 
-        $message = '‼️ ';
-        $message .= $this->implodeResult(
-            $this->trans('courts_title'),
-            $record->getItems(),
-            fn (ClarityPersonCourt $item): array => [
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('‼️ '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier(fn (ClarityPersonCourt $item): array => [
                 $m->create()
                     ->add($m->emptyNullModifier())
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
@@ -240,24 +235,22 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('court')))
                     ->apply($item->getPlace()),
-            ],
-            $full
-        );
-
-        return $message;
+            ])($record->getItems())))
+            ->apply($this->trans('courts_title'))
+        ;
     }
 
     private function getPersonEnforcementsMessage(ClarityPersonEnforcements $record, FeedbackSearchTerm $searchTerm, bool $full): string
     {
         $m = $this->modifier;
-
         $term = $searchTerm->getNormalizedText();
 
-        $message = '‼️ ';
-        $message .= $this->implodeResult(
-            $this->trans('enforcements_title'),
-            $record->getItems(),
-            fn (ClarityPersonEnforcement $item): array => [
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('‼️ '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier(fn (ClarityPersonEnforcement $item): array => [
                 $m->create()
                     ->add($m->emptyNullModifier())
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
@@ -303,24 +296,22 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('collector')))
                     ->apply($item->getCollector()),
-            ],
-            $full
-        );
-
-        return $message;
+            ])($record->getItems())))
+            ->apply($this->trans('enforcements_title'))
+        ;
     }
 
     private function getPersonDebtorsMessage(ClarityPersonDebtors $record, FeedbackSearchTerm $searchTerm, bool $full): string
     {
         $m = $this->modifier;
-
         $term = $searchTerm->getNormalizedText();
 
-        $message = '‼️ ';
-        $message .= $this->implodeResult(
-            $this->trans('debtors_title'),
-            $record->getItems(),
-            fn (ClarityPersonDebtor $item): array => [
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('‼️ '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier(fn (ClarityPersonDebtor $item): array => [
                 $m->create()
                     ->add($m->emptyNullModifier())
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier(excepts: $term))
@@ -344,24 +335,22 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('category')))
                     ->apply($item->getCategory()),
-            ],
-            $full
-        );
-
-        return $message;
+            ])($record->getItems())))
+            ->apply($this->trans('debtors_title'))
+        ;
     }
 
     private function getPersonDeclarationsMessage(ClarityPersonDeclarations $record, FeedbackSearchTerm $searchTerm, bool $full): string
     {
         $m = $this->modifier;
-
         $term = $searchTerm->getNormalizedText();
 
-        $message = '💫 ';
-        $message .= $this->implodeResult(
-            $this->trans('person_declarations_title'),
-            $record->getItems(),
-            fn (ClarityPersonDeclaration $item): array => [
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('💫 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier(fn (ClarityPersonDeclaration $item): array => [
                 $m->create()
                     ->add($m->emptyNullModifier())
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier(excepts: $term))
@@ -382,24 +371,22 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('position')))
                     ->apply($item->getPosition()),
-            ],
-            $full
-        );
-
-        return $message;
+            ])($record->getItems())))
+            ->apply($this->trans('person_declarations_title'))
+        ;
     }
 
     private function getEdrsMessage(ClarityEdrs $record, FeedbackSearchTerm $searchTerm, bool $full): string
     {
         $m = $this->modifier;
-
         $term = $searchTerm->getNormalizedText();
 
-        $message = '💫 ';
-        $message .= $this->implodeResult(
-            $this->trans('edrs_title'),
-            $record->getItems(),
-            fn (ClarityEdr $item): array => [
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('💫 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier(fn (ClarityEdr $item): array => [
                 $m->create()
                     ->add($m->emptyNullModifier())
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier(excepts: $term))
@@ -423,10 +410,8 @@ class ClarityTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('address')))
                     ->apply($item->getAddress()),
-            ],
-            $full
-        );
-
-        return $message;
+            ])($record->getItems())))
+            ->apply($this->trans('edrs_title'))
+        ;
     }
 }

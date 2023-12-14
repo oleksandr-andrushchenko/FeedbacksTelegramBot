@@ -21,16 +21,16 @@ class UkrMissedCarTelegramSearchViewer extends SearchViewer implements SearchVie
     public function getResultMessage($record, FeedbackSearchTerm $searchTerm, array $context = []): string
     {
         $full = $context['full'] ?? false;
-
+        $this->showLimits = !$full;
         $m = $this->modifier;
-
         $term = $searchTerm->getNormalizedText();
 
-        $message = '🚨 ';
-        $message .= $this->implodeResult(
-            $this->trans('missed_cars_title'),
-            $record,
-            fn (UkrMissedCar $item): array => [
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('🚨 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier(fn (UkrMissedCar $item): array => [
                 $m->create()
                     ->add($m->emptyNullModifier())
                     ->add($full ? $m->nullModifier() : $m->wordSecretsModifier(excepts: $term))
@@ -64,10 +64,8 @@ class UkrMissedCarTelegramSearchViewer extends SearchViewer implements SearchVie
                     ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('region')))
                     ->apply($item->getRegion()),
-            ],
-            $full
-        );
-
-        return $message;
+            ])($record)))
+            ->apply($this->trans('missed_cars_title'))
+        ;
     }
 }

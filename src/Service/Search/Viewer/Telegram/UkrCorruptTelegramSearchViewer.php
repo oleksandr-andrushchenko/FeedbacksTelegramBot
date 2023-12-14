@@ -27,6 +27,7 @@ class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewe
         }
 
         $full = $context['full'] ?? false;
+        $this->showLimits = !$full;
 
         return match (get_class($record)) {
             UkrCorruptPersons::class => $this->getPersonsMessage($record, $searchTerm, $full),
@@ -36,14 +37,14 @@ class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewe
     public function getPersonsMessage(UkrCorruptPersons $record, FeedbackSearchTerm $searchTerm, bool $full): string
     {
         $m = $this->modifier;
-
         $term = $searchTerm->getNormalizedText();
 
-        $message = '‼️ ';
-        $message .= $this->implodeResult(
-            $this->trans('persons_title'),
-            $record->getItems(),
-            fn (UkrCorruptPerson $item): array => [
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('‼️ '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier(fn (UkrCorruptPerson $item): array => [
                 $m->create()
                     ->add($m->filterModifier())
                     ->add($m->implodeModifier(' '))
@@ -106,10 +107,8 @@ class UkrCorruptTelegramSearchViewer extends SearchViewer implements SearchViewe
                     ->add($m->slashesModifier())
                     ->add($m->bracketsModifier($this->trans('punishment_start')))
                     ->apply($item->getPunishmentStart()),
-            ],
-            $full
-        );
-
-        return $message;
+            ])($record->getItems())))
+            ->apply($this->trans('persons_title'))
+        ;
     }
 }

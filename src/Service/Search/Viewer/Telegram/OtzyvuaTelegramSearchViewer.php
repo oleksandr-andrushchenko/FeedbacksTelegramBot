@@ -30,6 +30,7 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         }
 
         $full = $context['full'] ?? false;
+        $this->showLimits = !$full;
 
         return match (get_class($record)) {
             OtzyvuaFeedbackSearchTerms::class => $this->getFeedbackSearchTermsMessage($record, $searchTerm, $full),
@@ -44,11 +45,12 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $term = $searchTerm->getNormalizedText();
         $phoneSearch = $searchTerm->getType() === SearchTermType::phone_number;
 
-        $message = '💫 ';
-        $message .= $this->implodeResult(
-            $this->trans('feedback_search_terms_title'),
-            $record->getItems(),
-            fn (OtzyvuaFeedbackSearchTerm $item): array => [
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('💫 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier(fn (OtzyvuaFeedbackSearchTerm $item): array => [
                 $m->create()
                     ->add($m->emptyNullModifier())
                     ->add($full || !$phoneSearch ? $m->nullModifier() : $m->wordSecretsModifier(excepts: ['+' . $term, $term]))
@@ -72,11 +74,9 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($m->numberFormatModifier(thousandsSeparator: ' '))
                     ->add($m->bracketsModifier($this->trans('feedback_count')))
                     ->apply((string) $item->getCount()),
-            ],
-            $full
-        );
-
-        return $message;
+            ])($record->getItems())))
+            ->apply($this->trans('feedback_search_terms_title'))
+        ;
     }
 
     private function getFeedbacksMessage(OtzyvuaFeedbacks $record, FeedbackSearchTerm $searchTerm, bool $full): string
@@ -86,11 +86,12 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
         $term = $searchTerm->getNormalizedText();
         $phoneSearch = $searchTerm->getType() === SearchTermType::phone_number;
 
-        $message = '💫 ';
-        $message .= $this->implodeResult(
-            $this->trans('feedbacks_title'),
-            $record->getItems(),
-            fn (OtzyvuaFeedback $item): array => [
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('💫 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier(fn (OtzyvuaFeedback $item): array => [
                 $m->create()
                     ->add($m->emptyNullModifier())
                     ->add($full || !$phoneSearch ? $m->nullModifier() : $m->wordSecretsModifier(excepts: ['+' . $term, $term]))
@@ -134,10 +135,8 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
                     ->add($full || !$phoneSearch ? $m->nullModifier() : $m->wordSecretsModifier())
                     ->add($m->bracketsModifier($this->trans('created_at')))
                     ->apply($item->getCreatedAt()),
-            ],
-            $full
-        );
-
-        return $message;
+            ])($record->getItems())))
+            ->apply($this->trans('feedbacks_title'))
+        ;
     }
 }

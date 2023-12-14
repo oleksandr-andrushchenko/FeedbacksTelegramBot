@@ -30,21 +30,22 @@ class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerI
 
     public function getResultMessage($record, FeedbackSearchTerm $searchTerm, array $context = []): string
     {
-        $message = '💫 ';
-
         $full = $context['full'] ?? false;
+        $this->showLimits = !$full;
         $locale = $context['locale'] ?? null;
         $addCountry = $context['addCountry'] ?? false;
         $addTime = $context['addTime'] ?? false;
 
-        $message .= $this->implodeResult(
-            $this->trans('feedbacks_title'),
-            $record,
-            $this->getFeedbackWrapMessageCallback(full: $full, addCountry: $addCountry, addTime: $addTime, locale: $locale),
-            $full
-        );
+        $m = $this->modifier;
 
-        return $message;
+        return $m->create()
+            ->add($m->boldModifier())
+            ->add($m->underlineModifier())
+            ->add($m->prependModifier('💫 '))
+            ->add($m->newLineModifier(2))
+            ->add($m->appendModifier($m->implodeLinesModifier($this->getFeedbackWrapMessageCallback(full: $full, addCountry: $addCountry, addTime: $addTime, locale: $locale))($record)))
+            ->apply($this->trans('feedbacks_title'))
+        ;
     }
 
     public function getFeedbackTelegramView(
@@ -65,17 +66,15 @@ class FeedbackTelegramSearchViewer extends SearchViewer implements SearchViewerI
             ->add($m->newLineModifier(2))
             ->add(
                 $m->appendModifier(
-                    $this->makeResultMessage(
-                        call_user_func(
-                            $this->getFeedbackWrapMessageCallback(
-                                full: !$addSecrets,
-                                addCountry: $addCountry,
-                                addTime: $addTime,
-                                locale: $locale
-                            ),
-                            $feedback
-                        )
-                    )
+                    $m->linesModifier()(call_user_func(
+                        $this->getFeedbackWrapMessageCallback(
+                            full: !$addSecrets,
+                            addCountry: $addCountry,
+                            addTime: $addTime,
+                            locale: $locale
+                        ),
+                        $feedback
+                    ))
                 )
             )
             ->add($addQuotes ? $m->italicModifier() : $m->nullModifier())
