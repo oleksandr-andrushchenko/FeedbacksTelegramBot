@@ -30,41 +30,45 @@ class UkrMissedCarTelegramSearchViewer extends SearchViewer implements SearchVie
             ->add($m->underlineModifier())
             ->add($m->prependModifier('🚨 '))
             ->add($m->newLineModifier(2))
-            ->add($m->appendModifier($m->implodeLinesModifier(fn (UkrMissedCar $item): array => [
-                $m->create()
-                    ->add($m->emptyNullModifier())
-                    ->add($full ? $m->nullModifier() : $m->wordSecretsModifier(excepts: $term))
-                    ->add($m->slashesModifier())
-                    ->add($m->boldModifier())
-                    ->add($m->bracketsModifier($this->trans('car_number')))
-                    ->apply($item->getCarNumber()),
-                $m->create()
-                    ->add($m->emptyNullModifier())
-                    ->add($m->appendModifier(' '))
-                    ->add($m->appendModifier($item->getModel()))
-                    ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
-                    ->add($m->slashesModifier())
-                    ->add($m->bracketsModifier($this->trans('color_and_model')))
-                    ->apply($item->getColor()),
-                $m->create()
-                    ->add($m->emptyNullModifier())
-                    ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
-                    ->add($m->slashesModifier())
-                    ->add($m->bracketsModifier($this->trans('chassis_number')))
-                    ->apply($item->getChassisNumber()),
-                $m->create()
-                    ->add($m->emptyNullModifier())
-                    ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
-                    ->add($m->slashesModifier())
-                    ->add($m->bracketsModifier($this->trans('body_number')))
-                    ->apply($item->getBodyNumber()),
-                $m->create()
-                    ->add($m->emptyNullModifier())
-                    ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
-                    ->add($m->slashesModifier())
-                    ->add($m->bracketsModifier($this->trans('region')))
-                    ->apply($item->getRegion()),
-            ])($record)))
+            ->add(
+                $m->appendModifier(
+                    $m->implodeLinesModifier(fn (UkrMissedCar $item): array => [
+                        $m->create()
+                            ->add($m->emptyNullModifier())
+                            ->add($full ? $m->nullModifier() : $m->wordSecretsModifier(excepts: $term))
+                            ->add($m->slashesModifier())
+                            ->add($m->boldModifier())
+                            ->add($m->bracketsModifier($this->trans('car_number')))
+                            ->apply($item->getCarNumber()),
+                        $m->create()
+                            ->add($m->emptyNullModifier())
+                            ->add($m->appendModifier(' '))
+                            ->add($m->appendModifier($item->getModel()))
+                            ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                            ->add($m->slashesModifier())
+                            ->add($m->bracketsModifier($this->trans('color_and_model')))
+                            ->apply($item->getColor()),
+                        $m->create()
+                            ->add($m->emptyNullModifier())
+                            ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                            ->add($m->slashesModifier())
+                            ->add($m->bracketsModifier($this->trans('chassis_number')))
+                            ->apply($item->getChassisNumber()),
+                        $m->create()
+                            ->add($m->emptyNullModifier())
+                            ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                            ->add($m->slashesModifier())
+                            ->add($m->bracketsModifier($this->trans('body_number')))
+                            ->apply($item->getBodyNumber()),
+                        $m->create()
+                            ->add($m->emptyNullModifier())
+                            ->add($full ? $m->nullModifier() : $m->wordSecretsModifier())
+                            ->add($m->slashesModifier())
+                            ->add($m->bracketsModifier($this->trans('region')))
+                            ->apply($item->getRegion()),
+                    ])($record)
+                )
+            )
             ->apply($this->trans('missed_cars_title'))
         ;
     }

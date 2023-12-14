@@ -50,31 +50,35 @@ class OtzyvuaTelegramSearchViewer extends SearchViewer implements SearchViewerIn
             ->add($m->underlineModifier())
             ->add($m->prependModifier('💫 '))
             ->add($m->newLineModifier(2))
-            ->add($m->appendModifier($m->implodeLinesModifier(fn (OtzyvuaFeedbackSearchTerm $item): array => [
-                $m->create()
-                    ->add($m->emptyNullModifier())
-                    ->add($full || !$phoneSearch ? $m->nullModifier() : $m->wordSecretsModifier(excepts: ['+' . $term, $term]))
-                    ->add($m->slashesModifier())
-                    ->add($full ? $m->linkModifier($item->getHref()) : $m->nullModifier())
-                    ->add($m->boldModifier())
-                    ->add($m->bracketsModifier($this->trans('name')))
-                    ->apply($item->getName()),
-                $m->create()
-                    ->add($m->emptyNullModifier())
-                    ->add($m->slashesModifier())
-                    ->add($m->underlineModifier())
-                    ->add($m->bracketsModifier($this->trans('category')))
-                    ->apply($item->getCategory()),
-                $m->create()
-                    ->add($m->ratingModifier())
-                    ->add($m->bracketsModifier($this->trans('rating', ['value' => $item->getRating(), 'total' => 5])))
-                    ->apply((string) $item->getRating()),
-                $m->create()
-                    ->add($m->emptyNullModifier())
-                    ->add($m->numberFormatModifier(thousandsSeparator: ' '))
-                    ->add($m->bracketsModifier($this->trans('feedback_count')))
-                    ->apply((string) $item->getCount()),
-            ])($record->getItems())))
+            ->add(
+                $m->appendModifier(
+                    $m->implodeLinesModifier(fn (OtzyvuaFeedbackSearchTerm $item): array => [
+                        $m->create()
+                            ->add($m->emptyNullModifier())
+                            ->add($full || !$phoneSearch ? $m->nullModifier() : $m->wordSecretsModifier(excepts: ['+' . $term, $term]))
+                            ->add($m->slashesModifier())
+                            ->add($full ? $m->linkModifier($item->getHref()) : $m->nullModifier())
+                            ->add($m->boldModifier())
+                            ->add($m->bracketsModifier($this->trans('name')))
+                            ->apply($item->getName()),
+                        $m->create()
+                            ->add($m->emptyNullModifier())
+                            ->add($m->slashesModifier())
+                            ->add($m->underlineModifier())
+                            ->add($m->bracketsModifier($this->trans('category')))
+                            ->apply($item->getCategory()),
+                        $m->create()
+                            ->add($m->ratingModifier())
+                            ->add($m->bracketsModifier($this->trans('rating', ['value' => $item->getRating(), 'total' => 5])))
+                            ->apply((string) $item->getRating()),
+                        $m->create()
+                            ->add($m->emptyNullModifier())
+                            ->add($m->numberFormatModifier(thousandsSeparator: ' '))
+                            ->add($m->bracketsModifier($this->trans('feedback_count')))
+                            ->apply((string) $item->getCount()),
+                    ])($record->getItems())
+                )
+            )
             ->apply($this->trans('feedback_search_terms_title'))
         ;
     }
