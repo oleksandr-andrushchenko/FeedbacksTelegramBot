@@ -22,11 +22,12 @@ class HtmlValidator
 
         $prev = libxml_use_internal_errors(true);
         libxml_clear_errors();
-        simplexml_load_string($text);
 
-        $result = libxml_get_last_error() === false;
+        simplexml_load_string($text);
+        $isValid = libxml_get_last_error() === false;
+
         libxml_use_internal_errors($prev);
 
-        return $result;
+        return $isValid;
     }
 }
