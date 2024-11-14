@@ -75,7 +75,6 @@ class TelegramBotMessageSender implements TelegramBotMessageSenderInterface
         $text = $data['text'];
         $length = mb_strlen($text);
 
-
         if ($length <= $max) {
             return $bot->sendMessage($data);
         }
@@ -84,26 +83,30 @@ class TelegramBotMessageSender implements TelegramBotMessageSenderInterface
             return $bot->sendMessage($data);
         }
 
-        do {
-            $length = $max;
+        $response = null;
 
-            while (true) {
-                if ($length === 0) {
-                    throw new LogicException('Not enough chunk size');
-                }
+        while (!empty($text)) {
+            $length = min($max, mb_strlen($text));
 
-                $expose = mb_substr($text, 0, $length);
+            while ($length > 0) {
+                $chunk = mb_substr($text, 0, $length);
 
-                if ($this->htmlValidator->validateHtml($expose)) {
-                    $data['text'] = $expose;
+                if ($this->htmlValidator->validateHtml($chunk)) {
+                    $data['text'] = $chunk;
                     $response = $bot->sendMessage($data);
-                    $text = mb_substr($text, mb_strlen($expose));
+
+                    // Update remaining text
+                    $text = mb_substr($text, mb_strlen($chunk));
                     break;
                 }
 
                 $length--;
             }
-        } while (!empty($text));
+
+            if ($length === 0) {
+                throw new LogicException('Cannot split HTML text into valid chunks within the max size limit.');
+            }
+        }
 
         return $response;
     }
