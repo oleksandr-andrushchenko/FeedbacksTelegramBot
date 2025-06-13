@@ -25,6 +25,8 @@
         <parameter key="app.contact_options" type="collection">
             <parameter key="feedbacks">%app.feedbacks_contact_options%</parameter>
         </parameter>
+
+        <parameter key="app.crypto">%env(json:CRYPTO)%</parameter>
     </parameters>
 
     <services>

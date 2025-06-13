@@ -43,6 +43,7 @@
         <env name="LOG_ACTIVITIES" value="false"/>
         <env name="GOOGLE_API_KEY" value=""/>
         <env name="DATABASE_URL" value="mysql://app:1111@mysql:3306/app_test?serverVersion=8&amp;charset=utf8mb4"/>
+        <env name="CRYPTO" value='{"btc":"btc-addr","eth":"eth-addr"}'/>
 
         <const name="PHPUNIT_TESTSUITE" value="true"/>
 

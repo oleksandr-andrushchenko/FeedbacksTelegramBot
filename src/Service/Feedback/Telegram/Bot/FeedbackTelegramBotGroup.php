@@ -78,6 +78,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
         private readonly FeedbackCommandOptions $feedbackLookupCommandOptions,
         private readonly MessageBusInterface $eventBus,
         private readonly ContactOptionsFactory $contactOptionsFactory,
+        private readonly array $crypto,
     )
     {
         parent::__construct($telegramBotAwareHelper, $telegramBotConversationFactory);
@@ -271,7 +272,7 @@ class FeedbackTelegramBotGroup extends TelegramBotGroup implements TelegramBotGr
     {
         $tg->stopCurrentConversation();
 
-        $message = $tg->view('donate');
+        $message = $tg->view('donate', ["crypto" => $this->crypto]);
 
         $tg->reply($message);
 
