@@ -28,15 +28,17 @@
         "symfony/http-client": "6.2.*",
         "symfony/messenger": "6.2.*",
         "symfony/monolog-bundle": "*",
+        "symfony/process": "6.2.*",
         "symfony/property-access": "6.2.*",
         "symfony/runtime": "6.2.*",
         "symfony/serializer": "6.2.*",
         "symfony/translation": "6.2.*",
+        "symfony/twig-bridge": "6.2.*",
         "symfony/twig-bundle": "6.2.*",
         "symfony/validator": "6.2.*",
         "symfony/yaml": "6.2.*",
         "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0"
+        "twig/twig": "^3.21"
     },
     "config": {
         "allow-plugins": {
