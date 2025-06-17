@@ -23,6 +23,7 @@ use App\Service\Telegram\Bot\Conversation\TelegramBotConversationInterface;
 use App\Service\Telegram\Bot\TelegramBotAwareHelper;
 use App\Service\Validator\Validator;
 use App\Transfer\Feedback\FeedbackSearchTransfer;
+use App\Transfer\Feedback\SearchTermsTransfer;
 use App\Transfer\Feedback\SearchTermTransfer;
 use DateTimeImmutable;
 use Longman\TelegramBot\Entities\KeyboardButton;
@@ -595,7 +596,7 @@ class SearchFeedbackTelegramBotConversation extends TelegramBotConversation impl
             CreateFeedbackTelegramBotConversation::class,
             (new CreateFeedbackTelegramBotConversationState())
                 ->setStep(CreateFeedbackTelegramBotConversation::STEP_RATING_QUERIED)
-                ->addSearchTerm($this->state->getSearchTerm()),
+                ->setSearchTerms(new SearchTermsTransfer([$this->state->getSearchTerm()])),
             'queryRating'
         );
 

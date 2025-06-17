@@ -8,6 +8,7 @@ use App\Entity\Feedback\FeedbackSearchTerm;
 use App\Enum\Feedback\SearchTermType;
 use App\Service\Feedback\SearchTerm\SearchTermProvider;
 use App\Service\Feedback\SearchTerm\SearchTermTypeProvider;
+use App\Transfer\Feedback\SearchTermsTransfer;
 use App\Transfer\Feedback\SearchTermTransfer;
 
 class MultipleSearchTermTelegramViewProvider
@@ -32,28 +33,26 @@ class MultipleSearchTermTelegramViewProvider
         string $locale = null,
     ): string
     {
-        $searchTerms = array_map(
+        $searchTermsItems = array_map(
             fn (FeedbackSearchTerm $searchTerm): SearchTermTransfer => $this->searchTermProvider->getFeedbackSearchTermTransfer($searchTerm),
             $feedbackSearchTerms
         );
-        $count = count($searchTerms);
+        $searchTerms = new SearchTermsTransfer($searchTermsItems);
 
-        if ($count === 0) {
+        if (!$searchTerms->hasItems()) {
             return '';
         }
 
-        if ($count === 1) {
+        if ($searchTerms->countItems() === 1) {
             return $this->searchTermTelegramViewProvider->getSearchTermTelegramView(
-                $searchTerms[0],
+                $searchTerms->getFirstItem(),
                 addSecrets: $addSecrets,
                 localeCode: $locale
             );
         }
 
         $sortedSearchTerms = $this->getSortedSearchTerms($searchTerms);
-
-        /** @var SearchTermTransfer $searchTerm */
-        $searchTerm = array_shift($sortedSearchTerms);
+        $searchTerm = $sortedSearchTerms->shiftFirstItem();
 
         $message = $this->searchTermTelegramViewProvider->getSearchTermTelegramMainView($searchTerm, addSecrets: $addSecrets);
         $message .= ' [ ';
@@ -72,31 +71,18 @@ class MultipleSearchTermTelegramViewProvider
         return $message;
     }
 
-    /**
-     * @param SearchTermTransfer[] $searchTerms
-     * @param bool $addSecrets
-     * @param bool $forceType
-     * @param string|null $locale
-     * @return string
-     */
     public function getPrimarySearchTermTelegramView(
-        array $searchTerms,
+        SearchTermsTransfer $searchTerms,
         bool $addSecrets = false,
         bool $forceType = true,
         string $locale = null
     ): string
     {
-        $count = count($searchTerms);
-
-        if ($count === 0) {
+        if (!$searchTerms->hasItems()) {
             return '';
         }
 
-        if ($count === 1) {
-            $searchTerm = $searchTerms[0];
-        } else {
-            $searchTerm = $this->getSortedSearchTerms($searchTerms)[0];
-        }
+        $searchTerm = $this->getSortedSearchTerms($searchTerms)->getFirstItem();
 
         return $this->searchTermTelegramViewProvider->getSearchTermTelegramView(
             $searchTerm,
@@ -106,13 +92,9 @@ class MultipleSearchTermTelegramViewProvider
         );
     }
 
-    /**
-     * @param SearchTermTransfer[] $searchTerms
-     * @return SearchTermTransfer[]
-     */
-    private function getSortedSearchTerms(array $searchTerms): array
+    private function getSortedSearchTerms(SearchTermsTransfer $searchTerms): SearchTermsTransfer
     {
-        $sortSearchTerms = [];
+        $sortSearchTermsItems = [];
 
         $sortTypes = [
             SearchTermType::person_name,
@@ -122,19 +104,19 @@ class MultipleSearchTermTelegramViewProvider
         ];
 
         foreach ($sortTypes as $type) {
-            foreach ($searchTerms as $searchTerm) {
+            foreach ($searchTerms->getItems() as $searchTerm) {
                 if ($searchTerm->getType() === $type) {
-                    $sortSearchTerms[] = $searchTerm;
+                    $sortSearchTermsItems[] = $searchTerm;
                 }
             }
         }
 
-        foreach ($searchTerms as $searchTerm) {
-            if (!in_array($searchTerm, $sortSearchTerms, true)) {
-                $sortSearchTerms[] = $searchTerm;
+        foreach ($searchTerms->getItems() as $searchTerm) {
+            if (!in_array($searchTerm, $sortSearchTermsItems, true)) {
+                $sortSearchTermsItems[] = $searchTerm;
             }
         }
 
-        return $sortSearchTerms;
+        return new SearchTermsTransfer($sortSearchTermsItems);
     }
 }

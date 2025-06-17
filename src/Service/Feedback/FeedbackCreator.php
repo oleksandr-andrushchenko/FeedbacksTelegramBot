@@ -83,7 +83,7 @@ class FeedbackCreator
 
         $searchTerms = [];
 
-        foreach ($transfer->getSearchTerms() as $searchTerm) {
+        foreach ($transfer->getSearchTerms()->getItemsAsArray() as $searchTerm) {
             $searchTerms[] = $this->feedbackSearchTermUpserter->upsertFeedbackSearchTerm($searchTerm);
         }
 
@@ -110,7 +110,7 @@ class FeedbackCreator
     {
         $messengerUser = $transfer->getMessengerUser();
 
-        foreach ($transfer->getSearchTerms() as $searchTerm) {
+        foreach ($transfer->getSearchTerms()->getItemsAsArray() as $searchTerm) {
             $messenger = $this->searchTermMessengerProvider->getSearchTermMessenger($searchTerm->getType());
 
             if (

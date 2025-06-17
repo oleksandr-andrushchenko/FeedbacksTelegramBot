@@ -12,13 +12,13 @@ class FeedbackTransfer
 {
     public function __construct(
         private ?MessengerUser $messengerUser = null,
-        private ?array $searchTerms = null,
+        private ?SearchTermsTransfer $searchTerms = null,
         private ?Rating $rating = null,
         private ?string $description = null,
         private ?TelegramBot $telegramBot = null,
     )
     {
-        $this->setSearchTerms($this->searchTerms);
+        $this->searchTerms = $searchTerms ?? new SearchTermsTransfer();
     }
 
     public function getMessengerUser(): ?MessengerUser
@@ -33,23 +33,9 @@ class FeedbackTransfer
         return $this;
     }
 
-    /**
-     * @return SearchTermTransfer[]
-     */
-    public function getSearchTerms(): array
+    public function getSearchTerms(): SearchTermsTransfer
     {
         return $this->searchTerms;
-    }
-
-    public function setSearchTerms(?array $searchTerms): self
-    {
-        if (is_array($searchTerms)) {
-            array_map(static fn ($searchTerm): bool => assert($searchTerm instanceof SearchTermTransfer), $this->searchTerms);
-        }
-
-        $this->searchTerms = $searchTerms;
-
-        return $this;
     }
 
     public function getRating(): ?Rating

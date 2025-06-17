@@ -6,72 +6,32 @@ namespace App\Entity\Feedback\Telegram\Bot;
 
 use App\Entity\Telegram\TelegramBotConversationState;
 use App\Enum\Feedback\Rating;
+use App\Transfer\Feedback\SearchTermsTransfer;
 use App\Transfer\Feedback\SearchTermTransfer;
 
 class CreateFeedbackTelegramBotConversationState extends TelegramBotConversationState
 {
     public function __construct(
         ?int $step = null,
-        /**
-         * @var SearchTermTransfer[]|null
-         */
-        private ?array $searchTerms = null,
+        private ?SearchTermsTransfer $searchTerms = null,
         private ?Rating $rating = null,
         private ?string $description = null,
         private ?string $createdId = null,
     )
     {
         parent::__construct($step);
+
+        $this->setSearchTerms($this->searchTerms);
     }
 
-    public function getSearchTerms(): ?array
+    public function getSearchTerms(): SearchTermsTransfer
     {
         return $this->searchTerms;
     }
 
-    public function addSearchTerm(SearchTermTransfer $searchTerm): self
+    public function setSearchTerms(?SearchTermsTransfer $searchTerms): self
     {
-        if ($this->searchTerms === null) {
-            $this->searchTerms = [];
-        }
-
-        $this->searchTerms[] = $searchTerm;
-
-        return $this;
-    }
-
-    public function removeSearchTerm(SearchTermTransfer $searchTermRemove): self
-    {
-        foreach ($this->searchTerms as $index => $searchTerm) {
-            if ($searchTerm !== $searchTermRemove) {
-                continue;
-            }
-
-            unset($this->searchTerms[$index]);
-            break;
-        }
-
-        $this->searchTerms = array_values($this->searchTerms);
-
-        if (count($this->searchTerms) === 0) {
-            $this->searchTerms = null;
-        }
-
-        return $this;
-    }
-
-    public function getLastSearchTerm(): ?SearchTermTransfer
-    {
-        if ($this->searchTerms === null || count($this->searchTerms) === 0) {
-            return null;
-        }
-
-        return $this->searchTerms[count($this->searchTerms) - 1];
-    }
-
-    public function setSearchTerms(?array $searchTerms): self
-    {
-        $this->searchTerms = $searchTerms;
+        $this->searchTerms = $searchTerms ?? new SearchTermsTransfer();
 
         return $this;
     }

@@ -24,6 +24,7 @@ use App\Tests\Traits\Feedback\FeedbackSearchTermRepositoryProviderTrait;
 use App\Tests\Traits\Feedback\FeedbackSearchTermTypeProviderTrait;
 use App\Tests\Traits\Messenger\MessengerUserProfileUrlProviderTrait;
 use App\Tests\Traits\User\UserRepositoryProviderTrait;
+use App\Transfer\Feedback\SearchTermsTransfer;
 use App\Transfer\Feedback\SearchTermTransfer;
 use Generator;
 
@@ -1975,7 +1976,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         $this->createConversation(
             CreateFeedbackTelegramBotConversation::class,
             (new CreateFeedbackTelegramBotConversationState())
-                ->setSearchTerms($searchTerms)
+                ->setSearchTerms(new SearchTermsTransfer($searchTerms))
                 ->setRating($rating)
                 ->setDescription($description)
                 ->setStep(CreateFeedbackTelegramBotConversation::STEP_CONFIRM_QUERIED)
@@ -2080,7 +2081,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         $conversation = $this->createConversation(
             CreateFeedbackTelegramBotConversation::class,
             (new CreateFeedbackTelegramBotConversationState())
-                ->setSearchTerms($searchTerms)
+                ->setSearchTerms(new SearchTermsTransfer($searchTerms))
                 ->setRating($rating)
                 ->setDescription($description)
                 ->setCreatedId('feedback1')
@@ -2222,7 +2223,7 @@ class CreateFeedbackTelegramBotCommandFunctionalTest extends TelegramBotCommandF
         $conversation = $this->createConversation(
             CreateFeedbackTelegramBotConversation::class,
             (new CreateFeedbackTelegramBotConversationState())
-                ->setSearchTerms($searchTerms)
+                ->setSearchTerms(new SearchTermsTransfer($searchTerms))
                 ->setRating($rating)
                 ->setDescription($description)
                 ->setStep($stateStep)
